@@ -28,7 +28,7 @@ CFG=Publish - Win32 Debug
 
 !IF  "$(CFG)" == "Publish - Win32 Release"
 
-# PROP BASE Use_MFC
+# PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 0
 # PROP BASE Output_Dir "Release"
 # PROP BASE Intermediate_Dir "Release"
@@ -37,11 +37,11 @@ CFG=Publish - Win32 Debug
 # PROP BASE Target_File "Publish.exe"
 # PROP BASE Bsc_Name "Publish.bsc"
 # PROP BASE Target_Dir ""
-# PROP Use_MFC
+# PROP Use_MFC 0
 # PROP Use_Debug_Libraries 0
 # PROP Output_Dir "Release"
 # PROP Intermediate_Dir "Release"
-# PROP Cmd_Line "nmake /f "Publish.mak""
+# PROP Cmd_Line "nmake /f "Publish.mak" all"
 # PROP Rebuild_Opt "/a"
 # PROP Target_File "Publish.exe"
 # PROP Bsc_Name ""
@@ -49,7 +49,7 @@ CFG=Publish - Win32 Debug
 
 !ELSEIF  "$(CFG)" == "Publish - Win32 Debug"
 
-# PROP BASE Use_MFC
+# PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 1
 # PROP BASE Output_Dir "Debug"
 # PROP BASE Intermediate_Dir "Debug"
@@ -58,7 +58,7 @@ CFG=Publish - Win32 Debug
 # PROP BASE Target_File "Publish.exe"
 # PROP BASE Bsc_Name "Publish.bsc"
 # PROP BASE Target_Dir ""
-# PROP Use_MFC
+# PROP Use_MFC 0
 # PROP Use_Debug_Libraries 1
 # PROP Output_Dir "Debug"
 # PROP Intermediate_Dir "Debug"

@@ -12,11 +12,11 @@
 class CPicture  
 {
 public:
-	CPicture(CWnd *);
+	CPicture(CWnd *, bool square=true);
 	virtual ~CPicture();
 
-//	bool			Load(CString sResourceType, CString sResource);
-//	bool			Load(CString sFileName);
+	bool			Load(LPTSTR sResourceType, LPTSTR sResource);
+	bool			Load(CString sFileName);
 	bool			Draw(CDC* pDC);
 	bool			Draw(CDC* pDC, CPoint Pos);
 	bool			Draw(CDC* pDC, CPoint Pos, CSize Size);
@@ -39,6 +39,7 @@ private:
 	};
 
 	CWnd * m_wnd;
+	bool			m_bSquare;
 };
 
 #endif // !defined(AFX_PICTURE_H__6098A4C3_D6D5_4711_BC7B_1595F459B480__INCLUDED_)

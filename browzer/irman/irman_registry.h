@@ -39,8 +39,9 @@ const static TCHAR RegWindowsColorTxPanel[] = _T("ColorTxPanel");
 const static TCHAR RegWindowsColorTxNormal[] = _T("ColorTxNormal");
 const static TCHAR RegWindowsColorTxHigh[] = _T("ColorTxHigh");
 const static TCHAR RegWindowsColorTxSel[] = _T("ColorTxSel");
-
 const static TCHAR RegRunAtStartup[] =_T("RunAtStartup");
+const static TCHAR RegUseGenre[] =_T("UseGenre");
+const static TCHAR RegAlbumSort[] = _T("AlbumSort");
 class RegistryKey
 {
 public:

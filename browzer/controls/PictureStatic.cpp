@@ -15,10 +15,10 @@ static char THIS_FILE[] = __FILE__;
 /////////////////////////////////////////////////////////////////////////////
 // PictureStatic
 
-PictureStatic::PictureStatic() : m_bytes(NULL), m_ploaded(FALSE)
+PictureStatic::PictureStatic(bool square) : m_bytes(NULL), m_ploaded(FALSE)
 
 {
-	m_Picture = new CPicture(this);
+	m_Picture = new CPicture(this, square);
 }
 
 PictureStatic::~PictureStatic()
@@ -68,6 +68,12 @@ PictureStatic::load(BYTE * data, size_t size) {
 //	m_bytes = data;
 	m_Picture->LoadFromBuffer(data, size);
 //	delete [] data;
+	m_ploaded = TRUE;
+	RedrawWindow();
+}
+void
+PictureStatic::load(LPTSTR type, LPTSTR resource) {
+	m_Picture->Load(type, resource);
 	m_ploaded = TRUE;
 	RedrawWindow();
 }

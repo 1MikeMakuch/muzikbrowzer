@@ -276,6 +276,10 @@ SOURCE=.\ToDo.h
 # PROP Default_Filter "ico;cur;bmp;dlg;rc2;rct;bin;cnt;rtf;gif;jpg;jpeg;jpe"
 # Begin Source File
 
+SOURCE=.\res\app.gif
+# End Source File
+# Begin Source File
+
 SOURCE=.\res\app_icon1_iconwkshp.ico
 # End Source File
 # Begin Source File
@@ -425,6 +429,10 @@ SOURCE=.\res\icon1.ico
 # Begin Source File
 
 SOURCE=.\res\icon2.ico
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\image1.bin
 # End Source File
 # Begin Source File
 

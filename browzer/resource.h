@@ -60,6 +60,7 @@
 #define IDB_BITMAP6                     212
 #define IDB_SPLASH2                     214
 #define IDB_SPLASH3                     215
+#define IDR_APPGIF                      227
 #define IDC_VOLUME_BUTTON               1000
 #define IDC_STOP_BUTTON                 1001
 #define IDC_PLAY_BUTTON                 1002
@@ -284,6 +285,7 @@
 #define IDC_IRALPHADOWN_STATUS          1720
 #define IDC_MESSAGEBOX_OK               2001
 #define IDC_CP_FIRSTNAME                2002
+#define IDC_MESSAGEBOX_CANCEL           2002
 #define IDC_CP_LASTNAME                 2003
 #define IDC_CP_PASSWORD                 2004
 #define IDC_CP_EMAIL                    2005
@@ -295,6 +297,9 @@
 #define IDC_CP_TRIAL_LABEL              2013
 #define IDC_PICTURE                     2014
 #define IDC_PICTURE_CTRL                2016
+#define IDC_USEGENRE                    2018
+#define IDC_ALBUMSORT_DATE              2019
+#define IDC_ALBUMSORT_ALPHA             2020
 #define ID_XXX                          32775
 #define ID__EXIT                        32785
 #define ID_PMENU_EXIT                   32785
@@ -332,9 +337,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        222
+#define _APS_NEXT_RESOURCE_VALUE        228
 #define _APS_NEXT_COMMAND_VALUE         32817
-#define _APS_NEXT_CONTROL_VALUE         2017
+#define _APS_NEXT_CONTROL_VALUE         2020
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

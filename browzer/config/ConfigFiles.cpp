@@ -18,13 +18,16 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
+static unsigned long useGenreUL;
+
 /////////////////////////////////////////////////////////////////////////////
 // CConfigFiles property page
 
 IMPLEMENT_DYNCREATE(CConfigFiles, CPropertyPage)
 
 CConfigFiles::CConfigFiles(CPlayerDlg *p) : CPropertyPage(CConfigFiles::IDD),
-    m_PlayerDlg(p), m_RunAtStartupUL(0), m_scanNew(FALSE)
+    m_PlayerDlg(p), m_RunAtStartupUL(0), m_scanNew(FALSE), m_UseGenreUL(0),
+	m_AlbumSortAlpha(TRUE), m_AlbumSortDate(FALSE)
 {
 	//{{AFX_DATA_INIT(CConfigFiles)
 		// NOTE: the ClassWizard will add member initialization here
@@ -49,6 +52,7 @@ void CConfigFiles::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_MP3_ADD_EXT, m_Mp3Extension);
 	DDX_Control(pDX, IDC_MDB_LOCATION, m_MdbLocation);
 	DDX_Control(pDX, IDC_DIRLIST, m_MP3DirList);
+	DDX_Control(pDX, IDC_USEGENRE, m_UseGenre);
 	//}}AFX_DATA_MAP
 }
 
@@ -63,6 +67,8 @@ BEGIN_MESSAGE_MAP(CConfigFiles, CPropertyPage)
 	ON_BN_CLICKED(IDC_MP3_ADD, OnMp3Add)
 	ON_BN_CLICKED(IDC_MP3_REMOVE, OnMp3Remove)
 	ON_BN_CLICKED(IDC_DIRSCAN_NEW, OnDirscanNew)
+	ON_BN_CLICKED(IDC_ALBUMSORT_DATE, OnAlbumsortDate)
+	ON_BN_CLICKED(IDC_ALBUMSORT_ALPHA, OnAlbumsortAlpha)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -270,6 +276,18 @@ void CConfigFiles::ReadReg() {
         }
     }
     m_RunAtStartupUL = reg.Read(RegRunAtStartup, 0);
+	m_UseGenreUL = reg.Read(RegUseGenre, 0);
+	useGenreUL = m_UseGenreUL;
+	unsigned long x = reg.Read(RegAlbumSort, 0);
+	if (x == 0) {
+		m_AlbumSortAlpha = 0;
+		m_AlbumSortDate = 1;
+
+	} else {
+		m_AlbumSortAlpha = 1;
+		m_AlbumSortDate = 0;
+	}
+
 }
 
 
@@ -317,7 +335,20 @@ void CConfigFiles::StoreReg() {
         m_RunAtStartupUL = 1;
         reg.Write(RegRunAtStartup, (unsigned long) 1);
     }
+    if (m_UseGenre.GetCheck() == 0) {
+        m_UseGenreUL = 0;
+        reg.Write(RegUseGenre, (unsigned long) 0);
+    } else {
+        m_UseGenreUL = 1;
+        reg.Write(RegUseGenre, (unsigned long) 1);
+    }
     setRunAtStartup();
+	reg.Write(RegAlbumSort, (unsigned long)m_AlbumSortAlpha);
+	if (useGenreUL != m_UseGenreUL) {
+		MBMessageBox("Notice", "muzikbrowzer must be restarted.\r\nClick OK then restart.", FALSE);
+		m_PlayerDlg->OnCancel();
+		exit(0);
+	}
     m_PlayerDlg->init();
 
 }
@@ -450,6 +481,19 @@ BOOL CConfigFiles::OnInitDialog()
     } else {
         m_RunAtStartup.SetCheck(0);
     }
+	if (m_UseGenreUL) {
+		m_UseGenre.SetCheck(1);
+	} else {
+		m_UseGenre.SetCheck(0);
+	}
+
+	if (m_AlbumSortAlpha) {
+		CheckRadioButton(IDC_ALBUMSORT_DATE,IDC_ALBUMSORT_ALPHA,
+			IDC_ALBUMSORT_ALPHA);
+	} else {
+		CheckRadioButton(IDC_ALBUMSORT_DATE,IDC_ALBUMSORT_ALPHA,
+			IDC_ALBUMSORT_DATE);
+	}
 
     UpdateWindow();
 
@@ -518,4 +562,31 @@ void CConfigFiles::OnCancel()
 	CPropertyPage::OnCancel();
 }
 
+
+BOOL CConfigFiles::UseGenre() {
+	return (m_UseGenreUL == 1);
+	return TRUE;
+}
+
+void CConfigFiles::OnAlbumsortDate() 
+{
+	m_AlbumSortAlpha = FALSE;
+	m_AlbumSortDate = TRUE;
+	CheckRadioButton(IDC_ALBUMSORT_DATE,IDC_ALBUMSORT_ALPHA,IDC_ALBUMSORT_DATE);
+	UpdateData(FALSE);
+	
+}
+
+void CConfigFiles::OnAlbumsortAlpha() 
+{
+	m_AlbumSortAlpha = TRUE;
+	m_AlbumSortDate = FALSE;
+	CheckRadioButton(IDC_ALBUMSORT_DATE,IDC_ALBUMSORT_ALPHA,IDC_ALBUMSORT_ALPHA);
+	UpdateData(FALSE);
+	
+}
+BOOL CConfigFiles::AlbumSortAlpha()
+{
+	return m_AlbumSortAlpha;
+}
 

@@ -299,7 +299,8 @@ class MusicLib
         void deletePlaylist(const CString &);
         int deleteSongFromPlaylist(PlaylistNode *p);
         void dumpPL(int p);
-        int getAlbums(const CString &, const CString &, CExtendedListBox&);
+        int getAlbums(const CString &, const CString &, CExtendedListBox&, 
+			BOOL albumsortalpha=TRUE);
         int getArtists(const CString &, CExtendedListBox&);
         CString getDbLocation() { return m_dir; };
         int getGenres(CExtendedListBox&);

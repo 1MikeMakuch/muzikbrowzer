@@ -21,7 +21,7 @@ class MBMessageBoxImpl : public CDialog
 // Construction
 public:
 	MBMessageBoxImpl(CString & title, CString & info, BOOL log = TRUE,
-		CWnd* pParent = NULL);   // standard constructor
+		BOOL enableCancel=FALSE, CWnd* pParent = NULL);   // standard constructor
 	~MBMessageBoxImpl();
 // Dialog Data
 	//{{AFX_DATA(MBMessageBoxImpl)
@@ -47,6 +47,7 @@ public:
 	//{{AFX_MSG(MBMessageBoxImpl)
 	virtual BOOL OnInitDialog();
 	virtual void OnOK();
+	virtual void OnCancel();
 	afx_msg void OnSetfocusMessageBox();
 	afx_msg void OnSetfocusOk();
 	//}}AFX_MSG
@@ -58,10 +59,12 @@ private:
     CString m_title;
 	BOOL m_log;
 	CFont mfont;
+	BOOL m_EnableCancel;
 
 };
 
-void MBMessageBox(CString title, CString msg, BOOL log = TRUE);
+int MBMessageBox(CString title, CString msg, BOOL log = TRUE, 
+				 BOOL enableCancel=FALSE);
 
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.

@@ -29,6 +29,7 @@ public:
 	CEdit	m_Mp3Extension;
 	CStatic	m_MdbLocation;
 	CListBox	m_MP3DirList;
+	CButton m_UseGenre;
 	//}}AFX_DATA
 
 
@@ -54,6 +55,8 @@ protected:
 	afx_msg void OnMp3Remove();
 	virtual void OnCancel();
 	afx_msg void OnDirscanNew();
+	afx_msg void OnAlbumsortDate();
+	afx_msg void OnAlbumsortAlpha();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 private:
@@ -65,6 +68,9 @@ private:
     CString m_origMdbLocation;
     CStringList m_origMP3DirList;
     unsigned long m_RunAtStartupUL;
+	unsigned long m_UseGenreUL;
+	BOOL m_AlbumSortAlpha;
+	BOOL m_AlbumSortDate;
 
     int m_ScanThread_continue;
 
@@ -78,6 +84,8 @@ private:
 public:
 	BOOL m_scanNew;
     void setDefaults();
+	BOOL UseGenre();
+	BOOL AlbumSortAlpha();
 
 };
 

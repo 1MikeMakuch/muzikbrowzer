@@ -178,7 +178,8 @@ private:
 	CExtendedListBox	m_Songs;	
 	CExtendedListBox	m_Playlist;    
 	CMbutton		m_OptionsButton;
-	CBitmapButton	m_ButtonAppLabel;
+	//CBitmapButton	m_ButtonAppLabel;
+	PictureStatic	m_AppLabel;
 	CBitmapButton	m_ButtonMinimize;
 	CBitmapButton	m_ButtonMaximize;
 	CBitmapButton	m_ButtonExit;

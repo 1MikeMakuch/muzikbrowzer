@@ -16,7 +16,7 @@ static char THIS_FILE[]=__FILE__;
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CPicture::CPicture(CWnd * w) : m_wnd(w)
+CPicture::CPicture(CWnd * w, bool square) : m_wnd(w), m_bSquare(square)
 {
 	m_pPicture	= NULL;
 }
@@ -26,63 +26,65 @@ CPicture::~CPicture()
 	UnLoad();
 }
 
-//bool CPicture::Load(CString sResourceType, CString sResource)
-//{
-//	bool bResult = false;
-//
-//	if (m_pPicture != NULL)
-//		UnLoad();
-//
-//	if (m_pPicture == NULL)
-//	{
-//		BYTE*	pBuff = NULL;
-//		int		nSize = 0;
-//		if (GetResource(sResource.GetBuffer(0), sResourceType.GetBuffer(0), pBuff, nSize))
-//		{
-//			if (nSize > 0)
-//			{
-//				pBuff = new BYTE[nSize];
-//
-//				if (GetResource(sResource.GetBuffer(0), sResourceType.GetBuffer(0), pBuff, nSize))
-//				{
-//					if (LoadFromBuffer(pBuff, nSize))
-//						bResult = true;
-//				}
-//
-//				delete [] pBuff;
-//			}
-//		}
-//	}
-//	return bResult;
-//}
+bool CPicture::Load(LPTSTR sResourceType, LPTSTR sResource)
+{
+	bool bResult = false;
 
-//bool CPicture::Load(CString sFileName)
-//{
-//	bool bResult = false;
-//
-//	if (m_pPicture != NULL)
-//		UnLoad();
-//
-//	if (m_pPicture == NULL)
-//	{
-//		CFile			cFile;
-//		CFileException	e;
-//
-//		if (cFile.Open(sFileName, CFile::modeRead | CFile::typeBinary, &e))
-//		{
-//			BYTE* pBuff = new BYTE[cFile.GetLength()];
-//
-//			if (cFile.Read(pBuff, cFile.GetLength()) > 0)
-//			{
-//				if (LoadFromBuffer(pBuff, cFile.GetLength()))
-//					bResult = true;
-//			}
-//
-//			delete [] pBuff;
-//		}
-//	}
-//	return bResult;
-//}
+	if (m_pPicture != NULL)
+		UnLoad();
+
+	if (m_pPicture == NULL)
+	{
+		BYTE*	pBuff = NULL;
+		int		nSize = 0;
+		if (GetResource(sResource, sResourceType,
+			pBuff, nSize))
+		{
+			if (nSize > 0)
+			{
+				pBuff = new BYTE[nSize];
+
+				if (GetResource(sResource,
+					sResourceType, pBuff, nSize))
+				{
+					if (LoadFromBuffer(pBuff, nSize))
+						bResult = true;
+				}
+
+				delete [] pBuff;
+			}
+		}
+	}
+	return bResult;
+}
+
+bool CPicture::Load(CString sFileName)
+{
+	bool bResult = false;
+
+	if (m_pPicture != NULL)
+		UnLoad();
+
+	if (m_pPicture == NULL)
+	{
+		CFile			cFile;
+		CFileException	e;
+
+		if (cFile.Open(sFileName, CFile::modeRead | CFile::typeBinary, &e))
+		{
+			BYTE* pBuff = new BYTE[cFile.GetLength()];
+
+			if (cFile.Read(pBuff, cFile.GetLength()) > 0)
+			{
+				if (LoadFromBuffer(pBuff, cFile.GetLength()))
+					bResult = true;
+			}
+
+			delete [] pBuff;
+		}
+	}
+	return bResult;
+}
 
 void CPicture::UnLoad()
 {
@@ -190,9 +192,12 @@ bool CPicture::Draw(CDC* pDC, int x, int y, int cx, int cy)
 	m_wnd->GetClientRect(rect);
 	cx = rect.Width();
 	cy = rect.Height();
-	int sq = __min(cx,cy);
+	if (m_bSquare == TRUE) {
+		int sq = __min(cx,cy);
+		cx = cy = sq;
+	}
 
-	if (m_pPicture->Render(pDC->m_hDC, x, y, sq, sq, 0, hmHeight, hmWidth,
+	if (m_pPicture->Render(pDC->m_hDC, x, y, cx, cy, 0, hmHeight, hmWidth,
 		-hmHeight, NULL) == S_OK)
 		return true;
 
@@ -204,12 +209,13 @@ bool CPicture::LoadFromBuffer(BYTE* pBuff, int nSize)
 	bool bResult = false;
 
 	HGLOBAL hGlobal = GlobalAlloc(GMEM_MOVEABLE, nSize);
+
 	void* pData = GlobalLock(hGlobal);
 	memcpy(pData, pBuff, nSize);
+
 	GlobalUnlock(hGlobal);
 
 	IStream* pStream = NULL;
-
 
 	if (CreateStreamOnHGlobal(hGlobal, TRUE, &pStream) == S_OK)
 	{
@@ -225,40 +231,41 @@ bool CPicture::LoadFromBuffer(BYTE* pBuff, int nSize)
 	return bResult;
 }
 
-bool CPicture::GetResource(LPSTR lpName, LPSTR lpType, void* pResource, int& nBufSize)
+bool CPicture::GetResource(LPSTR lpName, LPSTR lpType, 
+						   void* pResource, int& nBufSize)
 { 
 	HRSRC		hResInfo;
 	HANDLE		hRes;
-	HMODULE		hInst	= NULL; 
+	HMODULE		hInst	= AfxGetResourceHandle(); 
 	LPSTR		lpRes	= NULL; 
 	int			nLen	= 0;
 	bool		bResult	= FALSE;
 
 	// Find the resource
-	hResInfo = FindResource(hInst, lpName, lpType);
+	hResInfo = ::FindResource(hInst, lpName, lpType);
 
 	if (hResInfo == NULL) 
 		return false;
 
 	// Load the resource
-	hRes = LoadResource(hInst, hResInfo);
+	hRes = ::LoadResource(hInst, hResInfo);
 
 	if (hRes == NULL) 
 		return false;
 
 	// Lock the resource
-	lpRes = (char*)LockResource(hRes);
+	lpRes = (char*)::LockResource(hRes);
 
 	if (lpRes != NULL)
 	{ 
 		if (pResource == NULL)
 		{
-			nBufSize = SizeofResource(hInst, hResInfo);
+			nBufSize = ::SizeofResource(hInst, hResInfo);
 			bResult = true;
 		}
 		else
 		{
-			if (nBufSize >= (int)SizeofResource(hInst, hResInfo))
+			if (nBufSize >= (int)::SizeofResource(hInst, hResInfo))
 			{
 				memcpy(pResource, lpRes, nBufSize);
 				bResult = true;

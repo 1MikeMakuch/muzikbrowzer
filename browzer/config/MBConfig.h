@@ -88,6 +88,8 @@ public:
     COLORREF getColorTxNormal();
     COLORREF getColorTxHigh();
     COLORREF getColorTxSel();
+	BOOL UseGenre();
+	BOOL AlbumSortAlpha();
 	void getRegistry(const CString & key, int & value, const int dflt);
 	void setRegistry(const CString & key, const int value);
 	void getRegistry(const CString & key, CString & value);

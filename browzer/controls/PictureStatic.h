@@ -16,7 +16,7 @@ class PictureStatic : public CStatic
 {
 // Construction
 public:
-	PictureStatic();
+	PictureStatic(bool square=true);
 
 // Attributes
 public:
@@ -33,6 +33,7 @@ public:
 public:
 	virtual ~PictureStatic();
 	void load(BYTE * data, size_t size);
+	void load(LPTSTR type, LPTSTR resource);
 	void unload();
 	void blank();
 

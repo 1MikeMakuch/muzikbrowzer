@@ -14,7 +14,7 @@
 #define MBREGKEY "Software\\muzikbrowzer"
 
 #define MBUNABLETOOPEN "Unable to open database location. Set in config options, then run Scan."
-#define PLAYER_STATUS_DELAY 5
+#define PLAYER_STATUS_DELAY 10
 
 
 #define IR_MESSAGE				(WM_APP + 1)

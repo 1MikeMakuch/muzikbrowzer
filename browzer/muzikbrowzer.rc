@@ -65,8 +65,6 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-
-
 IDI_MBLOGO              ICON    DISCARDABLE     "res\\app_icon1_iconwkshp.ico"
 IDI_MBLOGO3             ICON    DISCARDABLE     "res\\mblogo3.ico"
 
@@ -98,7 +96,7 @@ END
 IDD_PLAYER_DIALOG DIALOGEX 0, 0, 401, 282
 STYLE WS_POPUP | WS_THICKFRAME
 EXSTYLE WS_EX_APPWINDOW
-FONT 8, "MS Sans Serif", 0, 0, 0x1
+FONT 8, "MS Sans Serif"
 BEGIN
     LISTBOX         IDC_GENRES,30,70,51,42,LBS_SORT | LBS_OWNERDRAWFIXED | 
                     LBS_HASSTRINGS | LBS_NOINTEGRALHEIGHT | WS_TABSTOP
@@ -117,7 +115,7 @@ BEGIN
     LTEXT           "Songs",IDC_SONGSLABEL,205,116,21,9
     LTEXT           "Playlist",IDC_PLAYLISTLABEL,35,182,127,8,NOT WS_GROUP
     CONTROL         "",IDC_OPTIONS_BUTTON,"Button",BS_OWNERDRAW | BS_LEFT | 
-                    BS_TOP | BS_FLAT,55,15,59,12
+                    BS_TOP | BS_FLAT,8,6,33,12
     CONTROL         "IDB_BUTTON_MINIMIZE",IDC_BUTTON_MINIMIZE,"Button",
                     BS_OWNERDRAW | BS_FLAT,360,0,10,9
     CONTROL         "IDB_BUTTON_MAXIMIZE",IDC_BUTTON_MAXIMIZE,"Button",
@@ -134,12 +132,10 @@ BEGIN
                     SS_CENTERIMAGE,110,266,20,10
     CONTROL         "",IDC_VOLUME_LABEL,"Static",SS_SIMPLE | SS_CENTERIMAGE,
                     210,266,20,10
-    CONTROL         "IDB_APP_LABEL3",IDC_APP_LABEL,"Button",BS_OWNERDRAW | 
-                    BS_CENTER | BS_VCENTER | BS_FLAT | WS_DISABLED,180,25,
-                    120,10
     CTEXT           "",IDC_CURRENT_TITLE,40,251,345,10,SS_CENTERIMAGE | NOT 
                     WS_GROUP
-    LTEXT           "",IDC_PICTURE_CTRL,285,66,75,55
+    LTEXT           "",IDC_PICTURE_CTRL,287,68,75,55
+    LTEXT           "",IDC_APP_LABEL,94,6,182,15
 END
 
 IDD_INIT_DIALOG DIALOG DISCARDABLE  0, 0, 337, 96
@@ -258,10 +254,11 @@ IDD_MESSAGE_DIALOG DIALOG DISCARDABLE  0, 0, 297, 178
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION
 FONT 8, "MS Sans Serif"
 BEGIN
-    DEFPUSHBUTTON   "OK",IDC_MESSAGEBOX_OK,124,157,50,14
+    DEFPUSHBUTTON   "OK",IDC_MESSAGEBOX_OK,177,157,50,14
     EDITTEXT        IDC_MESSAGE_BOX,7,7,283,145,ES_MULTILINE | 
                     ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_READONLY | 
                     WS_VSCROLL | WS_HSCROLL
+    DEFPUSHBUTTON   "Cancel",IDC_MESSAGEBOX_CANCEL,75,157,50,14
 END
 
 IDD_CONFIG_FONTS DIALOG DISCARDABLE  0, 0, 333, 181
@@ -328,7 +325,7 @@ END
 IDD_CONFIG_FILES DIALOGEX 0, 0, 287, 175
 STYLE WS_CHILD | WS_DISABLED | WS_CAPTION | WS_SYSMENU
 CAPTION "General"
-FONT 8, "MS Sans Serif", 0, 0, 0x1
+FONT 8, "MS Sans Serif"
 BEGIN
     LISTBOX         IDC_DIRLIST,10,15,165,55,LBS_SORT | WS_VSCROLL | 
                     WS_HSCROLL
@@ -342,12 +339,12 @@ BEGIN
                     80
     GROUPBOX        "Location of muzikbrowzer database",IDC_STATIC,5,90,275,
                     35
-    LISTBOX         IDC_MP3_EXTENSION,195,15,38,25,LBS_SORT | 
+    LISTBOX         IDC_MP3_EXTENSION,195,15,38,16,LBS_SORT | 
                     LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON      "Remove",IDC_MP3_REMOVE,195,50,32,11
+    PUSHBUTTON      "Remove",IDC_MP3_REMOVE,197,34,32,11
     EDITTEXT        IDC_MP3_ADD_EXT,245,15,24,12,ES_AUTOHSCROLL
     PUSHBUTTON      "Add",IDC_MP3_ADD,245,30,25,11
-    GROUPBOX        "Audio file extensions",IDC_STATIC,190,5,89,60
+    GROUPBOX        "Audio file extensions",IDC_STATIC,190,5,89,44
     CONTROL         "Yes",IDC_RUNATSTARTUP,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,195,154,40,8
     GROUPBOX        "Add audio files to muzikbrowzer database",IDC_STATIC,5,
@@ -355,6 +352,13 @@ BEGIN
     PUSHBUTTON      "Scan for New",IDC_DIRSCAN_NEW,55,150,60,13
     GROUPBOX        "Run muzikbrowzer at Start up?",IDC_STATIC,170,140,110,
                     30
+    CONTROL         "Use Genres?",IDC_USEGENRE,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,198,52,53,10
+    CONTROL         "Date",IDC_ALBUMSORT_DATE,"Button",BS_AUTORADIOBUTTON | 
+                    WS_GROUP,196,78,28,10
+    CONTROL         "Alpha",IDC_ALBUMSORT_ALPHA,"Button",BS_AUTORADIOBUTTON | 
+                    WS_GROUP,231,78,30,10
+    LTEXT           "Album sort",IDC_STATIC,202,67,37,9
 END
 
 IDD_CONFIG_IRMAN DIALOG DISCARDABLE  0, 0, 342, 201
@@ -781,6 +785,13 @@ IDB_APP_LABEL3X         BITMAP  DISCARDABLE     "res\\app_labelX.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
+// GIF
+//
+
+IDR_APPGIF              GIF     DISCARDABLE     "res\\app.gif"
+
+/////////////////////////////////////////////////////////////////////////////
+//
 // String Table
 //
 
@@ -815,6 +826,4 @@ LANGUAGE 9, 1
 #endif
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
-
-
 

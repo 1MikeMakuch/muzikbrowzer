@@ -577,7 +577,7 @@ public:
 };
 int
 MusicLib::getAlbums(const CString & genrename, const CString & artistname,
-				   CExtendedListBox & box) {
+				   CExtendedListBox & box, BOOL AlbumSortAlpha) {
 
 	MList albumList = m_SongLib.albumList(genrename, artistname);
 	MList::Iterator albumIter(albumList);
@@ -598,7 +598,7 @@ MusicLib::getAlbums(const CString & genrename, const CString & artistname,
 			namenums.Add(nn);
 		}
 	}
-	if (artistname == MBALL) {
+	if (artistname == MBALL || AlbumSortAlpha) {
 		NameNum::bsort(namenums, TRUE);
 	} else {
 		NameNum::bsort(namenums, FALSE);
@@ -1268,6 +1268,41 @@ MusicLib::savePlaylist(Playlist & playlist, const CString & file) {
 
 	CFile myFile;
 	CFileException fileException;
+	if (myFile.Open((LPCTSTR)dbfilename,
+		CFile::modeRead, &fileException)) {
+		DWORD len = myFile.GetLength();
+		char * buf = (char*)malloc(len+1);
+		UINT read = myFile.Read(buf, len);
+		myFile.Close();
+		dbfilename = m_dir;
+		dbfilename += "\\";
+		dbfilename += MUZIKBROWZER;
+		dbfilename += MBPLAYLIST;
+		dbfilename += file;
+		dbfilename += ".bak";
+
+		if ( !myFile.Open( (LPCTSTR)dbfilename,
+			CFile::modeWrite | CFile::modeCreate,
+			&fileException ))
+		{
+			CString msg = "Unable to backup playlist ";
+			msg += dbfilename;
+			MBMessageBox(CString("alert"), msg);
+			free(buf);
+			return ;
+		}
+		myFile.Write(buf,read);
+		myFile.Flush();
+		myFile.Close();
+		free(buf);
+
+		dbfilename = m_dir;
+		dbfilename += "\\";
+		dbfilename += MUZIKBROWZER;
+		dbfilename += MBPLAYLIST;
+		dbfilename += file;
+		dbfilename += MBPLAYLISTEXT;
+	}
 
 	if ( !myFile.Open( (LPCTSTR)dbfilename,
         CFile::modeWrite | CFile::modeCreate,
@@ -1447,11 +1482,45 @@ MusicLib::modifyID3(Song oldSong, Song newSong) {
 	int count = songs.GetCount();
 	dialog->ProgressRange(0, count);
 
+	msg = "The following files will be modified.\r\nClick OK to continue or Cancel to abort.\r\n";
+	char buf[1000];
+	CString fmt = "%15s: %20s,  %15s: %s\r\n";
+	sprintf(buf,fmt,"old genre",oldGenre,"new genre",newGenre);
+	msg += buf;
+	sprintf(buf,fmt,"old artist",oldArtist,"new artist",newArtist);
+	msg += buf;
+	sprintf(buf,fmt,"old album",oldAlbum,"new album",newAlbum);
+	msg += buf;
+	sprintf(buf,fmt,"old title",oldTitle,"new title",newTitle);
+	msg += buf;
+	sprintf(buf,fmt,"old track#",oldTrack,"new track",newTrack);
+	msg += buf;
+	sprintf(buf,fmt,"old year",oldYear,"new year",newYear);
+	msg += buf;
+	msg += "\r\n";
+
+    POSITION pos;
+    for (pos = songs.GetHeadPosition(); pos != NULL; ) {
+        CString file = songs.GetAt(pos);
+		msg += file;
+		msg += "\r\n";
+        songs.GetNext(pos);
+	}
+	delete dialog;
+	int r = MBMessageBox("Notice", msg, TRUE, TRUE);
+	if (r == 0) {
+		MBMessageBox("Notice","Edit not performed");
+		return;
+	}
+
+	dialog = new InitDlg(1,0);
 	dialog->m_InitLabel = "Modifying audio files...";
+	dialog->SetLabel(msg);
+	dialog->ShowWindow(SW_SHOWNORMAL);
+	dialog->UpdateWindow();
 
 	CString result;
     int ctr = 1;
-    POSITION pos;
     for (pos = songs.GetHeadPosition(); pos != NULL; ) {
         CString file = songs.GetAt(pos);
 

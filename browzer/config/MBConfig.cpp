@@ -109,6 +109,14 @@ COLORREF
 MBConfig::getColorTxSel() {
     return m_Colors->getTxSel();
 }
+BOOL
+MBConfig::UseGenre() {
+	return m_Files->UseGenre();
+}
+BOOL
+MBConfig::AlbumSortAlpha() {
+	return m_Files->AlbumSortAlpha();
+}
 void MBConfig::getRegistry(const CString & key, int & value, int dflt) {
     RegistryKey reg( HKEY_LOCAL_MACHINE, RegKey );
     value = reg.Read((LPCTSTR)key, dflt);
