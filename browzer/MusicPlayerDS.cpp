@@ -55,7 +55,7 @@ MusicPlayerDS::init()
     HRESULT hr = InitDirectShow();
     if(FAILED(hr))
     {
-        RetailOutput(TEXT("Failed to initialize DirectShow!  hr=0x%x\r\n"), hr);
+		LogError(hr, "DS init");
         return FALSE;
     }
 #ifdef _DEBUG
@@ -101,21 +101,17 @@ HRESULT MusicPlayerDS::PrepareMedia(LPTSTR lpszMovie)
 	logger.log(msg);
     hr = pGB->RenderFile(T2W(lpszMovie), NULL);
     if (FAILED(hr)) {
-        RetailOutput(TEXT("*** Failed(%08lx) in RenderFile(%s)!\r\n"),
-                 hr, lpszMovie);
+		LogError(hr, "PrepareMedia, RenderFile");
         return hr;
     }
 	// Have the graph signal event via window callbacks
 	hr = pME->SetNotifyWindow((OAHWND)m_PlayerDlg->m_hWnd, WM_GRAPHNOTIFY, 0);
 //		Returns S_OK if successful or E_INVALIDARG if the hwnd ;
-	if (hr != S_OK) { 
-		RetailOutput(TEXT(
-			"*** Failed(%081x) in PrepareMedia,SetNotifyWindow\r\n"),
-			hr);
+	if (hr != S_OK) {
+		LogError(hr, "PrepareMedia, SetNotifyWindow");
 	}
 	return hr;
 }
-
 
 //
 //  Displays a text string in a status line near the bottom of the dialog
@@ -144,6 +140,7 @@ BOOL MusicPlayerDS::Play()
 	BOOL r = TRUE;
   	HRESULT hr = RunMedia();
 	if (FAILED(hr)) {
+		LogError(hr, "Play");
 		r = FALSE;
 	} else {
 		Say(TEXT("Running"));
@@ -161,7 +158,7 @@ void MusicPlayerDS::ShowState()
     hr = pMC->GetState(500, &fs);
     if (FAILED(hr))
     {
-        RetailOutput(TEXT("Failed to read graph state!  hr=0x%x\r\n"), hr);
+		LogError(hr, "ShowState");
         return;
     }
 
@@ -192,7 +189,7 @@ void MusicPlayerDS::Stop()
     hr = pMC->GetState(500, &fs);
     if (FAILED(hr))
     {
-        RetailOutput(TEXT("Failed to read graph state!  hr=0x%x\r\n"), hr);
+        LogError(hr, "Stop, GetState");
     }
 
     // Reset to beginning of media clip
@@ -201,7 +198,7 @@ void MusicPlayerDS::Stop()
                            NULL, AM_SEEKING_NoPositioning);
     if (FAILED(hr))
     {
-        RetailOutput(TEXT("Failed to seek to beginning of media!  hr=0x%x\r\n"), hr);
+        LogError(hr, "Stop, SetPositions");
     }
   
     // Display the first frame of the media clip, if it contains video.
@@ -212,7 +209,7 @@ void MusicPlayerDS::Stop()
     hr = pMC->StopWhenReady();
     if (FAILED(hr))
     {
-        RetailOutput(TEXT("Failed in StopWhenReady!  hr=0x%x\r\n"), hr);
+        LogError(hr, "Stop, StopWhenReady");
     }
 
     Say(TEXT("Stopped"));
@@ -315,26 +312,34 @@ HRESULT MusicPlayerDS::DisplayFileDuration(void)
     // Read the time format to restore later
     GUID guidOriginalFormat;
     hr = pMS->GetTimeFormat(&guidOriginalFormat);
-    if (FAILED(hr))
+    if (FAILED(hr)) {
+		LogError(hr, "DisplayFileDuration, GetTimeFormat");
         return hr;
+	}
 
     // Ensure media time format for easy display
     hr = pMS->SetTimeFormat(&TIME_FORMAT_MEDIA_TIME);
-    if (FAILED(hr))
+    if (FAILED(hr)) {
+		LogError(hr, "DisplayFileDuration, SetTimeFormat");
         return hr;
+	}
 
     // Read the file's duration
     LONGLONG llDuration;
     hr = pMS->GetDuration(&llDuration);
-    if (FAILED(hr))
+    if (FAILED(hr)) {
+		LogError(hr, "DisplayFileDuration, GetDuration");
         return hr;
+	}
 
     // Return to the original format
     if (guidOriginalFormat != TIME_FORMAT_MEDIA_TIME)
     {
         hr = pMS->SetTimeFormat(&guidOriginalFormat);
-        if (FAILED(hr))
+        if (FAILED(hr)) {
+			LogError(hr, "DisplayFileDuration, SetTimeFormat");
             return hr;
+		}
     }
 
     // Convert the LONGLONG duration into human-readable format
@@ -360,26 +365,34 @@ int MusicPlayerDS::GetFileDuration(void)
     // Read the time format to restore later
     GUID guidOriginalFormat;
     hr = pMS->GetTimeFormat(&guidOriginalFormat);
-    if (FAILED(hr))
+    if (FAILED(hr)) {
+		LogError(hr, "GetFileDuration, GetTimeFormat");
         return -1;
+	}
 
     // Ensure media time format for easy display
     hr = pMS->SetTimeFormat(&TIME_FORMAT_MEDIA_TIME);
-    if (FAILED(hr))
+    if (FAILED(hr)) {
+		LogError(hr, "GetFileDuration, SetTimeFormat");
         return -1;
+	}
 
     // Read the file's duration
     LONGLONG llDuration;
     hr = pMS->GetDuration(&llDuration);
-    if (FAILED(hr))
+    if (FAILED(hr)) {
+		LogError(hr, "GetFileDuration, GetDuration");
         return -1;
+	}
 
     // Return to the original format
     if (guidOriginalFormat != TIME_FORMAT_MEDIA_TIME)
     {
         hr = pMS->SetTimeFormat(&guidOriginalFormat);
-        if (FAILED(hr))
+        if (FAILED(hr)) {
+			LogError(hr, "GetFileDuration, SetTimeFormat");
             return -1;
+		}
     }
 	g_rtTotalTime = llDuration;
 
@@ -457,8 +470,10 @@ long MusicPlayerDS::ReadMediaPosition()
 
     // Read the current stream position
     hr = pMS->GetCurrentPosition(&rtNow);
-    if (FAILED(hr))
+    if (FAILED(hr)) {
+		LogError(hr, "ReadMediaPosition, GetCurrentPosition");
         return 0;
+	}
 
 	long lTick = 0;
     // Convert position into a percentage value and update slider position
@@ -475,8 +490,10 @@ void MusicPlayerDS::ReadMediaPosition(long & positionseconds,
 
     // Read the current stream position
     hr = pMS->GetCurrentPosition(&rtNow);
-    if (FAILED(hr))
+    if (FAILED(hr)) {
+		LogError(hr, "ReadMediaPosition, GetCurrentPosition");
         return ;
+	}
 
     // Convert position into a percentage value and update slider position
     if (g_rtTotalTime != 0)
@@ -502,8 +519,10 @@ void MusicPlayerDS::UpdatePosition(REFERENCE_TIME rtNow)
     {
         // Read the current stream position
         hr = pMS->GetCurrentPosition(&rtNow);
-        if (FAILED(hr))
+        if (FAILED(hr)) {
+			LogError(hr, "UpdatePosition, GetCurrentPosition");
             return;
+		}
     }
 
     // Convert the LONGLONG duration into human-readable format
@@ -521,7 +540,7 @@ MusicPlayerDS::isPlaying() {
     hr = pMC->GetState(500, &fs);
     if (FAILED(hr))
     {
-        RetailOutput(TEXT("Failed to read graph state!  hr=0x%x\r\n"), hr);
+        LogError(hr, "isPlaying");
         return FALSE;
     }
 	if (fs == State_Running) return TRUE;
@@ -535,7 +554,7 @@ MusicPlayerDS::isStopped() {
     hr = pMC->GetState(500, &fs);
     if (FAILED(hr))
     {
-        RetailOutput(TEXT("Failed to read graph state!  hr=0x%x\r\n"), hr);
+        LogError(hr, "isStopped");
         return FALSE;
     }
 	if (fs == State_Stopped) return TRUE;
@@ -639,13 +658,17 @@ void MusicPlayerDS::FilterProps(IBaseFilter *pFilter)
         {
             FILTER_INFO FilterInfo;
             hr = pFilter->QueryFilterInfo(&FilterInfo);
-            if (FAILED(hr))
+            if (FAILED(hr)) {
+				LogError(hr, "FilterProps, QueryFilter");
                 break;
+			}
 
             CAUUID caGUID;
             hr = pSpecify->GetPages(&caGUID);
-            if (FAILED(hr))
+            if (FAILED(hr)) {
+				LogError(hr, "FilterProps, GetPages");
                 break;
+			}
 
             pSpecify->Release();
         
@@ -732,4 +755,28 @@ CString MusicPlayerDS::GetVersion()
 }
 
 
+
+void MusicPlayerDS::LogError(HRESULT hr, CString msg)
+{
+    if (FAILED(hr))
+    {
+        TCHAR szErr[MAX_ERROR_TEXT_LEN];
+        DWORD res = AMGetErrorText(hr, szErr, MAX_ERROR_TEXT_LEN);
+        if (res == 0)
+        {
+            wsprintf(szErr, "Unknown Error: 0x%2x", hr);
+        }
+		CString txt;
+		if (msg.GetLength()) {
+			txt += msg;
+			txt += ": ";
+		}
+		char buf[100];
+		sprintf(buf, "0x%2x", hr);
+		txt += buf;
+		txt += ", ";
+		txt += szErr;
+        logger.log(txt);
+    }
+}
 

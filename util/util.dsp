@@ -91,6 +91,10 @@ SOURCE=.\FExtension.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\FileUtils.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\Misc.cpp
 # End Source File
 # Begin Source File
@@ -121,6 +125,10 @@ SOURCE=.\StdAfx.cpp
 # Begin Source File
 
 SOURCE=.\FExtension.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\FileUtils.h
 # End Source File
 # Begin Source File
 

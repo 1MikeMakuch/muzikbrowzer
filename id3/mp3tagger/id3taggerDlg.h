@@ -29,6 +29,8 @@ public:
 // Dialog Data
 	//{{AFX_DATA(CId3taggerDlg)
 	enum { IDD = IDD_ID3TAGGER_DIALOG };
+	CButton	m_RenameRoot;
+	CEdit	m_RenameRootDir;
 	CButton	m_ShowAll;
 	CButton	m_FilesRemoveAll;
 	CButton	m_CommandRemoveAll;
@@ -66,13 +68,18 @@ protected:
 	CString displayCommands();
 	CString editMp3(BOOL EditOrDryRun, CString file);
 	BOOL DoOp(BOOL EditOrDryRun, TagOp * op, ID3_Tag & id3,
-		ID3_Tag & newid3);
+		ID3_Tag & newid3, CString & file);
 	CString valueFromField(CString field, ID3_Tag & id3);
 	CString quotedValueFromField(CString field, ID3_Tag & id3);
 	void setField(ID3_Tag & srcId3, ID3_Tag & id3, CString & field, CString & value);
 	CString doLastCommaFirst(const CString & old);
 	CString doFirstLast(const CString & old);
 	void EnableDisable();
+	void updateRenameRoot();
+	BOOL m_renaming;
+	CString normalFilePath(ID3_Tag & id3, CString & file);
+	CString renameFile(CString src, CString dst);
+	CString prune();
 
 	// Generated message map functions
 	//{{AFX_MSG(CId3taggerDlg)
@@ -100,6 +107,8 @@ protected:
 	afx_msg void OnSelchangeComboField1();
 	afx_msg void OnEditchangeComboMatchvalue();
 	afx_msg void OnButtonShowall();
+	afx_msg void OnButtonAddrename();
+	afx_msg void OnChangeRenameroot();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

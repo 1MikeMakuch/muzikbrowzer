@@ -55,4 +55,12 @@ b) Convert to "Lastname, Firstname". To do this just enter
 	You'll find this setting in the drop down list of pre defined values
 	as well as one to set back to "{FirstName LastName}".
 
-Have a nice day.
+Renaming and/or moving files into ...\\Artist\\Album\\Track-Title.mp3 format.
+
+1 Add desired files into list box at top
+2 A guess is made at the default root directory. Modify it if you need to
+3 Click Add to add the Rename command into the Commands box
+4 Click Apply
+
+Note that you cannot mix Rename with other tag field modification operations,
+not as if you'd want to anyway.

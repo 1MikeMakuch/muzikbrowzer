@@ -1,7 +1,6 @@
 
 #include "StdAfx.h"
-#include <io.h>
-#include <fcntl.h>
+
 
 #include "Misc.h"
 #ifdef _DEBUG
@@ -18,19 +17,3 @@ CString MBFormatError(LONG e) {
 	return msg;
 }
 
-BOOL fileIsReadable(const CString & file) {
-	int fd;
-	if ((fd = _open(file, _O_RDONLY)) == -1) {
-		return FALSE;
-	}
-	_close(fd);
-	return TRUE;
-}
-BOOL fileIsWriteable(const CString & file) {
-	int fd;
-	if ((fd = _open(file, _O_WRONLY)) == -1) {
-		return FALSE;
-	}
-	_close(fd);
-	return TRUE;
-}

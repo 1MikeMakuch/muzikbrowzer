@@ -63,6 +63,8 @@ public:
 	void EnumFilters (IFilterGraph *pGraph) ;
 	void FilterProps(IBaseFilter *pGraph) ;
 
+	void LogError(HRESULT hr, CString msg = "");
+
 protected:
     REFERENCE_TIME g_rtTotalTime;
     UINT_PTR g_wTimerID;

@@ -54,7 +54,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /machine:I386
-# ADD LINK32 ../3rdparty/ogg/libogg-1.0/win32/Release/ogg_static.lib ../oggtagger/Release/oggtagger.lib ../3rdparty/ogg/libvorbis-1.0/win32/Release/vorbis_static.lib ../3rdparty/ogg/libvorbis-1.0/win32/Release/vorbisfile_static.lib rpcrt4.lib ..\3rdparty/id3lib-3.8.2\libprj\Release\id3lib.lib ..\3rdparty/id3lib-3.8.2\zlib\prj\Release\zlib.lib ..\TestHarness\Release\TestHarness.lib HtmlHelp.lib strmiids.lib config\Release\config.lib controls\Release\controls.lib ..\id3\id3libutils\Release\id3utils.lib irman\Release\irman.lib Serial\Release\Serial.lib ..\util\Release\util.lib ..\md5\Release\md5.lib  dxguid.lib /subsystem:windows /pdb:none /machine:I386 /nodefaultlib:"msvcrtd" /nodefaultlib:"msvcrt" /nodefaultlib:"nafxcwd" /nodefaultlib:"libcmtd"
+# ADD LINK32 ../3rdparty/ogg/libogg-1.0/win32/Release/ogg_static.lib ../oggtagger/Release/oggtagger.lib ../3rdparty/ogg/libvorbis-1.0/win32/Release/vorbis_static.lib ../3rdparty/ogg/libvorbis-1.0/win32/Release/vorbisfile_static.lib rpcrt4.lib ..\3rdparty/id3lib-3.8.2\libprj\Release\id3lib.lib ..\3rdparty/id3lib-3.8.2\zlib\prj\Release\zlib.lib ..\TestHarness\Release\TestHarness.lib HtmlHelp.lib strmiids.lib config\Release\config.lib controls\Release\controls.lib ..\id3\id3libutils\Release\id3utils.lib irman\Release\irman.lib Serial\Release\Serial.lib ..\util\Release\util.lib ..\md5\Release\md5.lib dxguid.lib Quartz.lib /subsystem:windows /pdb:none /machine:I386 /nodefaultlib:"msvcrtd" /nodefaultlib:"msvcrt" /nodefaultlib:"nafxcwd" /nodefaultlib:"libcmtd"
 
 !ELSEIF  "$(CFG)" == "muzikbrowzer - Win32 Debug"
 
@@ -81,7 +81,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 ../3rdparty/ogg/libogg-1.0/win32/Debug/ogg_static_d.lib ../oggtagger/Debug/oggtagger.lib ../3rdparty/ogg/libvorbis-1.0/win32/Debug/vorbis_static_d.lib ../3rdparty/ogg/libvorbis-1.0/win32/Debug/vorbisfile_static_d.lib rpcrt4.lib ..\3rdparty/id3lib-3.8.2\libprj\Debug\id3libD.lib ..\3rdparty/id3lib-3.8.2\zlib\prj\Debug\zlibD.lib ..\TestHarness\Debug\TestHarness.lib HtmlHelp.lib strmiids.lib config\Debug\config.lib controls\Debug\controls.lib ..\id3\id3libutils\Debug\id3utils.lib irman\Debug\irman.lib Serial\Debug\Serial.lib ..\util\Debug\util.lib ..\md5\Debug\md5.lib dxguid.lib /nologo /subsystem:windows /incremental:no /debug /debugtype:both /machine:I386 /nodefaultlib:"msvcrt" /nodefaultlib:"libcmt" /nodefaultlib:"nafxcw" /out:"Debug/muzikbrowzerD.exe" /pdbtype:sept
+# ADD LINK32 ../3rdparty/ogg/libogg-1.0/win32/Debug/ogg_static_d.lib ../oggtagger/Debug/oggtagger.lib ../3rdparty/ogg/libvorbis-1.0/win32/Debug/vorbis_static_d.lib ../3rdparty/ogg/libvorbis-1.0/win32/Debug/vorbisfile_static_d.lib rpcrt4.lib ..\3rdparty/id3lib-3.8.2\libprj\Debug\id3libD.lib ..\3rdparty/id3lib-3.8.2\zlib\prj\Debug\zlibD.lib ..\TestHarness\Debug\TestHarness.lib HtmlHelp.lib strmiids.lib config\Debug\config.lib controls\Debug\controls.lib ..\id3\id3libutils\Debug\id3utils.lib irman\Debug\irman.lib Serial\Debug\Serial.lib ..\util\Debug\util.lib ..\md5\Debug\md5.lib dxguid.lib Quartz.lib /nologo /subsystem:windows /incremental:no /debug /debugtype:both /machine:I386 /nodefaultlib:"msvcrt" /nodefaultlib:"libcmt" /nodefaultlib:"nafxcw" /out:"Debug/muzikbrowzerD.exe" /pdbtype:sept
 # SUBTRACT LINK32 /pdb:none
 
 !ENDIF 

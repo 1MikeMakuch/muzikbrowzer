@@ -36,6 +36,7 @@
 #include "muzikbrowzerVersion.h"
 #include "TransparentDialogDlg.h"
 #include "util/Misc.h"
+#include "FileUtils.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -1452,6 +1453,7 @@ void CPlayerDlg::OnDblclkPlaylist()
     int sel = m_Playlist.GetCurSel();
     m_PlaylistCurrent = sel -1;
     Stop();
+	m_StopFlag = FALSE;
 
     PlayLoop();
 
@@ -2143,7 +2145,7 @@ void CPlayerDlg::PlayLoop() {
             m_Playlist.SetCurSel(m_PlaylistCurrent);
             CString file = m_mlib._playlist[m_PlaylistCurrent]->getId3("FILE");
 
-			if (fileIsReadable(file)) {
+			if (FileUtil::IsReadable(file)) {
 				good = 1;
 			} else {
 				good = 0;
@@ -2344,7 +2346,7 @@ void CPlayerDlg::OnUserEditSong()
 //			_selectedArtist, _selectedAlbum, songname);
 
 		CString filename = song->getId3("FILE");
-		if (!fileIsReadable(filename)) {
+		if (!FileUtil::IsReadable(filename)) {
 //			song = m_mlib.getSong(_selectedGenre, _selectedArtist,
 //				_selectedAlbum, songname);
 //		else {

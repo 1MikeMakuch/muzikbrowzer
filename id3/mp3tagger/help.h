@@ -60,7 +60,15 @@ msg += "\r\n";
 msg += "	You'll find this setting in the drop down list of pre defined values\r\n";
 msg += "	as well as one to set back to \"{FirstName LastName}\".\r\n";
 msg += "\r\n";
-msg += "Have a nice day.\r\n";
+msg += "Renaming and/or moving files into ...\\Artist\\Album\\Track-Title.mp3 format.\r\n";
+msg += "\r\n";
+msg += "1 Add desired files into list box at top\r\n";
+msg += "2 A guess is made at the default root directory. Modify it if you need to\r\n";
+msg += "3 Click Add to add the Rename command into the Commands box\r\n";
+msg += "4 Click Apply\r\n";
+msg += "\r\n";
+msg += "Note that you cannot mix Rename with other tag field modification operations,\r\n";
+msg += "not as if you'd want to anyway.\r\n";
 
 return msg;
 }

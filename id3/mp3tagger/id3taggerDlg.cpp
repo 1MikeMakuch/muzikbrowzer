@@ -18,7 +18,9 @@
 #include "CheckResult.h"
 #include "help.h"
 #include "Progress.h"
-//#include "Genres.h"
+#include "Misc.h"
+#include "FExtension.h"
+#include "FileUtils.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -85,6 +87,7 @@ CId3taggerDlg::CId3taggerDlg(CWnd* pParent /*=NULL*/)
 	// Note that LoadIcon does not require a subsequent DestroyIcon in Win32
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 	m_pAutoProxy = NULL;
+	m_renaming = FALSE;
 }
 
 CId3taggerDlg::~CId3taggerDlg()
@@ -100,6 +103,8 @@ void CId3taggerDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CId3taggerDlg)
+	DDX_Control(pDX, IDC_BUTTON_ADDRENAME, m_RenameRoot);
+	DDX_Control(pDX, IDC_RENAMEROOT, m_RenameRootDir);
 	DDX_Control(pDX, IDC_BUTTON_SHOWALL, m_ShowAll);
 	DDX_Control(pDX, IDC_BUTTON_REMOVEALLFILES, m_FilesRemoveAll);
 	DDX_Control(pDX, IDC_BUTTON_REMOVECOMMANDALL, m_CommandRemoveAll);
@@ -142,6 +147,8 @@ BEGIN_MESSAGE_MAP(CId3taggerDlg, CDialog)
 	ON_CBN_SELCHANGE(IDC_COMBO_FIELD1, OnSelchangeComboField1)
 	ON_CBN_EDITCHANGE(IDC_COMBO_MATCHVALUE, OnEditchangeComboMatchvalue)
 	ON_BN_CLICKED(IDC_BUTTON_SHOWALL, OnButtonShowall)
+	ON_BN_CLICKED(IDC_BUTTON_ADDRENAME, OnButtonAddrename)
+	ON_EN_CHANGE(IDC_RENAMEROOT, OnChangeRenameroot)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -181,6 +188,9 @@ BOOL CId3taggerDlg::OnInitDialog()
 
 	EnableDisable();
 	Genre_init();
+
+//	CString file = "c:\\mkm\\Amusic\\taggertest\\artist\\album\\01-Rats In The Cellar.mp3";
+//	m_Files.AddString(file);
 	
 	// TODO: Add extra initialization here
 	
@@ -337,12 +347,18 @@ void CId3taggerDlg::OnButtonAddcommand()
 	if (m_SetValue.FindStringExact(-1, setValue) == CB_ERR) {
 		m_SetValue.AddString(setValue);
 	}
+
 	EnableDisable();
 }
 
 void CId3taggerDlg::OnButtonAddfiles() 
 {
 	CFileDialog *dialog;
+
+	// save current dir so to set it back
+	// otherwise it stays open and can't delete it on renames
+	char cwd[MAX_PATH];
+	GetCurrentDirectory(MAX_PATH, cwd);
 
 	dialog = new CFileDialog(TRUE, 
 							"mp3",
@@ -371,6 +387,9 @@ void CId3taggerDlg::OnButtonAddfiles()
 	free(dialog->m_ofn.lpstrFile);
 
 	delete dialog;
+	SetCurrentDirectory(cwd);
+
+	updateRenameRoot();
 	
 	EnableDisable();
 }
@@ -421,6 +440,9 @@ void CId3taggerDlg::OnButtonCheck()
 			pdlg.m_Progress.SetPos(i);
 		}
 		pdlg.EndDialog(0);
+		if (m_renaming) {
+			prune();
+		}
 		CCheckResult dlg("Ok", check);
 		dlg.DoModal();
 	}
@@ -429,7 +451,7 @@ void CId3taggerDlg::OnButtonCheck()
 
 CString CId3taggerDlg::editMp3(BOOL EditOrDry, CString file) {
 	CString result;
-	result = file + crlf;
+
 
 	ID3_Tag id3, newid3;
 	id3.Link(file, ID3TT_ALL);
@@ -441,10 +463,47 @@ CString CId3taggerDlg::editMp3(BOOL EditOrDry, CString file) {
 	int n = m_Ops.GetSize();
 	int i;
 	BOOL updated = FALSE;
+	BOOL renaming = FALSE;
+	CString newfile;
 	for(i = 0 ; i < n ; ++i) {
 		TagOp * op = (TagOp*)m_Ops.GetAt(i);
-		updated |= DoOp(EditOrDry, op, id3, newid3);
+		if (op->m_Op.Left(6) == "Rename") {
+			renaming = TRUE;
+			newfile = normalFilePath(id3, file);
+		} else {
+			updated |= DoOp(EditOrDry, op, id3, newid3, file);
+		}
 	}
+	if (renaming == TRUE) {
+		if (FileUtil::IsReadable(file)) {
+			if (file == newfile) {
+				result += "no change ";
+				result += file;
+				result += "\r\n";
+			} else {
+				result += "move ";
+				result += file;
+				result += "\r\n";
+				result += "   to ";
+				result += newfile;
+				result += "\r\n";
+				if (EditOrDry == TRUE) { 
+					CString r = renameFile(file, newfile);
+					if (r.GetLength()) {
+						result += r;
+						result += "\r\n";
+					}
+				}
+			}
+		} else {
+			result += "unable to read ";
+			result += file;
+			result += "\r\n";
+		}
+		return result;
+	}
+	
+	result = file + crlf;
 
 	CStringArray fields;
 	fields.Add("Genre");
@@ -484,7 +543,7 @@ CString CId3taggerDlg::editMp3(BOOL EditOrDry, CString file) {
 }
 
 BOOL CId3taggerDlg::DoOp(BOOL EditOrDry, TagOp * Op, ID3_Tag & id3,
-							ID3_Tag & newid3) {
+							ID3_Tag & newid3, CString & file) {
 	BOOL result = FALSE;
 	CString newvalue;
 	CString op = Op->m_Op;
@@ -514,6 +573,8 @@ BOOL CId3taggerDlg::DoOp(BOOL EditOrDry, TagOp * Op, ID3_Tag & id3,
 		if (matchValue.GetLength() > 0) {
 			newvalue = Op->m_SetValue;
 		}
+	} else if (op.Left(6) == "Rename") {
+		CString newfile = normalFilePath(id3, file);
 	} else if (op == "") {
 		newvalue = Op->m_SetValue;
 	}
@@ -526,6 +587,42 @@ BOOL CId3taggerDlg::DoOp(BOOL EditOrDry, TagOp * Op, ID3_Tag & id3,
 		}
 	}
 	return result;
+}
+CString CId3taggerDlg::normalFilePath(ID3_Tag & id3, CString & file) {
+	CString artist = id3_GetArtist(&id3);
+	CString album = id3_GetAlbum(&id3);
+	CString title = id3_GetTitle(&id3);
+	CString itrack = id3_GetTrack(&id3);
+	CString ftrack;
+	CString basename = FileUtil::basename(file);
+	char ch1 = basename.GetAt(0);
+	char ch2 = basename.GetAt(1);
+	if (ch1 >= '0' && ch1 <= '9')
+		ftrack += ch1;
+	if (ch2 >= '0' && ch2 <= '9')
+		ftrack += ch2;
+	CString track;
+	if (ftrack.GetLength() > 0)
+		track = ftrack;
+	else
+		track = itrack;
+
+	CString root;
+	m_RenameRootDir.GetWindowText(root);
+	CString newpath = root;
+	newpath += "\\";
+	newpath += artist;
+	newpath += "\\";
+	newpath += album;
+	newpath += "\\";
+	newpath += track;
+	newpath += "-";
+	newpath += title;
+	newpath += ".";
+	FExtension ext(file);
+	newpath += ext.ext();
+	return newpath;
+
 }
 
 CString CId3taggerDlg::quotedValueFromField(CString field, ID3_Tag & id3) {
@@ -671,12 +768,15 @@ void CId3taggerDlg::OnButtonRemovefiles()
 void CId3taggerDlg::OnDblclkListFiles() 
 {
 	int sel = m_Files.GetCurSel();
-	CString file;
+	CString file, info;;
 	m_Files.GetText(sel, file);
 	ID3_Tag id3;
-	id3.Link(file);
-	CString info;
-	info = displayTag(&id3, TRUE, file);
+	if (FileUtil::IsReadable(file)) {
+		id3.Link(file);
+		info = displayTag(&id3, TRUE, file);
+	} else {
+		info << file << " doesn't exist";
+	}
 	m_TagInfo.SetWindowText(info);
 	
 }
@@ -729,6 +829,7 @@ CString CId3taggerDlg::displayCommands() {
 	formatSet += CString("to \"") + fpct + fs + CString("\"");
 
 	char buf[200];
+
 	for(i = 0 ; i < n ; ++i) {
 		TagOp * to = (TagOp*)m_Ops.GetAt(i);
 		if (to->m_Op == "is blank" || to->m_Op == "is not blank") {
@@ -737,6 +838,8 @@ CString CId3taggerDlg::displayCommands() {
 				to->m_Op,
 				to->m_SetField,
 				to->m_SetValue);
+		} else if (to->m_Op.Left(6) == "Rename") {
+			sprintf(buf, "%s", to->m_Op);
 		} else if (to->m_MatchField.GetLength() && to->m_MatchValue.GetLength()) {
 			sprintf(buf, formatCondVal,
 				to->m_MatchField,
@@ -822,6 +925,30 @@ void CId3taggerDlg::EnableDisable() {
 		m_CommandRemoveAll.EnableWindow(FALSE);
 		m_CommandRemove.EnableWindow(FALSE);
 	}
+	CString rootDir;
+	m_RenameRootDir.GetWindowText(rootDir);
+	if (m_Files.GetCount() && m_Commands.GetCount() == 0
+		&& rootDir.GetLength()) {
+		m_RenameRoot.EnableWindow(TRUE);
+	} else {
+		m_RenameRoot.EnableWindow(FALSE);
+	}
+	int n = m_Ops.GetSize();
+	m_renaming = FALSE;
+	int i;
+	for(i = 0 ; i < n ; ++i) {
+		TagOp * to = (TagOp*)m_Ops.GetAt(i);
+		if (to->m_Op.Left(6) == "Rename") {
+			m_renaming = TRUE;
+		}
+	}
+	if (m_renaming == FALSE) {
+		m_CommandAdd.EnableWindow(TRUE);
+		m_CommandsClear.EnableWindow(TRUE);
+	} else {
+		m_CommandAdd.EnableWindow(FALSE);
+		m_CommandsClear.EnableWindow(FALSE);
+	}
 }
 
 void CId3taggerDlg::OnButtonShowall() 
@@ -846,4 +973,91 @@ void CId3taggerDlg::OnButtonShowall()
 	pdlg.EndDialog(0);
 	CCheckResult dlg("Ok", info);
 	dlg.DoModal();
+}
+
+void CId3taggerDlg::OnButtonAddrename() 
+{
+	TagOp * to = new TagOp;
+	to->m_Op = "Rename to ";
+	CString root;
+	m_RenameRootDir.GetWindowText(root);
+	to->m_Op += root;
+	to->m_Op += "\\Artist\\Album\\Track-Title.mp3";
+	m_Ops.Add(to);
+	m_renaming = TRUE;
+	
+	displayCommands();
+	OnButtonCommandsclear();
+	EnableDisable();	
+}
+
+void CId3taggerDlg::OnChangeRenameroot() 
+{
+	// TODO: If this is a RICHEDIT control, the control will not
+	// send this notification unless you override the CDialog::OnInitDialog()
+	// function and call CRichEditCtrl().SetEventMask()
+	// with the ENM_CHANGE flag ORed into the mask.
+	
+	EnableDisable() ;
+	
+}
+
+// m:\mkm\asdf\artist\album\song.mp3
+
+void CId3taggerDlg::updateRenameRoot() {
+	if (m_Files.GetCount() < 1) return;
+
+	CString file, root;
+	m_Files.GetText(0, file);
+
+	int numparts = String::delCount(file, "\\");
+	if (numparts < 4) {
+		root = String::field(file,"\\",1);
+	} else {
+		int i;
+		for(i = 1 ; i <= (numparts - 3) ; ++i) {
+			if (root.GetLength())
+				root += "\\";
+			root += String::field(file,"\\",i);
+		}
+	}
+	m_RenameRootDir.SetWindowText(root);
+
+	return;
+}
+
+CString CId3taggerDlg::renameFile(CString src, CString dst) {
+	CString result;
+	if (FileUtil::mv(src, dst) == FALSE) {
+		result << "error renaming: " << src << " to " << dst;
+	}
+	return result;
+}
+
+CString CId3taggerDlg::prune() {
+	CString result, file, root, artistdir,tmp;
+	CMapStringToString artistdirs;
+	int num = m_Files.GetCount();
+	int i;
+	m_RenameRootDir.GetWindowText(root);
+	for(i = 0 ; i < num ; ++i) {
+		m_Files.GetText(i, file);
+		file = String::replace(file, "", root); // chop off root
+		artistdir = String::field(file,"\\",2);
+		artistdirs.SetAt(artistdir, artistdir);
+	}
+
+	POSITION pos;
+	for(pos = artistdirs.GetStartPosition(); pos != NULL; ) {
+		artistdirs.GetNextAssoc(pos, artistdir,tmp);
+		tmp="";
+		tmp << root << "\\" << artistdir;
+		if (FileUtil::rm_dir(tmp, TRUE, TRUE) == FALSE) {
+			result += "couldn't delete ";
+			result += tmp;
+			result += "\r\n";
+		}
+	}
+	return result;
+
 }

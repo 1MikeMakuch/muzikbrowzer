@@ -14,6 +14,7 @@
 #include "MyID3LibMiscSupport.h"
 #include "Mp3Header.h"
 #include "TestHarness/TestHarness.h"
+#include "FileUtils.h"
 
 #include "vorbis/codec.h"
 #include "vorbis/vorbisfile.h"
@@ -266,7 +267,7 @@ MusicLib::addSongToDb(int & ctr, Song &song, const CString & file) {
 
 	if (_id) {
 		ctr++;
-		dir = PathUtil::dir(file);
+		dir = FileUtil::dirname(file);
 
 		if (lastdir.Compare(dir) != 0) {
 			lastdir = dir;
@@ -296,6 +297,7 @@ MusicLib::getPlaylistNames(CExtendedListBox & box) {
         CString name = String::extract(fname, mbname, MBPLAYLISTEXT);
         int sel = box.AddString(name);
     }
+	finder.Close();
 
     return 0;
 }
@@ -319,6 +321,7 @@ MusicLib::getPlaylistNames(CStringList & box) {
         CString name = String::extract(fname, mbname, MBPLAYLISTEXT);
         box.AddTail(name);
     }
+	finder.Close();
 
     return 0;
 }
@@ -957,7 +960,7 @@ MusicLib::scanDirectory(int * abortflag, CStringList &mp3Files,
         }
         bWorking = finder.FindNextFile();
         CString fname = finder.GetFileName();
-        if (fname != "." && fname != "..") {
+        if (!finder.IsDots()) {
             if (finder.IsDirectory()) {
                 CString newDir(directory);
 				if (newDir[newDir.GetLength()-1] != '\\') {
@@ -986,6 +989,7 @@ MusicLib::scanDirectory(int * abortflag, CStringList &mp3Files,
             }
         }
     }
+	finder.Close();
 
     return 0;
 
@@ -1064,12 +1068,12 @@ CString
 MusicLib::writeSongToFile(Song song) {
 	CString result;
 	CString file = song->getId3(CS("FILE"));
-	if (!fileIsReadable(file)) {
+	if (!FileUtil::IsReadable(file)) {
 		result = file;
 		result += " is unreadable";
 		return result;
 	}
-	if (!fileIsWriteable(file)) {
+	if (!FileUtil::IsWriteable(file)) {
 		result = file;
 		result += " is unwriteable";
 		return result;
@@ -1774,7 +1778,7 @@ MusicLib::apic(const CString & file, uchar *& rawdata, size_t & nDataSize) {
 	delete iter;
 
 	// not in apic so look for folder.jpg in dir
-	CString folderjpg = PathUtil::dir(file);
+	CString folderjpg = FileUtil::dirname(file);
 	folderjpg += "\\folder.jpg";
 	int fd = _open(folderjpg, _O_RDONLY|_O_BINARY);
 	if (fd > 0) {
@@ -3195,7 +3199,7 @@ MSongLib::verify(CString msg, int & total_albums, int & total_songs) {
 					while (songIter.more()) {
 						MRecord song = songIter.next();
 						CString file = song.lookupVal("FILE");
-						if (!fileIsReadable(file)) {
+						if (!FileUtil::IsReadable(file)) {
 							Song rem = song.createSong();
 							removeList.append(rem);
 							removed += file + "\r\n";
