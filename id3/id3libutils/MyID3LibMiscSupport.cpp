@@ -341,16 +341,30 @@ Genre_init() {
 CString
 Genre_normalize(const CString genre) {
 	CString tmp, tmp2;
+//  This was the id3v1 way of doing it.
 // 	tmp = string_replace(genre, '(', "");
 // 	tmp = string_replace(tmp, ')', "");
 	tmp = genre;
 
+//  id3v2 says it can be "Rock", "(17)", "(17)Rock", ... and more
+//  but MusicMatch doesn't get any fancier so I don't
+//  Besides MM uses the # in parens and overrides the text so do i.
     if (rgdb.Lookup(tmp, tmp2) != 0) {
         tmp = tmp2;
     } else {
 		CString parens = CS("(") + genre + CS(")");
 		if (rgdb.Lookup(parens, tmp2) != 0) {
 			tmp = tmp2;
+		} else {
+			char * str = tmp.GetBuffer(0);
+			char * p1 = strchr(str, '(');
+			char * p2 = strchr(str, ')');
+			if (p2 > (p1+1)) {
+				tmp = tmp.Mid((p1-str),(p2-p1)+1);
+				if (rgdb.Lookup(tmp, tmp2) != 0) {
+					tmp = tmp2;
+				}
+			}
 		}
 	}
 	return tmp;

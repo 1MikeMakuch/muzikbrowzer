@@ -389,11 +389,11 @@ LRESULT CMydiffDlg::OnFinished(WPARAM wParam, LPARAM)
 void CMydiffDlg::dodiff() {
 	showStatus("dodiff");
 	int sel = m_Files.GetCurSel();
-	if (sel < 0) sel = 0;
+	if (sel < 0) return;
 
 	CString entry;
 	m_Files.GetText(sel, entry);
-	if (!entry.GetLength()) {
+	if (entry == "") {
 		showStatus("dodiff no file");
 		return;
 	}
