@@ -3,5 +3,6 @@
 
 CString MBFormatError(LONG e);
 BOOL fileIsReadable(const CString & file);
+BOOL fileIsWriteable(const CString & file);
 
 #endif

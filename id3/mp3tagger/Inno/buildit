@@ -1,4 +1,4 @@
 #!/bin/bash
 
 iscc Release.iss 
-cp Output/mp3tagger_1_0_0.exe /cygdrive/w/muzikbrowzer/httpdocs/dl
+cp Output/mp3tagger_setup_1_0_1.exe /cygdrive/w/muzikbrowzer/httpdocs/dl

@@ -1070,6 +1070,16 @@ CString
 MusicLib::writeSongToFile(Song song) {
 	CString result;
 	CString file = song->getId3(CS("FILE"));
+	if (!fileIsReadable(file)) {
+		result = file;
+		result += " is unreadable";
+		return result;
+	}
+	if (!fileIsWriteable(file)) {
+		result = file;
+		result += " is unwriteable";
+		return result;
+	}
 	FExtension fext(file);
 	if (fext == "mp3") {
 		ID3_Tag * id3 = new ID3_Tag;
@@ -1428,6 +1438,7 @@ MusicLib::modifyID3(Song oldSong, Song newSong) {
 			CString oneresult = writeSongToFile(addsong);
 			if (oneresult.GetLength()) {
 				result += oneresult;
+				result += "\r\n";
 			} else {
 				// hack alert m_files only used for scanning/verifying,
 				// so keep it empty cause addSong will pre-exit if...
@@ -1439,7 +1450,7 @@ MusicLib::modifyID3(Song oldSong, Song newSong) {
         songs.GetNext(pos);
     }
 	if (result.GetLength()) {
-		result += "\r\nYou'll need to re-scan";
+//		result += "\r\nYou'll need to re-scan";
 		MBMessageBox(CString("alert"), result);
 	}
 	m_SongLib.m_garbagecollector++;
