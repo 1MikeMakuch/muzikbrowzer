@@ -51,9 +51,6 @@ Package=<4>
     Project_Dep_Name oggenc
     End Project Dependency
     Begin Project Dependency
-    Project_Dep_Name oggenc_dynamic
-    End Project Dependency
-    Begin Project Dependency
     Project_Dep_Name ogginfo
     End Project Dependency
     Begin Project Dependency
@@ -79,6 +76,18 @@ Package=<4>
 ###############################################################################
 
 Project: "vorbiscomment"=".\vorbiscomment.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "vorbisenc_static"="..\..\libvorbis-1.0\win32\vorbisenc_static.dsp" - Package Owner=<4>
 
 Package=<5>
 {{{

@@ -1424,6 +1424,7 @@ void CPlayerDlg::OnDblclkAlbums()
 
 void CPlayerDlg::OnDblclkArtists() 
 {
+	if (_selectedArtist == MBALL) return;
 	CString last = _selectedGenre + _selectedArtist;
 	if (last != m_LastThingQueuedUp) {
 		m_mlib.addArtistToPlaylist(_selectedGenre, _selectedArtist);
@@ -1436,7 +1437,7 @@ void CPlayerDlg::OnDblclkArtists()
 
 void CPlayerDlg::OnDblclkGenres() 
 {
-	if (_selectedGenre == " all") return;
+	if (_selectedGenre == MBALL) return;
 	CString last = _selectedGenre;
 	if (last != m_LastThingQueuedUp) {
 		m_mlib.addGenreToPlaylist(_selectedGenre);	
@@ -1459,8 +1460,11 @@ void CPlayerDlg::OnDblclkPlaylist()
 BOOL CPlayerDlg::PreTranslateMessage(MSG* pMsg)
 {	// disable ESC & ENTER from killing the dialog
     if (pMsg->message == WM_KEYDOWN) {
-        if (pMsg->wParam == VK_RETURN || pMsg->wParam == VK_ESCAPE) {
+        if (pMsg->wParam == VK_RETURN) {
+			OnControlClick();
             return TRUE;
+		} else if (pMsg->wParam == VK_ESCAPE) {
+			return TRUE;
         } else if (pMsg->wParam == VK_DELETE) {
             OnDelete();
             return TRUE;
@@ -2057,9 +2061,10 @@ void CPlayerDlg::OnPreviousSong() {
     }
     OnNextSong();
 }
-void CPlayerDlg::Play() {
+BOOL CPlayerDlg::Play() {
 	StartSeekTimer();
-	m_Player->Play();
+	return m_Player->Play();
+
 }
 void CPlayerDlg::Stop() {
 	m_Player->Stop();
@@ -2145,8 +2150,8 @@ void CPlayerDlg::PlayLoop() {
 			}
         
 			CString msg;
-            if (good && m_Player->InputOpen(file)) {
-				Play();
+            if (good && m_Player->InputOpen(file) && Play()) {
+//				Play();
 				adjustVolume();
 				good = 1;
 				displayAlbumArt(file);
@@ -2857,7 +2862,8 @@ void CPlayerDlg::adjustVolume() {
 	if (m_Player->SetVolume(m_VolumeSlider.GetPos())) {
 		updateVolumeLabel();
 	} else {
-		MBMessageBox("Error", "Unable to SetVolume");
+		logger.log("Unable to set volume");
+		PlayerStatusTempSet("Unable to set volume");
 	}
 }
 void CPlayerDlg::adjustVolume(int level) {

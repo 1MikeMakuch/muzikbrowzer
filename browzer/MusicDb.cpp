@@ -29,9 +29,7 @@
 #define MBPLAYLIST "_Playlist_"
 #define MBPLAYLISTEXT ".mbp"
 #define MB_GARBAGE_INTERVAL 10
-#define MB_DB_VERSION 2
-
-
+#define MB_DB_VERSION 3
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -506,7 +504,7 @@ public:
     CString m_name;
     int m_num;
     int m_p;
-    static void bsort(CObArray & array) {
+    static void bsort(CObArray & array, BOOL alpha = FALSE) {
         int size = array.GetSize();
         if (size < 2) return;
         int i,j;
@@ -514,9 +512,11 @@ public:
             for (j = size-1 ; j > i ; --j) {
                 NameNum * nnj = (NameNum*)array[j];
                 NameNum * nnjm1 = (NameNum*)array[j-1];
-                if ((nnj->m_num < nnjm1->m_num)
-                    || (nnj->m_num == nnjm1->m_num
-                    && (nnj->m_name.CompareNoCase(nnjm1->m_name)) < 0))
+                if (
+					(!alpha && (nnj->m_num < nnjm1->m_num)
+						|| (nnj->m_num == nnjm1->m_num
+						&& (nnj->m_name.CompareNoCase(nnjm1->m_name)) < 0))
+					|| (nnj->m_name.CompareNoCase(nnjm1->m_name) < 0))
                 {
                     CString tmpName = nnj->m_name;
                     int tmpNum = nnj->m_num;
@@ -592,7 +592,11 @@ MusicLib::getAlbums(const CString & genrename, const CString & artistname,
 			namenums.Add(nn);
 		}
 	}
-    NameNum::bsort(namenums);
+	if (artistname == MBALL) {
+		NameNum::bsort(namenums, TRUE);
+	} else {
+		NameNum::bsort(namenums, FALSE);
+	}
     int i;
     for (i = 0 ; i < namenums.GetSize(); ++i) {
         box.AddString(((NameNum*)namenums[i])->m_name);
@@ -2806,6 +2810,12 @@ MSongLib::addSong(Song & song) {
     }
 	allTitleRecord.ptr() = titleRecord.ptr();
 
+	MList allAllAlbumList = allArtistsList.list(MBALL);
+	MList allAllTitleList = allAllAlbumList.list(albumname);
+	allAllTitleList.prepend(titlename);
+	MRecord allAllTitleRecord = allAllTitleList.record(titlename);
+	allAllTitleRecord.ptr() = titleRecord.ptr();
+
     return 1;
 }
 void
@@ -2860,6 +2870,7 @@ MSongLib::removeSong(Song & song2remove) {
 		}
 	}
 
+	// all/artist removeall
 	MList allArtistList = genreList.list(MBALL);
 	MList allAlbumList = allArtistList.list(artistname);
 	MList allSongList = allAlbumList.list(albumname);
@@ -2887,6 +2898,38 @@ MSongLib::removeSong(Song & song2remove) {
 		if (allAlbumList.count() == 0) {
 			allArtistList.remove(artistname);
 			if (allArtistList.count() == 0) {
+				genreList.remove(MBALL);
+			}
+		}
+	}
+
+	// all/all removeall
+	MList allAllArtistList = genreList.list(MBALL);
+	MList allAllAlbumList = allAllArtistList.list(MBALL);
+	MList allAllSongList = allAllAlbumList.list(albumname);
+
+	song = NULL;
+	if (filename.GetLength()) {
+		MList::Iterator songIter(allAllSongList);
+		BOOL found = FALSE;
+		while (songIter.more() && !found) {
+			song = new MRecord (songIter.next() );
+			CString sfile = song->lookupVal("FILE");
+			if (filename == sfile) {
+				found = TRUE;
+			}
+		}
+	} else {
+		song = new MRecord ( allAllAlbumList.record(songname));
+	}
+	allAllSongList.remove(*song);
+	delete song;
+
+	if (allAllSongList.count() == 0) {
+		allAllAlbumList.remove(albumname);
+		if (allAllAlbumList.count() == 0) {
+			allAllArtistList.remove(MBALL);
+			if (allAllArtistList.count() == 0) {
 				genreList.remove(MBALL);
 			}
 		}

@@ -48,7 +48,7 @@ public:
 	BOOL init();
 	void OnDestroy();
 	void Pause();
-	void Play();
+	BOOL Play();
 	void ShowState();
 	void Stop();
 	void OnClose();
@@ -58,6 +58,7 @@ public:
 	int Seek(long pos, BOOL endpos = FALSE);
 	HRESULT SetVolume(long level);
 	HRESULT GetVolume(long & level);
+	CString GetVersion();
 
 	void EnumFilters (IFilterGraph *pGraph) ;
 	void FilterProps(IBaseFilter *pGraph) ;

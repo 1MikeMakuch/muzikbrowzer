@@ -139,11 +139,18 @@ void MusicPlayerDS::Pause()
     }
 }
 
-void MusicPlayerDS::Play() 
+BOOL MusicPlayerDS::Play() 
 {
-  	RunMedia();
-    Say(TEXT("Running"));
-	m_SongStarted = TRUE;
+	BOOL r = TRUE;
+  	HRESULT hr = RunMedia();
+	if (FAILED(hr)) {
+		r = FALSE;
+	} else {
+		Say(TEXT("Running"));
+		m_SongStarted = TRUE;
+	}
+	logger.log(GetVersion());
+	return r;
 }
 
 void MusicPlayerDS::ShowState()
@@ -664,3 +671,65 @@ void MusicPlayerDS::FilterProps(IBaseFilter *pFilter)
 
     pFilter->Release();
 }
+
+
+extern DWORD GetDXVersion();
+
+
+
+
+//-----------------------------------------------------------------------------
+// Name: WinMain()
+// Desc: Entry point to the program. Initializes everything, and pops
+//       up a message box with the results of the GetDXVersion call
+//-----------------------------------------------------------------------------
+CString MusicPlayerDS::GetVersion()
+{
+    CString strResult;
+    DWORD  dwDXVersion = GetDXVersion();
+
+    switch( dwDXVersion )
+    {
+        case 0x000:
+            strResult = _T("No DirectX installed" );
+            break;
+        case 0x100:
+            strResult = _T("DirectX 1 installed" );
+            break;
+        case 0x200:
+            strResult = _T("DirectX 2 installed" );
+            break;
+        case 0x300:
+            strResult = _T("DirectX 3 installed" );
+            break;
+        case 0x500:
+            strResult = _T("DirectX 5 installed" );
+            break;
+        case 0x600:
+            strResult = _T("DirectX 6 installed" );
+            break;
+        case 0x601:
+            strResult = _T("DirectX 6.1 installed" );
+            break;
+        case 0x700:
+            strResult = _T("DirectX 7" );
+            break;
+        case 0x800:
+            strResult = _T("DirectX 8.0 installed" );
+            break;
+        case 0x801:
+            strResult = _T("DirectX 8.1 or better installed" );
+            break;
+        default:
+            strResult = _T("Unknown version of DirectX installed." );
+            break;
+    }
+	return strResult;
+
+
+    
+
+}
+
+
+

@@ -223,14 +223,14 @@ CExtendedListBox::OnKeyDown( UINT nChar, UINT nRepCnt, UINT nFlags ) {
 		thePlayer->NextDlgCtrl();
     } else if (m_reorder) {
         move(nChar);
-	}
+//	}
 //    } else if (nChar == 85 || nChar == 117) {
 //		alphaUp();
 //	} else if (nChar == 68 || nChar == 100) {
 //		alphaDown();
-//	} else {
+	} else {
 		CListBox::OnKeyDown(nChar, nRepCnt, nFlags);
-//	}
+	}
 }
 
 void
@@ -628,12 +628,12 @@ CExtendedListBox::alphaUp() {
 	int cur = GetCurSel();
 	CString text;
 	GetText(cur, text);
-	char ch1 = text.GetAt(0);
+	CString ch1 = text.GetAt(0);
 	int i;
 	for(i = cur - 1 ; i >= 0 ; --i) {
 		GetText(i, text);
-		char ch = text.GetAt(0);
-		if (ch != ch1) {
+		CString ch = text.GetAt(0);
+		if (ch.CompareNoCase(ch1) != 0) {
 			SetCurSel(i);
 			return;
 		}
@@ -644,13 +644,13 @@ CExtendedListBox::alphaDown() {
 	int cur = GetCurSel();
 	CString text;
 	GetText(cur, text);
-	char ch1 = text.GetAt(0);
+	CString ch1 = text.GetAt(0);
 	int i;
 	int n = GetCount();
 	for(i = cur + 1 ; i <  n; ++i) {
 		GetText(i, text);
-		char ch = text.GetAt(0);
-		if (ch != ch1) {
+		CString ch = text.GetAt(0);
+		if (ch.CompareNoCase(ch1) != 0) {
 			SetCurSel(i);
 			return;
 		}

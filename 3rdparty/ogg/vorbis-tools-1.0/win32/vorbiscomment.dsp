@@ -62,7 +62,7 @@ LINK32=link.exe
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 1
-# PROP Output_Dir "Debug\vorbiscomment\static"
+# PROP Output_Dir "c:\mkm\bin"
 # PROP Intermediate_Dir "Debug\vorbiscomment\static"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
@@ -76,7 +76,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 ../../libogg-1.0/win32/Debug/ogg_static_d.lib ../../libvorbis-1.0/win32/Debug/vorbis_static_d.lib ../../libvorbis-1.0/win32/Debug/vorbisfile_static_d.lib /nologo /subsystem:console /debug /machine:I386 /out:"c:\mkm\bin\vorbiscomment.exe" /pdbtype:sept /libpath:"..\..\ogg\win32\Static_Debug" /libpath:"..\..\vorbis\win32\Vorbis_Static_Debug"
+# ADD LINK32 ../../libogg-1.0/win32/Debug/ogg_static_d.lib ../../libvorbis-1.0/win32/Debug/vorbis_static_d.lib ../../libvorbis-1.0/win32/Debug/vorbisfile_static_d.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept /libpath:"..\..\ogg\win32\Static_Debug" /libpath:"..\..\vorbis\win32\Vorbis_Static_Debug"
 
 !ENDIF 
 

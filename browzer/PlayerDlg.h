@@ -140,7 +140,7 @@ private:
 
 	void InputClose();
 	void Pause();
-	void Play();
+	BOOL Play();
 	void Stop();
 	void saveConfig();
 	void readConfig();

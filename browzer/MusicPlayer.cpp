@@ -66,11 +66,13 @@ MusicPlayer::Pause() {
 	
 }
 
-int
+BOOL
 MusicPlayer::Play() {
 //	m_PlayerDlg->StartSeekTimer();
-	m_MP->Play();
-	return 0;
+	if (m_MP->Play()) {
+		return TRUE;
+	}
+	return FALSE;
 }
 //int
 //MusicPlayer::Seek(unsigned long offset, unsigned long range) {
