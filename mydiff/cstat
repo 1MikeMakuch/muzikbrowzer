@@ -1,0 +1,23 @@
+#!/usr/bin/perl
+
+@stat = `cvs status 2>&1 | egrep "^File|Repository revision"`;
+
+$n = scalar(@stat);
+for ($i = 0 ; $i < $n ; $i+=2) {
+	$fline = @stat[$i];
+	$rline = @stat[$i+1];
+	($x,$file,@rest) = split(' ',$fline);
+	$pos = index($fline,"Status: ");
+	$pos += length("Status: ");
+	$status = substr($fline,$pos);
+	chop $status;
+
+	$pos = index($rline,"/");
+	$loc = substr($rline,$pos);
+	$loc =~ s@$ENV{'CVSROOT'}@$ENV{'HOME'}@;
+	$loc =~ s/,v$//;
+
+	if ($status ne "Up-to-date") {
+		print "$file  |$status|$loc";
+	}
+}

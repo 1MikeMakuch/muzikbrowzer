@@ -10,6 +10,7 @@
 #include "TestHarness.h"
 #include "direct.h"
 
+
 #define LOGOWNER
 #include "MyLog.h"
 
@@ -110,7 +111,9 @@ BOOL CMydiffDlg::OnInitDialog()
 
 	
 	
-	CString command = "cstat";
+	CString command = "/cygdrive/c/mkm/src/muzik/mydiff/cstat";
+	logger.open("");
+	logger.log("mydiff started");
 
 	mysystem(command, UPM_CSTAT_DONE);
 
@@ -270,6 +273,7 @@ LRESULT CMydiffDlg::OnLine(WPARAM wParam, LPARAM)
 {
 	CString * s = (CString *)wParam;
 	m_ComOutput.AddTail(*s);
+//	logger.log(*s);
 	delete s;
 	return 0;
 }
@@ -296,8 +300,13 @@ LRESULT CMydiffDlg::OnDiffDone(WPARAM wParam, LPARAM) {
 	}
 
 	showStatus("diff done");
-	CString command = "cvs update -p ";
-	command += m_currentfile;
+	CString command ;
+	if (m_currentStatus == "Locally Modified") {
+		command = "cvs update -p ";
+		command += m_currentfile;
+	} else {
+		command = "# noop";
+	}
 
 	mysystem(command, UPM_GETFILE_DONE);
 	return 0;
@@ -321,14 +330,16 @@ LRESULT CMydiffDlg::OnGetFileDone(WPARAM wParam, LPARAM) {
 		m_ComOutput.GetNext(pos);
 	}
 
-	showStatus("processing diff");
-	processDiff();
-	CString v = verify();
-	if (v.GetLength()) {
-		MessageBox(v, "Verify failed");
-	} else {
-		showDiff(m_File1, m_Data1);
-		showDiff(m_File2, m_Data2);
+	if (m_currentStatus == "Locally Modified") {
+		showStatus("processing diff");
+		processDiff();
+		CString v = verify();
+		if (v.GetLength()) {
+			MessageBox(v, "Verify failed");
+		} else {
+			showDiff(m_File1, m_Data1);
+			showDiff(m_File2, m_Data2);
+		}
 	}
 	killStatus();
 	OnButtonPrevDiff();
@@ -380,11 +391,15 @@ void CMydiffDlg::dodiff() {
 	int sel = m_Files.GetCurSel();
 	if (sel < 0) sel = 0;
 
-	m_Files.GetText(sel, m_currentfile);
-	if (!m_currentfile.GetLength()) {
+	CString entry;
+	m_Files.GetText(sel, entry);
+	if (!entry.GetLength()) {
 		showStatus("dodiff no file");
 		return;
 	}
+	CString file = String::field(entry,"|",1);
+	m_currentStatus = String::field(entry,"|",2);
+	m_currentfile = String::field(entry,"|",3);
 
 	m_Data1.ResetContent();
 	m_Data2.ResetContent();
@@ -396,8 +411,13 @@ void CMydiffDlg::dodiff() {
 
 //	CString res = readDFile(m_currentfile);
 
-	CString command = "cvs diff -e ";
-	command += m_currentfile;
+	CString command ;
+	if (m_currentStatus == "Locally Modified") {
+		command = "cvs diff -e ";
+		command += m_currentfile;
+	} else {
+		command = "# noop";
+	}
 
 	mysystem(command, UPM_DIFF_DONE);
 
@@ -463,9 +483,11 @@ void CMydiffDlg::processDiff() {
 	CString line = m_Diff.GetAt(pos);
 	while (String::substring(line,0,4) != "diff" && pos != NULL) {
 		line = m_Diff.GetNext(pos);
+		showStatus(line);
 	}
 	if (pos) {
 		line = m_Diff.GetAt(pos);
+		showStatus(line);
 	}
 	if (line.Find("was removed") >= 0) {
 		m_File2.RemoveAll();
@@ -485,6 +507,7 @@ void CMydiffDlg::processDiff() {
 	while (pos != NULL) {
 		op = 0;
 		lineno1 = lineno2 = -1;
+		showStatus(line);
 		edGetCom(line, lineno1, lineno2, op);
 
 		switch (op) {
@@ -703,6 +726,7 @@ void CMydiffDlg::edGetCom(const CString & line, int & lineno1,
 void CMydiffDlg::mysystem(const CString & command, UINT msg2post) {
 // c:\cygwin\bin\bash.exe --login -c cstat
 
+	logger.log(command);
 	m_ComOutput.RemoveAll();
 	CString scriptname = "c:\\tmp\\mydiff_script.sh";
 	CFile script;

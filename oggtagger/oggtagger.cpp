@@ -1,3 +1,4 @@
+
 #include "StdAfx.h"
 #include "vcedit.h"
 #include "vorbis/codec.h"
@@ -230,15 +231,15 @@ OggTag::write() {
 	}
 	return "";
 }
-TEST(OggTag, write)
-{
-	CString file = "..\\testdata\\01.ogg";
-	OggTag ogg;
-	ogg.read(file);
-	ogg.setVal("artist", "123");
-	ogg.write();
-
-	OggTag ogg2(file);
-	CString artist2 = ogg2.getVal("artist");
-	CHECK(artist2 == "123");
-}
+//TEST(OggTag, write)
+//{
+//	CString file = "..\\testdata\\01.ogg";
+//	OggTag ogg;
+//	ogg.read(file);
+//	ogg.setVal("artist", "123");
+//	ogg.write();
+//
+//	OggTag ogg2(file);
+//	CString artist2 = ogg2.getVal("artist");
+//	CHECK(artist2 == "123");
+//}

@@ -57,6 +57,7 @@ protected:
 	CStringList m_CurrFile;
 	CStringList m_Diff;
 	CString m_currentfile;
+	CString m_currentStatus;
 	POSITION m_currentdiff;
 	POSITION m_diffHead;
 	POSITION m_diffTail;

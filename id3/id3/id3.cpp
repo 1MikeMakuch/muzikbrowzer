@@ -5,6 +5,7 @@
 //#endif
 
 
+
 #include <iostream>
 #include <stdlib.h>
 #include <string.h>
@@ -14,13 +15,17 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 //#include <unistd.h>
+
 #include <io.h>
+
+#include <id3.h>
 
 #include <id3/tag.h>
 #include <id3/utils.h>
 #include <id3/misc_support.h>
 #include <id3/readers.h>
 #include <id3/io_helpers.h>
+
 
 using namespace std;
 

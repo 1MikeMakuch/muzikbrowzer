@@ -184,6 +184,10 @@ SOURCE=.\res\mydiff.rc2
 # End Group
 # Begin Source File
 
+SOURCE=.\cstat
+# End Source File
+# Begin Source File
+
 SOURCE=.\ReadMe.txt
 # End Source File
 # End Target

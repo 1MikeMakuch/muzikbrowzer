@@ -55,7 +55,7 @@ MBConfig::init() {
     AddPage(m_Irman);
     AddPage(m_Fonts);
     AddPage(m_Colors);
-	AddPage(m_Password);
+//	AddPage(m_Password);
 }
 
 BEGIN_MESSAGE_MAP(MBConfig, CPropertySheet)

@@ -54,7 +54,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /machine:I386
-# ADD LINK32 ..\..\3rdparty\id3lib-3.8.2\libprj\Release\id3lib.lib ..\..\3rdparty\id3lib-3.8.2\zlib\prj\Release\zlib.lib ..\..\util\Release\util.lib ..\..\TestHarness\Release\TestHarness.lib ..\id3libutils\Release\id3utils.lib  ..\..\browzer\controls\Release\controls.lib /nologo /subsystem:windows /machine:I386 /nodefaultlib:"nafxcwd" /nodefaultlib:"libcmtd" /out:"Release/mp3tagger.exe"
+# ADD LINK32 ..\..\3rdparty\id3lib-3.8.2\libprj\Release\id3lib.lib ..\..\3rdparty\id3lib-3.8.2\zlib\prj\Release\zlib.lib ..\..\util\Release\util.lib ..\..\TestHarness\Release\TestHarness.lib ..\id3libutils\Release\id3utils.lib ..\..\browzer\controls\Release\controls.lib /nologo /subsystem:windows /machine:I386 /nodefaultlib:"nafxcwd" /nodefaultlib:"libcmtd" /out:"Release/mp3tagger.exe"
 # SUBTRACT LINK32 /pdb:none
 
 !ELSEIF  "$(CFG)" == "id3tagger - Win32 Debug"
@@ -71,7 +71,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /Yu"stdafx.h" /FD /GZ /c
-# ADD CPP /nologo /MTd /W3 /Gm /Gi /GX /ZI /Od /I "..\..\3rdparty\id3lib-3.8.2\include" /I "..\id3libutils" /I "..\..\util" /I "..\..\browzer\controls" /D ID3LIB_LINKOPTION=1 /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /FR /FD /GZ /c
+# ADD CPP /nologo /MTd /W3 /Gm /Gi /GX /ZI /Od /I "..\\" /I "..\..\3rdparty\id3lib-3.8.2\include" /I "..\id3libutils" /I "..\..\util" /I "..\..\browzer\controls" /I "..\..\browzer" /D ID3LIB_LINKOPTION=1 /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /FR /FD /GZ /c
 # SUBTRACT CPP /YX /Yc /Yu
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32

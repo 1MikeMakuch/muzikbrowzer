@@ -217,7 +217,6 @@ BEGIN_MESSAGE_MAP(CPlayerDlg, CDialog)
 	ON_MESSAGE(MB_SERIAL_MESSAGE, OnSerialMsg)
 
 
-
 END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CPlayerDlg message handlers
@@ -258,8 +257,6 @@ BOOL CPlayerDlg::OnInitDialog()
     ModifyStyle(WS_CAPTION,WS_SYSMENU,SWP_FRAMECHANGED);
 
     setFont();
-
-
 
 
     m_HeaderFont.CreateFont(
@@ -321,7 +318,6 @@ BOOL CPlayerDlg::OnInitDialog()
 		_initdialog->DestroyWindow();
 	}
 
-
     CRect rect;
     int max;
     ReadWindowPos(max, rect);
@@ -354,7 +350,6 @@ BOOL CPlayerDlg::OnInitDialog()
 	//		irman().Close();
 	//		MBMessageBox("Irman", "unable to initialize Irman");
 	//	}
-
 
 	//ShowBetaWarning();
 	StartStatusTimer();
@@ -547,7 +542,6 @@ displayControlInfo(CString desc, CRect & rect, CRect & dialog) {
     msg = buf.p; logger.log(msg);
 
 
-
     
 }
 #define CONTROL_HSPACE 5
@@ -569,7 +563,6 @@ public:
 			txt, m_desc, row, col, width, height);
 		OutputDebugString(buf);
 	}
-
 
 	CString m_desc;
 	int row;
@@ -1031,7 +1024,6 @@ CPlayerDlg::initDb() {
 	OnSelchangeGenres() ;
 
 
-
 	//	IRReaderStart();
 
 }
@@ -1079,7 +1071,6 @@ void CPlayerDlg::OnPaint()
         //dc.FillRect(rect, &br);
         //OnSelchangeGenres();
 
-
 		CDialog::OnPaint();
 	}
 }
@@ -1115,7 +1106,6 @@ void CPlayerDlg::OnOpenFileButton()
 							OFN_EXPLORER,
 							"MPEG Audio Files {*.mpg;*.mp1;*.mp2;*.mp3}|*.mpg;*.mp1;*.mp2;*.mp3|All Files {*.*}|*.*||");
 
-
 	int ret;
 	ret = dialog->DoModal();
 	if (ret == IDOK) {
@@ -1134,7 +1124,6 @@ void CPlayerDlg::OnOpenUrlButton()
 
 	dialog = new CUrlDlg();
 
-
 	int ret;
 	ret = dialog->DoModal();
 	if (ret == IDOK) {
@@ -1144,7 +1133,6 @@ void CPlayerDlg::OnOpenUrlButton()
 	delete dialog;
 }
 #endif
-
 
 #ifdef asdfold
 void CPlayerDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
@@ -1220,7 +1208,6 @@ void CPlayerDlg::OnAbout()
     About dialog;
     dialog.DoModal();
 }
-
 
 void CPlayerDlg::OnControlSelChange() {
     if (m_Control->ptr() == &m_Genres) {
@@ -1606,14 +1593,12 @@ CPlayerDlg::OnPageDown() {
     OnControlSelChange();
 }
 
-
 // WinNT, not 98, not XP
 BOOL CALLBACK KillScreenSaverFunc (HWND hWnd, LPARAM lParam){
     PostMessage(hWnd,WM_CLOSE,0,0);
 
     return TRUE;
 }
-
 
 // Need to try GetVersionEx() to determine version of windows running
 // also try keybd_event and SendInput
@@ -1639,7 +1624,6 @@ BOOL WakeUp (){
         keybd_event(VK_SHIFT,0,0,0);
 	    keybd_event(VK_SHIFT,0,KEYEVENTF_KEYUP,0);
 //    }
-
 
 //    PostMessage (GetActiveWindow(), WM_KEYDOWN, VK_SHIFT, 0L);
 //    PostMessage (GetActiveWindow(), WM_KEYUP, VK_SHIFT, 0L);
@@ -1686,8 +1670,6 @@ NULL);
 		  CloseDesktop(hdesk);
 		} 
 	}
-
-
 
 
 
@@ -1796,7 +1778,6 @@ CPlayerDlg::HandleIRMessage(int key) {
 	}
     return 0;
 }
-
 
 afx_msg LRESULT
 CPlayerDlg::OnSerialMsg (WPARAM wParam, LPARAM lParam) {
@@ -1910,7 +1891,6 @@ CPlayerDlg::SaveWindowPos() {
     if (IsZoomed() || IsIconic()) {
         reg.Write(RegWindowMaximized, 1);
     }
-
 
     reg.Write(RegWindowX1, tl.x);
     reg.Write(RegWindowY1, tl.y);
@@ -2088,7 +2068,6 @@ void CPlayerDlg::OnPlayButton()
 	}
 }
 
-
 void CPlayerDlg::OnStopButton() 
 {
 	Stop();
@@ -2178,7 +2157,6 @@ void CPlayerDlg::PlayLoop() {
 				PlayerStatusTempSet("Trial Mode. Set Password in Configuration.");
 			}
             UpdateWindow();
-
 
         } else {
             good = 1;
@@ -2717,7 +2695,6 @@ void CPlayerDlg::OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruct) {
     }
 }
 
-
 void CPlayerDlg::OnTestMenu() {
 //    CScrollBar *s = new CScrollBar();
 //    LPSCROLLINFO lpScrollInfo;
@@ -2925,7 +2902,6 @@ void CPlayerDlg::displayAlbumArt(const CString & file) {
 	uchar * data = NULL;
 	BOOL pic = m_mlib.apic(file, data, size);
 
-
 	if (pic) {
 		m_Picture.load(data,size);
 	} else {
@@ -2933,6 +2909,5 @@ void CPlayerDlg::displayAlbumArt(const CString & file) {
 	}
 
 }
-
 
 

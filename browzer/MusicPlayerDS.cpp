@@ -696,8 +696,8 @@ void MusicPlayerDS::FilterProps(IBaseFilter *pFilter)
 }
 
 
-extern DWORD GetDXVersion();
-
+//extern DWORD GetDXVersion();
+extern HRESULT GetDXVersion( DWORD* pdwDirectXVersion, TCHAR* strDirectXVersion, int cchDirectXVersion );
 
 
 
@@ -709,44 +709,35 @@ extern DWORD GetDXVersion();
 CString MusicPlayerDS::GetVersion()
 {
     CString strResult;
-    DWORD  dwDXVersion = GetDXVersion();
+    //DWORD  dwDXVersion = GetDXVersion();
+	DWORD dwDXVersion;
+	TCHAR strDirectXVersion;
+	int cchDirectXVersion = 0;
 
-    switch( dwDXVersion )
-    {
-        case 0x000:
+	GetDXVersion( & dwDXVersion, &strDirectXVersion,  cchDirectXVersion );
+
+        if (dwDXVersion == 0x000)
             strResult = _T("No DirectX installed" );
-            break;
-        case 0x100:
-            strResult = _T("DirectX 1 installed" );
-            break;
-        case 0x200:
-            strResult = _T("DirectX 2 installed" );
-            break;
-        case 0x300:
-            strResult = _T("DirectX 3 installed" );
-            break;
-        case 0x500:
-            strResult = _T("DirectX 5 installed" );
-            break;
-        case 0x600:
-            strResult = _T("DirectX 6 installed" );
-            break;
-        case 0x601:
-            strResult = _T("DirectX 6.1 installed" );
-            break;
-        case 0x700:
-            strResult = _T("DirectX 7" );
-            break;
-        case 0x800:
-            strResult = _T("DirectX 8.0 installed" );
-            break;
-        case 0x801:
-            strResult = _T("DirectX 8.1 or better installed" );
-            break;
-        default:
+        else if (dwDXVersion >= 0x10000 && dwDXVersion < 0x20000) 
+            strResult = _T("DirectX 1 or better installed" );
+        else if (dwDXVersion >= 0x20000 && dwDXVersion < 0x30000) 
+            strResult = _T("DirectX 2 or better installed" );
+        else if (dwDXVersion >= 0x30000 && dwDXVersion < 0x40000) 
+            strResult = _T("DirectX 3 or better installed" );
+        else if (dwDXVersion >= 0x40000 && dwDXVersion < 0x50000) 
+            strResult = _T("DirectX 4 or better installed" );
+        else if (dwDXVersion >= 0x50000 && dwDXVersion < 0x60000) 
+            strResult = _T("DirectX 5 or better installed" );
+        else if (dwDXVersion >= 0x60000 && dwDXVersion < 0x70000) 
+            strResult = _T("DirectX 6 or better installed" );
+        else if (dwDXVersion >= 0x70000 && dwDXVersion < 0x80000) 
+            strResult = _T("DirectX 7 or better installed" );
+        else if (dwDXVersion >= 0x80000 && dwDXVersion < 0x90000) 
+            strResult = _T("DirectX 8 or better installed" );
+        else if (dwDXVersion >= 0x90000)
+            strResult = _T("DirectX 9 or better installed" );
+	else
             strResult = _T("Unknown version of DirectX installed." );
-            break;
-    }
 	return strResult;
 
 

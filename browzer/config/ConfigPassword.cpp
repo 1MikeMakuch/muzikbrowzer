@@ -368,6 +368,8 @@ void CConfigPassword::OnSendinfo()
 	}
 }
 void CConfigPassword::validate() {
+	m_TrialMode = 0;
+	return;
 	CString p = createPassword();
 	if (m_Password == p) {
 		m_TrialMode = 0;

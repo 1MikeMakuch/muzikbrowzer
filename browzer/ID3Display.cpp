@@ -1,6 +1,8 @@
 // ID3Display.cpp : implementation file
 //
 
+
+
 #include "stdafx.h"
 #include "id3/tag.h"
 #include "ID3Display.h"
@@ -26,7 +28,6 @@ using namespace dami;
 /////////////////////////////////////////////////////////////////////////////
 // ID3Display dialog
 
-
 ID3Display::ID3Display(Song song, CWnd* pParent /*=NULL*/)
 	: CDialog(ID3Display::IDD, pParent), m_Song(song)
 {
@@ -35,7 +36,6 @@ ID3Display::ID3Display(Song song, CWnd* pParent /*=NULL*/)
 	//}}AFX_DATA_INIT
 }
 
-
 void ID3Display::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
@@ -43,7 +43,6 @@ void ID3Display::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_ID3_DISPLAY, m_ID3Display);
 	//}}AFX_DATA_MAP
 }
-
 
 BEGIN_MESSAGE_MAP(ID3Display, CDialog)
 	//{{AFX_MSG_MAP(ID3Display)
