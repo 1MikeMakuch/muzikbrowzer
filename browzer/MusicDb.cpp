@@ -1810,6 +1810,29 @@ MusicLib::apic(const CString & file, uchar *& rawdata, size_t & nDataSize) {
 //		m_picCache.write(file, rawdata, nDataSize);
 		return TRUE;
 	}
+	// not in folder.jpg so look for cover.jpg in dir
+	folderjpg = FileUtil::dirname(file);
+	folderjpg += "\\cover.jpg";
+	fd = _open(folderjpg, _O_RDONLY|_O_BINARY);
+	if (fd > 0) {
+		struct _stat statbuf;
+		int fs = _stat(folderjpg, &statbuf );
+		if (fs != 0) {
+			close(fd);
+			return FALSE;
+		}
+
+		nDataSize = statbuf.st_size;
+		rawdata = new BYTE [ nDataSize ];
+		int r = _read(fd, (void*) rawdata, nDataSize);
+		close(fd);
+		if (r != nDataSize) {
+			delete rawdata;
+			return FALSE;
+		}
+//		m_picCache.write(file, rawdata, nDataSize);
+		return TRUE;
+	}
 	return FALSE;
 }
 
