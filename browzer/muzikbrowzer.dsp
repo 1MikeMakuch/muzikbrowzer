@@ -54,7 +54,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /machine:I386
-# ADD LINK32 ../3rdparty/ogg/libogg-1.0/win32/Release/ogg_static.lib ../oggtagger/Release/oggtagger.lib ../3rdparty/ogg/libvorbis-1.0/win32/Release/vorbis_static.lib ../3rdparty/ogg/libvorbis-1.0/win32/Release/vorbisfile_static.lib rpcrt4.lib ..\3rdparty/id3lib-3.8.2\libprj\Release\id3lib.lib ..\3rdparty/id3lib-3.8.2\zlib\prj\Release\zlib.lib ..\TestHarness\Release\TestHarness.lib HtmlHelp.lib strmiids.lib config\Release\config.lib controls\Release\controls.lib ..\id3\id3libutils\Release\id3utils.lib irman\Release\irman.lib Serial\Release\Serial.lib ..\util\Release\util.lib ..\md5\Release\md5.lib dxguid.lib Quartz.lib /subsystem:windows /pdb:none /machine:I386 /nodefaultlib:"msvcrtd" /nodefaultlib:"msvcrt" /nodefaultlib:"nafxcwd" /nodefaultlib:"libcmtd"
+# ADD LINK32 Version.lib  ../3rdparty/ogg/libogg-1.0/win32/Release/ogg_static.lib ../oggtagger/Release/oggtagger.lib ../3rdparty/ogg/libvorbis-1.0/win32/Release/vorbis_static.lib ../3rdparty/ogg/libvorbis-1.0/win32/Release/vorbisfile_static.lib rpcrt4.lib ..\3rdparty/id3lib-3.8.2\libprj\Release\id3lib.lib ..\3rdparty/id3lib-3.8.2\zlib\prj\Release\zlib.lib ..\TestHarness\Release\TestHarness.lib Help\HtmlHelp.lib strmiids.lib config\Release\config.lib controls\Release\controls.lib ..\id3\id3libutils\Release\id3utils.lib irman\Release\irman.lib Serial\Release\Serial.lib ..\util\Release\util.lib ..\md5\Release\md5.lib dxguid.lib Quartz.lib /subsystem:windows /pdb:none /machine:I386 /nodefaultlib:"msvcrtd" /nodefaultlib:"msvcrt" /nodefaultlib:"nafxcwd" /nodefaultlib:"libcmtd"
 
 !ELSEIF  "$(CFG)" == "muzikbrowzer - Win32 Debug"
 
