@@ -1361,6 +1361,8 @@ MusicLib::modifyID3(Song oldSong, Song newSong) {
     CString newGenre, newArtist, newAlbum, newTitle, newYear, newTrack;
     oldGenre = oldSong->getId3("TCON",0);
     newGenre = newSong->getId3("TCON",0);
+	// normalize to strip parens ()'s from user input
+	newGenre = Genre_normalize(newGenre);
     oldArtist = oldSong->getId3("TPE1",0);
     newArtist = newSong->getId3("TPE1",0);
     oldAlbum = oldSong->getId3("TALB",0);
