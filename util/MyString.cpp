@@ -11,7 +11,7 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 CString
-string_replace(const CString cstring, const char src, const CString target) {
+String::replace(const CString cstring, const char src, const CString target) {
 	int len = cstring.GetLength();
 	CString newstring;
 	char ch;
@@ -28,8 +28,11 @@ string_replace(const CString cstring, const char src, const CString target) {
 }
 
 CString
-string_downcase(const CString cstring) {
-	CString newstring;
+String::downcase(const CString cstring) {
+	CString newstring(cstring);
+	newstring.MakeLower();
+	return newstring;
+
 	char ch;
 	int len = cstring.GetLength();
 	for (int i = 0 ; i < len; i++ ) {
@@ -41,6 +44,13 @@ string_downcase(const CString cstring) {
 	}
 	return newstring;
 }
+CString
+String::upcase(const CString cstring) {
+	CString newstring(cstring);
+	newstring.MakeUpper();
+	return newstring;
+}
+
 
 // Return the occur'th substring of string delimited by delim.
 
@@ -251,7 +261,18 @@ TEST(StringReplace, String)
 	CString r1 = String::replace(test, newsub, oldsub);
 	CHECK(r1 == "--123--456--789--");
 }
-
+int
+String::last(const CString & string, const char ch) {
+	int pos = -1;
+	int n = string.GetLength();
+	int i;
+	for(i = 0 ; i < n ; ++i) {
+		if (string.GetAt(i) == ch) {
+			pos = i;
+		}
+	}
+	return pos;
+}
 AutoBuf::AutoBuf(int size) {
     p = new char[size];
 }

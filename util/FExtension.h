@@ -12,4 +12,11 @@ class FExtension {
     private:
         CString mFile;
 };
+
+class PathUtil {
+public:
+	static CString basename(const CString & file);
+	static CString dir(const CString & file);
+};
+
 #endif

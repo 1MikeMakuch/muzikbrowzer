@@ -107,10 +107,6 @@ SOURCE=.\DirectShowGlobals.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\Genres.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\ID3Display.cpp
 # End Source File
 # Begin Source File
@@ -132,10 +128,6 @@ SOURCE=.\MenuDialog.cpp
 # Begin Source File
 
 SOURCE=.\ModifyIDThree.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\Mp3Header.cpp
 # End Source File
 # Begin Source File
 
@@ -192,10 +184,6 @@ SOURCE=.\DirectShowMediaTypes.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\Genres.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\ID3Display.h
 # End Source File
 # Begin Source File
@@ -225,10 +213,6 @@ SOURCE=.\MenuDialog.h
 # Begin Source File
 
 SOURCE=.\ModifyIDThree.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\Mp3Header.h
 # End Source File
 # Begin Source File
 

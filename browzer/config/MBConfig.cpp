@@ -9,6 +9,7 @@
 #include "ConfigFiles.h"
 #include "ConfigPassword.h"
 #include "irman_registry.h"
+#include "MyString.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

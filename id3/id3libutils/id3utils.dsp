@@ -41,7 +41,7 @@ RSC=rc.exe
 # PROP Intermediate_Dir "Release"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /Yu"stdafx.h" /FD /c
-# ADD CPP /nologo /MT /W3 /GX /O2 /I "../../ogg/" /I "../../ogg/libogg-1.0/include" /I "../../ogg/libvorbis-1.0/include/" /I "..\\" /I "..\controls" /I "..\util" /I "..\irman" /I "..\..\3rdparty\id3lib-3.8.2\include" /I "..\id3utils" /I "..\Serial" /I "..\config" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D ID3LIB_LINKOPTION=1 /D "_WIN32_DCOM" /FD /c
+# ADD CPP /nologo /MT /W3 /GX /O2 /I "../../ogg/" /I "../../ogg/libogg-1.0/include" /I "../../ogg/libvorbis-1.0/include/" /I "..\\" /I "..\controls" /I "..\..\util" /I "..\irman" /I "..\..\3rdparty\id3lib-3.8.2\include" /I "..\id3utils" /I "..\Serial" /I "..\config" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D ID3LIB_LINKOPTION=1 /D "_WIN32_DCOM" /FD /c
 # SUBTRACT CPP /YX /Yc /Yu
 # ADD BASE RSC /l 0x409 /d "NDEBUG" /d "_AFXDLL"
 # ADD RSC /l 0x409 /d "NDEBUG"
@@ -65,7 +65,7 @@ LIB32=link.exe -lib
 # PROP Intermediate_Dir "Debug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /Yu"stdafx.h" /FD /GZ /c
-# ADD CPP /nologo /MTd /W3 /GX /Z7 /Od /I "../../ogg/" /I "../../ogg/libogg-1.0/include" /I "../../ogg/libvorbis-1.0/include/" /I "..\\" /I "..\controls" /I "..\util" /I "..\irman" /I "..\..\3rdparty\id3lib-3.8.2\include" /I "..\id3utils" /I "..\Serial" /I "..\config" /D ID3LIB_LINKOPTION=1 /D "TEST_HARNESS" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_WIN32_DCOM" /FR /FD /GZ /c
+# ADD CPP /nologo /MTd /W3 /GX /Z7 /Od /I "../../ogg/" /I "../../ogg/libogg-1.0/include" /I "../../ogg/libvorbis-1.0/include/" /I "..\\" /I "..\controls" /I "..\..\util" /I "..\irman" /I "..\..\3rdparty\id3lib-3.8.2\include" /I "..\id3utils" /I "..\Serial" /I "..\config" /D ID3LIB_LINKOPTION=1 /D "TEST_HARNESS" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_WIN32_DCOM" /FR /FD /GZ /c
 # SUBTRACT CPP /YX /Yc /Yu
 # ADD BASE RSC /l 0x409 /d "_DEBUG" /d "_AFXDLL"
 # ADD RSC /l 0x409 /d "_DEBUG"
@@ -87,6 +87,14 @@ LIB32=link.exe -lib
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
+SOURCE=.\Mp3Header.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\MpgHeader.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\MyID3LibMiscSupport.cpp
 # End Source File
 # Begin Source File
@@ -100,11 +108,23 @@ SOURCE=.\StdAfx.cpp
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
 # Begin Source File
 
+SOURCE=.\Mp3Header.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\MpgHeader.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\MyID3LibMiscSupport.h
 # End Source File
 # Begin Source File
 
 SOURCE=.\StdAfx.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\structMpgHeader.h
 # End Source File
 # End Group
 # Begin Source File

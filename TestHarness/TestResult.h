@@ -4,7 +4,7 @@
 #define TESTRESULT_H
 
 #include "StdAfx.h"
-#include "util/MyString.h"
+#include "MyString.h"
 
 // TestResult is a simple little class which accepts notifications from
 // tests.  In its current form, it takes these notifications and prints

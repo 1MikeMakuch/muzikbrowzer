@@ -5,7 +5,7 @@
 #include "stdafx.h"
 #include "MPtr.h"
 #include "InitDlg.h"
-#include "Genres.h"
+//#include "Genres.h"
 #include "ExtendedListBox.h"
 #include "id3/tag.h"
 //#include "ID3ModifyStatus.h"
@@ -284,7 +284,7 @@ class MusicLib
 			const CString &);
         int addArtistToPlaylist(const CString &, const CString &);
         int addGenreToPlaylist(const CString &);
-        UINT addSongToDb(int & ctr, Song &);
+        UINT addSongToDb(int & ctr, Song &, const CString & file = "");
         int addSongToPlaylist(const CString &, const CString &,
 			const CString &, const CString &);
 //        int addSongToPlaylist(int);

@@ -5,6 +5,10 @@
 #include "id3tagger.h"
 #include "id3taggerDlg.h"
 #include "DlgProxy.h"
+
+#define LOGOWNER
+#include "MyLog.h"
+
 #include "FileFolderDialog.h"
 #include <id3.h>
 #include <id3/tag.h>
@@ -14,7 +18,7 @@
 #include "CheckResult.h"
 #include "help.h"
 #include "Progress.h"
-#include "Genres.h"
+//#include "Genres.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -536,7 +540,7 @@ CString CId3taggerDlg::quotedValueFromField(CString field, ID3_Tag & id3) {
 CString CId3taggerDlg::valueFromField(CString field, ID3_Tag & id3) {
 	CString value;
 	if (field == "Genre") {
-		value = getNormalizedGenre(&id3);
+		value = Genre_normalize(id3_GetGenre(&id3));
 	} else if (field == "Artist") {
 		value = id3_GetArtist(&id3);
 	} else if (field == "Album") {
@@ -553,7 +557,7 @@ CString CId3taggerDlg::valueFromField(CString field, ID3_Tag & id3) {
 void CId3taggerDlg::setField(ID3_Tag & srcid3, ID3_Tag & id3,
 							 CString & field, CString & invalue) {
 	CString genre, artist, album, title, track, year;
-	genre = getNormalizedGenre(&srcid3);
+	genre = Genre_normalize(id3_GetGenre(&srcid3));
 	artist = id3_GetArtist(&srcid3);
 	album = id3_GetAlbum(&srcid3);
 	title = id3_GetTitle(&srcid3);
@@ -672,7 +676,7 @@ void CId3taggerDlg::OnDblclkListFiles()
 	ID3_Tag id3;
 	id3.Link(file);
 	CString info;
-	info = displayTag(&id3);
+	info = displayTag(&id3, TRUE, file);
 	m_TagInfo.SetWindowText(info);
 	
 }

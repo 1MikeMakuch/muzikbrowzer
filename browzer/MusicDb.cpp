@@ -2,7 +2,7 @@
 #include "stdafx.h"
 #include "MusicDb.h"
 #include "MyLog.h"
-#include "Genres.h"
+//#include "Genres.h"
 #include "MyString.h"
 #include "id3/tag.h"
 #include "id3/misc_support.h"
@@ -28,7 +28,7 @@
 #define MBPLAYLIST "_Playlist_"
 #define MBPLAYLISTEXT ".mbp"
 #define MB_GARBAGE_INTERVAL 10
-#define MB_DB_VERSION 1
+#define MB_DB_VERSION 2
 
 
 
@@ -260,27 +260,18 @@ MusicLib::writeDb() {
 }
 
 UINT
-MusicLib::addSongToDb(int & ctr, Song &song) {
-	CString tmp, albumname, titlename, artistname;
+MusicLib::addSongToDb(int & ctr, Song &song, const CString & file) {
+	CString dir;
 
-	static CString lastartist;
-	char buf[10];
-
-	tmp = "TPE1";
-	artistname = song->getId3(tmp);
+	static CString lastdir;
 
 	if (_id) {
 		ctr++;
+		dir = PathUtil::dir(file);
 
-		if (lastartist.Compare(artistname) != 0) {
-			lastartist = artistname;
-			CString status = "          ";
-			sprintf(buf,"%d", ctr);
-			status += buf;
-			status += " ";
-			status += artistname;
-//			_id->UpdateStatus(status);
-            _id->SendUpdateStatus(1, status, 0,0);
+		if (lastdir.Compare(dir) != 0) {
+			lastdir = dir;
+            _id->SendUpdateStatus(1, dir, 0,0);
 		}
 	}
 
@@ -805,7 +796,7 @@ MusicLib::scanDirectories(const CStringList & directories,
             sprintf(buf.p, "%s%02d", RegMp3ExtensionsKey, i);
             TCHAR extension[100];
             reg.Read(buf.p, extension, 9, "");
-            m_mp3Extensions.AddTail(string_downcase(extension));
+            m_mp3Extensions.AddTail(String::downcase(extension));
         }
     }
 
@@ -868,7 +859,7 @@ MusicLib::scanDirectories(const CStringList & directories,
             ++good_count;
         }
 
-		added_count += addSongToDb(ctr, song);
+		added_count += addSongToDb(ctr, song, mp3file);
 		added += mp3file + "\r\n";
 		mp3Files.GetNext(pos);
     }
@@ -983,7 +974,7 @@ MusicLib::scanDirectory(int * abortflag, CStringList &mp3Files,
 				if (!scanNew ||
 						!m_SongLib.m_files.contains(finder.GetFilePath())) {
 					FExtension ext(fname);
-					if (m_mp3Extensions.Find(string_downcase(ext.ext())) != NULL) {
+					if (m_mp3Extensions.Find(String::downcase(ext.ext())) != NULL) {
 	                    insertSort(mp3Files, finder.GetFilePath());
 		            }
 				}
@@ -1029,17 +1020,15 @@ MusicLib::createSongFromFile(const CString & mp3file,
 			if (mp3i && mp3i->time) {
 				tlen = numToString(mp3i->time * 1000);
 				tlen_method_1_count++;
-			} else if (mp3.getFilePath(mp3file) == TRUE) { // else try mp3tagtools
+			} else if (mp3.mb_getFilePath(mp3file) == TRUE) { // else try mp3tagtools
 				int duration = mp3.getLengthInSeconds();
 				duration *= 1000;
 				tlen = numToString(duration);
 				tlen_method_2_count++;
 
 			} else { // else error
-#ifdef _DEBUG
 				error_results += mp3file;
-				error_results += ": Couldn't calculate TLEN. Might not be an mp3 file.\r\n";
-#endif
+				error_results += ": No valid mp3 headers found. Might not be an mp3 file.\r\n";
 				tlen_methods_failed_count++;
 			}
 		}
@@ -1371,8 +1360,6 @@ MusicLib::modifyID3(Song oldSong, Song newSong) {
     CString newGenre, newArtist, newAlbum, newTitle, newYear, newTrack;
     oldGenre = oldSong->getId3("TCON",0);
     newGenre = newSong->getId3("TCON",0);
-	// normalize to strip parens ()'s from user input
-	newGenre = Genre_normalize(newGenre);
     oldArtist = oldSong->getId3("TPE1",0);
     newArtist = newSong->getId3("TPE1",0);
     oldAlbum = oldSong->getId3("TALB",0);
@@ -1394,6 +1381,8 @@ MusicLib::modifyID3(Song oldSong, Song newSong) {
     if (oldGenre == "") oldGenre = MBALL;
 	// old* vars need to be null to search as wildcard
     searchForMp3s(songs, oldGenre, oldArtist, oldAlbum, oldTitle);
+	int count = songs.GetCount();
+	dialog->ProgressRange(0, count);
 
 	dialog->m_InitLabel = "Modifying audio files...";
 
@@ -3015,7 +3004,7 @@ MSongLib::validate() {
 	if (m_db_version != MB_DB_VERSION) {
 		init();
 		CString msg = "The muzikbrowzer database appears to be an\r\nolder incompatible version.\r\n";
-		msg += "Rebuild by doing a Scan in Configuration.";
+		msg += "You must rebuild by doing a Scan in Configuration.";
 		MBMessageBox("Error", msg);
 		return -1;
 	}

@@ -15,7 +15,7 @@ static char THIS_FILE[] = __FILE__;
 /////////////////////////////////////////////////////////////////////////////
 // CExtendedListBox
 
-CExtendedListBox::CExtendedListBox() : m_highlights(FALSE)
+CExtendedListBox::CExtendedListBox() : m_highlights(FALSE), m_companion(NULL)
 {
 }
 
@@ -101,7 +101,7 @@ void CExtendedListBox::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 
 		CString strText;
 		GetText (lpDrawItemStruct->itemID, strText);
-		strText = string_replace(strText, '\t', "        ");
+		strText = String::replace(strText, '\t', "        ");
 
 		const RECT &rc=lpDrawItemStruct->rcItem;
 

@@ -23,10 +23,16 @@ CString id3_GetTLEN(const ID3_Tag * tag);
 CString id3_GetRVA2(const ID3_Tag * tag);
 
 
-//void id3_Free(void *p);
+void Genre_init();
 
-//ID3_C_EXPORT ID3_Frame* ID3_AddTrack(ID3_Tag*, uchar ucTrack, uchar ucTotal = 0,
-//                                     bool replace = false);
-//ID3_C_EXPORT ID3_Frame* ID3_AddTrack(ID3_Tag*, uchar ucTrack, bool replace);
+CString Genre_normalize(const CString genre);
+
+//int Genre_getInt(CString genre);
+
+void Genre_getGenres(CStringList &);
+void Genre_addGenre(ID3_Tag & id3, const char * genre);
+
+CString
+displayTag(ID3_Tag *id3, BOOL showLabels=FALSE, CString file = "");
 
 #endif /* _ID3LIB_MISC_SUPPORT_H_ */

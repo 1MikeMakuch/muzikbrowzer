@@ -43,7 +43,7 @@ CFG=Inno - Win32 Debug
 # PROP Intermediate_Dir "Release"
 # PROP Cmd_Line "iscc Release.iss"
 # PROP Rebuild_Opt ""
-# PROP Target_File "Output\muzikbrowzer_setup_1_2_1.exe"
+# PROP Target_File "Output\muzikbrowzer_setup_ver.exe"
 # PROP Bsc_Name ""
 # PROP Target_Dir ""
 

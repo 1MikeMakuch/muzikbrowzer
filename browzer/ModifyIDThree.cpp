@@ -6,9 +6,10 @@
 #include "ModifyIDThree.h"
 #include "id3/tag.h"
 #include "id3/misc_support.h"
-#include "Genres.h"
+//#include "Genres.h"
 #include "ID3Display.h"
 #include "MyID3LibMiscSupport.h"
+#include "MyString.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

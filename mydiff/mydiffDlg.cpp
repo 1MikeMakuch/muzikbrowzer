@@ -10,6 +10,9 @@
 #include "TestHarness.h"
 #include "direct.h"
 
+#define LOGOWNER
+#include "MyLog.h"
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -102,6 +105,8 @@ BOOL CMydiffDlg::OnInitDialog()
 
 	controlsEnable(FALSE);
 	getcwd();
+
+	CString args = ::GetCommandLine();
 
 	
 	
@@ -717,7 +722,7 @@ void CMydiffDlg::mysystem(const CString & command, UINT msg2post) {
 	
 
 	CString tmp = "cd ";
-	CString cwd = string_replace(m_cwd, '\\', "\\\\");
+	CString cwd = String::replace(m_cwd, '\\', "\\\\");
 
 	tmp += cwd;
 	tmp += "; ";

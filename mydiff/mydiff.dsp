@@ -43,7 +43,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /Yu"stdafx.h" /FD /c
-# ADD CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /FD /c
+# ADD CPP /nologo /MT /W3 /GX /O2 /I "../util" /I "../TestHarness" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /FD /c
 # SUBTRACT CPP /YX /Yc /Yu
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
@@ -54,7 +54,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /machine:I386
-# ADD LINK32 /nologo /subsystem:windows /machine:I386 /out:"c:/mkm/bin/mydiff.exe"
+# ADD LINK32 ../util/Release/util.lib ../TestHarness/Release/TestHarness.lib /nologo /subsystem:windows /machine:I386 /out:"c:/mkm/bin/mydiff.exe"
 
 !ELSEIF  "$(CFG)" == "mydiff - Win32 Debug"
 
@@ -70,7 +70,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /Yu"stdafx.h" /FD /GZ /c
-# ADD CPP /nologo /MTd /W3 /GX /Z7 /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /FD /GZ /c
+# ADD CPP /nologo /MTd /W3 /GX /Z7 /Od /I "../util" /I "../TestHarness" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /FD /GZ /c
 # SUBTRACT CPP /YX /Yc /Yu
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
@@ -81,7 +81,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 /nologo /subsystem:windows /debug /machine:I386 /out:"c:/mkm/bin/mydiff.exe" /pdbtype:sept
+# ADD LINK32 ../util/Debug/util.lib ../TestHarness/Debug/TestHarness.lib /nologo /subsystem:windows /debug /machine:I386 /out:"c:/mkm/bin/mydiff.exe" /pdbtype:sept
 
 !ENDIF 
 
@@ -114,10 +114,6 @@ SOURCE=.\mydiffDlg.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\MyString.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\Process.cpp
 # End Source File
 # Begin Source File
@@ -133,18 +129,6 @@ SOURCE=.\StatusDlg.cpp
 SOURCE=.\StdAfx.cpp
 # ADD CPP /Yc"stdafx.h"
 # End Source File
-# Begin Source File
-
-SOURCE=.\Test.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\TestRegistry.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\TestResult.cpp
-# End Source File
 # End Group
 # Begin Group "Header Files"
 
@@ -159,19 +143,11 @@ SOURCE=.\ExtendedListBox.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\Failure.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\mydiff.h
 # End Source File
 # Begin Source File
 
 SOURCE=.\mydiffDlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\MyString.h
 # End Source File
 # Begin Source File
 
@@ -192,22 +168,6 @@ SOURCE=.\StatusDlg.h
 # Begin Source File
 
 SOURCE=.\StdAfx.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\Test.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\TestHarness.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\TestRegistry.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\TestResult.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"

@@ -42,7 +42,6 @@ protected:
 	DECLARE_MESSAGE_MAP()
 private:
 //    ID3_Tag * mID3_Tag;
-    CString displayTag(ID3_Tag *);
 	Song m_Song;
 	CString displayTag(Song song);
 	CString displayOgg(const CString & file);

@@ -43,7 +43,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /Yu"stdafx.h" /FD /c
-# ADD CPP /nologo /MT /W3 /GX /O2 /I "..\..\3rdparty\id3lib-3.8.2\include" /D ID3LIB_LINKOPTION=1 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /FR /FD /c
+# ADD CPP /nologo /MT /W3 /GX /O2 /I "..\..\3rdparty\id3lib-3.8.2\include" /I "..\id3libutils" /I "..\..\util" /D ID3LIB_LINKOPTION=1 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /FR /FD /c
 # SUBTRACT CPP /YX /Yc /Yu
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
@@ -54,7 +54,8 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /machine:I386
-# ADD LINK32 ..\..\3rdparty\id3lib-3.8.2\libprj\Release\id3lib.lib ..\..\3rdparty\id3lib-3.8.2\zlib\prj\Release\zlib.lib /nologo /subsystem:windows /machine:I386 /out:"Release/mp3tagger.exe"
+# ADD LINK32 ..\..\3rdparty\id3lib-3.8.2\libprj\Release\id3lib.lib ..\..\3rdparty\id3lib-3.8.2\zlib\prj\Release\zlib.lib ..\..\util\Release\util.lib ..\..\TestHarness\Release\TestHarness.lib ..\id3libutils\Release\id3utils.lib /nologo /subsystem:windows /machine:I386 /nodefaultlib:"nafxcwd" /nodefaultlib:"libcmtd" /out:"Release/mp3tagger.exe"
+# SUBTRACT LINK32 /pdb:none
 
 !ELSEIF  "$(CFG)" == "id3tagger - Win32 Debug"
 
@@ -70,7 +71,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /Yu"stdafx.h" /FD /GZ /c
-# ADD CPP /nologo /MTd /W3 /Gm /Gi /GX /ZI /Od /I "..\..\3rdparty\id3lib-3.8.2\include" /D ID3LIB_LINKOPTION=1 /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /FR /FD /GZ /c
+# ADD CPP /nologo /MTd /W3 /Gm /Gi /GX /ZI /Od /I "..\..\3rdparty\id3lib-3.8.2\include" /I "..\id3libutils" /I "..\..\util" /D ID3LIB_LINKOPTION=1 /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /FR /FD /GZ /c
 # SUBTRACT CPP /YX /Yc /Yu
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
@@ -81,7 +82,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 ..\..\3rdparty\id3lib-3.8.2\libprj\Debug\id3libD.lib ..\..\3rdparty\id3lib-3.8.2\zlib\prj\Debug\zlibD.lib /nologo /subsystem:windows /debug /machine:I386 /out:"Debug/mp3tagger.exe" /pdbtype:sept
+# ADD LINK32 ..\..\3rdparty\id3lib-3.8.2\libprj\Debug\id3libD.lib ..\..\3rdparty\id3lib-3.8.2\zlib\prj\Debug\zlibD.lib ..\..\util\Debug\util.lib ..\..\TestHarness\Debug\TestHarness.lib ..\id3libutils\Debug\id3utils.lib /nologo /subsystem:windows /debug /machine:I386 /out:"Debug/mp3tagger.exe" /pdbtype:sept
 
 !ENDIF 
 
@@ -98,14 +99,6 @@ SOURCE=.\CheckResult.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\FExtension.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\Genres.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\id3tagger.cpp
 # End Source File
 # Begin Source File
@@ -119,14 +112,6 @@ SOURCE=.\id3tagger.rc
 # Begin Source File
 
 SOURCE=.\id3taggerDlg.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\MyID3LibMiscSupport.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\MyString.cpp
 # End Source File
 # Begin Source File
 
@@ -147,14 +132,6 @@ SOURCE=.\CheckResult.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\FExtension.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\Genres.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\help.h
 # End Source File
 # Begin Source File
@@ -164,14 +141,6 @@ SOURCE=.\id3tagger.h
 # Begin Source File
 
 SOURCE=.\id3taggerDlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\MyID3LibMiscSupport.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\MyString.h
 # End Source File
 # Begin Source File
 

@@ -7,6 +7,7 @@
 #include "MyLog.h"
 #include "MBMessageBox.h"
 #include "ConfigFiles.h"
+#include "MyString.h"
 //#define _WIN32_DCOM
 #include <objbase.h>
 #include <winbase.h>

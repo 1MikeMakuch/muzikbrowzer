@@ -5,11 +5,7 @@
 
 #define CS(CS_string) CString(CS_string)
 
-CString
-string_replace(const CString string, const char src, const CString target);
 
-CString
-string_downcase(const CString string);
 
 class String {
     private:
@@ -51,6 +47,12 @@ class String {
 		const CString &newsubstring, 
 		const CString &oldsubstring, 
 		const unsigned int &occur=0);
+
+	static CString replace(const CString string, const char src, const CString target);
+	static CString downcase(const CString string);
+	static CString upcase(const CString string);
+	static int last(const CString & string, const char ch);
+
 
 };
 
