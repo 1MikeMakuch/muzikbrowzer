@@ -351,7 +351,7 @@ MusicLib::getSongsInPlaylist(const CString & name, CExtendedListBox & box) {
     if (myFile.GetLength()) {
         AutoBuf buf(myFile.GetLength()+1);
         myFile.Read(buf.p, myFile.GetLength());
-        CString genre, artist, album, song;
+        CString genre, artist, album, song, file;
         char * p = buf.p;
         while (p < buf.p + myFile.GetLength()) {
             genre = p;
@@ -362,9 +362,8 @@ MusicLib::getSongsInPlaylist(const CString & name, CExtendedListBox & box) {
             p += album.GetLength()+1;
             song = p;
             p += song.GetLength()+1;
-//            while ((p[0] == '\r' || p[0] == '\n') 
-//                && (p < buf.p + myFile.GetLength()))
-//                p++;
+			file = p;
+			p += file.GetLength()+1;
             while ((p < buf.p + myFile.GetLength())
                 && (p[0] == '\r' || p[0] == '\n'))
                 p++;
@@ -1577,7 +1576,7 @@ MusicLib::modifyPlaylist(const CString playlistname, Song oldsong, Song newsong)
     if (myFile.GetLength()) {
         AutoBuf buf(myFile.GetLength()+1);
         myFile.Read(buf.p, myFile.GetLength());
-        CString genre, artist, album, song;
+        CString genre, artist, album, song, file;
         char * p = buf.p;
         while (p < buf.p + myFile.GetLength()) {
             genre = p;
@@ -1588,6 +1587,8 @@ MusicLib::modifyPlaylist(const CString playlistname, Song oldsong, Song newsong)
             p += album.GetLength()+1;
             song = p;
             p += song.GetLength()+1;
+			file = p;
+			p += file.GetLength()+1;
 
             while ((p < buf.p + myFile.GetLength())
                 && (p[0] == '\r' || p[0] == '\n'))
@@ -1614,6 +1615,7 @@ MusicLib::modifyPlaylist(const CString playlistname, Song oldsong, Song newsong)
 			tmp->setId3("TPE1", artist);
 			tmp->setId3("TALB", album);
 			tmp->setId3("TIT2", song);
+			tmp->setId3("FILE", file);
 			newplaylist.append(tmp);
         }
     }
