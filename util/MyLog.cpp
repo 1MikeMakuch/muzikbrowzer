@@ -53,7 +53,7 @@ MyLog::log(CString msg) {
 	if (m_ready == FALSE) return;
     CString msgx;
     CTime t = CTime::GetCurrentTime();
-    msgx = t.Format("%d%m%y:%H%M%S ");
+    msgx = t.Format("%Y%m%d:%H%M%S ");
     msgx += msg;
 	msgx += "\r\n";
 	_file.Write(msgx,msgx.GetLength());

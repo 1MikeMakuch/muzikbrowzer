@@ -242,6 +242,13 @@ BOOL CPlayerDlg::OnInitDialog()
 	logger.log(CS("muzikbrowzer version: ") + CS(MUZIKBROWZER_VERSION));
 	m_Config.createit(this);
 
+	OSVERSIONINFO osvi;
+	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+	GetVersionEx(&osvi);
+	CString msg = "GetVersionEx=";
+	msg += osvi.dwPlatformId;
+	logger.log(msg);
+
     if (m_mlib.init()) {
 		MBMessageBox("Error", "Database corrupted. Rebuild it by performing a\r\nScan in Options/Configuration");
 		PlayerStatusSet(CString(
@@ -2215,8 +2222,13 @@ void CPlayerDlg::PlayLoop() {
 				displayAlbumArt(file);
 			} else {
 				good = 0;
-				msg = "Unable to play ";
-				msg += m_mlib._playlist[m_PlaylistCurrent]->getId3("FILE");
+				if (!FileUtil::IsReadable(file)) {
+					msg = "File is unreadable ";
+					msg += file;
+				} else {
+					msg = "Unable to play ";
+					msg += file;
+				}
 				CurrentTitleSet(msg);
 				UpdateWindow();
 				logger.log(msg);

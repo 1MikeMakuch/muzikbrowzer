@@ -50,6 +50,8 @@ MusicPlayerDS::init()
 {
     // Initialize COM
     CoInitialize(NULL);
+	logger.log("MusicPlayerDS::init");
+	logger.log(GetVersion());
 	
     // Initialize DirectShow and query for needed interfaces
     HRESULT hr = InitDirectShow();
@@ -110,6 +112,7 @@ HRESULT MusicPlayerDS::PrepareMedia(LPTSTR lpszMovie)
 	if (hr != S_OK) {
 		LogError(hr, "PrepareMedia, SetNotifyWindow");
 	}
+
 	return hr;
 }
 
@@ -146,7 +149,7 @@ BOOL MusicPlayerDS::Play()
 		Say(TEXT("Running"));
 		m_SongStarted = TRUE;
 	}
-	logger.log(GetVersion());
+
 	return r;
 }
 
@@ -757,7 +760,7 @@ void MusicPlayerDS::LogError(HRESULT hr, CString msg)
         {
             wsprintf(szErr, "Unknown Error: 0x%2x", hr);
         }
-		CString txt;
+		CString txt = "MusicPlayerDS: ";
 		if (msg.GetLength()) {
 			txt += msg;
 			txt += ": ";

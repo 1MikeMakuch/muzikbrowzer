@@ -1,4 +1,23 @@
 /*
+
+All this stuff is in mbbugs tracking system
+
+
+
+
+
+
+
+
+
+
+
+
+-F config/fonts/colors - get apply to work
+-B ConfigFonts - have to select font size, cant type it in
+-F/B in "Dirs to scan for files" need multi selection dlg, and it should
+remember where you were last time.
+-F add wma etc., etc. support
 -F Better looking Help for Remote Control
 -B irman learning: wizard to determine interKeyDelay and/or # of pulses
 -B irman: learning: have 'em hold down each button for a few seconds and get the code most

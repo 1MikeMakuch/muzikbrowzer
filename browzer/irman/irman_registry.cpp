@@ -25,8 +25,8 @@ RegistryKey::RegistryKey( HKEY base, const TCHAR* keyName )
                       KEY_QUERY_VALUE | KEY_SET_VALUE,
                       NULL, &key, NULL ) != ERROR_SUCCESS )
     key = NULL;
-  CString msg = CString("Registry ") + keyName;
-  logger.log(msg);
+//  CString msg = CString("Registry ") + keyName;
+//  logger.log(msg);
 }
 
 RegistryKey::~RegistryKey()
@@ -48,8 +48,8 @@ void RegistryKey::Read( const TCHAR* value, TCHAR* data,
     _tcsnccpy( data, deflt, maxSize );
   // Ensure null termination
   data[ maxSize - 1 ] = 0;
-  CString msg = CString("Registry read  ") + value + CString(": ") + data;
-  logger.log(msg);
+//  CString msg = CString("Registry read  ") + value + CString(": ") + data;
+//  logger.log(msg);
 }
 
 void RegistryKey::Write( const TCHAR* value, const TCHAR* data ) const
@@ -57,8 +57,8 @@ void RegistryKey::Write( const TCHAR* value, const TCHAR* data ) const
   // Take \0 into account
   WriteData( value, data, ( _tcslen( data ) + 1 ) * sizeof( TCHAR ),
 	  REG_SZ );
-  CString msg = CString("Registry write ") + value + CString(": ") + data;
-  logger.log(msg);
+//  CString msg = CString("Registry write ") + value + CString(": ") + data;
+//  logger.log(msg);
 }
 ///////////////////////////////////////////////////////////////////////
 // long ints
@@ -72,18 +72,18 @@ unsigned long RegistryKey::Read( const TCHAR* value, unsigned long deflt ) const
     retVal = deflt;
   else
     retVal = data;
-  CString msg = CString("Registry read  ") + CString(value) + CString(": ");
-  msg += retVal;
-  logger.log(msg);
+//  CString msg = CString("Registry read  ") + CString(value) + CString(": ");
+//  msg += retVal;
+//  logger.log(msg);
   return retVal;
 }
 
 void RegistryKey::Write( const TCHAR* value, unsigned long data ) const
 {
   WriteData( value, &data, sizeof( data ), REG_DWORD );
-  CString msg = CString("Registry write ") + value + CString(": ");
-  msg += data;
-  logger.log(msg);
+//  CString msg = CString("Registry write ") + value + CString(": ");
+//  msg += data;
+//  logger.log(msg);
 
 }
 ///////////////////////////////////////////////////////////////////////
@@ -95,16 +95,16 @@ void RegistryKey::Read( const TCHAR* value, void* data,
   unsigned long size = desiredSize;
   if( !ReadData( value, data, size, REG_BINARY ) && size == desiredSize )
     CopyMemory( data, deflt, desiredSize );
-  CString msg = CString("Registry read  ") + CString(value) + CString(": BIN");
-  logger.log(msg);
+//  CString msg = CString("Registry read  ") + CString(value) + CString(": BIN");
+//  logger.log(msg);
 }
 
 void RegistryKey::Write( const TCHAR* value, const void* data,
 						unsigned long size ) const
 {
   WriteData( value, data, size, REG_BINARY );
-  CString msg = CString("Registry write ") + value + CString(": BIN");
-  logger.log(msg);
+//  CString msg = CString("Registry write ") + value + CString(": BIN");
+//  logger.log(msg);
 }
 
 ///////////////////////////////////////////////////////////////////////

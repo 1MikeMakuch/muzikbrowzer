@@ -30,7 +30,7 @@
 #define MBPLAYLIST "_Playlist_"
 #define MBPLAYLISTEXT ".mbp"
 #define MB_GARBAGE_INTERVAL 10
-#define MB_DB_VERSION 3
+#define MB_DB_VERSION 4
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -1058,6 +1058,13 @@ MusicLib::createSongFromFile(const CString & mp3file,
 	CString genre = song->getId3((CString)"TCON");
 	genre = Genre_normalize(genre);
 	song->setId3((CString)"TCON", genre);
+
+	CString artist = song->getId3((CString)"TPE1");
+	if (artist == "" || artist == MBUNKNOWN)
+		song->setId3("TPE1", MBUNKNOWN);
+	CString album = song->getId3((CString)"TALB");
+	if (album == "" || album == MBUNKNOWN)
+		song->setId3("TALB", MBUNKNOWN);
 
 	CString title = song->getId3("TIT2");
 	if (title == MBUNKNOWN) {
@@ -3108,7 +3115,9 @@ MSongLib::writeToFile() {
 	m_mem.writei(8,m_garbagecollector);
 	m_mem.writei(12,MB_DB_VERSION);
 	m_mem.writeToFile();
+#ifdef _DEBUG
 	dump();
+#endif
 	m_dirty = 0;
 //	m_files.write();
 //	m_files.removeAll();
@@ -3195,8 +3204,8 @@ MSongLib::dump() {
 	}
 
     sprintf(buf.p, 
-"Head:%07d Size:%07d SongCount:%d gc:%d ###########################################\n",
- head(), m_mem.m_size, m_songcount, m_garbagecollector);
+"DBV:%d Head:%07d Size:%07d SongCount:%d gc:%d ###########################################\n",
+ m_db_version, head(), m_mem.m_size, m_songcount, m_garbagecollector);
     myFile.Write(buf.p, strlen(buf.p));
     sprintf(buf.p, "%7s %7s %7s %7s %7s %s\n", "pos", "length", "prev", "next",
         "ptr", "label");

@@ -84,7 +84,9 @@ void
 CConfigFonts::setDefault() {
 
     sscanf(deffont, CCFONTFMT, 
-        &m_lfTitles.lfHeight, &m_lfTitles.lfWidth, &m_lfTitles.lfEscapement,
+        &m_lfTitles.lfHeight, 
+		&m_lfTitles.lfWidth, 
+		&m_lfTitles.lfEscapement,
         &m_lfTitles.lfOrientation,
         &m_lfTitles.lfWeight,
         &italic,
