@@ -1,4 +1,5 @@
-#include "MPtr.h"
+#ifdef __BUILDING_MPTR_H__
+//#include "MPtr.h"
 
 //#ifdef _DEBUG
 //#define new DEBUG_NEW
@@ -312,3 +313,4 @@ MPtrDLL<T>::moveDown(int element) {
     if (_tail == oldnext)
         _tail = p;
 }
+#endif

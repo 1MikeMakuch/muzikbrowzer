@@ -4,7 +4,7 @@
 
 # TARGTYPE "Win32 (x86) Application" 0x0101
 
-CFG=id3tagger - Win32 Debug
+CFG=id3tagger - Win32 DebugBC
 !MESSAGE This is not a valid makefile. To build this project using NMAKE,
 !MESSAGE use the Export Makefile command and run
 !MESSAGE 
@@ -13,12 +13,13 @@ CFG=id3tagger - Win32 Debug
 !MESSAGE You can specify a configuration when running NMAKE
 !MESSAGE by defining the macro CFG on the command line. For example:
 !MESSAGE 
-!MESSAGE NMAKE /f "id3tagger.mak" CFG="id3tagger - Win32 Debug"
+!MESSAGE NMAKE /f "id3tagger.mak" CFG="id3tagger - Win32 DebugBC"
 !MESSAGE 
 !MESSAGE Possible choices for configuration are:
 !MESSAGE 
 !MESSAGE "id3tagger - Win32 Release" (based on "Win32 (x86) Application")
 !MESSAGE "id3tagger - Win32 Debug" (based on "Win32 (x86) Application")
+!MESSAGE "id3tagger - Win32 DebugBC" (based on "Win32 (x86) Application")
 !MESSAGE 
 
 # Begin Project
@@ -84,12 +85,42 @@ LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
 # ADD LINK32 ..\..\3rdparty\id3lib-3.8.2\libprj\Debug\id3libD.lib ..\..\3rdparty\id3lib-3.8.2\zlib\prj\Debug\zlibD.lib ..\..\util\Debug\util.lib ..\..\TestHarness\Debug\TestHarness.lib ..\id3libutils\Debug\id3utils.lib ..\..\browzer\controls\Debug\controls.lib /nologo /subsystem:windows /debug /machine:I386 /out:"Debug/mp3tagger.exe" /pdbtype:sept
 
+!ELSEIF  "$(CFG)" == "id3tagger - Win32 DebugBC"
+
+# PROP BASE Use_MFC 5
+# PROP BASE Use_Debug_Libraries 1
+# PROP BASE Output_Dir "id3tagger___Win32_DebugBC"
+# PROP BASE Intermediate_Dir "id3tagger___Win32_DebugBC"
+# PROP BASE Ignore_Export_Lib 0
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 5
+# PROP Use_Debug_Libraries 1
+# PROP Output_Dir "DebugBC"
+# PROP Intermediate_Dir "DebugBC"
+# PROP Ignore_Export_Lib 0
+# PROP Target_Dir ""
+# ADD BASE CPP /nologo /MTd /W3 /Gm /Gi /GX /ZI /Od /I "..\\" /I "..\..\3rdparty\id3lib-3.8.2\include" /I "..\id3libutils" /I "..\..\util" /I "..\..\browzer\controls" /I "..\..\browzer" /D ID3LIB_LINKOPTION=1 /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /FR /FD /GZ /c
+# SUBTRACT BASE CPP /YX /Yc /Yu
+# ADD CPP /nologo /MTd /W3 /Gm /Gi /GX /ZI /Od /I "..\\" /I "..\..\3rdparty\id3lib-3.8.2\include" /I "..\id3libutils" /I "..\..\util" /I "..\..\browzer\controls" /I "..\..\browzer" /D ID3LIB_LINKOPTION=1 /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /FR /FD /GZ /c
+# SUBTRACT CPP /YX /Yc /Yu
+# ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
+# ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
+# ADD BASE RSC /l 0x409 /d "_DEBUG"
+# ADD RSC /l 0x409 /d "_DEBUG"
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LINK32=link.exe
+# ADD BASE LINK32 ..\..\3rdparty\id3lib-3.8.2\libprj\Debug\id3libD.lib ..\..\3rdparty\id3lib-3.8.2\zlib\prj\Debug\zlibD.lib ..\..\util\Debug\util.lib ..\..\TestHarness\Debug\TestHarness.lib ..\id3libutils\Debug\id3utils.lib ..\..\browzer\controls\Debug\controls.lib /nologo /subsystem:windows /debug /machine:I386 /out:"Debug/mp3tagger.exe" /pdbtype:sept
+# ADD LINK32 ..\..\3rdparty\id3lib-3.8.2\libprj\Debug\id3libD.lib ..\..\3rdparty\id3lib-3.8.2\zlib\prj\Debug\zlibD.lib ..\..\util\Debug\util.lib ..\..\TestHarness\Debug\TestHarness.lib ..\id3libutils\Debug\id3utils.lib ..\..\browzer\controls\Debug\controls.lib /nologo /subsystem:windows /debug /machine:I386 /out:"DebugBC/mp3tagger.exe" /pdbtype:sept
+
 !ENDIF 
 
 # Begin Target
 
 # Name "id3tagger - Win32 Release"
 # Name "id3tagger - Win32 Debug"
+# Name "id3tagger - Win32 DebugBC"
 # Begin Group "Source Files"
 
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"

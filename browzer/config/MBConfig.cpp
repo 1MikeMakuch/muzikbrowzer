@@ -7,7 +7,7 @@
 #include "ConfigFonts.h"
 #include "ConfigIrman.h"
 #include "ConfigFiles.h"
-//#include "ConfigPassword.h"
+#include "ConfigPassword.h"
 #include "irman_registry.h"
 #include "MyString.h"
 
@@ -40,7 +40,9 @@ MBConfig::~MBConfig()
     if (m_Irman) delete m_Irman;
     if (m_Fonts) delete m_Fonts;
     if (m_Colors) delete m_Colors;
-//	if (m_Password) delete m_Password;
+#ifdef MB_USING_TRIAL_MODE
+	if (m_Password) delete m_Password;
+#endif
 }
 
 void
@@ -49,13 +51,17 @@ MBConfig::init() {
     m_Colors = new CConfigColors(m_CWnd);
     m_Files = new CConfigFiles(m_PlayerDlg);
     m_Fonts = new CConfigFonts(m_CWnd);
-//	m_Password = new CConfigPassword(m_CWnd);
+#ifdef MB_USING_TRIAL_MODE
+	m_Password = new CConfigPassword(m_CWnd);
+#endif
 
     AddPage(m_Files);
     AddPage(m_Irman);
     AddPage(m_Fonts);
     AddPage(m_Colors);
-//	AddPage(m_Password);
+#ifdef MB_USING_TRIAL_MODE
+	AddPage(m_Password);
+#endif
 }
 
 BEGIN_MESSAGE_MAP(MBConfig, CPropertySheet)
@@ -137,7 +143,7 @@ void MBConfig::setRegistry(const CString & key, const CString & value) {
 	RegistryKey reg( HKEY_LOCAL_MACHINE, RegKey );
 	reg.Write((LPCTSTR)key, (LPCTSTR)value);
 }
-//int MBConfig::trialMode() { return m_Password->trialMode(); }
+int MBConfig::trialMode() { return m_Password->trialMode(); }
 
 BOOL MBConfig::HelpInfo() {
     TCHAR szPath[_MAX_PATH],

@@ -4,7 +4,7 @@
 
 # TARGTYPE "Win32 (x86) Application" 0x0101
 
-CFG=MBPWDLG - WIN32 DEBUG
+CFG=mbpwDlg - Win32 DebugBC
 !MESSAGE This is not a valid makefile. To build this project using NMAKE,
 !MESSAGE use the Export Makefile command and run
 !MESSAGE 
@@ -13,12 +13,13 @@ CFG=MBPWDLG - WIN32 DEBUG
 !MESSAGE You can specify a configuration when running NMAKE
 !MESSAGE by defining the macro CFG on the command line. For example:
 !MESSAGE 
-!MESSAGE NMAKE /f "mbpwDlg.mak" CFG="MBPWDLG - WIN32 DEBUG"
+!MESSAGE NMAKE /f "mbpwDlg.mak" CFG="mbpwDlg - Win32 DebugBC"
 !MESSAGE 
 !MESSAGE Possible choices for configuration are:
 !MESSAGE 
 !MESSAGE "mbpwDlg - Win32 Release" (based on "Win32 (x86) Application")
 !MESSAGE "mbpwDlg - Win32 Debug" (based on "Win32 (x86) Application")
+!MESSAGE "mbpwDlg - Win32 DebugBC" (based on "Win32 (x86) Application")
 !MESSAGE 
 
 # Begin Project
@@ -83,12 +84,42 @@ LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
 # ADD LINK32 ..\util\Debug\util.lib ..\TestHarness\Debug\TestHarness.lib ..\md5\Debug\md5.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
 
+!ELSEIF  "$(CFG)" == "mbpwDlg - Win32 DebugBC"
+
+# PROP BASE Use_MFC 5
+# PROP BASE Use_Debug_Libraries 1
+# PROP BASE Output_Dir "mbpwDlg___Win32_DebugBC"
+# PROP BASE Intermediate_Dir "mbpwDlg___Win32_DebugBC"
+# PROP BASE Ignore_Export_Lib 0
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 5
+# PROP Use_Debug_Libraries 1
+# PROP Output_Dir "DebugBC"
+# PROP Intermediate_Dir "DebugBC"
+# PROP Ignore_Export_Lib 0
+# PROP Target_Dir ""
+# ADD BASE CPP /nologo /MTd /W3 /GX /Z7 /Od /I "..\md5" /I "..\util" /I "..\mbpw" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /FD /GZ /c
+# SUBTRACT BASE CPP /YX /Yc /Yu
+# ADD CPP /nologo /MTd /W3 /GX /Z7 /Od /I "..\md5" /I "..\util" /I "..\mbpw" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /FD /GZ /c
+# SUBTRACT CPP /YX /Yc /Yu
+# ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
+# ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
+# ADD BASE RSC /l 0x409 /d "_DEBUG"
+# ADD RSC /l 0x409 /d "_DEBUG"
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LINK32=link.exe
+# ADD BASE LINK32 ..\util\Debug\util.lib ..\TestHarness\Debug\TestHarness.lib ..\md5\Debug\md5.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
+# ADD LINK32 ..\util\Debug\util.lib ..\TestHarness\Debug\TestHarness.lib ..\md5\Debug\md5.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
+
 !ENDIF 
 
 # Begin Target
 
 # Name "mbpwDlg - Win32 Release"
 # Name "mbpwDlg - Win32 Debug"
+# Name "mbpwDlg - Win32 DebugBC"
 # Begin Group "Source Files"
 
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"

@@ -68,6 +68,7 @@ template <class T> class MPtrDLL {
 
 };
 
+#define __BUILDING_MPTR_H__
 #include "MPtr.cpp"
 #endif
 

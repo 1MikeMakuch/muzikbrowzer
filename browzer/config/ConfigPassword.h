@@ -73,7 +73,12 @@ public:
 	CString genHost();
 	static CString uuidEncode(const CString & u);
 	static CString uuidDecode(const CString & u);
+#ifdef MB_USING_TRIAL_MODE
 	int trialMode() { return m_TrialMode; }
+#else
+	int trialMode() { return FALSE; }
+#endif
+
 public:
 };
 

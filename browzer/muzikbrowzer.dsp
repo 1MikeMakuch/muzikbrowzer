@@ -4,7 +4,7 @@
 
 # TARGTYPE "Win32 (x86) Application" 0x0101
 
-CFG=muzikbrowzer - Win32 Debug
+CFG=muzikbrowzer - Win32 DebugBC
 !MESSAGE This is not a valid makefile. To build this project using NMAKE,
 !MESSAGE use the Export Makefile command and run
 !MESSAGE 
@@ -13,12 +13,13 @@ CFG=muzikbrowzer - Win32 Debug
 !MESSAGE You can specify a configuration when running NMAKE
 !MESSAGE by defining the macro CFG on the command line. For example:
 !MESSAGE 
-!MESSAGE NMAKE /f "muzikbrowzer.mak" CFG="muzikbrowzer - Win32 Debug"
+!MESSAGE NMAKE /f "muzikbrowzer.mak" CFG="muzikbrowzer - Win32 DebugBC"
 !MESSAGE 
 !MESSAGE Possible choices for configuration are:
 !MESSAGE 
 !MESSAGE "muzikbrowzer - Win32 Release" (based on "Win32 (x86) Application")
 !MESSAGE "muzikbrowzer - Win32 Debug" (based on "Win32 (x86) Application")
+!MESSAGE "muzikbrowzer - Win32 DebugBC" (based on "Win32 (x86) Application")
 !MESSAGE 
 
 # Begin Project
@@ -81,7 +82,38 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 Version.lib ../3rdparty/ogg/libogg-1.0/win32/Debug/ogg_static_d.lib ../oggtagger/Debug/oggtagger.lib ../3rdparty/ogg/libvorbis-1.0/win32/Debug/vorbis_static_d.lib ../3rdparty/ogg/libvorbis-1.0/win32/Debug/vorbisfile_static_d.lib rpcrt4.lib ..\3rdparty/id3lib-3.8.2\libprj\Debug\id3libD.lib ..\3rdparty/id3lib-3.8.2\zlib\prj\Debug\zlibD.lib ..\TestHarness\Debug\TestHarness.lib Help\HtmlHelp.lib strmiids.lib config\Debug\config.lib controls\Debug\controls.lib ..\id3\id3libutils\Debug\id3utils.lib irman\Debug\irman.lib Serial\Debug\Serial.lib ..\util\Debug\util.lib dxguid.lib Quartz.lib /nologo /subsystem:windows /incremental:no /debug /debugtype:both /machine:I386 /nodefaultlib:"msvcrt" /nodefaultlib:"libcmt" /nodefaultlib:"nafxcw" /out:"Debug/muzikbrowzerD.exe" /pdbtype:sept
+# ADD LINK32 Version.lib config\Debug\config.lib ../3rdparty/ogg/libogg-1.0/win32/Debug/ogg_static_d.lib ../oggtagger/Debug/oggtagger.lib ../3rdparty/ogg/libvorbis-1.0/win32/Debug/vorbis_static_d.lib ../3rdparty/ogg/libvorbis-1.0/win32/Debug/vorbisfile_static_d.lib rpcrt4.lib ..\3rdparty/id3lib-3.8.2\libprj\Debug\id3libD.lib ..\3rdparty/id3lib-3.8.2\zlib\prj\Debug\zlibD.lib ..\TestHarness\Debug\TestHarness.lib Help\HtmlHelp.lib strmiids.lib config\Debug\config.lib controls\Debug\controls.lib ..\id3\id3libutils\Debug\id3utils.lib irman\Debug\irman.lib Serial\Debug\Serial.lib ..\util\Debug\util.lib dxguid.lib Quartz.lib ..\md5\Debug\md5.lib /nologo /subsystem:windows /incremental:no /debug /debugtype:both /machine:I386 /nodefaultlib:"msvcrt" /nodefaultlib:"libcmt" /nodefaultlib:"nafxcw" /out:"Debug/muzikbrowzerD.exe" /pdbtype:sept
+# SUBTRACT LINK32 /pdb:none
+
+!ELSEIF  "$(CFG)" == "muzikbrowzer - Win32 DebugBC"
+
+# PROP BASE Use_MFC 5
+# PROP BASE Use_Debug_Libraries 1
+# PROP BASE Output_Dir "muzikbrowzer___Win32_DebugBC"
+# PROP BASE Intermediate_Dir "muzikbrowzer___Win32_DebugBC"
+# PROP BASE Ignore_Export_Lib 0
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 5
+# PROP Use_Debug_Libraries 1
+# PROP Output_Dir "DebugBC"
+# PROP Intermediate_Dir "DebugBC"
+# PROP Ignore_Export_Lib 0
+# PROP Target_Dir ""
+# ADD BASE CPP /nologo /MTd /W3 /GX /Z7 /Od /I "../" /I "../3rdparty/ogg" /I "../3rdparty/ogg/libvorbis-1.0/include" /I "../3rdparty/ogg/libogg-1.0/include" /I "c:\DXSDK\include" /I "..\3rdparty/id3lib-3.8.2\include" /I "config" /I "controls" /I "../id3/id3libutils" /I "irman" /I "../util" /I "Serial" /D ID3LIB_LINKOPTION=1 /D "TEST_HARNESS" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_WIN32_DCOM" /FR /FD /c
+# SUBTRACT BASE CPP /YX /Yc /Yu
+# ADD CPP /nologo /MTd /W3 /GX /Z7 /Od /I "../" /I "../3rdparty/ogg" /I "../3rdparty/ogg/libvorbis-1.0/include" /I "../3rdparty/ogg/libogg-1.0/include" /I "c:\DXSDK\include" /I "..\3rdparty/id3lib-3.8.2\include" /I "config" /I "controls" /I "../id3/id3libutils" /I "irman" /I "../util" /I "Serial" /D ID3LIB_LINKOPTION=1 /D "TEST_HARNESS" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_WIN32_DCOM" /FR /FD /c
+# SUBTRACT CPP /YX /Yc /Yu
+# ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
+# ADD MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
+# ADD BASE RSC /l 0x409 /d "_DEBUG"
+# ADD RSC /l 0x409 /d "_DEBUG"
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LINK32=link.exe
+# ADD BASE LINK32 Version.lib config\Debug\config.lib ../3rdparty/ogg/libogg-1.0/win32/Debug/ogg_static_d.lib ../oggtagger/Debug/oggtagger.lib ../3rdparty/ogg/libvorbis-1.0/win32/Debug/vorbis_static_d.lib ../3rdparty/ogg/libvorbis-1.0/win32/Debug/vorbisfile_static_d.lib rpcrt4.lib ..\3rdparty/id3lib-3.8.2\libprj\Debug\id3libD.lib ..\3rdparty/id3lib-3.8.2\zlib\prj\Debug\zlibD.lib ..\TestHarness\Debug\TestHarness.lib Help\HtmlHelp.lib strmiids.lib config\Debug\config.lib controls\Debug\controls.lib ..\id3\id3libutils\Debug\id3utils.lib irman\Debug\irman.lib Serial\Debug\Serial.lib ..\util\Debug\util.lib dxguid.lib Quartz.lib ..\md5\Debug\md5.lib /nologo /subsystem:windows /incremental:no /debug /debugtype:both /machine:I386 /nodefaultlib:"msvcrt" /nodefaultlib:"libcmt" /nodefaultlib:"nafxcw" /out:"Debug/muzikbrowzerD.exe" /pdbtype:sept
+# SUBTRACT BASE LINK32 /pdb:none
+# ADD LINK32 Version.lib config\DebugBC\config.lib ../3rdparty/ogg/libogg-1.0/win32/DebugBC/ogg_static_d.lib ../oggtagger/DebugBC/oggtagger.lib ../3rdparty/ogg/libvorbis-1.0/win32/DebugBC/vorbis_static_d.lib ../3rdparty/ogg/libvorbis-1.0/win32/DebugBC/vorbisfile_static_d.lib rpcrt4.lib ..\3rdparty/id3lib-3.8.2\libprj\DebugBC\id3libD.lib ..\3rdparty/id3lib-3.8.2\zlib\prj\DebugBC\zlibD.lib ..\TestHarness\DebugBC\TestHarness.lib Help\HtmlHelp.lib strmiids.lib config\Debug\config.lib controls\DebugBC\controls.lib ..\id3\id3libutils\DebugBC\id3utils.lib irman\DebugBC\irman.lib Serial\DebugBC\Serial.lib ..\util\DebugBC\util.lib dxguid.lib Quartz.lib ..\md5\DebugBC\md5.lib /nologo /subsystem:windows /incremental:no /debug /debugtype:both /machine:I386 /nodefaultlib:"msvcrt" /nodefaultlib:"libcmt" /nodefaultlib:"nafxcw" /out:"DebugBC/muzikbrowzerD.exe" /pdbtype:sept
 # SUBTRACT LINK32 /pdb:none
 
 !ENDIF 
@@ -90,6 +122,7 @@ LINK32=link.exe
 
 # Name "muzikbrowzer - Win32 Release"
 # Name "muzikbrowzer - Win32 Debug"
+# Name "muzikbrowzer - Win32 DebugBC"
 # Begin Group "Source Files"
 
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
@@ -132,6 +165,10 @@ SOURCE=.\MenuDialog.cpp
 # Begin Source File
 
 SOURCE=.\ModifyIDThree.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\MPtr.cpp
 # End Source File
 # Begin Source File
 

@@ -36,5 +36,6 @@
 #define MB_FONTCOMBO_TIMER_ID	5
 
 #define MB_TRIAL_DAYS 60
+//#define MB_USING_TRIAL_MODE
 
 #endif

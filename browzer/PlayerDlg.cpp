@@ -369,18 +369,18 @@ BOOL CPlayerDlg::OnInitDialog()
 
 	//ShowBetaWarning();
 	StartStatusTimer();
-	//	if (m_Config.trialMode() == TRUE) {
-	//		PlayerStatusTempSet("Trial Mode. Set Password in Configuration.");
-	//	}
+	if (m_Config.trialMode() == TRUE) {
+		PlayerStatusTempSet("Trial Mode. Set Password in Configuration.");
+	}
 	CString menuFunc,menuDesc;
 	irman().getDescs(IR_MESSAGE_MENU, menuFunc, menuDesc);
 	if (menuDesc == "") menuDesc = "Menu";
 	m_HelpMsg = "Press "; m_HelpMsg += menuDesc; m_HelpMsg += " for options.";
-//	if (m_Config.trialMode() == 1) {
-//		m_HelpMsg += " Trial Mode.";
-//	} else if (m_Config.trialMode() == 2) {
-//		m_HelpMsg = " Trial Expired.";
-//	}
+	if (m_Config.trialMode() == 1) {
+		m_HelpMsg += " Trial Mode.";
+	} else if (m_Config.trialMode() == 2) {
+		m_HelpMsg = " Trial Expired.";
+	}
 	PlayerStatusSet(m_HelpMsg);
 
 	m_AppLabel.load("GIF", MAKEINTRESOURCE(IDR_APPGIF));
@@ -1911,11 +1911,11 @@ void CPlayerDlg::OnMenuOptions() {
 	irman().getDescs(IR_MESSAGE_MENU, menuFunc, menuDesc);
 	if (menuDesc == "") menuDesc = "Menu";
 	m_HelpMsg = "Press "; m_HelpMsg += menuDesc; m_HelpMsg += " for options.";
-//	if (m_Config.trialMode() == 1) {
-//		m_HelpMsg += " Trial Mode.";
-//	} else if (m_Config.trialMode() == 2) {
-//		m_HelpMsg = " Trial Expired.";
-//	}
+	if (m_Config.trialMode() == 1) {
+		m_HelpMsg += " Trial Mode.";
+	} else if (m_Config.trialMode() == 2) {
+		m_HelpMsg = " Trial Expired.";
+	}
 	PlayerStatusSet(m_HelpMsg);
 }
 void
@@ -2139,13 +2139,13 @@ void CPlayerDlg::Stop() {
 }
 void CPlayerDlg::OnPlayButton() 
 {
-//	if (m_Config.trialMode() == 1) {
-//		--m_PlaylistCurrent;
-//		PlayLoop();
-//		return;
-//	} else if (m_Config.trialMode() == 2) {
-//		return;
-//	}
+	if (m_Config.trialMode() == 1) {
+		--m_PlaylistCurrent;
+		PlayLoop();
+		return;
+	} else if (m_Config.trialMode() == 2) {
+		return;
+	}
 	if (m_Player->isPlaying() == FALSE) {
         Play();
         m_StopFlag = FALSE;
@@ -2177,7 +2177,7 @@ CPlayerDlg::recordTLEN() {
 
 void CPlayerDlg::PlayLoop() {
     static int first = 1;
-//	static int trialCounter = 0;
+	static int trialCounter = 0;
     int good = 0;
     do {
         if (m_Player->isStopped()
@@ -2194,17 +2194,17 @@ void CPlayerDlg::PlayLoop() {
 
                 m_PlaylistCurrent = 0;
             }
-//			if (m_Config.trialMode() == 1) {
-//				++m_trialCounter;
-//				if (m_trialCounter > 3) {
-//					m_trialCounter = 0;
-//					PlayerStatusSet("Trial Mode Stopped. Press Play to continue.");
-//					return;
-//				}
-//			} else if (m_Config.trialMode() == 2) {
-//				PlayerStatusSet("Trial Expired.");
-//				return;
-//			}
+			if (m_Config.trialMode() == 1) {
+				++m_trialCounter;
+				if (m_trialCounter > 3) {
+					m_trialCounter = 0;
+					PlayerStatusSet("Trial Mode Stopped. Press Play to continue.");
+					return;
+				}
+			} else if (m_Config.trialMode() == 2) {
+				PlayerStatusSet("Trial Expired.");
+				return;
+			}
             m_Playlist.SetCurSel(m_PlaylistCurrent);
             CString file = m_mlib._playlist[m_PlaylistCurrent]->getId3("FILE");
 
@@ -2242,9 +2242,9 @@ void CPlayerDlg::PlayLoop() {
             msg += " / ";
             msg += m_mlib._playlist[m_PlaylistCurrent]->getId3("TIT2");
             CurrentTitleSet(msg);
-//			if (m_Config.trialMode() == 1) {
-//				PlayerStatusTempSet("Trial Mode. Set Password in Configuration.");
-//			}
+			if (m_Config.trialMode() == 1) {
+				PlayerStatusTempSet("Trial Mode. Set Password in Configuration.");
+			}
             UpdateWindow();
 
         } else {
@@ -2386,10 +2386,10 @@ void CPlayerDlg::OnContextMenu(CWnd* pWnd, CPoint ScreenPnt)
 
 void CPlayerDlg::OnUserEditSong() 
 {
-//	if (m_Config.trialMode() == 2) {
-//		MBMessageBox("Notice", "Trial Expired.");
-//		return;
-//	}
+	if (m_Config.trialMode() == 2) {
+		MBMessageBox("Notice", "Trial Expired.");
+		return;
+	}
 	ModifyIDThree *dialog;
     CString genre,artist,album,title,year,track;
     CStringList genreList;
@@ -2995,9 +2995,11 @@ void CPlayerDlg::displayAlbumArt(const CString & file) {
 
 	if (pic) {
 		m_Picture.load(data,size);
-	} else {
+//	} else {
 //		m_Picture.blank();
 	}
+	if (data)
+		delete [] data;
 
 }
 

@@ -15,7 +15,7 @@ class CConfigFiles;
 class CConfigIrman;
 class CConfigFonts;
 class CConfigColors;
-//class CConfigPassword;
+class CConfigPassword;
 /////////////////////////////////////////////////////////////////////////////
 // MBConfig
 
@@ -62,7 +62,7 @@ private:
     CConfigIrman * m_Irman;
     CConfigFonts * m_Fonts;
     CConfigColors * m_Colors;
-//	CConfigPassword * m_Password;
+	CConfigPassword * m_Password;
     COLORREF m_BKColor;
     COLORREF m_TColor;
 
@@ -76,7 +76,7 @@ public:
     CConfigIrman * irman() { return m_Irman; }
     CConfigFonts * fonts() { return m_Fonts; }
     CConfigColors * colors() { return m_Colors;}
-//	CConfigPassword * password() { return m_Password; }
+	CConfigPassword * password() { return m_Password; }
 
     LPLOGFONT getTitlesFont();
     LPLOGFONT getPanelFont();
@@ -94,7 +94,7 @@ public:
 	void setRegistry(const CString & key, const int value);
 	void getRegistry(const CString & key, CString & value);
 	void setRegistry(const CString & key, const CString & value);
-//	int trialMode();
+	int trialMode();
 
 };
 
