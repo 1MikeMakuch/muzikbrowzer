@@ -7,7 +7,7 @@
 #include "ConfigFonts.h"
 #include "ConfigIrman.h"
 #include "ConfigFiles.h"
-#include "ConfigPassword.h"
+//#include "ConfigPassword.h"
 #include "irman_registry.h"
 #include "MyString.h"
 
@@ -40,7 +40,7 @@ MBConfig::~MBConfig()
     if (m_Irman) delete m_Irman;
     if (m_Fonts) delete m_Fonts;
     if (m_Colors) delete m_Colors;
-	if (m_Password) delete m_Password;
+//	if (m_Password) delete m_Password;
 }
 
 void
@@ -49,7 +49,7 @@ MBConfig::init() {
     m_Colors = new CConfigColors(m_CWnd);
     m_Files = new CConfigFiles(m_PlayerDlg);
     m_Fonts = new CConfigFonts(m_CWnd);
-	m_Password = new CConfigPassword(m_CWnd);
+//	m_Password = new CConfigPassword(m_CWnd);
 
     AddPage(m_Files);
     AddPage(m_Irman);
@@ -129,7 +129,7 @@ void MBConfig::setRegistry(const CString & key, const CString & value) {
 	RegistryKey reg( HKEY_LOCAL_MACHINE, RegKey );
 	reg.Write((LPCTSTR)key, (LPCTSTR)value);
 }
-int MBConfig::trialMode() { return m_Password->trialMode(); }
+//int MBConfig::trialMode() { return m_Password->trialMode(); }
 
 BOOL MBConfig::HelpInfo() {
     TCHAR szPath[_MAX_PATH],

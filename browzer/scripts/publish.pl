@@ -18,6 +18,7 @@ $exefile = $exe . $exe_rev . $exe_sfx;
 $exesrc = "../Inno/Output/$exefile";
 $exedst = "/cygdrive/w/muzikbrowzer/httpdocs/dl/$exefile";
 $exedst2 = "/cygdrive/w/muzikbrowzer/httpdocs/dl/".$exe.$exe_sfx;
+$src  = "/cygdrive/w/muzikbrowzer/httpdocs/dl/muzikbrowzerSrc"."$exe_rev";
 
 # copy to www
 open(F,"<$exesrc");
@@ -34,3 +35,4 @@ open(F,">/cygdrive/w/muzikbrowzer/httpdocs/dl/current_rev");
 print F $major . '.' . $minor . '.' . $patch . "\n";
 close(F);
 
+system("cd /cygdrive/c/mkm/src/muzik/browzer/scripts; /usr/bin/bash --login /cygdrive/c/mkm/src/muzik/browzer/scripts/makezip.sh $src");

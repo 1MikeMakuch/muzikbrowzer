@@ -162,48 +162,6 @@ Package=<4>
 
 ###############################################################################
 
-Project: "mbpw"=..\md5\mbpw.dsp - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-    Begin Project Dependency
-    Project_Dep_Name md5
-    End Project Dependency
-}}}
-
-###############################################################################
-
-Project: "mbpwDlg"=..\mbpwDlg\mbpwDlg.dsp - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-    Begin Project Dependency
-    Project_Dep_Name md5
-    End Project Dependency
-}}}
-
-###############################################################################
-
-Project: "md5"=..\md5\md5.dsp - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
 Project: "muzikbrowzer"=.\muzikbrowzer.dsp - Package Owner=<4>
 
 Package=<5>
@@ -253,15 +211,6 @@ Package=<4>
     End Project Dependency
     Begin Project Dependency
     Project_Dep_Name id3
-    End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name mbpw
-    End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name mbpwDlg
-    End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name md5
     End Project Dependency
     Begin Project Dependency
     Project_Dep_Name mydiff

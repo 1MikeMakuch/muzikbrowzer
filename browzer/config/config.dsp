@@ -103,10 +103,6 @@ SOURCE=.\ConfigIrman.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\ConfigPassword.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\MBConfig.cpp
 # End Source File
 # Begin Source File
