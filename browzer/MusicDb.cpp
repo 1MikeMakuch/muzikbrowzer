@@ -1307,7 +1307,7 @@ MusicLib::RandomizePlaylist() {
         newplaylist.remove(newplaylist.head());
     }
 }
-
+#ifdef asdf
 void
 MusicLib::shufflePlaylist() {
     int n = _playlist.size();
@@ -1318,6 +1318,53 @@ MusicLib::shufflePlaylist() {
     for (i = 0; i < n; ++i) {
         Song song = _playlist[i];
         CString artist = song->getId3("TPE1");
+        if (map.Lookup(artist, (CObject *&) list) == 0) {
+            list = new CStringList;
+            map.SetAt(artist, list);
+//            delete list;
+        }
+        sprintf(buf, "%d", i);
+        CString spos = buf;
+        list->AddTail(spos);
+    }
+
+    Playlist newplaylist;
+    POSITION pos;
+    CString artist;
+    pos = map.GetStartPosition();
+    while (pos != NULL) {
+        map.GetNextAssoc(pos, artist, (CObject *&)list);
+
+        if (list->IsEmpty()) {
+            map.RemoveKey((LPCTSTR)artist);
+            delete list;
+        } else {
+            CString mappos = list->RemoveHead();
+            int ppos = atoi((LPCTSTR)mappos);
+            Song song = _playlist[ppos];
+            newplaylist.append(song);
+        }
+        if (pos == NULL) {
+            pos = map.GetStartPosition();
+        }
+    }
+    _playlist.reset();
+    while (newplaylist.head()) {
+        _playlist.append(newplaylist.head()->_item);
+        newplaylist.remove(newplaylist.head());
+    }
+}
+#endif
+void
+MusicLib::shufflePlaylist() {
+    int n = _playlist.size();
+    int i;
+    char buf[100];
+    CMapStringToOb map;
+    CStringList *list;
+    for (i = 0; i < n; ++i) {
+        Song song = _playlist[i];
+        CString artist = song->getId3("TALB");
         if (map.Lookup(artist, (CObject *&) list) == 0) {
             list = new CStringList;
             map.SetAt(artist, list);
