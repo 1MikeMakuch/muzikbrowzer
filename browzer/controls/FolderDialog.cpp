@@ -27,7 +27,8 @@ static int CALLBACK BrowseDirectoryCallback(
 	return 0;
 }
 
-CFolderDialog::CFolderDialog(LPCTSTR lpszFolderName, DWORD dwFlags, CWnd* pParentWnd)
+CFolderDialog::CFolderDialog(LPCTSTR lpszFolderName, 
+							 DWORD dwFlags, CWnd* pParentWnd)
 {
 	// Use the supplied initial folder if non-null.
 	if (lpszFolderName == NULL)

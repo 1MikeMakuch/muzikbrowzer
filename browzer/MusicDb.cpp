@@ -418,6 +418,11 @@ MusicLib::loadPlaylist(const CString & name, CString & error_msg) {
             song = p;
             p += song.GetLength()+1;
 
+			// First get to the eol
+            while ((p < buf.p + myFile.GetLength())
+                && (p[0] != '\r' && p[0] != '\n'))
+                p++;
+			// Now skip past any extra crlf's
             while ((p < buf.p + myFile.GetLength())
                 && (p[0] == '\r' || p[0] == '\n'))
                 p++;
@@ -1287,6 +1292,10 @@ MusicLib::savePlaylist(Playlist & playlist, const CString & file) {
 		buf += (char)0;
 		buf += p->_item->getId3("TIT2");
 		buf += (char)0;
+//#ifdef _DEBUG
+		buf += p->_item->getId3("FILE");
+		buf += (char)0;
+//#endif
         buf += "\n";
     }
     myFile.Write(buf,buf.GetLength());
