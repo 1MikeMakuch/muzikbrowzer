@@ -1,0 +1,654 @@
+/******************************************************************************
+
+ IR unit interface
+
+ This is a thin layer between the serial port and the knowledge of IR key
+ presses. It performs no buffering other than that provided by the underlying
+ COM port, and merely queues up sequences of 6 characters before translating
+ them to an index into a vector.
+
+ Note that the COM port is not opened until the first read, so that potential
+ hangs occur in the separate thread.
+
+                     Copyright 1999 Gavin Smyth
+                http://www.beesknees.freeserve.co.uk
+
+******************************************************************************/
+#include "StdAfx.h"
+#include "irman_common.h"
+#include "irman.h"
+#include "irman_registry.h"
+#include <io.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include "MyLog.h"
+#include "MBMessageBox.h"
+#include "MyString.h"
+#include "Misc.h"
+
+// Registry keys
+const static TCHAR RegPort[] = _T( "Port" );
+const static TCHAR RegDelay[] = _T( "InterKeyDelay" );
+
+Irman::Irman() {}
+
+BOOL
+Irman::init( const TCHAR * regKey_, int numKeys_, CWnd * wndMsgHndlr) {
+	regKey = regKey_ ;
+	numKeys = numKeys_ ;
+	keyCodes = new KeyCode[ numKeys_ ];
+	keyTime = GetTickCount( );
+	setKey = -1 ;
+	m_bPortReady = FALSE ;
+	m_portSet = FALSE;
+	m_ready = FALSE;
+	m_wndMsgHndlr = wndMsgHndlr;
+	m_sComPort[0] = 0;
+	m_fifo = new CodeFifo [ 50 ] ;
+
+    // Read the port name, inter key delay and all the key codes from
+    // the registry, and then fire up the device
+    RegistryKey reg( HKEY_LOCAL_MACHINE, regKey );
+	TCHAR comPort[5];
+    reg.Read( RegPort, comPort, sizeof( comPort ) / sizeof( TCHAR ),
+              _T( "x" ) );
+	if (comPort[0] != 'x') {
+		Port(comPort);
+	}
+    interKeyDelay = reg.Read( RegDelay, 100 );
+    static KeyCode blankKeyCode;
+	memset(&blankKeyCode, 0, sizeof(KeyCode));
+    for ( int i = 0; i < numKeys; ++i ) {
+        TCHAR num[ 16 ];
+		TCHAR desc[20];
+        memset(keyCodes[i].code, 0, 6);
+        memset(keyCodes[i].desc, 0, 21);
+        wsprintf( num, _T( "%03d" ), i );
+		wsprintf( desc, _T( "%03d_desc"), i);
+        char code[6];
+        TCHAR descd[50];
+        reg.Read(num, (void*)code, sizeof(code), blankKeyCode.code);
+        reg.Read(desc, descd, sizeof(descd), blankKeyCode.desc);
+        strcpy((char*)keyCodes[i].code, code);
+        strcpy((char*)keyCodes[i].desc, descd);
+    }
+    // Don't open the port yet in case it hangs...
+	return TRUE;
+}
+
+CString
+Irman::code(int i) {
+	CString code;
+	char buf[13];
+	sprintf(buf, "%02X%02X%02X%02X%02X%02X",
+		keyCodes[i].code[0], keyCodes[i].code[1], keyCodes[i].code[2],
+		keyCodes[i].code[3], keyCodes[i].code[4], keyCodes[i].code[5]);
+	buf[12] = 0;
+	code = buf;
+	return code;
+}
+
+Irman::~Irman( ) {
+
+    // Close everything down, and write back to the registry
+    Close( );
+    delete[] keyCodes;
+	delete [] m_fifo;
+}
+void
+Irman::SaveKeys() {
+    RegistryKey reg( HKEY_LOCAL_MACHINE, regKey );
+    reg.Write( RegPort, m_sComPort );
+    reg.Write( RegDelay, interKeyDelay );
+    for ( int i = 0; i < numKeys; ++i ) {
+        TCHAR num[ 16 ];
+		TCHAR desc[21];
+        wsprintf( num, _T( "%03d" ), i );
+		wsprintf(desc, _T("%03d_desc"), i);
+        reg.Write( num, (void*)keyCodes[ i ].code,
+						(unsigned long)sizeof( keyCodes[i].code ) );
+		reg.Write(desc, keyCodes[i].desc);
+    }
+
+}
+
+bool Irman::Open( ) {
+	if (ready())
+		return TRUE;
+
+    if (m_sComPort == 0 || strlen(m_sComPort) < 1) {
+        return false;
+    }
+    const TCHAR * error = _T( "Error opening device" );
+
+	CSerialMFC::EPort e = CSerialMFC::CheckPort(m_sComPort);
+	if (e != CSerialMFC::EPortAvailable) {
+		CString msg;
+		msg << m_sComPort << " " << m_serial.EPortError(e);
+		MBMessageBox("serial i/o error", msg);
+		return false;
+	}
+	
+	LONG o = m_serial.Open(m_sComPort, m_wndMsgHndlr, MB_SERIAL_MESSAGE );
+	if (o != ERROR_SUCCESS) {
+		CString msg;
+		msg << "unable to open " << m_sComPort << " error ["
+			<< o << "] " << MBFormatError(o);
+		MBMessageBox("serial i/o error", msg);
+		return false;
+	}
+	
+	o = m_serial.Setup(CSerial::EBaud9600,CSerial::EData8,
+		CSerial::EParNone,CSerial::EStop1);
+	if (o != ERROR_SUCCESS) {
+		CString msg;
+		msg << "unable to Setup " << m_sComPort << " error ["
+			<< o << "] " << MBFormatError(o);
+		MBMessageBox("serial i/o error", msg);
+		return false;
+	}
+
+	o = m_serial.SetupHandshaking(CSerial::EHandshakeOff);
+	if (o != ERROR_SUCCESS) {
+		CString msg;
+		msg << "unable to Setup HandshakeOff " << m_sComPort << " error ["
+			<< o << "] " << MBFormatError(o);
+		MBMessageBox("serial i/o error", msg);
+		return false;
+	}
+	o = m_serial.SetupReadTimeouts(CSerial::EReadTimeoutNonblocking);
+	if (o != ERROR_SUCCESS) {
+		CString msg;
+		msg << "unable to Setup TimeoutNonblocking" << m_sComPort << " error ["
+			<< o << "] " << MBFormatError(o);
+		MBMessageBox("serial i/o error", msg);
+		return false;
+	}
+	
+	if (PowerOff( ) == FALSE)
+		return FALSE;
+	Sleep( 200 );
+	if (PowerOn( ) == FALSE)
+		return FALSE;
+
+	Sleep( 100 );	// Time for the output to settle
+	Flush( );		// Remove power up garbage
+	
+	m_serial.Write("I"); // These strings must be ASCII, not Unicode
+	Sleep( 2 );			 // Need to have >500us between the 'I' & the 'R'
+	m_serial.Write("R");
+	m_OKreceived = 0;
+
+	// Need to check that we receive "OK" back from Irman
+
+	return TRUE;
+
+
+	//	char data[ 2 ];
+	//
+	//	if ( ReadWait( data, 2 ) && data[ 0 ] == 'O' && data[ 1 ] == 'K' ) {
+	//		//                    logger.log( "after1 ReadWait Irman good, got OK!" );
+	//		ready(TRUE);
+	//		return true;
+	//	} else {
+	//		ready(FALSE);
+	//		//                    logger.log( "after ReadWait Irman not responding" );
+	//		MessageBox( NULL, _T( "Irman not responding!" ), error,
+	//			MB_ICONEXCLAMATION | MB_OK );
+	//	}
+	//	
+	//	m_bPortReady = TRUE;	
+	//
+	//    // To get this far, something must have gone wrong
+	//    Close( );
+	//    return false;
+}
+
+void
+Irman::Close( ) {
+	m_serial.Close();
+	ready(FALSE);
+}
+void
+Irman::Port( const TCHAR * comPort ) {
+    _tcsnccpy( m_sComPort, comPort, sizeof( m_sComPort ) / sizeof( TCHAR ) );
+    m_sComPort[ sizeof( m_sComPort ) / sizeof( TCHAR ) - 1 ] = 0;
+
+    // Reopen the port if the name changed - I could have checked the new
+    // and old names and if they were the same, skip the reopen. However,
+    // this way, I can force a recover from a "stuck" I/O port...
+    Close( );
+    if (comPort == NULL || strlen(comPort) == 0) {
+        m_portSet = FALSE;
+    } else {
+	    m_portSet = TRUE;
+    }
+}
+
+void
+Irman::SetKey( int key ) {
+	//    if ( m_hCom == INVALID_HANDLE_VALUE ) {
+	//        MessageBox( NULL, _T( "COM port not valid - can't configure" ),
+	//                    _T( "IR Configuration Error" ),
+	//                    MB_ICONEXCLAMATION | MB_OK );
+	//        return ;
+	//    }
+    if ( key < 0 || key > numKeys ) {
+        return ;
+    }
+    // Just indicate to the reading function that it should store the next
+    // sequence instead of matching it
+    setKey = key;
+}
+
+//int
+//Irman::Key( ) {
+////    if ( m_hCom == INVALID_HANDLE_VALUE && !Open( ) )
+//        return -1;
+//
+//    // The Irman reports a number of sequences for each key - chuck away
+//    // old ones before reading the next key.
+//    Flush( );
+//    KeyCode key;
+//
+//    // Loop for a minimum time, to get rid of old duplicate/inverted messages
+//    unsigned long
+//    startTime = keyTime;
+//
+//    do {
+//        if ( !Read( key ) )
+//            return -1;
+//    } while ( keyTime - startTime < interKeyDelay );
+//
+//    // Now, key contains a valid code sequence, so do something with it
+//    if ( setKey != -1 ) {
+//
+//        // If we're in record mode, just use this sequence for the relevant
+//        // entry in keyCodes[]
+//        keyCodes[ setKey ] = key;
+//        int
+//        retVal = setKey;
+//        setKey = -1;
+//        return retVal;
+//    }
+//    else {
+//
+//        // If we're not in record mode, scan the list to find a match,
+//        // and repeat for up to the inter key period before giving up and
+//        // admitting it's unrecognised - the reason for the loop is to
+//        // catch any inversions along the way
+//        startTime = keyTime;
+//
+//        do {
+//            for ( int i = 0; i < numKeys; ++i )
+//                if ( key == keyCodes[ i ] )
+//                    return i;
+//            if ( !Read( key ) )
+//                return -1;
+//        } while ( GetTickCount( ) - startTime < interKeyDelay );
+//        return -1;				// No key found
+//    }
+//}
+
+//bool Irman::Read( KeyCode & key ) {
+//    bool
+//    success =
+//        ReadWait( key.code, sizeof( key.code ) );
+//
+//    //# ifdef VERBOSE
+//    if ( success ) {
+//        TCHAR
+//        buff[ 40 ];
+//        wsprintf( buff, "Code %02X %02X %02X %02X %02X %02X\n", key.code[ 0 ],
+//                  key.code[ 1 ], key.code[ 2 ], key.code[ 3 ], key.code[ 4 ],
+//                  key.code[ 5 ] );
+//        OutputDebugString( buff );
+//    }
+//    //# endif
+//    keyTime = GetTickCount( );
+//    return success;
+//}
+
+void
+Irman::Interrupt( ) {
+
+    // On NT or 98, this should use CancelIo, but that function isn't present
+    // on 95, so bodge it by signalling the event...
+    // CancelIo( m_hCom );
+    //  SetEvent( ioCompletion );
+}
+
+// It's a bit of a shame that there is some much code repetition in reading
+// and writing. I did experiment with a common function into which I passed
+// a pointer to either ReadFile or WriteFile, but C++'s type system confounded
+// that by making it impossible to write legal code that would cope with the
+// const arguments of WriteFile vs the non-const ones of ReadFile.
+
+//bool Irman::ReadWait( void *data, unsigned long size ) {
+////    if ( m_hCom == INVALID_HANDLE_VALUE )
+//        return false;
+//
+//    //  OVERLAPPED ov;
+//    //  ZeroMemory( &ov, sizeof( ov ) );
+//    //  ov.hEvent = ioCompletion;
+//
+//    // If ReadFile doesn't succeed, but the error is ERROR_IO_PENDING, we
+//    // just wait for the operation to complete.
+//    char *
+//    p = ( char * ) data;
+//    DWORD length;
+//    const TCHAR * error = _T( "ReadFile error" );
+////    bReadRC = ReadFile( m_hCom, data, size, &length, NULL );
+//
+//    //      if (bReadRC != 0 && length == 0) {
+//    //              char buf[100];
+//    //              sprintf(buf, "%d", GetLastError());
+//    //              MessageBox( NULL, buf, error, MB_ICONEXCLAMATION | MB_OK );
+//    //      }
+//    return size == length;
+//}
+
+// The ReadFile function returns when one of the following is true: a write
+// operation completes on the write end of the pipe, the number of bytes
+// requested has been read, or an error occurs.
+//
+// If the function succeeds, the return value is nonzero.
+//
+// If the return value is nonzero and the number of bytes read is zero, the
+// file pointer was beyond the current end of the file at the time of the
+// read operation. However, if the file was opened with FILE_FLAG_OVERLAPPED
+// and lpOverlapped is not NULL, the return value is FALSE and GetLastError
+// returns ERROR_HANDLE_EOF when the file pointer goes beyond the current
+// end of file.
+//
+// If the function fails, the return value is zero. To get extended error
+// information, call GetLastError.
+
+// Very similar to ReadWait...
+//bool Irman::WriteWait( const void *data, unsigned long size ) {
+////    if ( m_hCom == INVALID_HANDLE_VALUE )
+//        return false;
+//    DWORD
+//    length;
+////    bWriteRC = WriteFile( m_hCom, data, size, &length, NULL );
+//    const TCHAR *
+//    error =
+//        _T( "WriteFile error" );
+//    if ( bWriteRC != 0 && length == 0 ) {
+//        char
+//        buf[ 100 ];
+//        sprintf( buf, "%d", GetLastError( ) );
+//        MessageBox( NULL, buf, error, MB_ICONEXCLAMATION | MB_OK );
+//    }
+//    return size == length;
+//}
+
+// Power the Irman device by twiddling the control lines
+BOOL
+Irman::PowerOff( ) {
+	BOOL o = m_serial.EscapeCommFunction(CLRDTR);
+	if (o == FALSE) {
+		DWORD e = GetLastError();
+		CString msg;
+		msg << "unable to CLRDTR Irman " << m_sComPort << " error ["
+			<< e << "] " << MBFormatError(e);
+		MBMessageBox("serial i/o error", msg);
+		return FALSE;
+	}
+	o = m_serial.EscapeCommFunction(CLRRTS);
+	if (o == FALSE) {
+		DWORD e = GetLastError();
+		CString msg;
+		msg << "unable to CLRRTS Irman " << m_sComPort << " error ["
+			<< e << "] " << MBFormatError(e);
+		MBMessageBox("serial i/o error", msg);
+		return FALSE;
+	}
+	return TRUE;
+}
+
+BOOL
+Irman::PowerOn( ) {
+//    Verify( EscapeCommFunction( m_hCom, SETDTR ) );
+//    Verify( EscapeCommFunction( m_hCom, SETRTS ) );
+	BOOL o = m_serial.EscapeCommFunction(SETDTR);
+	if (o == FALSE) {
+		DWORD e = GetLastError();
+		CString msg;
+		msg << "unable to SETDTR Irman " << m_sComPort << " error ["
+			<< e << "] " << MBFormatError(e);
+		MBMessageBox("serial i/o error", msg);
+		return FALSE;
+	}
+	o = m_serial.EscapeCommFunction(SETRTS);
+	if (o == FALSE) {
+		DWORD e = GetLastError();
+		CString msg;
+		msg << "unable to SETRTS Irman " << m_sComPort << " error ["
+			<< e << "] " << MBFormatError(e);
+		MBMessageBox("serial i/o error", msg);
+		return FALSE;
+	}
+	return TRUE;
+}
+
+// Throw away anything in the COM port buffers, and set the ignore time
+// to start from now.
+BOOL
+Irman::Flush( ) {
+	//    Verify( PurgeComm
+	//            ( m_hCom,
+	//              PURGE_TXABORT | PURGE_RXABORT | PURGE_TXCLEAR |
+	//              PURGE_RXCLEAR ) );
+
+	LONG e = m_serial.Purge();
+	if (e != ERROR_SUCCESS) {
+		CString msg;
+		msg << "unable to PurgeComm " << m_sComPort << " error ["
+			<< e << "] " << MBFormatError(e);
+		MBMessageBox("serial i/o error", msg);
+		return false;
+	}
+	keyTime = GetTickCount( );
+	return TRUE;
+}
+
+#ifdef asdf
+int
+Irman::HandleSerialMsg(WPARAM wParam, LPARAM lParam) {
+   
+	const CSerialMFC::EEvent eEvent = CSerialMFC::EEvent(LOWORD(wParam));
+    const CSerialMFC::EError eError = CSerialMFC::EError(HIWORD(wParam));
+	char buf[100];
+
+    switch (eEvent)
+    {
+    case CSerialMFC::EEventRecv: {
+		DWORD bytesRead;
+		KeyCode key;
+		do
+		{
+			// Read data from the COM-port
+			bytesRead = 0;
+			m_serial.Read(key.code, sizeof(key.code), &bytesRead);
+			if (bytesRead) {
+				unsigned int i; unsigned char ch;
+				CString received;
+				for (i = 0 ; i < bytesRead; ++i) {
+					ch = key.code[i];
+					sprintf(buf, "%02x ", ch);
+					received += buf;
+				}
+
+				sprintf(buf,"%d", bytesRead);
+				CString msg = "R:";
+				msg += buf;
+				msg += " ";
+				msg += received + "\r\n";
+				OutputDebugString(msg);
+			}
+			if (bytesRead == 6) {
+				return lookup(key);
+			} else if (m_OKreceived == 0) {
+				if (bytesRead == 2 && key.code[0] == 'O'
+						&& key.code[1] == 'K') {
+					m_OKreceived = 1;
+					m_ready = TRUE;
+				}
+			}
+		} while (bytesRead == sizeof(key.code));
+        break; 
+	}
+	default:
+		sprintf(buf,"%d", eEvent);
+		CString msg = "eEvent: ";
+		msg += buf;
+		OutputDebugString(msg);
+    }
+	return -1;
+}
+#endif
+
+
+int
+Irman::HandleSerialMsg(WPARAM wParam, LPARAM lParam, int & code) {
+
+	static int nextFifo = 0;
+	static int retrieveFifo = 0;
+	static DWORD lastTick = 0;
+	static DWORD tick = 0;
+	BOOL more = FALSE;
+	code = -1;
+	CString msg;
+
+//	if (nextFifo == 0) {
+		const CSerialMFC::EEvent eEvent = CSerialMFC::EEvent(LOWORD(wParam));
+		const CSerialMFC::EError eError = CSerialMFC::EError(HIWORD(wParam));
+		char buf[100];
+
+		//		switch (eEvent)
+		//		{
+		//		case CSerialMFC::EEventRecv: {
+			DWORD bytesRead;
+			KeyCode key;
+			do
+			{
+				// Read data from the COM-port
+				bytesRead = 0;
+				m_serial.Read(key.code, sizeof(key.code), &bytesRead);
+				tick = GetTickCount();
+				if (bytesRead) {
+					unsigned int i; unsigned char ch;
+					CString received;
+					for (i = 0 ; i < bytesRead; ++i) {
+						ch = key.code[i];
+						sprintf(buf, "%02x ", ch);
+						received += buf;
+					}
+					sprintf(buf,"%03d bytes, % 15d tick diff ",
+						bytesRead, tick-lastTick);
+					msg = CS("R:") + CS(buf) + CS(" ") + received + CS(" ");
+					if (bytesRead == 6) {
+						code = lookup(key);
+						if (code != -1) {
+							CString desc = getKeyDesc(code);
+							if (tick - lastTick > interKeyDelay) {
+								lastTick = tick;
+								m_fifo[nextFifo].code = code;
+								m_fifo[nextFifo].tick = tick;
+								++nextFifo;
+								msg += desc + " queued up";
+							} else {
+								code = -1;
+								msg += desc + CS(" ignore / interKeyDelay:");
+								msg += interKeyDelay;
+							}
+						} else {
+							msg += "unknown sequence";
+						}
+					} else if (m_OKreceived == 0 && bytesRead == 2
+							&& key.code[0] == 'O' && key.code[1] == 'K') {
+						m_OKreceived = 1;
+						m_ready = TRUE;
+						msg += "OK";
+					}
+					msg += "\r\n";
+					OutputDebugString(msg);
+				}
+			} while (bytesRead == sizeof(key.code));
+			//			break;
+			//		}
+			//		default:
+			//			sprintf(buf,"%d", eEvent);
+			//			CString msg = "eEvent: ";
+			//			msg += buf;
+			//			OutputDebugString(msg);
+			//		}
+//	}
+
+	if (nextFifo) {
+		code = m_fifo[retrieveFifo].code;
+		++retrieveFifo;
+		more = TRUE;
+		if (retrieveFifo == nextFifo) {
+			retrieveFifo = nextFifo = 0;
+			more = FALSE;
+		}
+	}
+	return more;
+}
+
+int
+Irman::lookup(KeyCode key) {
+
+	int theKey = -1;
+	CString msg;
+
+    // Loop for a minimum time, to get rid of old duplicate/inverted messages
+	//	lastKeyTime = keyTime;
+	//    keyTime = GetTickCount();
+	//	if (keyTime - lastKeyTime < interKeyDelay) {
+	//		msg = "ignoring key within interKeyDelay\r\n";
+	//		OutputDebugString(msg);
+	//		return theKey;
+	//	}
+
+    // Now, key contains a valid code sequence, so do something with it
+    if ( setKey != -1 ) {
+
+        // If we're in record mode, just use this sequence for the relevant
+        // entry in keyCodes[]
+        keyCodes[ setKey ] = key;
+        theKey = setKey;
+        setKey = -1;
+		return theKey;
+    } else {
+
+        // If we're not in record mode, scan the list to find a match,
+        // and repeat for up to the inter key period before giving up and
+        // admitting it's unrecognised - the reason for the loop is to
+        // catch any inversions along the way
+
+        for ( int i = 0; i < numKeys; ++i ) {
+            if ( key == keyCodes[ i ] ) {
+                theKey = i;
+				break;
+			}
+		}
+    }
+
+//	msg << "invoking callback on " << theKey << CString("\r\n");
+//	OutputDebugString(msg);
+	return theKey;
+
+	if (theKey == -1) {
+		CString msg;
+		msg << "Unrecognized code received from Irman.";
+		MBMessageBox("serial i/o error", msg);
+	} else {
+		(*m_irmanCallback)(theKey, 0);
+	}
+}

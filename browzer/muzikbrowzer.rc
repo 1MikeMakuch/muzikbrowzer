@@ -1,0 +1,810 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#endif\r\n"
+    "#include ""res\\MfcPlayer.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""         // Standard components\r\n"
+    "#endif\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_MBLOGO              ICON    DISCARDABLE     "res\\app_icon1_iconwkshp.ico"
+IDI_MBLOGO3             ICON    DISCARDABLE     "res\\mblogo3.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOG DISCARDABLE  0, 0, 267, 175
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About muzikbrowzer"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CTEXT           "Copyright (C) 2001 Pecan Ventures, LLC",IDC_STATIC,67,
+                    20,133,8
+    DEFPUSHBUTTON   "OK",IDOK,115,155,32,14,WS_GROUP
+    CTEXT           "",IDC_HYPERLINK,71,35,125,8
+    GROUPBOX        "Credits",IDC_STATIC,5,50,255,100
+    LTEXT           "Id3lib - www.id3lib.org",IDC_STATIC,40,60,115,8
+    LTEXT           "Inno installer Copyright (C) 1997-2002 Jordan Russell. All rights reserved. www.jrsoftware.org",
+                    IDC_STATIC,40,75,180,19
+    EDITTEXT        IDC_PRODVERSION,28,5,210,12,ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_READONLY | NOT WS_BORDER
+    LTEXT           "Microsoft Directx - muzikbrowzer relies upon MS DirectX for mp3 decoding. muzikbrowzer is not distributed with any mp3 decoding nor encoding technology of any kind.",
+                    IDC_STATIC,40,100,180,25
+    LTEXT           "Ogg Vorbis www.xiph.org",IDC_STATIC,40,135,180,8
+END
+
+IDD_PLAYER_DIALOG DIALOGEX 0, 0, 401, 282
+STYLE WS_POPUP | WS_THICKFRAME
+EXSTYLE WS_EX_APPWINDOW
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    LISTBOX         IDC_GENRES,30,70,51,42,LBS_SORT | LBS_OWNERDRAWFIXED | 
+                    LBS_HASSTRINGS | LBS_NOINTEGRALHEIGHT | WS_TABSTOP
+    LISTBOX         IDC_ARTISTS,86,70,159,42,LBS_SORT | LBS_OWNERDRAWFIXED | 
+                    LBS_HASSTRINGS | LBS_NOINTEGRALHEIGHT | WS_TABSTOP
+    LISTBOX         IDC_ALBUMS,30,131,166,40,LBS_OWNERDRAWFIXED | 
+                    LBS_HASSTRINGS | LBS_NOINTEGRALHEIGHT | WS_TABSTOP
+    LISTBOX         IDC_SONGS,205,131,140,40,LBS_OWNERDRAWFIXED | 
+                    LBS_HASSTRINGS | LBS_NOINTEGRALHEIGHT | WS_TABSTOP
+    LISTBOX         IDC_PLAYLIST,35,196,355,50,LBS_OWNERDRAWFIXED | 
+                    LBS_HASSTRINGS | LBS_NOINTEGRALHEIGHT | 
+                    LBS_WANTKEYBOARDINPUT | WS_TABSTOP
+    LTEXT           "Genres",IDC_GENRESLABEL,30,60,24,8
+    LTEXT           "Artists",IDC_ARTISTSLABEL,86,60,74,8,NOT WS_GROUP
+    LTEXT           "Albums",IDC_ALBUMSLABEL,40,116,24,8
+    LTEXT           "Songs",IDC_SONGSLABEL,205,116,21,9
+    LTEXT           "Playlist",IDC_PLAYLISTLABEL,35,182,127,8,NOT WS_GROUP
+    CONTROL         "",IDC_OPTIONS_BUTTON,"Button",BS_OWNERDRAW | BS_LEFT | 
+                    BS_TOP | BS_FLAT,55,15,59,12
+    CONTROL         "IDB_BUTTON_MINIMIZE",IDC_BUTTON_MINIMIZE,"Button",
+                    BS_OWNERDRAW | BS_FLAT,360,0,10,9
+    CONTROL         "IDB_BUTTON_MAXIMIZE",IDC_BUTTON_MAXIMIZE,"Button",
+                    BS_OWNERDRAW | BS_FLAT,373,0,10,9
+    CONTROL         "IDB_BUTTON_EXIT",IDC_BUTTON_EXIT,"Button",BS_OWNERDRAW | 
+                    BS_FLAT,387,0,10,9
+    CONTROL         "Slider1",IDC_POSITION_SLIDER,"msctls_trackbar32",
+                    TBS_BOTH | TBS_NOTICKS,45,266,49,11
+    CONTROL         "",IDC_PLAYER_STATUS,"Static",SS_SIMPLE | SS_CENTERIMAGE,
+                    245,266,105,10
+    CONTROL         "Slider1",IDC_VOLUME_SLIDER,"msctls_trackbar32",TBS_BOTH | 
+                    TBS_NOTICKS,145,266,49,11
+    CONTROL         "",IDC_POSITION_LABEL,"Static",SS_SIMPLE | 
+                    SS_CENTERIMAGE,110,266,20,10
+    CONTROL         "",IDC_VOLUME_LABEL,"Static",SS_SIMPLE | SS_CENTERIMAGE,
+                    210,266,20,10
+    CONTROL         "IDB_APP_LABEL3",IDC_APP_LABEL,"Button",BS_OWNERDRAW | 
+                    BS_CENTER | BS_VCENTER | BS_FLAT | WS_DISABLED,180,25,
+                    120,10
+    CTEXT           "",IDC_CURRENT_TITLE,40,251,345,10,SS_CENTERIMAGE | NOT 
+                    WS_GROUP
+    LTEXT           "",IDC_PICTURE_CTRL,285,66,75,55
+END
+
+IDD_INIT_DIALOG DIALOG DISCARDABLE  0, 0, 337, 96
+STYLE DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION
+CAPTION "muzikbrowzer"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CTEXT           "",IDC_INIT_LABEL,15,13,250,23,SS_CENTERIMAGE | NOT 
+                    WS_GROUP
+    LTEXT           "",IDC_INIT_STATUS,15,43,300,14,SS_CENTERIMAGE | 
+                    SS_SUNKEN | NOT WS_GROUP
+    CONTROL         "Progress1",IDC_INIT_PROGRESS,"msctls_progress32",
+                    WS_BORDER,16,66,300,14
+    PUSHBUTTON      "Abort",IDC_INIT_ABORT,274,14,41,14
+END
+
+IDD_MENU_DIALOG DIALOGEX 0, 0, 77, 180
+STYLE DS_MODALFRAME | DS_CONTROL | DS_CENTER | WS_POPUP
+EXSTYLE WS_EX_CLIENTEDGE | WS_EX_CONTROLPARENT
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    PUSHBUTTON      "Exit",IDC_PMENUEXIT,6,5,65,15
+    PUSHBUTTON      "Shuffle Playlist",IDC_PMENUSHUFFLEPLAYLIST,6,22,65,15
+    PUSHBUTTON      "Randomize Playlist",IDC_PMENURANDOMIZEPLAYLIST,6,39,65,
+                    15
+    PUSHBUTTON      "Clear Playlist",IDC_PMENUCLEARPLAYLIST,6,56,65,15
+    PUSHBUTTON      "SavePlaylist",IDC_PMENUSAVEPLAYLIST,6,73,65,15
+    PUSHBUTTON      "Load Playlist",IDC_PMENULOADPLAYLIST,6,90,65,15
+    PUSHBUTTON      "Pause",IDC_PMENUPAUSE,6,107,65,15
+    PUSHBUTTON      "Play",IDC_PMENUPLAY,6,124,65,15
+    PUSHBUTTON      "Stop",IDC_PMENUSTOP,6,141,65,15
+    PUSHBUTTON      "Help",IDC_PMENUHELP,6,158,65,15
+END
+
+IDD_SAVEPLAYLISTDIALOG DIALOG DISCARDABLE  0, 0, 186, 46
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION
+CAPTION "Name your playlist..."
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        IDC_SAVEPLAYLIST_BOX,19,14,96,15
+    DEFPUSHBUTTON   "OK",IDOK,129,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,129,24,50,14
+END
+
+IDD_LOADPLAYLISTDLG DIALOG DISCARDABLE  0, 0, 323, 234
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION
+CAPTION "Load Playlist"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LISTBOX         IDC_PLAYLIST_NAMES,7,3,74,177,LBS_SORT | 
+                    LBS_OWNERDRAWFIXED | LBS_HASSTRINGS | 
+                    LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    LISTBOX         IDC_PLAYLIST_SONGS,85,3,231,177,LBS_OWNERDRAWFIXED | 
+                    LBS_HASSTRINGS | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | 
+                    WS_HSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Exit",IDC_PLAYLIST_CANCEL,233,185,30,12,NOT WS_TABSTOP
+    PUSHBUTTON      "Delete",IDC_PLAYLIST_DELETE,146,185,30,12,NOT 
+                    WS_TABSTOP
+    PUSHBUTTON      "Load",IDC_PLAYLIST_LOAD,59,185,30,12,NOT WS_TABSTOP
+    LTEXT           "",IDC_GAAS,7,203,309,24,WS_BORDER
+END
+
+IDD_ID3TAG_DIALOG DIALOG DISCARDABLE  0, 0, 283, 172
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Modify Audio Tag"
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        IDC_EDIT_ARTIST,170,55,104,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_ALBUM,170,75,104,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_YEAR,170,95,104,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_TRACK,170,135,104,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_TITLE,170,115,104,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "Cancel",IDCANCEL,116,156,50,14
+    DEFPUSHBUTTON   "OK",IDOK,191,156,50,14
+    LTEXT           "Audio Tag",IDC_STATIC,127,0,41,10
+    LTEXT           "Genre",IDC_STATIC,10,35,20,8
+    LTEXT           "Artist",IDC_STATIC,10,55,20,8
+    LTEXT           "Album",IDC_STATIC,10,75,20,8
+    LTEXT           "Title",IDC_STATIC,10,115,20,8
+    LTEXT           "Track#",IDC_STATIC,10,135,25,8
+    LTEXT           "Year",IDC_STATIC,10,95,20,8
+    LTEXT           "",IDC_OLDGENRE,55,35,104,15,WS_BORDER
+    LTEXT           "",IDC_OLDARTIST,55,55,104,15,WS_BORDER
+    LTEXT           "",IDC_OLDALBUM,55,75,104,15,WS_BORDER
+    LTEXT           "",IDC_OLDYEAR,55,95,104,15,WS_BORDER
+    LTEXT           "",IDC_OLDTITLE,55,115,104,15,WS_BORDER
+    LTEXT           "",IDC_OLDTRACK,55,135,104,15,WS_BORDER
+    PUSHBUTTON      "More...",IDC_MOREID3,41,156,50,14
+    COMBOBOX        IDC_EDIT_GENRE,170,35,104,112,CBS_DROPDOWN | CBS_SORT | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "",IDC_TAG_FILE,10,10,265,21,WS_BORDER
+END
+
+IDD_ID3_DISPLAY DIALOG DISCARDABLE  0, 0, 262, 201
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Dialog"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,106,180,50,14
+    EDITTEXT        IDC_ID3_DISPLAY,8,7,245,168,ES_MULTILINE | ES_READONLY | 
+                    WS_VSCROLL | WS_HSCROLL
+END
+
+IDD_ID3MODIFY_STATUS DIALOG DISCARDABLE  0, 0, 329, 81
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Modifing Tags"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "Static",IDC_ID3MODIFY_LABEL,51,15,227,12
+    LTEXT           "Static",IDC_ID3MODIFY_STATUS,33,34,262,12
+    CONTROL         "Progress1",IDC_ID3MODIFY_PROGRESS,"msctls_progress32",
+                    WS_BORDER,33,54,262,12
+END
+
+IDD_MESSAGE_DIALOG DIALOG DISCARDABLE  0, 0, 297, 178
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDC_MESSAGEBOX_OK,124,157,50,14
+    EDITTEXT        IDC_MESSAGE_BOX,7,7,283,145,ES_MULTILINE | 
+                    ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_READONLY | 
+                    WS_VSCROLL | WS_HSCROLL
+END
+
+IDD_CONFIG_FONTS DIALOG DISCARDABLE  0, 0, 333, 181
+STYLE WS_CHILD | WS_DISABLED | WS_CAPTION | WS_SYSMENU
+CAPTION "Fonts"
+FONT 8, "MS Sans Serif"
+BEGIN
+    COMBOBOX        IDC_FONT,114,23,154,114,CBS_DROPDOWN | 
+                    CBS_OWNERDRAWFIXED | CBS_SORT | CBS_HASSTRINGS | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Font",IDC_STATIC,83,24,17,10
+    LTEXT           "Bold",IDC_STATIC,83,40,17,10
+    LTEXT           "Size",IDC_STATIC,83,55,17,10
+    COMBOBOX        IDC_FONTSIZE,114,54,33,61,CBS_DROPDOWN | WS_VSCROLL | 
+                    WS_TABSTOP
+    CTEXT           "",IDC_SAMPLE,153,40,114,30,SS_CENTERIMAGE | SS_SUNKEN
+    CONTROL         "",IDC_BOLD,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,114,40,
+                    19,10
+    COMBOBOX        IDC_FONT2,114,100,154,114,CBS_DROPDOWN | 
+                    CBS_OWNERDRAWFIXED | CBS_SORT | CBS_HASSTRINGS | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Font",IDC_STATIC,84,102,17,10
+    LTEXT           "Bold",IDC_STATIC,84,118,17,10
+    LTEXT           "Size",IDC_STATIC,84,132,17,10
+    COMBOBOX        IDC_FONTSIZE2,114,132,33,61,CBS_DROPDOWN | WS_VSCROLL | 
+                    WS_TABSTOP
+    CTEXT           "",IDC_SAMPLE2,154,118,114,30,SS_CENTERIMAGE | SS_SUNKEN
+    CONTROL         "",IDC_BOLD2,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,114,
+                    118,19,10
+    GROUPBOX        "Music Titles",IDC_STATIC,47,7,226,69
+    GROUPBOX        "Panel labels",IDC_STATIC,47,87,226,69
+END
+
+IDD_CONFIG_COLORS DIALOG DISCARDABLE  0, 0, 265, 174
+STYLE WS_CHILD | WS_DISABLED | WS_CAPTION | WS_SYSMENU
+CAPTION "Colors"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "Background",IDC_STATIC,85,20,43,10
+    LTEXT           "Normal",IDC_STATIC,25,41,38,10
+    LTEXT           "Highlighted",IDC_STATIC,25,64,38,10
+    LTEXT           "Selected",IDC_STATIC,25,87,38,10
+    CONTROL         "",IDC_COLOR_BK_NORMAL,"Button",BS_OWNERDRAW | 
+                    WS_TABSTOP,85,38,38,15
+    CONTROL         "",IDC_COLOR_BK_HIGH,"Button",BS_OWNERDRAW | WS_TABSTOP,
+                    85,61,38,15
+    CONTROL         "",IDC_COLOR_BK_SEL,"Button",BS_OWNERDRAW | WS_TABSTOP,
+                    85,84,38,15
+    LTEXT           "Text",IDC_STATIC,141,20,38,10
+    CONTROL         "",IDC_COLOR_TX_NORMAL,"Button",BS_OWNERDRAW | 
+                    WS_TABSTOP,136,38,38,15
+    CONTROL         "",IDC_COLOR_TX_HIGH,"Button",BS_OWNERDRAW | WS_TABSTOP,
+                    136,61,38,15
+    CONTROL         "",IDC_COLOR_TX_SEL,"Button",BS_OWNERDRAW | WS_TABSTOP,
+                    136,84,38,15
+    CONTROL         "",IDC_COLOR_BK_PANEL,"Button",BS_OWNERDRAW | WS_TABSTOP,
+                    85,111,38,15
+    LTEXT           "Panel",IDC_STATIC,25,113,38,10
+    CONTROL         "",IDC_COLOR_TX_PANEL,"Button",BS_OWNERDRAW | WS_TABSTOP,
+                    136,111,38,15
+    PUSHBUTTON      "Set to Default",IDC_SET_DEFAULT,94,142,71,17
+END
+
+IDD_CONFIG_FILES DIALOGEX 0, 0, 287, 175
+STYLE WS_CHILD | WS_DISABLED | WS_CAPTION | WS_SYSMENU
+CAPTION "General"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LISTBOX         IDC_DIRLIST,10,15,165,55,LBS_SORT | WS_VSCROLL | 
+                    WS_HSCROLL
+    PUSHBUTTON      "Add",IDC_DIRADD,40,70,36,11
+    PUSHBUTTON      "Remove",IDC_DIRREMOVE,95,70,36,11
+    PUSHBUTTON      "Scan",IDC_DIRSCAN,11,150,36,13
+    PUSHBUTTON      "Edit",IDC_LOCATION_BUTTON,235,105,33,13
+    LTEXT           "",IDC_MDB_LOCATION,10,105,218,14,NOT WS_GROUP,
+                    WS_EX_CLIENTEDGE
+    GROUPBOX        "Directories to scan for audio files",IDC_STATIC,5,5,178,
+                    80
+    GROUPBOX        "Location of muzikbrowzer database",IDC_STATIC,5,90,275,
+                    35
+    LISTBOX         IDC_MP3_EXTENSION,195,15,38,25,LBS_SORT | 
+                    LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Remove",IDC_MP3_REMOVE,195,50,32,11
+    EDITTEXT        IDC_MP3_ADD_EXT,245,15,24,12,ES_AUTOHSCROLL
+    PUSHBUTTON      "Add",IDC_MP3_ADD,245,30,25,11
+    GROUPBOX        "Audio file extensions",IDC_STATIC,190,5,89,60
+    CONTROL         "Yes",IDC_RUNATSTARTUP,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,195,154,40,8
+    GROUPBOX        "Add audio files to muzikbrowzer database",IDC_STATIC,5,
+                    135,145,35
+    PUSHBUTTON      "Scan for New",IDC_DIRSCAN_NEW,55,150,60,13
+    GROUPBOX        "Run muzikbrowzer at Start up?",IDC_STATIC,170,140,110,
+                    30
+END
+
+IDD_CONFIG_IRMAN DIALOG DISCARDABLE  0, 0, 342, 201
+STYLE WS_CHILD | WS_DISABLED | WS_CAPTION | WS_SYSMENU
+CAPTION "Irman"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         "Disabled",IDC_IRNONE,"Button",BS_AUTORADIOBUTTON,11,15,
+                    45,8
+    CONTROL         "1",IDC_IRCOM1,"Button",BS_AUTORADIOBUTTON,55,15,20,10
+    CONTROL         "2",IDC_IRCOM2,"Button",BS_AUTORADIOBUTTON,75,15,20,10
+    CONTROL         "3",IDC_IRCOM3,"Button",BS_AUTORADIOBUTTON,95,15,20,10
+    CONTROL         "4",IDC_IRCOM4,"Button",BS_AUTORADIOBUTTON,115,15,20,10
+    CONTROL         "5",IDC_IRCOM5,"Button",BS_AUTORADIOBUTTON,55,25,20,10
+    CONTROL         "6",IDC_IRCOM6,"Button",BS_AUTORADIOBUTTON,75,25,20,10
+    CONTROL         "7",IDC_IRCOM7,"Button",BS_AUTORADIOBUTTON,95,25,20,10
+    CONTROL         "8",IDC_IRCOM8,"Button",BS_AUTORADIOBUTTON,115,25,20,10
+    PUSHBUTTON      "Initialize",IDC_IRINITIALIZE,145,15,54,13
+    EDITTEXT        IDC_IRDELAY,270,20,26,12,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Record",IDC_IRRECORD,"Button",BS_AUTORADIOBUTTON | 
+                    BS_NOTIFY,60,64,40,10
+    CONTROL         "Test",IDC_IRTEST,"Button",BS_AUTORADIOBUTTON | 
+                    BS_NOTIFY,100,64,40,10
+    PUSHBUTTON      "Up",IDC_IRUP,10,88,32,13
+    EDITTEXT        IDC_IRUP_DESC,45,88,26,13,ES_AUTOHSCROLL
+    LTEXT           "",IDC_IRUP_STATUS,75,88,40,13,SS_SUNKEN
+    PUSHBUTTON      "Down",IDC_IRDOWN,10,103,32,13
+    EDITTEXT        IDC_IRDOWN_DESC,45,103,26,13,ES_AUTOHSCROLL
+    LTEXT           "",IDC_IRDOWN_STATUS,75,103,40,13,SS_SUNKEN
+    PUSHBUTTON      "Left",IDC_IRLEFT,10,118,32,13
+    EDITTEXT        IDC_IRLEFT_DESC,45,118,26,13,ES_AUTOHSCROLL
+    LTEXT           "",IDC_IRLEFT_STATUS,75,118,40,13,SS_SUNKEN
+    PUSHBUTTON      "Right",IDC_IRRIGHT,10,133,32,13
+    EDITTEXT        IDC_IRRIGHT_DESC,45,133,26,13,ES_AUTOHSCROLL
+    LTEXT           "",IDC_IRRIGHT_STATUS,75,133,40,13,SS_SUNKEN
+    PUSHBUTTON      "Select",IDC_IRSELECT,10,148,32,13
+    EDITTEXT        IDC_IRSELECT_DESC,45,148,26,13,ES_AUTOHSCROLL
+    LTEXT           "",IDC_IRSELECT_STATUS,75,148,40,13,SS_SUNKEN
+    PUSHBUTTON      "Menu",IDC_IRMENU,10,163,32,13
+    EDITTEXT        IDC_IRMENU_DESC,45,163,26,13,ES_AUTOHSCROLL
+    LTEXT           "",IDC_IRMENU_STATUS,75,163,40,13,SS_SUNKEN
+    PUSHBUTTON      "Exit",IDC_IREXIT,10,178,32,13
+    EDITTEXT        IDC_IREXIT_DESC,45,178,26,13,ES_AUTOHSCROLL
+    LTEXT           "",IDC_IREXIT_STATUS,75,178,40,13,SS_SUNKEN
+    PUSHBUTTON      "Delete",IDC_IRDELETE,120,88,32,13
+    EDITTEXT        IDC_IRDELETE_DESC,155,88,26,13,ES_AUTOHSCROLL
+    LTEXT           "",IDC_IRDELETE_STATUS,185,88,40,13,SS_SUNKEN
+    PUSHBUTTON      "Vol Up",IDC_IRVOLUP,120,103,32,13
+    EDITTEXT        IDC_IRVOLUP_DESC,155,103,26,13,ES_AUTOHSCROLL
+    LTEXT           "",IDC_IRVOLUP_STATUS,185,103,40,13,SS_SUNKEN
+    PUSHBUTTON      "Vol Dn",IDC_IRVOLDOWN,120,118,32,13
+    EDITTEXT        IDC_IRVOLDOWN_DESC,155,118,26,13,ES_AUTOHSCROLL
+    LTEXT           "",IDC_IRVOLDOWN_STATUS,185,118,40,13,SS_SUNKEN
+    PUSHBUTTON      "Page Up",IDC_IRPAGEUP,120,133,32,13
+    EDITTEXT        IDC_IRPAGEUP_DESC,155,133,26,13,ES_AUTOHSCROLL
+    LTEXT           "",IDC_IRPAGEUP_STATUS,185,133,40,13,SS_SUNKEN
+    PUSHBUTTON      "Page Dn",IDC_IRPAGEDOWN,120,148,32,13
+    EDITTEXT        IDC_IRPAGEDOWN_DESC,155,148,26,13,ES_AUTOHSCROLL
+    LTEXT           "",IDC_IRPAGEDOWN_STATUS,185,148,40,13,SS_SUNKEN
+    PUSHBUTTON      "Play",IDC_IRPLAY,120,163,32,13
+    EDITTEXT        IDC_IRPLAY_DESC,155,163,26,13,ES_AUTOHSCROLL
+    LTEXT           "",IDC_IRPLAY_STATUS,185,163,40,13,SS_SUNKEN
+    PUSHBUTTON      "Pause",IDC_IRPAUSE,120,178,32,13
+    EDITTEXT        IDC_IRPAUSE_DESC,155,178,26,13,ES_AUTOHSCROLL
+    LTEXT           "",IDC_IRPAUSE_STATUS,185,178,40,13,SS_SUNKEN
+    PUSHBUTTON      "Stop",IDC_IRSTOP,230,88,32,13
+    EDITTEXT        IDC_IRSTOP_DESC,265,88,26,13,ES_AUTOHSCROLL
+    LTEXT           "",IDC_IRSTOP_STATUS,295,88,40,13,SS_SUNKEN
+    PUSHBUTTON      "Next",IDC_IRNEXT,230,103,32,13
+    EDITTEXT        IDC_IRNEXT_DESC,265,103,26,13,ES_AUTOHSCROLL
+    LTEXT           "",IDC_IRNEXT_STATUS,295,103,40,13,SS_SUNKEN
+    PUSHBUTTON      "Previous",IDC_IRPREVIOUS,230,118,32,13
+    EDITTEXT        IDC_IRPREVIOUS_DESC,265,118,26,13,ES_AUTOHSCROLL
+    LTEXT           "",IDC_IRPREVIOUS_STATUS,295,118,40,13,SS_SUNKEN
+    PUSHBUTTON      "Fast Fwd",IDC_IRFASTFORWARD,230,133,32,13
+    EDITTEXT        IDC_IRFASTFORWARD_DESC,265,133,26,13,ES_AUTOHSCROLL
+    LTEXT           "",IDC_IRFASTFORWARD_STATUS,295,133,40,13,SS_SUNKEN
+    PUSHBUTTON      "Reverse",IDC_IRREVERSE,230,148,32,13
+    EDITTEXT        IDC_IRREVERSE_DESC,265,148,26,13,ES_AUTOHSCROLL
+    LTEXT           "",IDC_IRREVERSE_STATUS,295,148,40,13,SS_SUNKEN
+    LTEXT           "COM status",IDC_IRCOMPORT_STATUS,145,30,54,13,SS_SUNKEN
+    LTEXT           "Desc",IDC_STATIC,45,78,18,10
+    LTEXT           "Function",IDC_STATIC,10,78,30,10
+    LTEXT           "",IDC_IRTEST_STATUS,175,64,52,10,SS_SUNKEN | NOT 
+                    WS_GROUP
+    LTEXT           "IR Pulses\r\nper press",IDC_STATIC,235,20,33,16
+    GROUPBOX        "Irman COM Port",IDC_STATIC,5,5,335,45
+    GROUPBOX        "Irman Learn",IDC_STATIC,5,55,335,145
+    LTEXT           "Read",IDC_STATIC,150,64,21,10
+    LTEXT           "Function",IDC_STATIC,120,78,30,10
+    LTEXT           "Function",IDC_STATIC,230,78,30,10
+    LTEXT           "Desc",IDC_STATIC,265,78,18,10
+    LTEXT           "Desc",IDC_STATIC,155,78,18,10
+    LTEXT           "Code",IDC_STATIC,75,78,18,8
+    LTEXT           "Code",IDC_STATIC,185,78,18,8
+    LTEXT           "Code",IDC_STATIC,295,78,18,8
+END
+
+IDD_CONFIG_PASSWORD DIALOG DISCARDABLE  0, 0, 342, 201
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Password"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "Registration",IDC_STATIC,145,0,50,9
+    RTEXT           "Host ID",IDC_STATIC,40,10,50,12,SS_CENTERIMAGE
+    EDITTEXT        IDC_CP_HOSTID,95,10,200,12,ES_AUTOHSCROLL | ES_READONLY | 
+                    NOT WS_TABSTOP
+    RTEXT           "First name",IDC_STATIC,40,39,50,12,SS_CENTERIMAGE
+    EDITTEXT        IDC_CP_FIRSTNAME,95,39,200,12,ES_AUTOHSCROLL
+    RTEXT           "Last name",IDC_STATIC,40,55,50,12,SS_CENTERIMAGE
+    EDITTEXT        IDC_CP_LASTNAME,95,55,200,12,ES_AUTOHSCROLL
+    RTEXT           "Email",IDC_STATIC,40,70,50,12,SS_CENTERIMAGE
+    EDITTEXT        IDC_CP_EMAIL,95,70,200,12,ES_AUTOHSCROLL
+    RTEXT           "Password",IDC_STATIC,40,84,50,12,SS_CENTERIMAGE
+    EDITTEXT        IDC_CP_PASSWORD,95,84,200,12,ES_AUTOHSCROLL
+    CTEXT           "To obtain a password to remove Trial Mode, enter your name and email address and click the Send infol link below. You will receive a password at the email address specified.",
+                    IDC_PASSWORD_MSG,0,100,340,70
+    PUSHBUTTON      "Validate Password",IDC_VALIDATE_PW,136,175,70,25
+    EDITTEXT        IDC_CP_TRIAL_EXPIRATION,95,25,200,12,ES_AUTOHSCROLL | 
+                    ES_READONLY | NOT WS_TABSTOP
+    RTEXT           "Trial expires",IDC_CP_TRIAL_LABEL,40,25,50,12,
+                    SS_CENTERIMAGE
+END
+
+IDD_PICTUREDLG DIALOG DISCARDABLE  0, 0, 271, 206
+STYLE DS_CENTER | WS_POPUP
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "",IDC_PICTURE,0,0,270,205,NOT WS_GROUP
+END
+
+IDD_SPLASH_DIALOG DIALOG DISCARDABLE  0, 0, 186, 95
+STYLE WS_POPUP
+FONT 8, "MS Sans Serif"
+BEGIN
+END
+
+
+#ifndef _MAC
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,1,0,1
+ PRODUCTVERSION 1,1,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "Comments", "\0"
+            VALUE "CompanyName", "\0"
+            VALUE "FileDescription", "muzikbrowzer MFC Application\0"
+            VALUE "FileVersion", "1, 1, 0, 1\0"
+            VALUE "InternalName", "muzikbrowzer\0"
+            VALUE "LegalCopyright", "Copyright (C) 2001 Pecan Ventures, LLC\0"
+            VALUE "LegalTrademarks", "\0"
+            VALUE "OriginalFilename", "muzikbrowzer.exe\0"
+            VALUE "PrivateBuild", "\0"
+            VALUE "ProductName", "muzikbrowzer Application\0"
+            VALUE "ProductVersion", "1, 1, 0, 1\0"
+            VALUE "SpecialBuild", "\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+#endif    // !_MAC
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_INIT_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 330
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 89
+    END
+
+    IDD_MENU_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 70
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 173
+    END
+
+    IDD_SAVEPLAYLISTDIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 39
+    END
+
+    IDD_LOADPLAYLISTDLG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 316
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 227
+    END
+
+    IDD_ID3TAG_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 276
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 165
+    END
+
+    IDD_ID3_DISPLAY, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 255
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 194
+    END
+
+    IDD_ID3MODIFY_STATUS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 322
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 74
+    END
+
+    IDD_MESSAGE_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 290
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 171
+    END
+
+    IDD_CONFIG_FONTS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 326
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 174
+    END
+
+    IDD_CONFIG_COLORS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 258
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 167
+    END
+
+    IDD_CONFIG_FILES, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 280
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 168
+    END
+
+    IDD_CONFIG_IRMAN, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 335
+        VERTGUIDE, 242
+        VERTGUIDE, 336
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 194
+    END
+
+    IDD_CONFIG_PASSWORD, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 335
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 194
+    END
+
+    IDD_PICTUREDLG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 264
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 199
+    END
+
+    IDD_SPLASH_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 88
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MENU1 MENU DISCARDABLE 
+BEGIN
+    POPUP "POPUP_MENU"
+    BEGIN
+        MENUITEM "Shuffle Playlist",            ID_PMENU_SHUFFLE
+        MENUITEM "Clear Playlist",              ID_PMENU_CLEAR
+        MENUITEM "Load Playlist",               ID_PMENU_LOADPLAYLIST
+        MENUITEM "Pause",                       ID_PMENU_PAUSE
+        MENUITEM "Play",                        ID_PMENU_PLAY
+        MENUITEM "Stop",                        ID_PMENU_STOP
+        MENUITEM "",                            ID_MENUITEM32803
+        , MENUBARBREAK
+        MENUITEM "Help",                        ID_PMENU_HELP
+        MENUITEM "Exit",                        ID_PMENU_EXIT
+    END
+    POPUP "POPUP_MENU2"
+    BEGIN
+        MENUITEM "Edit Audio Tag",              ID_EDIT_ID3TAG
+    END
+END
+
+IDR_MENU2 MENU DISCARDABLE 
+BEGIN
+    POPUP ""
+    BEGIN
+        MENUITEM "Shuffle Playlist",            ID_MENU_SHUFFLEPLAYLIST
+        MENUITEM "Randomize Playlist",          ID_MENU_RANDOMIZE_PLAYLIST
+        MENUITEM "Clear Playlist",              ID_MENU_CLEARPLAYLIST
+        MENUITEM "Save Playlist",               ID_MENU_SAVEPLAYLIST
+        MENUITEM "Load Playlist",               ID_MENU_LOADPLAYLIST
+        MENUITEM "Pause",                       ID_MENU_PAUSE
+        MENUITEM "Play",                        ID_MENU_PLAY
+        MENUITEM "Stop",                        ID_MENU_STOP
+        MENUITEM SEPARATOR
+        MENUITEM "Configuration",               ID_MENU_OPTIONS
+        MENUITEM "Help",                        ID_MENU_HELP
+        MENUITEM "About",                       IDD_ABOUT
+        MENUITEM "Exit",                        ID_MENU_EXIT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Cursor
+//
+
+IDC_CURSOR2             CURSOR  DISCARDABLE     "res\\cursor2.cur"
+IDC_CURSOR3             CURSOR  DISCARDABLE     "res\\cursor3.cur"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_GLYPHS              BITMAP  DISCARDABLE     "res\\printer.bmp"
+IDB_SCROLLDOWNARROW     BITMAP  DISCARDABLE     "res\\ScrollDownArrowButton.bmp"
+IDB_SCROLLUPARROW       BITMAP  DISCARDABLE     "res\\ScrollUpArrowButton.bmp"
+IDB_SCROLLBUTTON        BITMAP  DISCARDABLE     "res\\ScrollButton.bmp"
+IDB_SCREENSHOT          BITMAP  DISCARDABLE     "res\\screenshot.bmp"
+IDB_BITMAP1             BITMAP  DISCARDABLE     "res\\bitmap1.bmp"
+IDB_BITMAP2             BITMAP  DISCARDABLE     "res\\bitmap2.bmp"
+IDB_BITMAP3             BITMAP  DISCARDABLE     "res\\bitmap3.bmp"
+IDB_BITMAP4             BITMAP  DISCARDABLE     "res\\bitmap4.bmp"
+IDB_BITMAP5             BITMAP  DISCARDABLE     "res\\muzikbrowzer.bmp"
+IDB_BUTTON_MINIMIZEU    BITMAP  DISCARDABLE     "res\\button_minimizeU.bmp"
+IDB_BUTTON_MINIMIZED    BITMAP  DISCARDABLE     "res\\button_minimizeD.bmp"
+IDB_BUTTON_MINIMIZEF    BITMAP  DISCARDABLE     "res\\button_minimizeF.bmp"
+IDB_BUTTON_MINIMIZEX    BITMAP  DISCARDABLE     "res\\button_minimizeX.bmp"
+IDB_BUTTON_MAXIMIZEU    BITMAP  DISCARDABLE     "res\\button_maximizeU.bmp"
+IDB_BUTTON_MAXIMIZED    BITMAP  DISCARDABLE     "res\\button_maximizeD.bmp"
+IDB_BUTTON_MAXIMIZEF    BITMAP  DISCARDABLE     "res\\button_maximizeF.bmp"
+IDB_BUTTON_MAXIMIZEX    BITMAP  DISCARDABLE     "res\\button_maximizeX.bmp"
+IDB_BUTTON_RESTOREU     BITMAP  DISCARDABLE     "res\\button_restoreU.bmp"
+IDB_BUTTON_RESTORED     BITMAP  DISCARDABLE     "res\\button_restoreD.bmp"
+IDB_BUTTON_RESTOREF     BITMAP  DISCARDABLE     "res\\button_restoreF.bmp"
+IDB_BUTTON_RESTOREX     BITMAP  DISCARDABLE     "res\\button_restoreX.bmp"
+IDB_BUTTON_EXITU        BITMAP  DISCARDABLE     "res\\button_exitU.bmp"
+IDB_BUTTON_EXITD        BITMAP  DISCARDABLE     "res\\button_exitD.bmp"
+IDB_BUTTON_EXITF        BITMAP  DISCARDABLE     "res\\button_exitF.bmp"
+IDB_BUTTON_EXITX        BITMAP  DISCARDABLE     "res\\button_exitX.bmp"
+IDB_APP_LABELD          BITMAP  DISCARDABLE     "res\\mtitle3D.bmp"
+IDB_APP_LABELF          BITMAP  DISCARDABLE     "res\\mtitle3F.bmp"
+IDB_APP_LABELU          BITMAP  DISCARDABLE     "res\\mtitle3U.bmp"
+IDB_APP_LABELX          BITMAP  DISCARDABLE     "res\\mtitle3X.bmp"
+IDB_SPLASH2             BITMAP  DISCARDABLE     "res\\splash.bmp"
+IDB_SPLASH3             BITMAP  DISCARDABLE     "res\\splash0.bmp"
+IDB_APP_LABEL2D         BITMAP  DISCARDABLE     "res\\mtitle4D.bmp"
+IDB_APP_LABEL2F         BITMAP  DISCARDABLE     "res\\mtitle4F.bmp"
+IDB_APP_LABEL2U         BITMAP  DISCARDABLE     "res\\mtitle4U.bmp"
+IDB_APP_LABEL2X         BITMAP  DISCARDABLE     "res\\mtitle4X.bmp"
+IDB_APP_LABEL3D         BITMAP  DISCARDABLE     "res\\app_labelD.bmp"
+IDB_APP_LABEL3F         BITMAP  DISCARDABLE     "res\\app_labelF.bmp"
+IDB_APP_LABEL3U         BITMAP  DISCARDABLE     "res\\app_labelU.bmp"
+IDB_APP_LABEL3X         BITMAP  DISCARDABLE     "res\\app_labelX.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_ABOUTBOX            "&About muzikbrowzer..."
+    IDP_SOCKETS_INIT_FAILED "Windows sockets initialization failed."
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#endif
+#include "res\MfcPlayer.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"         // Standard components
+#endif
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

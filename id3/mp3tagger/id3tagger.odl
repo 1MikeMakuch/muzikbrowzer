@@ -1,0 +1,42 @@
+// id3tagger.odl : type library source for id3tagger.exe
+
+// This file will be processed by the MIDL compiler to produce the
+// type library (id3tagger.tlb).
+
+[ uuid(E0414FAB-201F-4EBC-8467-B66ED31E9290), version(1.0) ]
+library Id3tagger
+{
+	importlib("stdole32.tlb");
+	importlib("stdole2.tlb");
+
+
+	//  Primary dispatch interface for CId3taggerDoc
+	
+	[ uuid(914924E8-D499-47FB-B8FA-A0E766A566D6) ]
+	dispinterface IId3tagger
+	{
+		properties:
+			// NOTE - ClassWizard will maintain property information here.
+			//    Use extreme caution when editing this section.
+			//{{AFX_ODL_PROP(CId3taggerDlgAutoProxy)
+			//}}AFX_ODL_PROP
+			
+		methods:
+			// NOTE - ClassWizard will maintain method information here.
+			//    Use extreme caution when editing this section.
+			//{{AFX_ODL_METHOD(CId3taggerDlgAutoProxy)
+			//}}AFX_ODL_METHOD
+
+	};
+
+	//  Class information for CId3taggerDoc
+	
+	[ uuid(1280B282-F699-4E77-8875-CD5D915427F8) ]
+	coclass Id3tagger
+	{
+		[default] dispinterface IId3tagger;
+	};
+
+	//{{AFX_APPEND_ODL}}
+	//}}AFX_APPEND_ODL}}
+};

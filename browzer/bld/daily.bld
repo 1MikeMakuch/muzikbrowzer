@@ -1,0 +1,50 @@
+# Set this to a directory where you want your builds
+# default /build/main/engine
+# example /u/joe
+BUILDROOT=/mkm/src/mb_nightly
+
+# dir within BUILDROOT default timestamp e.g. 980101-040000. Do not prepend slash
+# example "v"
+BLDNAME=
+
+# Only for nightlies
+NEWROOT=
+NEWBLDROOT=
+CREATE_LINKS=0
+CURSHARE=
+OLDSHARE=
+OLDERSHARE=
+
+# Where to (re)start build.  Levels 1 & 2 require that BLDNAME be specified.
+# 0 - at the beginning (checkout)
+# 1 - at make
+# 2 - at make install
+BLDLEVEL=0
+
+# Whom to send email to. Put your uname here for personal builds. defaults to
+# rebel-eng
+MAILTO=mkm
+
+# If set don't send email
+VGN_BUILDME_SKIP_MAIL=
+
+# Optional mailer override. Defaults to correct mailer for solaris/NT.
+#MAILER=
+
+# If 1 append to the logfile, accumulating results. defaults to 1
+APPENDLOG=0
+
+# Do a debug build
+DO_DEBUG_BUILD=1
+
+# Do a release build
+DO_RELEASE_BUILD=0
+
+# Build in the seperate buildtree
+MAKE_BUILDTREE=1
+
+NEWBUILD=0
+
+. $HOME/bld/all
+BUILD_TITLE="$BUILD_TITLE"
+

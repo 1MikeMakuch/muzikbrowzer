@@ -1,0 +1,76 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<meta name="GENERATOR" content="Microsoft&reg; HTML Help Workshop 4.1">
+<!-- Sitemap 1.0 -->
+</HEAD><BODY>
+<OBJECT type="text/site properties">
+	<param name="Auto Generated" value="Yes">
+</OBJECT>
+<UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Welcome">
+		<param name="Local" value="Html/Introduction.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Quick Start">
+		<param name="Local" value="Html/QuickStart.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="User Guide">
+		<param name="Local" value="Html/UserGuide.htm">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Remote Control Operation">
+			<param name="Local" value="Html/UserGuide.htm#Remote">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Keyboard/Mouse Operation">
+			<param name="Local" value="Html/UserGuide.htm#KeyboardMouse">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Miscellaneous">
+			<param name="Local" value="Html/UserGuide.htm#Miscellaneous">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Configuration">
+		<param name="Local" value="Html/Configuration.htm">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Files">
+			<param name="Local" value="Html/Configuration.htm#Files">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Irman">
+			<param name="Local" value="Html/Configuration.htm#Irman">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Fonts & Colors">
+			<param name="Local" value="Html/Configuration.htm#FontsColors">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Ogg Vorbis">
+			<param name="Local" value="Html/Configuration.htm#OggVorbis">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Password">
+			<param name="Local" value="Html/Configuration.htm#Password">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Requirements">
+		<param name="Local" value="Html/ReqsNRecs.htm#Reqs">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Recommendations">
+		<param name="Local" value="Html/ReqsNRecs.htm#Recs">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Appendix">
+		<param name="Local" value="Html/Appendix.htm">
+		</OBJECT>
+</UL>
+</BODY></HTML>

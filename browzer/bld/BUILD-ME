@@ -1,0 +1,1046 @@
+#!/bin/bash
+set -h
+#
+# XXX
+#   THIS NEEDS TO BE A LOT MORE GENERAL AND A LOT MORE ROBUST
+#   HOWEVER, THIS IS GOOD ENOUGH(?) FOR NOW
+# XXX
+#
+# Notes:
+#
+#   * By default, this script does a server build off of the main
+#     branch in /build/main/engine.
+#   * Variables you can set in your environment:
+#     BUILDROOT             Root directory for build
+#                           default:  /build/main/engine
+#     BLDNAME               build directory within BUILDROOT
+#                           default:  timestamp, e.g. 970929-224000
+#     BUILD_TITLE           Used in mail messages, and defaults to the
+#                           value of CLIENT_TEMPLATE
+#     P4CLIENT              Name of Perforce client to use for the build
+#                           default: eng-timestamp, e.g. eng-970929-224000
+#     CLIENT_TEMPLATE       used by create-p4-client and used as default
+#                           title.
+#     CREATE_P4CLIENT       Create the Perforce client specified by P4CLIENT
+#                           default: 1
+#     USE_CHROOT            Use a chroot environment with a root
+#                           directory of $NEWROOT.
+#                           default:  1
+#     NEWBUILD              Causes version build # to be incremented
+#                           default:  1 
+#     NEWROOT               Argument for chroot.  Used in conjunction with
+#                           USE_CHROOT.
+#                           default:  /build/bldroot
+#     NEWBLDROOT            Build root relative to NEWROOT. Used in conjuction
+#                           with USE_CHROOT.
+#                           default:  main/engine
+#     CREATE_LINKS          Create the current, old, and older symbolic links
+#                           (Unix) or shares (NT).  Specify 1 = yes, 0 = no.
+#                           default: 1
+#     CURSHARE              NT only.  Name of "current" share.
+#                           default:  current
+#     OLDSHARE              NT only.  Name of "old" share.
+#                           default:  old
+#     OLDERSHARE            NT only.  Name of "older" share.
+#                           default:  older
+#     BLDLEVEL              Where to (re)start build.  Levels 1 & 2 require
+#                           that BLDNAME be specified.
+#                             0 - at the beginning (checkout)
+#                             1 - at make
+#                             2 - at make install
+#                           default:  0
+#     MAILTO                To whom to send build status email.
+#                           default:  rebel-eng
+#     VGN_BUILDME_SKIP_MAIL If set, don't send any email.  Developers should
+#                           have this set so they don't send email to everyone
+#                           when doing their own personal builds.
+#                           default:  not set
+#     MAILER                mail executable, defaults appropriately
+#     APPENDLOG             append to the logfile or overwrite it? defaults to 1
+#     DO_DEBUG_BUILD        defaults to 1 on nt
+#     DO_RELEASE_BUILD      defaults to 1 on both
+#     MAKE_BUILDTREE        defaults to 1
+#     ITREE_STRIPPED        defaults to 0; if 1 then strip executables
+#
+#   * Variables can be set in a parameter file that can be passed
+#     in as the first variable.  The file will be sourced by this
+#     script.
+#   * By default, the solaris build only does a release build while
+#     the NT build does both a release build and a debug build.  BLDLEVEL
+#     only applies to the release build.
+#
+
+# If there's an argument, it's a file with parameters that needs to
+# be sourced.
+
+if [ "$1" != "" ] ; then
+    . $1
+fi
+
+RELDIR="5.5"
+
+MACHINE_NAME=`uname -n`
+
+CLIENT_TEMPLATE=${CLIENT_TEMPLATE:-"engine.solaris"}
+
+# the build title defaults to the name of the client template
+
+BUILD_TITLE=${BUILD_TITLE:-$CLIENT_TEMPLATE}
+
+# if set, strip executables on solaris
+ITREE_STRIPPED=${ITREE_STRIPPED:-0}
+
+# get the OS name in order to set OS-dependent variables
+# OS-specific environment variables are exported only for that OS
+
+OSNAME=`uname`
+export OSNAME
+if [ "$OSNAME" = "SunOS" ] ; then                                    
+
+    # Unset the USE_CHROOT variable if you don't want to build within the
+    # chroot environment.  The chroot environment should only be used for
+    # the nightly builds unless there's a good reason.  Note that you can
+    # only use the chroot environment if your directory is physically under
+    # the build root.
+    
+    USE_CHROOT=${USE_CHROOT:-0}
+
+    PATH=/usr/bin:/usr/sbin:/usr/local/development/SUNWspro/bin:/usr/local/bin:/usr/ccs/bin
+    BUILDROOT=${BUILDROOT:-/export/fs273/build/engine}
+    export BUILDROOT
+    NEWROOT=${NEWROOT:-/build/bldroot}
+    NEWBLDROOT=${NEWBLDROOT:-main/engine}
+    TEMPDIR=/tmp                          
+    MAILER=${MAILER:-"/usr/ucb/mail"}
+
+    export PATH
+    DO_DEBUG_BUILD=${DO_DEBUG_BUILD:-"0"}
+    DO_RELEASE_BUILD=${DO_RELEASE_BUILD:-"1"}
+    SUBWR=
+    PLATFORM="solaris"
+
+    # only used for create_html_info
+    if [ "$ITREE_STRIPPED" = "0" ]; then
+        BITS=release-solaris/itree/CDROM
+        BITS2=release-solaris/itree/CDROM-EXPORT
+    else
+        BITS=release-solaris/itree_stripped/CDROM
+        BITS2=release-solaris/itree_stripped/CDROM-EXPORT
+        BITS3=release-solaris/itree/CDROM
+        BITS4=release-solaris/itree/CDROM-EXPORT
+    fi
+
+
+elif [ "$OSNAME" = "Windows_NT" ] ; then
+    
+    BUILDROOT=${BUILDROOT:-c\:/nightly/engine}
+    export BUILDROOT
+    MSDevDir=${MSDevDir:-c\:/DevStudio/VC98}
+    TEMPDIR=c:/temp                          
+    MAILER=${MAILER:-"c:/winnt/system32/rsh zeus.vignette.com -l $USERNAME /usr/ucb/mail"}
+
+    export MSDevDir
+    DO_DEBUG_BUILD=${DO_DEBUG_BUILD:-"1"}
+    DO_RELEASE_BUILD=${DO_RELEASE_BUILD:-"1"}
+    SUBWR="\""
+    PLATFORM="winnt"
+
+    # only used for create_html_info
+    BITS="packaging/ishield/Install_6/Media/Default/Disk Images/Disk1"
+    BITS2="packaging/ishield/Install_6/Media/Export/Disk Images/Disk1"
+    BITS3="packaging/ishield/Install_6/Media/Debug/Disk Images/Disk1"
+    BITS4="packaging/ishield/Install_6/Media/ExportD/Disk Images/Disk1"
+#    BITS5="packaging/ishield/Config_Edit/Media/Default/Disk Images/Disk1"
+#    BITS6="packaging/ishield/Config_Edit/Media/Export/Disk Images/Disk1"
+	QALIBS="//uhaul/qa_lib/$RELDIR"
+
+else
+    echo Unknown OS: $OSNAME
+    err_f
+fi
+
+umask 022
+export LD_LIBRARY_PATH
+
+#BUILD_RUNNER=`whoami`
+BUILD_RUNNER=`id | sed -e 's/uid=\([0-9]*\).*/\1/'`
+BUILD_HOST=`uname -n`
+
+# Location of the Perforce depot
+P4PORT=${P4PORT:-"saxon.vignette.com:1666"}
+export P4PORT
+
+# Set VGN_BUILDME_SKIP_MAIL if you don't want any mail at all
+MAILTO=${MAILTO:-"builds-eng"}
+
+# Build level - see comments above
+BLDLEVEL=${BLDLEVEL:-0}
+
+# New Build Number
+NEWBUILD=${NEWBUILD:-1}
+
+# Allow BLDNAME to be passed via the environment
+BLDNAME=${BLDNAME:-`date '+%y%m%d-%H%M%S'`}
+export BLDNAME
+
+# P4CLIENT - the name of the Perforce client to use
+P4CLIENT=${P4CLIENT:-"eng-"`date '+%y%m%d-%H%M%S'`}
+export P4CLIENT
+
+# Whether or not to create the Perforce client identified by P4CLIENT
+CREATE_P4CLIENT=${CREATE_P4CLIENT:-1}
+
+# Whether or not to create current, old, and older symbolic links or shares
+CREATE_LINKS=${CREATE_LINKS:-1}
+
+# NT only - name the shares
+CURSHARE=${CURSHARE:-current}
+OLDSHARE=${OLDSHARE:-old}
+OLDERSHARE=${OLDERSHARE:-older}
+
+MAKE_BUILDTREE=${MAKE_BUILDTREE:-"1"}
+if [ "$MAKE_BUILDTREE" -eq 1 ] ; then
+    MAKE_BUILDTREE="-sMAKE_BUILDTREE=1"
+else
+    MAKE_BUILDTREE=
+fi
+export MAKE_BUILDTREE
+
+APPENDLOG=${APPENDLOG:-"1"}
+
+BUILDDIR=$BUILDROOT/$BLDNAME
+export BUILDDIR
+mkdir -p $BUILDDIR
+cd $BUILDDIR
+
+# setup a tmp dir for the compiler
+if [ "$OSNAME" = "SunOS" ] ; then
+    BUILDTMP="-temp=$BUILDDIR/tmp"
+    export BUILDTMP
+    mkdir -p $BUILDDIR/tmp
+else
+    TEMP="$BUILDDIR/tmp"
+    TMP="$BUILDDIR/tmp"
+    export TEMP TMP
+    mkdir -p $BUILDDIR/tmp
+fi
+
+LD_LIBRARY_PATH=
+
+BERROR=0
+###########################################################################
+# Setup information for the buildinfo page
+
+# setup some values based in the client template, in case no info is 
+# provided in the .bldenv file
+# remove leading ss-, if it exists and trailing .solaris, .nt
+ct=`echo $CLIENT_TEMPLATE|perl -pe 's/^ss-(.*)/$1/;s/^(.*)\.(solaris|nt)$/$1/'`
+sw=`echo $ct|perl -pe 's/^([^.-]+).*/$1/'`
+rn=`echo $ct|perl -ne 'if(m/.*\-([\d\.]+)$/){print $1;}else{print "main"}'`
+DATESTAMP=`echo $BLDNAME|perl -e 'm/^.*-(\d+-\d+)$/;print $1'`  # take from build name
+
+# make sure there are some values
+sw=${sw:-none}
+rn=${rn:-none}
+ds=`date '+%y%m%d-%H%M%S'`
+
+# These can be set in the vvv.bldenv file
+SOFTWARE=${SOFTWARE:-$sw}
+RELEASE_NUMBER=${RELEASE_NUMBER:-$rn}
+export RELEASE_NUMBER
+RELEASE_NAME=${RELEASE_NAME:-none}
+DATESTAMP=${DATESTAMP:-$ds}
+if [ "$OSNAME" = "SunOS" ]; then
+    OSNAME2=solaris
+fi
+if [ "$OSNAME" = "Windows_NT" ]; then
+    OSNAME2=NT
+fi
+
+buildinfo="$RELEASE_NUMBER!$RELEASE_NAME!$OSNAME2!$SOFTWARE!$DATESTAMP!$BUILDROOT!$BLDNAME!$BITS!$BITS2!$BITS3!$BITS4!$BITS5!$BITS6"
+echo $buildinfo >client.buildinfo  # save info, rerun create-html-info later?
+if [ "$CREATE_HTML_INFO" = "yes" ]; then
+    echo $buildinfo |create-html-info.pl -buildstatus starting
+fi
+######################################################################
+
+err_noexit() {
+  set +x
+  if [ -z "$VGN_BUILDME_SKIP_MAIL" ] ; then
+    # don't put spaces in subject line to avoid rsh vs local machine issues
+    SUBJECT="$BUILD_TITLE build succeeded with warnings on $MACHINE_NAME $OSNAME $BUILDDIR"
+    ( 
+      if [ -f $BUILDDIR/client.url ]; then
+          cat $BUILDDIR/client.url
+          echo ""
+      fi
+      echo "$BUILD_TITLE build succeeded with warnings on $MACHINE_NAME $OSNAME"
+      echo "in $BUILDDIR"
+      echo " "
+      echo "Attached below is the output showing warnings."
+      echo $ROLLOVER_MSG
+      echo $RESTART_MSG
+      echo "See $BUILDDIR/logfile for details."
+      echo " "
+      echo "---------------------------------------------------------------"
+      echo " "
+      cat $BUILDDIR/build.msgs
+      if [ -f $BUILDDIR/client.changes ]; then
+      echo "---------------------------------------------------------------"
+      echo " "
+          $BUILDDIR/client.changes
+      fi
+    ) | $MAILER -s "${SUBWR}${SUBJECT}${SUBWR}" $MAILTO
+  fi
+
+  BERROR=1;
+}
+
+err_f() {
+  set +x
+  cd $BUILDDIR
+  if [ -z "$VGN_BUILDME_SKIP_MAIL" ] ; then
+    # don't put spaces in subject line to avoid rsh vs local machine issues
+    SUBJECT="$BUILD_TITLE build failed on $MACHINE_NAME $OSNAME $BUILDDIR"
+    ( 
+      if [ -f $BUILDDIR/client.url ]; then
+          cat $BUILDDIR/client.url
+          echo ""
+      fi
+      echo "$BUILD_TITLE build failed on $MACHINE_NAME $OSNAME"
+      echo "in $BUILDDIR"
+      echo " "
+      echo "Attached below is the output showing errors."
+      echo "$BUILDROOT/current was not updated!"
+      echo "See $BUILDDIR/logfile for details."
+      echo " "
+      echo "---------------------------------------------------------------"
+      echo " "
+      grep_errs_warns
+      cat $BUILDDIR/build.msgs
+      echo "---------------------------------------------------------------"
+      tail -20 logfile
+      if [ -f $BUILDDIR/client.changes ]; then
+      echo "---------------------------------------------------------------"
+      echo " "
+          $BUILDDIR/client.changes
+      fi
+    ) | $MAILER -s "${SUBWR}${SUBJECT}${SUBWR}" $MAILTO
+  fi
+
+
+  # create some html for the buildinfo web page
+  if [ "$CREATE_HTML_INFO" = "yes" ]; then
+      echo $buildinfo |create-html-info.pl -buildstatus failed
+  fi
+
+  exit 1
+}
+
+#######################################################################
+
+# this isn't the best way to look for errors; fine tune it with time...
+grep_errs_warns() {
+  set +x
+  egrep -i "^make[^a-z]*:|\*\*\*|warning|fatal|cannot|resolve|failed|don.*know|Can't|no space|skipped|lack|No such| error " logfile \
+    | egrep -v 'Nothing to be done for|is up to date|Entering directory|Leaving directory|warning.gif|p4 resolve -n|WARNING.*parameter.*PSTAMP.*set to|No file.*to resolve|pkgdummy|logresolve|slack|black|/bin/javac|0 error\(s\), 0 warning\(s\)|LNK4068: /MACHINE ' \
+    > $BUILDDIR/build.msgs
+}
+
+#######################################################################
+
+pass_f() {
+  set +x
+  if [ -z "$VGN_BUILDME_SKIP_MAIL" ] ; then
+    if [ $BERROR -eq 0 ] ; then
+    # don't put spaces in subject line to avoid rsh vs local machine issues
+    SUBJECT="$BUILD_TITLE build succeeded on $MACHINE_NAME $OSNAME $BUILDDIR"
+    ( 
+      if [ -f $BUILDDIR/client.url ]; then
+          cat $BUILDDIR/client.url
+          echo ""
+      fi
+      echo "$BUILD_TITLE build succeeded on $MACHINE_NAME $OSNAME"
+      echo "in $BUILDDIR"
+      echo " "
+      echo $ROLLOVER_MSG
+      echo $RESTART_MSG
+      echo "See $BUILDDIR/logfile for details."
+      echo " "
+      if [ -f $BUILDDIR/client.changes ]; then
+      echo "---------------------------------------------------------------"
+      echo " "
+          $BUILDDIR/client.changes
+      fi
+    ) | $MAILER -s "${SUBWR}${SUBJECT}${SUBWR}" $MAILTO
+    fi
+  fi
+}
+
+######################################################################
+
+rollover_f_unix() {
+  GONE=`ls -l older   | sed -e 's/.* -> \(.*\)$/\1/'`
+  NEW2=`ls -l old     | sed -e 's/.* -> \(.*\)$/\1/'`
+  NEW1=`ls -l current | sed -e 's/.* -> \(.*\)$/\1/'`
+  rm -f older
+  ln -s $NEW2 older
+  rm -f old
+  ln -s $NEW1 old
+  rm -f current
+  ln -s $BLDNAME current
+  ln -s $BUILDDIR/release-solaris $BUILDDIR/debug-solaris
+  ROLLOVER_MSG="\n$BUILDROOT/current was updated.\n"
+}
+
+rollover_f_nt() {
+  GONE=`net share $OLDERSHARE | grep "Path" | awk '{print $2}'`
+  NEW2=`net share $OLDSHARE | grep "Path" | awk '{print $2}'`
+  NEW1=`net share $CURSHARE | grep "Path" | awk '{print $2}'`
+  net share $OLDERSHARE /delete /y
+  net share $OLDERSHARE=$NEW2
+  net share $OLDSHARE /delete /y
+  net share $OLDSHARE=$NEW1
+  net share $CURSHARE /delete /y
+  net share $CURSHARE=$BUILDDIR
+  ROLLOVER_MSG="\n$CURSHARE share was updated.\n"
+}
+
+######################################################################
+
+strip_execs() {
+  # but only on solaris
+  if [ "$OSNAME" = "SunOS" ] ; then
+    cd $BUILDDIR/$BUILD_TYPE-$PLATFORM
+    # now, if we're doing the export phase, save the CDROM stuff from last time
+    if [ "$1" = "export" ]; then
+        cp -rp itree_stripped/CDROM CDROM_domestic_stripped
+    fi
+    rm -rf itree_stripped   # in case we are doing the 2nd package for export
+    mkdir itree_stripped
+    cd itree
+    tar cf - . | ( cd ../itree_stripped ; tar xfBp - )
+    cd ../itree_stripped
+    rm -rf CDROM/solaris CDROM-EXPORT/solaris   # just in case there is an export one
+    cd $RELDIR/bin/solaris
+    for i in `file * | egrep ELF | awk -F":" '{print $1}'`
+    do
+      strip $i
+    done
+    cd ../../lib/solaris
+    strip `ls *.so*|sed -e '/libcurl-.*/d'` > /dev/null 2>&1
+    if [ "$USE_CHROOT" = "1" ] ; then
+      das chroot $NEWROOT bin/su vvv -c "cd $NEWBLDROOT/$BLDNAME/$BUILD_TYPE-$PLATFORM/itree_stripped; ./createpkg"
+    else
+      cd $BUILDDIR/$BUILD_TYPE-$PLATFORM/itree_stripped; ./createpkg
+    fi
+    # now, if we're doing the export phase, restore the domestic CDROM stuff
+    if [ "$1" = "export" ]; then
+        cd $BUILDDIR/$BUILD_TYPE-$PLATFORM
+        rm -rf itree_stripped/CDROM
+        cp -rp CDROM_domestic_stripped itree_stripped/CDROM
+        rm -rf CDROM_domestic_stripped
+
+        # and ok, we can get rid of the itree now too!
+	# no, we can't. people want to install unstripped debug stuff
+        # rm -rf itree
+    fi    
+  fi
+}
+
+######################################################################
+do_econfig_build() {
+
+if [ "$CREATE_HTML_INFO" = "yes" ]; then
+    echo $buildinfo |create-html-info.pl -buildstatus make_econfig_t
+fi
+
+cd $BUILDDIR/econfig
+make econfig_t
+make install_clean
+make install_econfig_t
+
+mkdir -p $BUILDDIR/$BUILD_TYPE-$PLATFORM/itree/$RELDIR/adm
+cd $BUILDDIR/econfig/itree/client/adm
+#tar cf - . | (cd $BUILDDIR/$BUILD_TYPE-$PLATFORM/itree/$RELDIR/adm; tar xf - )
+find . -print | cpio -pdum $BUILDDIR/$BUILD_TYPE-$PLATFORM/itree/$RELDIR/adm
+
+mkdir -p $BUILDDIR/$BUILD_TYPE-$PLATFORM/itree/$RELDIR/java
+cd $BUILDDIR/econfig/itree/client/java
+#tar cf - . | (cd $BUILDDIR/$BUILD_TYPE-$PLATFORM/itree/$RELDIR/java; tar xf - )
+find . -print | cpio -pdum $BUILDDIR/$BUILD_TYPE-$PLATFORM/itree/$RELDIR/java
+
+mkdir -p $BUILDDIR/$BUILD_TYPE-$PLATFORM/itree/$RELDIR/lib
+cd $BUILDDIR/econfig/itree/client/lib
+#tar cf - . | (cd $BUILDDIR/$BUILD_TYPE-$PLATFORM/itree/$RELDIR/lib; tar xf - )
+find . -print | cpio -pdum $BUILDDIR/$BUILD_TYPE-$PLATFORM/itree/$RELDIR/lib
+}
+######################################################################
+
+do_installshield() {
+#
+# the argument is the location for the output, relative to something
+# if no argument, then the default location is used
+#
+# only do this stuff if it is a release build
+if [ "$BUILD_TYPE" = "release" ]; then
+    if [ "$OSNAME" = "Windows_NT" ] ; then
+
+	if [ "$CREATE_HTML_INFO" = "yes" ]; then
+	    echo $buildinfo |create-html-info.pl -buildstatus InstallShield
+	fi
+
+	# Copy the Java GUI into the platform itree
+	mkdir -p $BUILDDIR/$BUILD_TYPE-$PLATFORM/itree/$RELDIR/bin/winnt
+	cd $BUILDDIR/econfig/itree/client/bin
+	#tar cf - . | (cd $BUILDDIR/$BUILD_TYPE-$PLATFORM/itree/$RELDIR/bin/winnt; tar xf - )
+        find . -print | cpio -pdum $BUILDDIR/$BUILD_TYPE-$PLATFORM/itree/$RELDIR/bin/winnt
+
+	ISCOMPILE="C:/InstallShield/InstallShield 5.5 Professional Edition/Program/Compile.exe"
+	ISINCLUDE="C:/InstallShield/InstallShield 5.5 Professional Edition/Include"
+	ISBUILD="C:/InstallShield/InstallShield 5.5 Professional Edition/Program/ISBuild.exe"
+
+	# Note:  zip.exe and unzipsfx.exe belong in thirdparty and should
+	#        be copied into the itree by jam install.
+	cp C:/bldenv/zip.exe $BUILDDIR/release-winnt/itree/$RELDIR/bin/winnt/
+	cp C:/bldenv/unzipsfx.exe $BUILDDIR/release-winnt/itree/$RELDIR/bin/winnt/
+
+	#### GENERATE Program FILES.fgl ####
+	cd "$BUILDDIR/packaging/ishield/Install/File Groups"
+	sh $BUILDDIR/bldenv/create_pgfgl.sh $BUILDDIR/release-winnt/itree > \
+	    "Program FILES.fgl"
+
+	#### INSTALL ####
+	cd "$BUILDDIR\packaging\ishield\Install\Script Files"
+	"$ISCOMPILE" -I"$ISINCLUDE" setup.rul
+
+	# check for alternate output for the export stuff
+	if [ "$1" = "" ]; then
+
+           cp -rp "$BUILDDIR/packaging/ishield/Install/Media/Default" "$BUILDDIR/packaging/ishield/Install/Media/export"
+	   "$ISBUILD" -p"$BUILDDIR\packaging\ishield\Install" -m"Default"
+
+	    cp $BUILDDIR/packaging/cdrom/autorun.inf "$BUILDDIR/packaging/ishield/Install/Media/Default/Disk Images/disk1/"
+	else
+	   # alternate output for export build
+	   "$ISBUILD" -p"$BUILDDIR\packaging\ishield\Install" -m"Default" -b"$1"
+
+	    cp $BUILDDIR/packaging/cdrom/autorun.inf "$1/Disk Images/disk1/"
+	fi
+
+    fi
+fi
+}
+######################################################################
+
+do_ishield_6() {
+#
+# the argument is the location for the output, relative to something
+# if no argument, then the default location is used
+#
+# only do this stuff if it is a release build
+if [ "$BUILD_TYPE" = "release" ]; then
+    if [ "$OSNAME" = "Windows_NT" ] ; then
+
+	# Copy the Java GUI into the platform itree
+	mkdir -p $BUILDDIR/$BUILD_TYPE-$PLATFORM/itree/$RELDIR/bin/winnt
+	cd $BUILDDIR/econfig/itree/client/bin
+	#tar cf - . | (cd $BUILDDIR/$BUILD_TYPE-$PLATFORM/itree/$RELDIR/bin/winnt; tar xf - )
+        find . -print | cpio -pdum $BUILDDIR/$BUILD_TYPE-$PLATFORM/itree/$RELDIR/bin/winnt
+
+	INKY="C:\Program Files\InstallShield\InstallShield Professional 6"
+	BLDDIR="$BUILDDIR\packaging\ishield\Install_6\Script Files"
+	ISCOMPILE="C:\Program Files\InstallShield\InstallShield Professional 6\Program\Compile.exe"
+	ISINCLUDE="$INKY\Script\IFX\Include;$INKY\Script\ISRT\Include;$BLDDIR"
+	ISBUILD="$INKY/Program/ISBuild.exe"
+
+	# Note:  zip.exe and unzipsfx.exe belong in thirdparty and should
+	#        be copied into the itree by jam install.
+	cp C:/bldenv/zip.exe $BUILDDIR/release-winnt/itree/$RELDIR/bin/winnt/
+	cp C:/bldenv/unzipsfx.exe $BUILDDIR/release-winnt/itree/$RELDIR/bin/winnt/
+	
+	#### GENERATE Program FILES.fgl ####
+	# cd "$BUILDDIR/packaging/ishield/Install/File Groups"
+	# sh $BUILDDIR/bldenv/create_pgfgl.sh $BUILDDIR/release-winnt/itree > \
+	#    "Program FILES.fgl"
+	set -x
+	chmod -R +w "$BUILDDIR/packaging/ishield/Install_6"
+	mkdir "$BUILDDIR/packaging/ishield/Install_6/veonly"
+	mkdir "$BUILDDIR/packaging/ishield/Install_6/full"
+	cd "$BUILDDIR/release-winnt/itree"
+        cp -r ./* $BUILDDIR/packaging/ishield/Install_6/full
+        cd "$BUILDDIR/packaging/ishield/Install_6/full/5.5"
+	cpio -pvdum "$BUILDDIR/packaging/ishield/Install_6/veonly" < "$BUILDDIR/packaging/ishield/Install_6/Manifest.txt"
+	rm -rf `cat "$BUILDDIR/packaging/ishield/Install_6/Manifest.txt"`
+        mkdir "$BUILDDIR/packaging/ishield/Install_6/veonly/java"
+	cp -r $BUILDDIR/release-winnt/itree/5.5/java/* $BUILDDIR/packaging/ishield/Install_6/veonly/java
+        chmod -R +w "$BUILDDIR/packaging/ishield/Install_6/veonly/java"
+
+	FILE_SOURCE="$BUILDDIR/packaging/ishield/Install_6/full"
+	export FILE_SOURCE
+	VE_FILE_SOURCE="$BUILDDIR/packaging/ishield/Install_6/veonly"
+	export VE_FILE_SOURCE
+	LICENSE_SOURCE="$BUILDDIR/packaging/ishield/Install_6"
+	export LICENSE_SOURCE
+
+	#### COMPILE ####
+	cd "$BLDDIR"
+	"$ISCOMPILE" /I"$ISINCLUDE" "setup.rul" "$INKY\Script\Ifx\Lib\Ifx.obl" "$INKY\Script\Isrt\Lib\Isrt.obl"
+
+	#### BUILD ####
+	"$ISBUILD" -p"$BUILDDIR\packaging\ishield\Install_6" -m"Default"
+
+	#### Export install build ####
+
+        #### Copy Export file to location ####
+	rm "$BUILDDIR/release-winnt/itree/5.5/bin/winnt/libVgnSecurity.dll"
+	cp "$BUILDDIR/release-winnt/lib/libVgnSecurityExport.dll" "$BUILDDIR/release-winnt/itree/5.5/bin/winnt/libVgnSecurity.dll"
+
+	#### COMPILE ####
+	cd "$BLDDIR"
+	"$ISCOMPILE" /I"$ISINCLUDE" "setup.rul" "$INKY\Script\Ifx\Lib\Ifx.obl" "$INKY\Script\Isrt\Lib\Isrt.obl"
+
+	#### BUILD ####
+	"$ISBUILD" -p"$BUILDDIR\packaging\ishield\Install_6" -m"Export"
+
+	####  CLEAN UP ####
+	cd "$BUILDDIR/packaging/ishield/Install_6"
+	rm -rf full
+	rm -rf veonly
+    fi
+fi
+if [ "$BUILD_TYPE" = "debug" ]; then
+    if [ "$OSNAME" = "Windows_NT" ] ; then
+
+	# Copy the Java GUI into the platform itree
+	mkdir -p $BUILDDIR/$BUILD_TYPE-$PLATFORM/itree/$RELDIR/bin/winnt
+	cd $BUILDDIR/econfig/itree/client/bin
+	#tar cf - . | (cd $BUILDDIR/$BUILD_TYPE-$PLATFORM/itree/$RELDIR/bin/winnt; tar xf - )
+        find . -print | cpio -pdum $BUILDDIR/$BUILD_TYPE-$PLATFORM/itree/$RELDIR/bin/winnt
+
+	INKY="C:\Program Files\InstallShield\InstallShield Professional 6"
+	BLDDIR="$BUILDDIR\packaging\ishield\Install_6\Script Files"
+	ISCOMPILE="C:\Program Files\InstallShield\InstallShield Professional 6\Program\Compile.exe"
+	ISINCLUDE="$INKY\Script\IFX\Include;$INKY\Script\ISRT\Include;$BLDDIR"
+	ISBUILD="$INKY/Program/ISBuild.exe"
+
+	# Note:  zip.exe and unzipsfx.exe belong in thirdparty and should
+	#        be copied into the itree by jam install.
+	# cp C:/bldenv/zip.exe $BUILDDIR/release-winnt/itree/$RELDIR/bin/winnt/
+	# cp C:/bldenv/unzipsfx.exe $BUILDDIR/release-winnt/itree/$RELDIR/bin/winnt/
+	
+	#### GENERATE Program FILES.fgl ####
+	# cd "$BUILDDIR/packaging/ishield/Install/File Groups"
+	# sh $BUILDDIR/bldenv/create_pgfgl.sh $BUILDDIR/release-winnt/itree > \
+	#    "Program FILES.fgl"
+	set -x
+	chmod -R +w "$BUILDDIR/packaging/ishield/Install_6"
+	mkdir "$BUILDDIR/packaging/ishield/Install_6/veonly"
+	mkdir "$BUILDDIR/packaging/ishield/Install_6/full"
+	cd "$BUILDDIR/debug-winnt/itree"
+        cp -r ./* $BUILDDIR/packaging/ishield/Install_6/full
+        cd "$BUILDDIR/packaging/ishield/Install_6/full/5.5"
+	cpio -pvdum "$BUILDDIR/packaging/ishield/Install_6/veonly" < "$BUILDDIR/packaging/ishield/Install_6/Manifestd.txt"
+	rm -rf `cat "$BUILDDIR/packaging/ishield/Install_6/Manifestd.txt"`
+        mkdir "$BUILDDIR/packaging/ishield/Install_6/veonly/java"
+	cp -r $BUILDDIR/debug-winnt/itree/5.5/java/* $BUILDDIR/packaging/ishield/Install_6/veonly/java
+        chmod -R +w "$BUILDDIR/packaging/ishield/Install_6/veonly/java"
+
+	FILE_SOURCE="$BUILDDIR/packaging/ishield/Install_6/full"
+	export FILE_SOURCE
+	VE_FILE_SOURCE="$BUILDDIR/packaging/ishield/Install_6/veonly"
+	export VE_FILE_SOURCE
+	LICENSE_SOURCE="$BUILDDIR/packaging/ishield/Install_6"
+	export LICENSE_SOURCE
+
+	#### COMPILE ####
+	cd "$BLDDIR"
+	"$ISCOMPILE" /I"$ISINCLUDE" "setup.rul" "$INKY\Script\Ifx\Lib\Ifx.obl" "$INKY\Script\Isrt\Lib\Isrt.obl"
+
+	#### BUILD ####
+	"$ISBUILD" -p"$BUILDDIR\packaging\ishield\Install_6" -m"Debug"
+
+        #### Copy Export-Debug file to location ####
+	rm "$BUILDDIR/debug-winnt/itree/5.5/bin/winnt/libVgnSecurity.dll"
+	cp "$BUILDDIR/debug-winnt/lib/libVgnSecurityExport.dll" "$BUILDDIR/debug-winnt/itree/5.5/bin/winnt/libVgnSecurity.dll"
+
+	#### COMPILE ####
+	cd "$BLDDIR"
+	"$ISCOMPILE" /I"$ISINCLUDE" "setup.rul" "$INKY\Script\Ifx\Lib\Ifx.obl" "$INKY\Script\Isrt\Lib\Isrt.obl"
+
+	#### BUILD ####
+	"$ISBUILD" -p"$BUILDDIR\packaging\ishield\Install_6" -m"ExportD"
+
+	####  CLEAN UP ####
+	cd "$BUILDDIR/packaging/ishield/Install_6"
+	rm -rf full
+	rm -rf veonly
+    fi
+fi
+
+}
+######################################################################
+do_ishield_configedit() {
+
+    if [ "$BUILD_TYPE" = "release" ]; then
+    # only do this on windows, not solaris
+      if [ "$OSNAME" = "Windows_NT" ] ; then
+	set -x
+	chmod -R +w "$BUILDDIR/packaging/ishield/Config_Edit"
+	mkdir "$BUILDDIR/packaging/ishield/Config_Edit/release"
+	cd "$BUILDDIR/release-winnt/itree/5.5"
+	cpio -pvdum "$BUILDDIR/packaging/ishield/Config_Edit/release" < "$BUILDDIR/packaging/ishield/Config_Edit/Manifest.txt"
+	#### The following lines are for the full Java directory copy needed for the file manifest ####
+	mkdir "$BUILDDIR/packaging/ishield/Config_Edit/release/java"
+	cp -r $BUILDDIR/release-winnt/itree/5.5/java/* $BUILDDIR/packaging/ishield/Config_Edit/release/java
+
+	#### Create Platform Variable Editor Installer ####
+	FILE_SOURCE="$BUILDDIR/packaging/ishield/Config_Edit/release"
+	export FILE_SOURCE
+
+	#### COMPILE ####
+	INKY="C:\Program Files\InstallShield\InstallShield Professional 6"
+	BLDDIR="$BUILDDIR\packaging\ishield\Config_Edit\Script Files"
+	ISCOMPILE="C:\Program Files\Common Files\InstallShield\IScript\Compile.exe"
+	ISINCLUDE="$INKY\Script\IFX\Include;$INKY\Script\ISRT\Include;$BLDDIR"
+
+	cd "$BLDDIR"
+	"$ISCOMPILE" /I"$ISINCLUDE" "setup.rul" "$INKY\Script\Ifx\Lib\Ifx.obl" "$INKY\Script\Isrt\Lib\Isrt.obl"
+
+	#### BUILD ####
+	ISBUILD="$INKY/Program/ISBuild.exe"
+	"$ISBUILD" -p"$BUILDDIR\packaging\ishield\Config_Edit" -m"Default"
+
+	#### Export Version ####
+        rm "$BUILDDIR/packaging/ishield/Config_Edit/release/bin/winnt/libVgnSecurity.dll"
+	cp "$BUILDDIR/release-winnt/lib/libVgnSecurityExport.dll" "$BUILDDIR/packaging/ishield/Config_Edit/release/bin/winnt/libVgnSecurity.dll"
+
+	#### COMPILE ####
+	cd "$BLDDIR"
+	"$ISCOMPILE" /I"$ISINCLUDE" "setup.rul" "$INKY\Script\Ifx\Lib\Ifx.obl" "$INKY\Script\Isrt\Lib\Isrt.obl"
+
+	#### BUILD ####
+	ISBUILD="$INKY/Program/ISBuild.exe"
+	"$ISBUILD" -p"$BUILDDIR\packaging\ishield\Config_Edit" -m"Export"
+
+	####  CLEAN UP ####
+	cd "$BUILDDIR/packaging/ishield/Config_Edit"
+	# rm -rf release
+      fi
+    fi
+}
+######################################################################
+do_cd_image() {
+if [ "$BUILD_TYPE" = "release" ]; then
+   if [ "$OSNAME" = "Windows_NT" ] ; then
+     # Make cdrom dir.
+     mkdir "$BUILDDIR/release-winnt/$CD_PATH"
+  
+     # Copy DemoShield files to cdrom folder
+     cp -r $BUILDDIR/packaging/dshield/platform5.5/For_CD/* $BUILDDIR/release-winnt/$CD_PATH
+
+     # Make Vignette dir and copy setup files to it.
+     mkdir "$BUILDDIR/release-winnt/$CD_PATH/vignette"
+     cd "$BUILDDIR/packaging/ishield/Install_6/Media/$MEDIA_PATH/Disk Images/Disk1"
+     cp -r ./* $BUILDDIR/release-winnt/$CD_PATH/vignette
+
+     # Make Variable Editor dir and copy setup files to it.
+     # mkdir "$BUILDDIR/release-winnt/$CD_PATH/vignette/pve"
+     # cd "$BUILDDIR/packaging/ishield/Config_Edit/Media/$MEDIA_PATH/Disk Images/Disk1"
+     # cp -r ./* $BUILDDIR/release-winnt/$CD_PATH/vignette/pve
+
+     # Make netP dir and copy setup files to it.
+     mkdir "$BUILDDIR/release-winnt/$CD_PATH/netp"
+     cd "$BUILDDIR/thirdparty/netp/winnt"
+     cp -r ./* $BUILDDIR/release-winnt/$CD_PATH/netp
+
+     # Make Resonate dir and copy setup files to it.
+     mkdir "$BUILDDIR/release-winnt/$CD_PATH/resonate"
+     cd "$BUILDDIR/thirdparty/resonate"
+     cp -r ./* $BUILDDIR/release-winnt/$CD_PATH/resonate
+   fi
+   if [ "$OSNAME" = "SunOS" ] ; then
+     # Make cdrom dir.
+     mkdir "$BUILDDIR/release-solaris/$CD_PATH"
+  
+     # Make Vignette dir and copy setup files to it.
+     mkdir "$BUILDDIR/release-solaris/$CD_PATH/vignette"
+     cd "$BUILDDIR/release-solaris/itree_stripped/$PKG_PATH"
+     cp -r ./* $BUILDDIR/release-solaris/$CD_PATH/vignette
+
+     # Copy DemoShield files to cdrom folder
+     cp -r $BUILDDIR/packaging/dshield/platform5.5/solaris/* $BUILDDIR/release-solaris/$CD_PATH
+ 
+     # Make netP dir and copy setup files to it.
+     mkdir "$BUILDDIR/release-solaris/$CD_PATH/netp"
+     cd "$BUILDDIR/thirdparty/netp/solaris"
+     cp -r ./* $BUILDDIR/release-solaris/$CD_PATH/netp
+
+     # Make Resonate dir and copy setup files to it.
+     mkdir "$BUILDDIR/release-solaris/$CD_PATH/resonate"
+     cd "$BUILDDIR/thirdparty/resonate"
+     cp -r ./* $BUILDDIR/release-solaris/$CD_PATH/resonate
+   fi
+fi
+}
+######################################################################
+do_jam() {
+
+# do_jam  target status_string
+#
+# run jam with various parameters. The BUILD_TYPE and 
+# MAKE_BUILDTREE parameters are inherited from the environment
+# The target is the target to be built, and status_string is
+# the status which will appear on the buildinfo page.  If the
+# status string is not set, just use the jam target
+#
+    # if status string not set, use jam target
+    if [ "$2" = "" ]; then
+        status_string=$1
+    else
+        status_string=$2
+    fi
+
+    # if the BUILD_TYPE is set, add it to the status string
+    if [ "$BUILD_TYPE" != "" ]; then
+        status_string=${BUILD_TYPE}_$status_string
+    fi
+
+    echo "JAM $1 starting"
+    if [ "$CREATE_HTML_INFO" = "yes" ]; then
+    echo $buildinfo |create-html-info.pl -buildstatus jam_$status_string
+    fi
+    if [ "$USE_CHROOT" = "1" ] ; then
+    das chroot $NEWROOT bin/su vvv -c "cd $NEWBLDROOT/$BLDNAME; jam -d2 -sBUILD_TYPE=$BUILD_TYPE $MAKE_BUILDTREE $1"
+    RESULT=$?
+    echo "Completed: das chroot $NEWROOT bin/su vvv -c cd $NEWBLDROOT/$BLDNAME; jam -d2 -sBUILD_TYPE=$BUILD_TYPE $MAKE_BUILDTREE $1"
+    else
+    jam -d2 -sBUILD_TYPE=$BUILD_TYPE $MAKE_BUILDTREE $1
+    RESULT=$?
+    echo "Completed: jam -d2 -sBUILD_TYPE=$BUILD_TYPE $MAKE_BUILDTREE $1"
+    fi
+    if [ $RESULT -ne 0 ] ; then
+    err_f
+    fi
+}
+
+######################################################################
+do_build() {
+
+  BUILD_TYPE=$1
+  export $BUILD_TYPE
+
+  if [ -s "$BUILDDIR/$BUILD_TYPE-$PLATFORM/itree" ] ; then
+      rm -rf $BUILDDIR/$BUILD_TYPE-$PLATFORM/itree
+  fi
+
+  if [ -s "$BUILDDIR/$BUILD_TYPE-$PLATFORM/itree_stripped" ] ; then
+      rm -rf $BUILDDIR/$BUILD_TYPE-$PLATFORM/itree_stripped
+  fi
+
+
+  echo Doing $BUILD_TYPE build
+  date
+
+  if [ "$OSNAME" = "Windows_NT" ] ; then
+      VGN_LOCALEDIR="$BUILDDIR/thirdparty/uniscape/gc/winnt/3.1.1/locale"
+      export VGN_LOCALEDIR
+  fi
+
+  cd $BUILDDIR
+
+  if [ $BLDLEVEL -le 1 ] ; then
+      do_jam
+  fi
+      
+  if [ $BLDLEVEL -le 2 ] ; then
+      do_jam install
+
+      # this should be the place to do the econfig build, so that the files
+      # will be there for the solaris packaging
+
+      do_econfig_build
+      cd $BUILDDIR    # in case it put us somewhere else!
+
+      do_jam package
+
+      if [ "$ITREE_STRIPPED" = "1" ] ; then
+        echo "Creating stripped executables and package in itree_stripped"
+        strip_execs
+      fi
+#     Removing old IS script - DS 4/3/00
+#      do_installshield
+      do_ishield_6	
+#	  Removing Variable Editor instaler build - DS 4/25/00
+#      do_ishield_configedit
+
+
+#------------------------extra stuff for export bits---------------------------
+
+      cd $BUILDDIR
+
+      do_jam install_export
+
+      # this should be the place to do the econfig build, so that the files
+      # will be there for the solaris packaging
+
+      #do_econfig_build
+      #cd $BUILDDIR
+
+      do_jam package "package_for_export"
+
+      if [ "$ITREE_STRIPPED" = "1" ] ; then
+        echo "Creating stripped executables and package in itree_stripped"
+        strip_execs export
+      fi
+ #    Removing old IS script - DS 4/3/00 
+ #    do_installshield "$BUILDDIR/packaging/ishield/Install/Media/export"
+      cd $BUILDDIR
+  
+ #    Do CD Image packaging
+ #    Default Image
+      CD_PATH="CDIMAGE"
+      MEDIA_PATH="Default"
+      PKG_PATH="CDROM"
+      export CD_PATH
+      export MEDIA_PATH
+      export PKG_PATH
+      do_cd_image  
+#     Export Image
+      CD_PATH="CDIMAGE-EXPORT"
+      MEDIA_PATH="Export"
+      PKG_PATH="CDROM-EXPORT"
+      export CD_PATH
+      export MEDIA_PATH
+      export PKG_PATH
+      do_cd_image  
+  fi
+}
+
+######################################################################
+
+# always append to the logfile to keep build history around
+if [ "$APPENDLOG" -eq 1 ] ; then
+    exec >> logfile 2>&1
+else
+    exec > logfile 2>&1
+fi
+set -x
+
+env
+
+# Create the Perforce client
+if [ $CREATE_P4CLIENT -eq 1 ] ; then
+    create-p4-client.pl $CLIENT_TEMPLATE $BUILDROOT $P4CLIENT
+fi
+
+if [ $BLDLEVEL -eq 0 ] ; then
+    if [ -s "$BUILDDIR/packaging/ishield/Config/Config.ipr" ] ; then
+	chmod 555 $BUILDDIR/packaging/ishield/Config/Config.ipr
+    fi
+    if [ -s "$BUILDDIR/packaging/ishield/Install/Install.ipr" ] ; then
+	chmod 555 $BUILDDIR/packaging/ishield/Install/Install.ipr
+    fi
+
+    p4sync $P4CLIENT
+    RESULTS=$?
+    if [ $RESULTS -ne 0 ] ; then
+      err_f
+    fi
+    echo "CHECKOUT complete"
+fi
+
+if [ $CREATE_P4CLIENT -ne 1 ] ; then
+    p4 resolve -n
+fi
+
+curdir=`pwd`
+cd $BUILDROOT/$BLDNAME/bldenv
+if [ "$OSNAME" = "SunOS" ] ; then
+    szFind=`find . -name "version.h" 2> /dev/null`
+else
+    szFind=`find . -name "version.h" 2> /dev/nul`
+fi
+
+if [ "$szFind" = "" -o $NEWBUILD -eq 1 ] ; then
+    now=`date '+%y%m%d-%H%M'`
+    echo "Modifying bldenv/version.h with $now ..."
+    chmod 777 version.h
+    echo "#define SS_VERSIONNUMBER \"5.5\"" > version.h
+    echo "#define SS_RELDIR \"5.5\"" >> version.h
+    echo "#define SS_BUILDSTAMP \"$now\"" >> version.h
+    chmod 555 version.h
+fi
+
+cd $curdir
+
+if [ "$DO_DEBUG_BUILD" -eq 1 ] ; then
+    do_build "debug"
+fi
+
+if [ "$DO_RELEASE_BUILD" -eq 1 ] ; then
+    do_build "release"
+fi
+
+cd $BUILDROOT
+
+if [ $CREATE_LINKS -eq 1 ] ; then
+    if [ "$OSNAME" != "Windows_NT" ] ; then
+        rollover_f_unix
+    fi
+fi
+    
+cd $BUILDDIR
+
+# look for errors, and if any are found echo them
+grep_errs_warns
+if [ -s $BUILDDIR/build.msgs ]; then
+  err_noexit
+else
+  rm -f $BUILDDIR/build.msgs
+fi
+
+# create some html for the buildinfo web page
+if [ "$CREATE_HTML_INFO" = "yes" ]; then
+    if [ $BERROR -eq 0 ]; then
+        echo $buildinfo |create-html-info.pl -buildstatus succeeded
+    else
+        echo $buildinfo |create-html-info.pl -buildstatus warnings
+    fi
+
+fi
+
+# delete excess build trees and clients
+# client deletions are done pre-build by p4-client-cleanup.pl
+#delete_tree $BUILDROOT $BLDNAME
+
+pass_f
+
+# There may also be some other items we want to build that are
+# not part of the platform but depend on it -sturdy 11/19/99
+set -x
+if [ -n "$BUILD_XTRA_STUFF" ]
+then
+	$BUILD_XTRA_STUFF
+fi
+
+# Copy the NT libs and includes to a constant area. This allows QA folks
+# to build against the same directory that contains the latest and greatest
+# platform bits. -sturdy 02/15/00
+if [ "$OSNAME" = "Windows_NT" ]
+then
+    rm -rf $QALIBS/release-winnt/itree
+    rm -rf $QALIBS/thirdparty/ace
+    rm -rf $QALIBS/thirdparty/rogueNT
+    rm -rf $QALIBS/clients/API
+    cd $BUILDDIR/release-winnt
+	find itree -depth -print|cpio -dumpv $QALIBS/release-winnt
+    cd $BUILDDIR/thirdparty
+	find ace -depth -print|cpio -dumpv $QALIBS/thirdparty
+    find rogueNT -depth-print|cpio -dumpv $QALIBS/thirdparty
+    cd $BUILDDIR/clients
+	find API -depth -print|cpio -dumpv $QALIBS/clients
+	cp $BUILDDIR/release-winnt/config/xmlset/xmlset.exe $QALIBS/release-winnt/itree/$RELDIR/bin/winnt
+fi
+
+exit 0

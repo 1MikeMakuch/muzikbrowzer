@@ -1,0 +1,90 @@
+a:link    { text-decoration: none; color: Blue};
+a:visited { text-decoration: none; color: Blue};
+a:active  { text-decoration: none; color: Blue};
+a:hover   { text-decoration: none; color: Blue};
+
+.htmlbody {
+	margin-top: 30px;
+	margin-left:  30px;
+	margin-right: 30px;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 10pt;
+	font-style: normal;
+	text-indent: 0px;
+	line-height: normal;
+	font-weight: normal;
+	font-variant: normal;
+	background-color: #ffffff;
+	background-repeat:no-repeat; 
+}
+
+.text {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 10pt;
+	font-style: normal;
+	text-decoration: none;
+	text-indent: 0px;
+	line-height: normal;
+	font-weight: normal;
+	font-variant: normal;
+	background-color: #ffffff;
+}
+
+.copyright {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 8pt;
+	font-style: normal;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	text-indent: 0px;
+	color: white;
+	background-color: white;
+	text-decoration: none;
+}
+
+h1 {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 14pt;
+	font-weight: bold;
+	text-indent: 0px;
+	color: Black;
+}
+
+h2 {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12pt;
+	font-weight: bold;
+	text-indent: 0px;
+	color: Black;
+}
+
+h3 {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 10pt;
+	font-weight: bold;
+	text-indent: 0px;
+	color: Black;
+}
+
+
+table {
+	background-color: #ffffff;
+}
+
+
+table.rcm {
+	background-color: white;
+}
+
+td {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 14pt;
+	font-style: normal;
+	line-height: normal;
+	font-weight: bold;
+	font-variant: normal;
+	text-transform: none;
+	text-indent: 0px;
+	text-decoration: none;
+}

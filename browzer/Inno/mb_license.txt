@@ -1,0 +1,103 @@
+
+
+
+This is a legal agreement between you, the end user,
+and Pecan Ventures, LLC a Texas USA LLC.
+This software is protected by copyright laws
+and remains the sole property of Pecan Ventures, LLC. By installing 
+muzikbrowzer (the "Software") media, you agree to
+be bound by the terms of this agreement. If you do not
+agree to the terms of this agreement, promptly uninstall and delete the
+media and accompanying items.
+
+1. Grant of License. Pecan Ventures, LLC hereby grants to you (an individual
+or company) the right to install and activate the Software
+on one computer for your personal or commerical use.
+Copying, sharing or distributing this Software with other
+individuals is in violation of this license.
+
+2. Copyright. The Software is owned by Pecan Ventures,
+LLC and protected by United States copyright laws and
+international treaty provisions. Therefore, you must treat
+this Software like any other copyrighted material. You
+may not make this Software or copies thereof available in
+any manner or form or use, copy or transfer the Software,
+in whole or in part, except as provided herein.
+
+3. Other Restrictions. You may not rent or lease this
+Software to any other party. You may not alter, merge,
+modify, adapt, reverse engineer, decompile or disassemble
+the software, or disclose the contents of this Software
+to any other party.
+
+4. Electronic Transmission of Software. If you received
+the Software by electronic transmission or by Internet
+delivery, by installation of the Software, you acknowledge
+that you have read and understand this license agreement
+and agree to be bound by its terms and conditions.
+
+5. Term of Agreement. The term of this Agreement and the
+license granted to you pursuant hereto shall commence
+upon installation of this Software. This Agreement and the
+license granted herein may otherwise be terminated by Pecan Ventures, LLC
+in the event that you are in breach of any provision of
+this Agreement. In the event of termination, you agree
+to immediately return this Software, accompanying items,
+and any copies thereof to Pecan Ventures, LLC.
+
+6. LIMITED WARRANTY 
+
+(A) THE SOFTWARE AND ACCOMPANYING WRITTEN MATERIALS ARE
+PROVIDED ON AN "AS IS" BASIS, WITHOUT ANY WARRANTIES
+OF ANY KIND, INCLUDING, BUT NOT LIMITED TO, ANY IMPLIED
+WARRANTIES OF MERCHANTABILITY OR FITNESS FOR ANY PARTICULAR
+PURPOSE. NO ORAL OR WRITTEN INFORMATION OR ADVICE GIVEN BY
+Pecan Ventures, LLC, ITS DEALERS, DISTRIBUTORS, AGENTS OR
+EMPLOYEES SHALL CREATE A WARRANTY OR IN ANY WAY INCREASE
+THE SCOPE OF THIS WARRANTY, AND YOU MAY NOT RELY ON ANY
+SUCH INFORMATION OR ADVICE. Pecan Ventures, LLC DOES
+NOT WARRANT, GUARANTEE, OR MAKE ANY REPRESENTATIONS
+REGARDING THE USE OR THE RESULTS OF USE, OF THE SOFTWARE
+OR WRITTEN MATERIALS IN TERMS OF CORRECTNESS, ACCURACY,
+RELIABILITY, CURRENTNESS, OR OTHERWISE, AND THE ENTIRE
+RISK AS TO THE RESULTS AND PERFORMANCE OF THE SOFTWARE IS
+ASSUMED BY YOU. IF THE SOFTWARE OR WRITTEN MATERIALS ARE
+DEFECTIVE, YOU AND NOT Pecan Ventures, LLC OR ITS DEALERS,
+DISTRIBUTORS, AGENTS, OR EMPLOYEES, ASSUME THE ENTIRE COST
+OF ALL NECESSARY SERVICING, REPAIR OR CORRECTION OTHER
+THAN EXPRESSLY DESCRIBED ABOVE.
+
+(B) NEITHER Pecan Ventures, LLC NOR ANYONE ELSE WHO HAS
+BEEN INVOLVED IN THE CREATION, PRODUCTION OR DELIVERY OF
+THIS PRODUCT SHALL BE LIABLE FOR ANY DIRECT, INDIRECT,
+CONSEQUENTIAL OR INCIDENTAL DAMAGES (INCLUDING DAMAGES
+FOR LOSS OF BUSINESS PROFITS, BUSINESS INTERRUPTION, LOSS
+OF BUSINESS INFORMATION, AND THE LIKE) ARISING OUT OF THE
+USE OR INABILITY TO USE SUCH PRODUCT OR RELATED TO THIS
+AGREEMENT EVEN IF Pecan Ventures, LLC HAS BEEN ADVISED
+OF THE POSSIBILITY OF SUCH DAMAGES. Pecan Ventures, LLC
+SHALL NOT BE LIABLE TO YOU FOR ANY INDIRECT, SPECIAL,
+INCIDENTAL, OR CONSEQUENTIAL DAMAGES OR LOST PROFITS
+ARISING OUT OF OR RELATED TO THIS AGREEMENT OR YOUR USE
+OF THE SOFTWARE AND/OR THE RELATED DOCUMENTATION, EVEN IF
+Pecan Ventures, LLC HAS BEEN ADVISED OF THE POSSIBILITY
+OF SUCH DAMAGES. IN NO EVENT SHALL Pecan Ventures, LLC'S
+LIABILITY HERE UNDER, IF ANY, EXCEED THE PURCHASE PRICE
+PAID BY YOU FOR THE SOFTWARE.
+
+7. Governing Law. This agreement and the Limited Warranty
+described herein shall be governed and construed in
+accordance with the laws of the State of Texas, USA. You may
+have other rights which vary from state to state.
+
+ALL RIGHTS NOT EXPRESSLY GRANTED IN THIS LICENSE AGREEMENT
+ARE RESERVED BY Pecan Ventures, LLC.
+
+ACKNOWLEDGMENT BY INSTALLATION OF THIS SOFTWARE, YOU
+ACKNOWLEDGE THAT YOU HAVE READ AND UNDERSTAND THE FORE
+GOING AND THAT YOU AGREE TO BE BOUND BY ITS TERMS AND
+CONDITIONS. YOU ALSO AGREE THAT THIS AGREEMENT IS THE
+COMPLETE AND EXCLUSIVE STATEMENT OF AGREEMENT BETWEEN THE
+PARTIES AND SUPERSEDES ALL PROPOSED OR PRIOR AGREEMENTS,
+ORAL OR WRITTEN, AND ANY OTHER COMMUNICATIONS BETWEEN THE
+PARTIES RELATING TO THE LICENSE DESCRIBED HEREIN.

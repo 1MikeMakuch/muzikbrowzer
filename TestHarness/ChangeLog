@@ -1,0 +1,66 @@
+2003-01-02 19:45  mkm
+
+	* Test.h, TestHarness.h, TestResult.h, article.html: ogg support,
+	update id3v1/2 tag according to what's already there
+
+2002-11-18 14:29  mkm
+
+	* TestHarness.dsp: Put new logo on main dialog
+
+2002-10-31 10:22  mkm
+
+	* Test.cpp, TestHarness.dsp, TestRegistry.cpp, TestResult.cpp:
+	ifdef _DEBUG stuff
+
+2002-10-24 17:06  mkm
+
+	* TestHarness.dsp: ConfigPassword dlg, plug some resource leaks
+
+2002-10-23 11:43  mkm
+
+	* TestHarness.dsp: Insure errors
+
+2002-10-15 22:59  mkm
+
+	* TestHarness.dsp: More project fixin up
+
+2002-10-15 22:04  mkm
+
+	* TestHarness.dsp: fix up configs, Release, Insure, Debug
+
+2002-10-09 10:15  mkm
+
+	* TestResult.cpp, TestResult.h: Test results only on failure, but
+	logging 'em. And added additional font settings for panel vs.
+	titles
+
+2002-10-09 02:23  mkm
+
+	* TestHarness.dsp: Renaming for branding
+
+2002-10-09 00:52  mkm
+
+	* TestHarness.dsp: Use SerialMFC for I/O. Mod to look for # of ir
+	pulses instead of interKeyDelay
+
+2002-10-04 20:20  mkm
+
+	* TestHarness.dsp, TestHarness.plg, TestResult.cpp, TestResult.h:
+	Finished up rearranging into seperate dirs and static libs and
+	projects
+
+2002-10-02 21:27  mkm
+
+	* TestHarness.dsp: Handle seekbar, adjust menu button and applabel
+
+2002-09-25 10:46  mkm
+
+	* TestHarness.dsp: tyding up
+
+2002-09-12 01:19  mkm
+
+	* Failure.h, StdAfx.cpp, StdAfx.h, Test.cpp, Test.h,
+	TestHarness.dsp, TestHarness.dsw, TestHarness.h, TestHarness.ncb,
+	TestHarness.opt, TestHarness.plg, TestRegistry.cpp, TestRegistry.h,
+	TestResult.cpp, TestResult.h: Added TestHarness
+

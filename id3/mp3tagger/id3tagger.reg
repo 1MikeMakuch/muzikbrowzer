@@ -1,0 +1,13 @@
+REGEDIT
+; This .REG file may be used by your SETUP program.
+;   If a SETUP program is not available, the entries below will be
+;   registered in your InitInstance automatically with a call to
+;   CWinApp::RegisterShellFileTypes and COleObjectFactory::UpdateRegistryAll.
+
+
+HKEY_CLASSES_ROOT\Id3tagger.Application = Id3tagger Application
+HKEY_CLASSES_ROOT\Id3tagger.Application\CLSID = {1280B282-F699-4E77-8875-CD5D915427F8}
+
+HKEY_CLASSES_ROOT\CLSID\{1280B282-F699-4E77-8875-CD5D915427F8} = Id3tagger Application
+HKEY_CLASSES_ROOT\CLSID\{1280B282-F699-4E77-8875-CD5D915427F8}\ProgId = Id3tagger.Application
+HKEY_CLASSES_ROOT\CLSID\{1280B282-F699-4E77-8875-CD5D915427F8}\LocalServer32 = ID3TAGGER.EXE

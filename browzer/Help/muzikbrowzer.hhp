@@ -1,0 +1,32 @@
+[OPTIONS]
+Auto Index=Yes
+Binary Index=No
+Compatibility=1.1 or later
+Compiled file=muzikbrowzer.chm
+Contents file=toc.hhc
+Default Window=Default
+Default topic=Html\Introduction.htm
+Display compile progress=No
+Full-text search=Yes
+Index file=idx.hhk
+Language=0x409 English (United States)
+Title=muzikbrowzer Help
+
+[WINDOWS]
+Default="muzikbrowzer Help","toc.hhc","idx.hhk","Html\Introduction.htm","Html\Introduction.htm",,,,,0x42521,,0x304e,[200,200,1000,800],,,,,,,0
+MB Help=,"toc.hhc","idx.hhk","Html\Introduction.htm","Html\Introduction.htm",,,,,0x40520,,0xe,[271,372,593,566],0x230000,,,,,,0
+
+
+[FILES]
+Html\Introduction.htm
+Html\QuickStart.htm
+Html\UserGuide.htm
+Html\Configuration.htm
+Html\ReqsNRecs.htm
+Html\configuration.jpg
+
+[MAP]
+#include resource.h
+
+[INFOTYPES]
+

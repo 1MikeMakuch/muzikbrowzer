@@ -1,0 +1,351 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#endif //_WIN32\r\n"
+    "#include ""res\\id3tagger.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""         // Standard components\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON    DISCARDABLE     "res\\id3tagger.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOG DISCARDABLE  0, 0, 235, 55
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About id3tagger"
+FONT 8, "MS Sans Serif"
+BEGIN
+    ICON            IDR_MAINFRAME,IDC_STATIC,11,17,20,20
+    LTEXT           "id3tagger Version 1.0",IDC_STATIC,40,10,119,8,
+                    SS_NOPREFIX
+    LTEXT           "Copyright (C) 2003",IDC_STATIC,40,25,119,8
+    DEFPUSHBUTTON   "OK",IDOK,178,7,50,14,WS_GROUP
+END
+
+IDD_ID3TAGGER_DIALOG DIALOGEX 0, 0, 501, 274
+STYLE DS_3DLOOK | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | WS_VISIBLE | 
+    WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+EXSTYLE WS_EX_APPWINDOW
+CAPTION "mp3tagger"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LISTBOX         IDC_LIST_FILES,10,20,275,85,LBS_SORT | 
+                    LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_HSCROLL | 
+                    WS_TABSTOP
+    PUSHBUTTON      "Add",IDC_BUTTON_ADDFILES,70,110,34,14
+    PUSHBUTTON      "Remove",IDC_BUTTON_REMOVEFILES,120,110,34,14
+    PUSHBUTTON      "Remove all",IDC_BUTTON_REMOVEALLFILES,170,110,44,14
+    LISTBOX         IDC_LIST_COMMANDS,10,145,355,40,LBS_NOINTEGRALHEIGHT | 
+                    WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Remove",IDC_BUTTON_REMOVECOMMAND,380,145,44,14
+    PUSHBUTTON      "Remove all",IDC_BUTTON_REMOVECOMMANDALL,380,165,44,14
+    COMBOBOX        IDC_COMBO_FIELD1,15,210,60,70,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO_OPERATION,80,210,73,75,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO_MATCHVALUE,155,210,205,70,CBS_DROPDOWN | 
+                    WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO_FIELD2,15,250,60,80,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO_NEWVALUE,80,250,280,70,CBS_DROPDOWN | 
+                    WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Add",IDC_BUTTON_ADDCOMMAND,370,215,34,14
+    PUSHBUTTON      "Clear",IDC_BUTTON_COMMANDSCLEAR,370,234,34,14
+    PUSHBUTTON      "&Help",ID_HELP,445,160,50,14
+    DEFPUSHBUTTON   "Apply",IDC_BUTTON_CHECK,445,190,50,14
+    PUSHBUTTON      "Quit",IDCANCEL,445,250,50,14
+    LTEXT           "Double click a file on the left to display it's current tag info",
+                    IDC_STATIC,290,10,183,10
+    EDITTEXT        IDC_EDIT_TAGINFO,290,20,200,85,ES_MULTILINE | 
+                    ES_READONLY | WS_VSCROLL | WS_HSCROLL
+    LTEXT           "If Field",IDC_STATIC,15,200,22,10
+    LTEXT           "Operation",IDC_STATIC,80,200,32,10
+    LTEXT           "Value",IDC_STATIC,155,200,21,10
+    LTEXT           "Field",IDC_STATIC,15,240,42,10
+    GROUPBOX        "Enter tag editing commands",IDC_STATIC,5,135,425,135
+    GROUPBOX        "mp3 files to edit",IDC_STATIC,5,5,490,125
+    LTEXT           "To New Value",IDC_STATIC,80,240,48,10
+    GROUPBOX        "Condition (optional)",IDC_STATIC,10,190,355,35
+    GROUPBOX        "Set",IDC_STATIC,10,230,355,35
+    PUSHBUTTON      "Show tags for all files",IDC_BUTTON_SHOWALL,340,110,74,
+                    14
+END
+
+IDD_CHECKDLG DIALOG DISCARDABLE  0, 0, 482, 321
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Dialog"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "Doit",IDOK,178,300,50,14
+    EDITTEXT        IDC_EDIT_CHECK,0,0,480,295,ES_MULTILINE | ES_AUTOVSCROLL | 
+                    ES_AUTOHSCROLL | ES_READONLY | WS_VSCROLL | WS_HSCROLL
+    DEFPUSHBUTTON   "Cancel",IDCANCEL,253,300,50,14
+END
+
+IDD_DIALOG_PROGRESS DIALOG DISCARDABLE  0, 0, 277, 46
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION
+CAPTION "tagger progress"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         "Progress1",IDC_PROGRESS,"msctls_progress32",WS_BORDER,
+                    34,13,210,20
+END
+
+
+#ifndef _MAC
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904B0"
+        BEGIN
+            VALUE "CompanyName", "\0"
+            VALUE "FileDescription", "id3tagger MFC Application\0"
+            VALUE "FileVersion", "1, 0, 0, 1\0"
+            VALUE "InternalName", "id3tagger\0"
+            VALUE "LegalCopyright", "Copyright (C) 2003\0"
+            VALUE "LegalTrademarks", "\0"
+            VALUE "OriginalFilename", "id3tagger.EXE\0"
+            VALUE "ProductName", "id3tagger Application\0"
+            VALUE "ProductVersion", "1, 0, 0, 1\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+#endif    // !_MAC
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 228
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 48
+    END
+
+    IDD_ID3TAGGER_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 494
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 267
+    END
+
+    IDD_CHECKDLG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 475
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 314
+    END
+
+    IDD_DIALOG_PROGRESS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 270
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 39
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog Info
+//
+
+IDD_ID3TAGGER_DIALOG DLGINIT
+BEGIN
+    IDC_COMBO_FIELD1, 0x403, 1, 0
+"\000" 
+    IDC_COMBO_FIELD1, 0x403, 6, 0
+0x6547, 0x726e, 0x0065, 
+    IDC_COMBO_FIELD1, 0x403, 7, 0
+0x7241, 0x6974, 0x7473, "\000" 
+    IDC_COMBO_FIELD1, 0x403, 6, 0
+0x6c41, 0x7562, 0x006d, 
+    IDC_COMBO_FIELD1, 0x403, 6, 0
+0x6954, 0x6c74, 0x0065, 
+    IDC_COMBO_FIELD1, 0x403, 6, 0
+0x7254, 0x6361, 0x006b, 
+    IDC_COMBO_FIELD1, 0x403, 5, 0
+0x6559, 0x7261, "\000" 
+    IDC_COMBO_OPERATION, 0x403, 1, 0
+"\000" 
+    IDC_COMBO_OPERATION, 0x403, 12, 0
+0x7369, 0x6520, 0x7571, 0x6c61, 0x7420, 0x006f, 
+    IDC_COMBO_OPERATION, 0x403, 16, 0
+0x7369, 0x6e20, 0x746f, 0x6520, 0x7571, 0x6c61, 0x7420, 0x006f, 
+    IDC_COMBO_OPERATION, 0x403, 9, 0
+0x6f63, 0x746e, 0x6961, 0x736e, "\000" 
+    IDC_COMBO_OPERATION, 0x403, 17, 0
+0x6f64, 0x7365, 0x6e20, 0x746f, 0x6320, 0x6e6f, 0x6174, 0x6e69, "\000" 
+    IDC_COMBO_OPERATION, 0x403, 9, 0
+0x7369, 0x6220, 0x616c, 0x6b6e, "\000" 
+    IDC_COMBO_OPERATION, 0x403, 13, 0
+0x7369, 0x6e20, 0x746f, 0x6220, 0x616c, 0x6b6e, "\000" 
+    IDC_COMBO_MATCHVALUE, 0x403, 1, 0
+"\000" 
+    IDC_COMBO_MATCHVALUE, 0x403, 16, 0
+0x6156, 0x6972, 0x756f, 0x2073, 0x7241, 0x6974, 0x7473, 0x0073, 
+    IDC_COMBO_FIELD2, 0x403, 1, 0
+"\000" 
+    IDC_COMBO_FIELD2, 0x403, 6, 0
+0x6547, 0x726e, 0x0065, 
+    IDC_COMBO_FIELD2, 0x403, 7, 0
+0x7241, 0x6974, 0x7473, "\000" 
+    IDC_COMBO_FIELD2, 0x403, 6, 0
+0x6c41, 0x7562, 0x006d, 
+    IDC_COMBO_FIELD2, 0x403, 6, 0
+0x6954, 0x6c74, 0x0065, 
+    IDC_COMBO_FIELD2, 0x403, 6, 0
+0x7254, 0x6361, 0x006b, 
+    IDC_COMBO_FIELD2, 0x403, 5, 0
+0x6559, 0x7261, "\000" 
+    IDC_COMBO_NEWVALUE, 0x403, 1, 0
+"\000" 
+    IDC_COMBO_NEWVALUE, 0x403, 16, 0
+0x6156, 0x6972, 0x756f, 0x2073, 0x7241, 0x6974, 0x7473, 0x0073, 
+    IDC_COMBO_NEWVALUE, 0x403, 20, 0
+0x547b, 0x7469, 0x656c, 0x207d, 0x202d, 0x417b, 0x7472, 0x7369, 0x7374, 
+0x007d, 
+    IDC_COMBO_NEWVALUE, 0x403, 22, 0
+0x4c7b, 0x7361, 0x4e74, 0x6d61, 0x2c65, 0x4620, 0x7269, 0x7473, 0x614e, 
+0x656d, 0x007d, 
+    IDC_COMBO_NEWVALUE, 0x403, 21, 0
+0x467b, 0x7269, 0x7473, 0x614e, 0x656d, 0x4c20, 0x7361, 0x4e74, 0x6d61, 
+0x7d65, "\000" 
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDP_OLE_INIT_FAILED     "OLE initialization failed.  Make sure that the OLE libraries are the correct version."
+    IDS_ABOUTBOX            "&About id3tagger..."
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#endif //_WIN32
+#include "res\id3tagger.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"         // Standard components
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

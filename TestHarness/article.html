@@ -1,0 +1,638 @@
+<html>
+<head>
+<title>C/C++ Users Journal Web Site</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<center>
+<h1>C/C++ Users Journal</h1>
+<h2>October 2002 issue</h2>
+<h2><a href="http://www.cuj.com/articles/2002/0210/0210a/0210a.htm">
+http://www.cuj.com/articles/2002/0210/0210a/0210a.htm
+</a>
+</h2>
+</center>
+<h2 align="center"><font color="800000">Test Driven Development in C/C++</font></h2>
+<h3 align="center"><font color="800000"><b>Dr. Robert Koss and Jeff Langr</b> </font></h3>
+<H1 align="center">
+  <P align="center"> 
+</H1>
+<div align="center">Automated testing for C: The simplest explanation that could 
+  possibly work.</div>
+<hr>
+<h3><font color="000080"> </font> <font color="000080">Introduction</font></h3>
+<p> Over the course of the last two years, our company has been promoting, conducting 
+  training, and consulting in XP (eXtreme Programming). We believe that XP is 
+  the best technique for delivering high-quality software because of its emphasis 
+  on communication, simplicity, testing, and rapid feedback. XP achieves its results 
+  through implementation of about a dozen proven practices. We are only going 
+  to focus on one those practices in this article &#151; TDD (Test Driven Development). 
+<p> Many companies fear they can&#146;t be eXtreme for a variety of reasons, but 
+  we can&#146;t imagine a company or process that would advocate not testing their 
+  software. The TDD technique can be, and should be, applied in any software development 
+  environment. You don&#146;t even need your boss&#146; permission to do TDD because 
+  it is done as part of programming instead of a separate phase of the project. 
+  While testing, design, and programming are three distinct activities, we don&#146;t 
+  separate these activities in time &#151; they are done concurrently and continuously. 
+  The example presented in this article demonstrates how this works.
+<p> Nearly all of the publications concerning XP or TDD use a programming language 
+  that supports OO (object oriented) development. This is understandable since 
+  XP had its birth in the Smalltalk community and many &#151; but not all &#151; 
+  shops are in fact using an OO language.
+<p> A recent client of ours wanted to do TDD. In fact, they wanted to do all of 
+  the XP practices. The problem was that they were a C shop, and they were going 
+  to be using C for the foreseeable future, so we had to roll up our sleeves and 
+  figure out how to get the benefits of TDD in C. Unfortunately C doesn&#146;t 
+  (directly) support polymorphism, a concept that is fundamental to the techniques 
+  used in TDD.
+<p> In TDD, one module is developed at a time. To properly test a given module, 
+  it must be isolated from most other modules with which it interacts. In OO languages 
+  like C++ and Java, we would use polymorphic interfaces to isolate the module 
+  under test. These interfaces also provide a testing environment for the module. 
+  We need these same capabilities in C.
+<p> We used our experience working in embedded systems projects where either the 
+  hardware wasn&#146;t ready or wasn&#146;t available to us. In these environments, 
+  we would have to stub out the function calls that provided access to the missing 
+  hardware. This stubbing technique is just what we need to get the benefits that 
+  polymorphism provides in languages that support it. In fact, stubbing is polymorphism, 
+  and we refer to it as link-time polymorphism. 
+<h3> </h3>
+<h3><font color="000080">TDD </font></h3>
+<p> TDD is a style of programming where we write a test before the code that it 
+  is supposed to test. The test shouldn&#146;t even compile at first because the 
+  code to be tested hasn&#146;t been written yet. We then write enough code to 
+  get everything to compile, but purposely code it so that our test fails. We 
+  then write code to make the test pass. Each of these steps is critical to the 
+  TDD process. 
+<p> Finally, every time our tests pass, we refactor the code so that it is the 
+  best, r&eacute;sum&eacute;-quality code that we can produce. We strive to make 
+  our code have the best possible design for the functionality we have implemented 
+  so far, but for nothing more than that functionality. Only after we have refactored 
+  toward these goals do we go on to writing another test. We repeat this cycle 
+  of test-code-refactor in rapid succession throughout our development day.
+<p> How often have you spent an hour writing code, only to spend the entire day 
+  getting it to compile and debugged? We don&#146;t enjoy doing that because most 
+  of the day is spent feeling like a failure for not getting the code correct 
+  the first time. Instead of programming a (possibly large) piece of functionality, 
+  TDD dictates that we work on a very small problem, solve it, and then move on 
+  to the next very small problem. After all, every large complex problem is just 
+  a bunch of little problems. We&#146;ve found that by doing this, we can be successful 
+  throughout the entire day. Solving small problems, one after another, is sustainable, 
+  enjoyable, and highly productive.
+<p> The key to these series of successes is rapid feedback. We run the compiler 
+  just as soon as we have enough code that stands a chance of compiling. Compiling 
+  after every single line may not be possible in practice, but it&#146;s not as 
+  far off as you might think. We also run our tests as often as possible. Our 
+  rule is that no more than 10 minutes may go by without having all of our tests 
+  running. Five minutes is better. One minute is better still. This obsession 
+  with running our tests frequently forces us to partition our work into a series 
+  of very small problems.
+<p> You might initially find this unnatural &#151; we certainly did when we first 
+  learned about TDD. But after programming in this style for the last two years, 
+  there is no way we&#146;ll ever go back to our old ways of writing code and 
+  either testing it afterwards or handing it off to QA for testing. Have you ever 
+  tried to test code after it was written? It is very difficult, so difficult 
+  that it&#146;s often not done. By writing our tests first, we guarantee that 
+  there are tests and that the system is designed to be testable.
+<p> Since adopting TDD, we have almost never used a debugger on the code we have 
+  written. In fact, cranking up the debugger &#151; or even adding a <b>printf</b> 
+  statement &#151; is a sign of failure: we bit off a bigger problem than we could 
+  chew. Our response to the supposed need for debugging is to simply throw away 
+  the last few minutes worth of work. We then try again, taking even smaller steps. 
+<h3> </h3>
+<h3><font color="000080">Point-of-Sale System </font></h3>
+<p> As an example, we&#146;ve chosen a point-of-sale system, like one might encounter 
+  in any retail store. A sales clerk passes items over a scanner that reads the 
+  barcode. A display monitor shows information on each item as it is scanned and 
+  also tracks the total for each sale of one or more items to a given shopper. 
+
+<h3><a name="1_return"></a><font color="000080">Our First User Story [<a href="#1">1</a>] </font></h3>
+<p> The total price of all items in the sale is available. 
+<p> We have the concept of a <b>Sale</b>, and we know that it has a total. Let&#146;s 
+  capture that in a test. We are essentially coding our requirements document 
+  so that it executes as a suite of unit tests! This is an important concept when 
+  practicing XP. We do not produce thick paper requirements or design documents 
+  that never seem to match the working code. Yet documenting requirements and 
+  design is essential to software development, so we do it in code instead.
+<p> Writing tests in code is essential for a second reason: executing tests manually 
+  is extremely time consuming. Ultimately it becomes impossible to keep up with 
+  executing all tests against even a modest body of code. We have to automate 
+  the tests; otherwise they don&#146;t get run. As soon as tests aren&#146;t being 
+  run, we&#146;re shipping defects.
+<p> In TDD, a testing framework is an essential tool. It not only provides us 
+  with a means for automating the tests, but it is also an integral part of the 
+  minute-to-minute development process. Such a tool need not be an expensive investment. 
+  The tool we use here &#151; CppUnitLite &#151; is a macro-based tool that is 
+  freely available from our website (&lt;www.objectmentor.com&gt;). CppUnitLite 
+  was developed for C++, but since C++ can call C, we use it for development of 
+  C applications as well. Also, its use of C++ is minimal so that C developers 
+  with little or no knowledge of C++ can quickly learn how to use it.
+<p> For our user story, we first create the file <b>SaleTest.cpp</b> to contain 
+  the tests for <b>Sale</b>. CppUnitLite requires a little boilerplate code:
+<p> 
+<pre>
+#include "../TestHarness/TestHarness.h"
+
+int main()
+{
+   TestResult tr;
+   TestRegistry::runAllTests( tr );
+   return 0;
+}</pre>
+<p> The <b>main</b> function acts as the test driver. The basic idea is that the 
+  <b>runAllTests</b> method is responsible for extracting and executing all of 
+  the tests we have defined. It isn&#146;t necessary to know how the testing framework 
+  works to use it &#151; in fact we use it in our C++ course starting on the first 
+  day of class, long before students know enough C++ to understand how it works. 
+<p> Now that the boilerplate code is in place, we can write our first test. Each 
+  test is constructed with the <b>TEST</b> macro that is part of CppUnitLite. 
+  Anything defined with this macro is automatically picked up by <b>runAllTests</b>. 
+  The macro takes two parameters: an arbitrary name used to group the tests and 
+  a descriptive name for the test.
+<p> 
+<pre>
+#include "../TestHarness/TestHarness.h"
+
+int main()
+{
+   TestResult tr;
+   TestRegistry::runAllTests( tr );
+   return 0;
+}
+
+TEST( Sale, totalNewSale )
+{
+   CHECK( 0 == GetTotal( ) );
+}</pre>
+<p> The name of our first test is <b>totalNewSale</b>. It represents the state 
+  of a new <b>Sale</b> before any <b>Item</b>s are added to it. It seems reasonable 
+  that before anything is purchased the total of the <b>Sale</b> should be zero, 
+  so we express this in our test. 
+<p> Note that all tests contain one or more <b>CHECK</b> macros. We use the <b>CHECK</b> 
+  macro to ensure that a Boolean condition holds true. A test may have more than 
+  one <b>CHECK</b> statement; each of these is executed regardless of whether 
+  a prior <b>CHECK</b> passed or failed.
+<p> <b>SaleTest</b> will of course not compile, since the function <b>GetTotal</b> 
+  doesn&#146;t exist yet. We compile anyway as our first level of feedback. If 
+  <b>SaleTest</b> compiles, we know we have a serious configuration problem.
+<p> 
+<pre>
+g++ -c SaleTest.cpp
+SaleTest.cpp:
+   In method 'void totalNewSaleSaleTest::run(TestResult &amp;)':
+SaleTest.cpp:12:
+   implicit declaration of function 'int GetTotal(...)'</pre>
+<p> Once we get our compile errors, we create just enough of <b>Sale.h</b>: 
+<p> 
+<pre>
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+int GetTotal();
+
+#ifdef __cplusplus
+}
+#endif</pre>
+<p> We include <b>Sale.h</b> in <b>SaleTest.cpp</b> and create just enough of 
+  <b>Sale.c</b>. 
+<p> 
+<pre>
+#include "Sale.h"
+
+int GetTotal()
+{
+   return -1;
+}</pre>
+<p> Note the use of the linkage specifier <b>extern "C"</b> in <b>Sale.h</b>. 
+  This is necessary because our testing framework is written in C++ and <b>#include</b>s 
+  this file; <b>Sale.c</b> is written in C and also includes this file. This is 
+  the mechanism needed for C++ code to call C code. 
+<p> Our purpose is to get to compilation so that we can link and run our tests. 
+  To run the test, we simply execute <b>SaleTest</b>:
+<p> 
+<pre>
+Failure: "0 == GetTotal( )" line 13 in SaleTest.cpp</pre>
+<p> There was one failure. 
+<p> This is as expected: we have written a test but no production code yet. We 
+  want to see a failure, though, as part of our feedback-driven, test-first design 
+  cycle. A reminder of the cycle: 
+<ul>
+  <li> Write a test for nonexistent code.</li>
+  <li>Expect that the test will fail.</li>
+  <li>Write just enough code to make the test pass.</li>
+  <li>Refactor.</li>
+</ul>
+<p> Every once in a while, the test that we expect to fail passes. This should 
+  be a shock!
+<p> For our <b>Sale</b> application, we can make the test pass by simply returning 
+  <b>0</b> from <b>GetTotal</b>.
+<p> 
+<pre>
+int GetTotal( )
+{
+   return 0;
+}</pre>
+<p> As ridiculous as it looks to just return a hard-coded value to make the test 
+  pass, this is part of TDD. We have a failing test case, and we want to get it 
+  to pass as quickly as possible. Once the test is passing, we&#146;ll worry about 
+  making it &#147;right.&#148; Returning <b>0</b> seems to be &#147;wrong&#148; 
+  in the sense that the hard-coded zero will have to be replaced very shortly. 
+  But the fact that we provided just enough code to make the current test pass 
+  means that we will have to write more tests. These tests will fail, proving 
+  that a more complicated algorithm is necessary. We increase our test coverage 
+  this way at a steady pace. More tests are a good thing. 
+<p> There were no test failures.
+<p> Our first test is complete. We know the state a <b>Sale</b> should be in when 
+  nothing has been done to it. Now we want the capability to sell at least a single 
+  item, so we write the test <b>sellOneItem</b>. For our test, we make up an item 
+  whose barcode is <b>"a123"</b> and cost is 199 cents. (It&#146;s easiest to 
+  count pennies to avoid any floating-point rounding problems later.)
+<p> 
+<pre>
+TEST( Sale, sellOneItem )
+{
+   BuyItem( "a123" );
+   CHECK( 199 == GetTotal( ) );
+}</pre>
+<p> To sell an item, we need to pass in its barcode string to the <b>Sale</b>. 
+  We devise the function <b>BuyItem</b> to accomplish this. Buying item <b>"a123"</b> 
+  should increase the total of the <b>Sale</b> to <b>199</b>. We compile, expecting 
+  failure: 
+<p> 
+<pre>
+SaleTest.cpp:18:
+   implicit declaration of function 'int BuyItem(...)'</pre>
+<p> To pass compilation, we must modify the header: 
+<p> 
+<pre>
+int GetTotal( );
+void BuyItem( char* barCode );
+as well as Sale.c:
+#include "Sale.h"
+
+int GetTotal( )
+{
+   return 0;
+}
+
+void BuyItem( char* barCode )
+{
+}</pre>
+<p> We can now run all the tests, expecting <b>sellOneItem</b> to fail. 
+<p> 
+<pre>
+Failure: "199 == GetTotal( )" line 19 in SaleTest.cpp</pre>
+<p> There was one failure. 
+<p> Time to add the code to make this test pass. Each shopper&#146;s purchases 
+  must start with a total of <b>0</b>. At this point, the simplest thing that 
+  will work is to introduce a variable to track the total. We declare it in <b>Sale.c</b> 
+  as a <b>static</b>. This gives the variable visibility only at file scope.
+<p> In <b>Sale.c</b>, we return <b>total</b> from <b>GetTotal</b> and update it 
+  in <b>BuyItem</b>.
+<p> 
+<pre>
+#include "Sale.h"
+
+static int total = 0;
+
+int GetTotal()
+{
+   return total;
+}
+
+void BuyItem( char* barCode )
+{
+   total = 199;
+}</pre>
+<p> <a name="2_return"></a>Both tests now pass [<a href="#2">2</a>]. 
+<p> After each new test passes, we always pause and look over the code to be sure 
+  that it communicates. We see the string literal and magic number <b>199</b> 
+  in <b>sellOneItem</b> and feel that the code isn&#146;t as clear as it could 
+  be. Since the tests will evolve and be maintained along with the code that is 
+  being tested, we want them to serve as excellent documentation on how to manipulate 
+  the <b>Sale</b> functions. This obsession we have with clearly communicating 
+  code is far better than placing comments in the code, which quickly become outdated. 
+  Introducing local variables in the test yields:
+<p> 
+<pre>
+TEST( Sale, sellOneItem )
+{
+   char* milkBarcode = "a123";
+   int milkPrice = 199;
+
+   BuyItem( milkBarcode );
+   CHECK( milkPrice == GetTotal( ) );
+}</pre>
+<p> We can now move on and write a third test, which we expect to fail. Note that 
+  we already have a need to reuse the constant declarations of <b>milkBarcode</b> 
+  and <b>milkPrice</b>, so we move them out of <b>sellOneItem</b> and declare 
+  them as <b>static</b>. 
+<p> 
+<pre>
+TEST( Sale, sellTwoItems )
+{
+   BuyItem( milkBarcode );
+   BuyItem( milkBarcode );
+   CHECK( 2 * milkPrice == GetTotal( ) );
+}</pre>
+<p> It fails, as expected: 
+<p> 
+<pre>
+Failure: "2 * milkPrice == GetTotal( )" line 29 in SaleTest.cpp</pre>
+<p> There was one failure. 
+<p> Building the correct production code in <b>Sale.c</b> appears to be straightforward. 
+  Instead of just setting the total to the price of milk, we add the price into 
+  the total:
+<p> 
+<pre>
+void BuyItem( char* barCode )
+{
+   total = total + 199;
+}</pre>
+<p> We compile and run our tests again, expecting success. This time we are (somewhat) 
+  surprised, as we receive the same error again. 
+<p> After scratching our heads for a few seconds, we suspect that the static total 
+  is probably not getting initialized. We probe for an answer via our tests (not 
+  the debugger):
+<p> 
+<pre>
+TEST( Sale, sellTwoItems )
+{
+   CHECK( 0 == GetTotal( ) );
+   BuyItem( milkBarcode );
+   BuyItem( milkBarcode );
+   CHECK( 2 * milkPrice == GetTotal( ) );
+}</pre>
+<p> Aha. This time we receive two failures. The first one confirms our suspicion 
+  &#151; <b>total</b> is not initialized at the start of <b>sellTwoItems</b>: 
+<p> 
+<pre>
+Failure: "0 == GetTotal( )" line 27 in SaleTest.cpp
+Failure: "2 * milkPrice == GetTotal( )" line 30 in SaleTest.cpp</pre>
+<p> We just love that rapid feedback that TDD gives us! 
+<p> The way the test harness works is that each <b>TEST</b> is supposed to be 
+  independent of one another. In fact, you cannot guarantee that the tests will 
+  run in any particular order. (This actually introduced some problems for us 
+  &#151; see [2].) Each test needs to build its own setup.
+<p> We hate day-long debugging sessions that result when one test is unwittingly 
+  dealing with the remnants of some previous test. However, if you follow the 
+  rule of writing just enough code to make tests pass, you will be forced to add 
+  more tests. Usually these additional tests will uncover such insidious problems.
+<p> For the <b>Sale</b> example, we wrote just enough code to get it to work for 
+  one item and one item only. That forced us to write a test for selling two items, 
+  which exposed our error. To fix the problem, we introduced an initialization 
+  function that each test &#151; and therefore each client that will use <b>Sale</b> 
+  &#151; will have to call.
+<p> 
+<pre>
+static char* milkBarcode = "a123";
+static int milkPrice = 199;
+
+TEST( Sale, totalNewSale )
+{
+   Initialize( );
+   CHECK( 0 == GetTotal( ) );
+}
+
+TEST( Sale, sellOneItem )
+{
+   Initialize( );
+   BuyItem( milkBarcode );
+   CHECK( milkPrice == GetTotal( ) );
+}
+
+TEST( Sale, sellTwoItems )
+{
+   Initialize( );
+   CHECK( 0 == GetTotal( ) );
+   BuyItem( milkBarcode );
+   BuyItem( milkBarcode );
+   CHECK( 2 * milkPrice == GetTotal( ) );
+}</pre>
+<p> After declaring <b>Initialize</b> in <b>Sale.h</b>, we add its definition 
+  to <b>Sale.c</b>: 
+<p> 
+<pre>
+void Initialize()
+{
+   total = 0;
+}</pre>
+<p> All tests run at this point. 
+<h3> </h3>
+<h3><font color="000080">Dealing with Databases </font></h3>
+<p> So far, we are only supporting selling one product at a $1.99. We add a fourth 
+  test, to ensure that we can deal with selling two products. 
+<p> 
+<pre>
+TEST( Sale, sellTwoProducts )
+{
+   Initialize( );
+
+   char* cookieBarcode = "b234";
+   int cookiePrice = 50;
+
+   BuyItem( milkBarcode );
+   BuyItem( cookieBarcode );
+
+   CHECK( milkPrice + cookiePrice == GetTotal( ) );
+}</pre>
+<p> We compile and run the tests, which fail: 
+<p> 
+<pre>
+Failure: "milkPrice + cookiePrice == GetTotal()" line 46 in SaleTest.cpp</pre>
+<p> There was one failure. 
+<p> Getting this test to pass is simple:
+<p> 
+<pre>
+void BuyItem( char* barCode )
+{
+   if ( 0 == strcmp( barCode, "a123" ) )
+      total += 199;
+   else if ( 0 == strcmp( barCode, "b234" ) )
+      total += 50;
+}</pre>
+<p> We know that we have to do a lookup someplace using the barcode. Since we 
+  have passing tests, we can now refactor to do a lookup, all the while ensuring 
+  that all our tests still pass. Our refactoring is very incremental: we change 
+  only a very small amount of code before getting feedback by running our tests. 
+  It is otherwise too easy to introduce a defect while making dramatic code changes. 
+<p> Our small step for now is to introduce a placeholder for our lookup in the 
+  form of a call to a <b>GetPrice</b> function. The code in <b>BuyItem</b> will 
+  demonstrate what we want it to do. The real details of the how will come later.
+<p> 
+<pre>
+void BuyItem( char* barCode )
+{
+   int price = GetPrice( barCode );
+   total += price;
+}</pre>
+<p> In other words, our intent is that some other function will do the job of 
+  looking up the item price by barcode. This is known as programming by intention. 
+  It is a very powerful technique because it forces us to work on smaller and 
+  smaller problems, until the how is obvious. For now, we move the conditional 
+  logic from <b>BuyItem</b> to the <b>GetPrice</b> function: 
+<p> 
+<pre>
+int GetPrice( char* barCode )
+{
+   if ( 0 == strcmp( barCode, "a123" ) )
+      return 199;
+   else if ( 0 == strcmp( barCode, "b234" ) )
+      return 50;
+}</pre>
+<p> We add the declaration of this function to <b>Sale.h</b> and run our tests 
+  to ensure they still pass. 
+<p> Now where is <b>GetPrice</b> actually going to find the price of the item? 
+  In the database, of course.
+<p> But using a real database for development is a major undertaking. We don&#146;t 
+  want to go up against a live database, so we have to get a working snapshot. 
+  Then we&#146;ll have to track any changes that the DBA makes to the real database 
+  to keep our snapshot up to date.
+<p> There&#146;s also the performance consideration of working with a database. 
+  We&#146;d have to connect to it for each test, something that takes a lot of 
+  processing time. Yet we need to run our tests every few minutes. The slowness 
+  of establishing the connection would significantly decrease the amount of work 
+  we get done each day.
+<p> Instead, we want to stub out the calls to the database. All that <b>BuyItem</b> 
+  cares about is that <b>GetPrice</b> returns the price of the item. It doesn&#146;t 
+  care if the price comes from a database lookup or if <b>GetPrice</b> makes up 
+  a random price on the spot. We do, of course, have to test the real <b>GetPrice</b> 
+  when we use TDD to build the real database code.
+<p> In order for the call to <b>GetPrice</b> to be able to do both a database 
+  lookup in production code, as well as provide the numbers that we want for our 
+  tests, we have to access it indirectly. The usual way to get different behavior 
+  from a function is to use a function pointer. The test will set the pointer 
+  to its own stub lookup function, and the production code will set the pointer 
+  to a function that does the live database lookup.
+<p> In <b>SaleTest</b>, we start by supplying a stub function, <b>GetPriceStub</b>, 
+  for the lookup:
+<p> 
+<pre>
+int GetPriceStub( char* barCode )
+{
+   if ( 0 == strcmp( barCode, "a123" ) )
+      return 199;
+   else if ( 0 == strcmp( barCode, "b234" ) )
+      return 50;
+}</pre>
+<p> Our tests then need to pass a pointer to this stub function as a parameter 
+  to <b>Initialize</b>. We change the call to <b>Initialize</b> in each test: 
+<p> 
+<pre>
+Initialize( &amp;GetPriceStub );</pre>
+<p> This won&#146;t compile. We fix the prototype and definition of <b>Initialize</b> 
+  in <b>Sale.h</b> and <b>Sale.c</b>. Its new signature is: 
+<p> 
+<pre>
+void Initialize( int
+    (*LookUpPrice)(char* barCode)  )</pre>
+<p> <b>Initialize</b> then needs to store that function pointer. Once again, we 
+  use a <b>static</b> variable declared in <b>Sale.c</b>. 
+<p> 
+<pre>
+static int (*LookUpPrice)(char* barCode);
+
+void Initialize( int (*db)(char*) )
+{
+   total = 0;
+    LookUpPrice = db;
+}</pre>
+<p> Finally, <b>GetPrice</b> is altered so that it dereferences the database function 
+  pointer in order to call the database lookup function. 
+<p> 
+<pre>
+int GetPrice( char* barCode )
+{
+   return LookUpPrice( barCode );
+}</pre>
+<p> We build, run tests, and succeed. 
+<p> Now we can get the price of the item in any way that we choose. For the test, 
+  we use a simple if/else construct to return hard-coded prices based on the barcodes 
+  we know about. In the production code, whoever constructs the point-of-sale 
+  system will have to supply a function pointer to <b>Sale</b> that accesses the 
+  real database. (This function would of course have its own set of tests!) 
+<h3> </h3>
+<h3><font color="000080">Link-Time Polymorphism </font></h3>
+<p> Pointers are powerful but very dangerous, evidenced by the fact that the major 
+  languages introduced in the last decade have moved to eliminate them. The problem 
+  with pointers is that we must make sure that they refer to what we intend. It 
+  is all too easy for a stray pointer to cause the program to crash, inflicting 
+  late-night debugging sessions for the entire development team. Because dereferencing 
+  an invalid pointer is a certain bug and probable crash, many programmers test 
+  the validity of each pointer prior to dereferencing it. Such checking makes 
+  code difficult to read. 
+<p> There is an alternative to using pointers pointing at different functions: 
+  link-time polymorphism. We instead use the linker to link in different functions. 
+  The function <b>BuyItem( char* )</b> will continue to call <b>GetPrice( char* 
+  )</b>, but there will be two <b>GetPrice( char* )</b> functions defined: one 
+  for testing, which we&#146;ll place in the test file <b>SaleTest.cpp</b>, and 
+  another, which we&#146;ll place in a file <b>GetPrice.c</b>.
+<p> When we&#146;re building for test every few minutes throughout the development 
+  day, we link in <b>SaleTest.o</b> and <b>Sale.o</b>. When we want to build the 
+  real system, we link in the real application and <b>GetPrice.o</b>, but not 
+  <b>SaleTest.o</b>. Here is a very simplistic <b>Makefile</b> to illustrate the 
+  two builds:
+<p> 
+<pre>
+POSApp: Sale.o GetPrice.o main.o
+   g++ -o POSApp Sale.o GetPrice.o main.o 
+
+SaleTest: SaleTest.o Sale.o
+   g++ -o SaleTest SaleTest.o Sale.o \
+      ../TestHarness/TestHarness.a
+
+SaleTest.o: SaleTest.cpp Sale.h
+   g++ -c SaleTest.cpp
+
+Sale.o: Sale.c Sale.h GetPrice.h
+   gcc -c Sale.c
+
+GetPrice.o : GetPrice.c GetPrice.h
+   gcc -c GetPrice.c</pre>
+<h3><font color="000080">Conclusion </font> </h3>
+<p> An extremely important thing to note in this exercise is the very small steps 
+  that we took during our development. Our goal was to ensure that we incrementally 
+  improved the system at a steady rate. We wanted to see our tests pass every 
+  5 to 10 minutes or less. This kept us from spending too much time going in the 
+  wrong direction. At the end of the day, the product does more than it did at 
+  the beginning of the day, and it does it correctly. 
+<p> TDD, to put it mildly, is awesome. We also think it is the most important 
+  &#147;movement&#148; in software development today. We continually meet developers 
+  who tell us they have tried it and would never willingly give it up. And as 
+  we&#146;ve demonstrated here, TDD is not just for objects: you can do it in 
+  C. In fact, our position is that since C is such a powerful but dangerous language 
+  due to its low-level nature, you really must protect yourself with TDD.
+<p> The example we chose was admittedly scaled down so that we could illustrate 
+  the techniques of TDD. TDD has been proven to scale to large and complex systems. 
+  In fact, one of the chief goals of TDD is to ensure that we take simplified 
+  approaches to complexity. Properly managing complexity through TDD means that 
+  we can build systems that can be maintained over long periods of time at a reasonable 
+  cost.
+<p> <b>Saletest.cpp</b> (available for download at &lt;www.cuj.com&gt;) shows 
+  the final code demonstrating the link-time polymorphism technique. 
+<h3><font color="000080">Notes </font></h3>
+<p> <a name="1"></a>[1] A user story is a requirement that: 1) has demonstrable 
+  business value, 2) can be tested, and 3) can be completed within an iteration 
+  (typically two weeks). <br>
+  [<a href="#1_return">return to text</a>]
+<p> <a name="2"></a>[2] We encountered some interesting results when we coded 
+  this <b>Sale</b> example on a second machine. The tests ran in a different order 
+  &#151; not top to bottom &#151; because the testing framework produces a linked 
+  list of static objects, and the order of static initialization isn&#146;t guaranteed 
+  across compilers and operating systems. In this case, <b>sellOneItem</b> ran 
+  prior to <b>totalNewSale</b>. The total variable thus held a non-zero amount 
+  when <b>totalNewSale</b> executed, causing it to fail. This would have ended 
+  up being slightly earlier feedback to tell us to initialize the variable properly. 
+  <br>
+  [<a href="#2_return">return to text</a>]
+<h3><font color="000080">About the Authors</font></h3>
+<p><b>Dr. Robert S. Koss</b> is a senior consultant at Object Mentor, Inc. He 
+  has been programming for 29 years, the last 15 years in C and C++. Dr. Koss 
+  has conducted hundreds of classes in C, C++, and OO Design throughout the world, 
+  training thousands of students. 
+<p> <b>Jeff Langr</b> is a senior consultant at Object Mentor, Inc. He has authored 
+  several articles as well as the book <i>Essential Java Style</i> (Prentice Hall, 
+  1999). Langr has over 20 years of software development experience, including 
+  10 years of OO development in C++, Smalltalk, and Java. 

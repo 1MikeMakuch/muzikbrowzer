@@ -1,0 +1,17 @@
+ 
+// Commands (ID_* and IDM_*) 
+HIDM_ABOUTBOX                           0x10010
+ 
+// Prompts (IDP_*) 
+HIDP_OLE_INIT_FAILED                    0x30064
+ 
+// Resources (IDR_*) 
+HIDR_MAINFRAME                          0x20080
+ 
+// Dialogs (IDD_*) 
+HIDD_ABOUTBOX                           0x20064
+HIDD_ID3TAGGER_DIALOG                   0x20066
+HIDD_CHECKDLG                           0x20082
+HIDD_DIALOG_PROGRESS                    0x20084
+ 
+// Frame Controls (IDW_*) 

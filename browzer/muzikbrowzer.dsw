@@ -1,0 +1,404 @@
+Microsoft Developer Studio Workspace File, Format Version 6.00
+# WARNING: DO NOT EDIT OR DELETE THIS WORKSPACE FILE!
+
+###############################################################################
+
+Project: "Inno"=.\Inno\Inno.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name muzikbrowzer
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "PreBuild"=.\PreBuild\PreBuild.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "Publish"=.\Publish\Publish.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "Serial"=.\Serial\Serial.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "TestHarness"=..\TestHarness\TestHarness.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "config"=.\config\config.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "controls"=.\controls\controls.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "id3"=..\id3\id3\id3.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name id3lib
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "id3lib"="..\3rdparty\id3lib-3.8.2\libprj\id3lib.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "id3tagger"=..\id3\mp3tagger\id3tagger.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name id3lib
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "id3utils"=..\id3\id3libutils\id3utils.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "irman"=.\irman\irman.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "mbpw"=..\md5\mbpw.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name md5
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "mbpwDlg"=..\mbpwDlg\mbpwDlg.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name md5
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "md5"=..\md5\md5.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "muzikbrowzer"=.\muzikbrowzer.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name TestHarness
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name config
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name controls
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name id3utils
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name irman
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Serial
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name util
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name oggtagger
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name vorbis_static
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name vorbisfile_static
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name ogg_static
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name zlib
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name id3lib
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name id3
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name mbpw
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name mbpwDlg
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name md5
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name mydiff
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name vorbiscomment
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name id3tagger
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "mydiff"=..\mydiff\mydiff.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "ogg_static"="..\3rdparty\ogg\libogg-1.0\win32\ogg_static.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "oggtagger"=..\oggtagger\oggtagger.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "regset"=.\regset\regset.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "util"=..\util\util.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "vorbis_static"="..\3rdparty\ogg\libvorbis-1.0\win32\vorbis_static.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "vorbiscomment"="..\3rdparty\ogg\vorbis-tools-1.0\win32\vorbiscomment.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name ogg_static
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name oggtagger
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name vorbis_static
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name vorbisfile_static
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "vorbisfile_static"="..\3rdparty\ogg\libvorbis-1.0\win32\vorbisfile_static.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "zlib"="..\3rdparty\id3lib-3.8.2\zlib\prj\zlib.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Global:
+
+Package=<5>
+{{{
+}}}
+
+Package=<3>
+{{{
+}}}
+
+###############################################################################
+

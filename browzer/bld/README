@@ -1,0 +1,213 @@
+Overview of Make system:
+
+#
+#  Compiler options
+#
+
+INCDIRS = list of space-delimited directories to add to the include path
+LIBDIRS = list of space-delimited directories to add to the library search path
+          for linking
+DLLDIRS = list of space-delimited directories to add to the path to pick up
+          DLL's for programs executed in the Makefile (NT only)
+DEFINES = list of space-delimited defines to add to the compile line for this
+          directory.  For example, defines needed to use the NSAPI are only
+          added in the directory where the NSAPI plug-in is built
+
+The platform-level defines files is responsible for tranlating the INCDIRS
+and LIBDIRS lists to platform-specific compiler/link options.  Solaris example:
+CPPFLAGS += $(INCDIRS:%=-I%)
+
+You may also add platform-specific options: INCDIRS-solaris, LIBDIRS-winnt, etc.
+
+USE DEFINES SPARINGLY:  Most defines should be picked up from flags.h, NOT
+from the Makefiles!
+
+LIBDIRS and INCDIRS should be dot-relative (e.g. based on $(TOP), $(OBJECTS),
+$(SRCHERE), $(OBJHERE), etc.  This way, they can be picked up either from
+the current directory or a directory in $(SHADOW)
+
+
+#
+#  Targets
+#
+#   For all targets, leave off the .suffix part!
+#   e.g.  to build libx.a,    LIBS = libx
+#         to build foo.exe,   EXECS = foo
+#
+
+LIBS        =  list of static libraries to be created in this directory
+SHLIBS      =  list of shared libraries to be created in this directory
+EXECS       =  list of executables to be created in this directory
+CLEAN-FILES =  list of additional files to delete for the make clean rule
+
+
+#
+#  Suffixes
+#  All target suffixes are variables, because they vary by platform.
+#  The names of the suffixes are based on their UNIX names, except exe
+#
+#  These variables are set by the build system and should not be changed by
+#  a directory-level Makefile
+#
+
+				Value on NT		Value on Solaris
+o      = object file 		obj			o
+so     = shared library		dll			so
+a      = static library		lib			a
+exe    = executable		.exe			(empty)
+
+#
+#  Rules
+#
+#  The Make system will automatically create C++ objects from .cpp files and
+#  C objects from .c files.  Because NT is not case sensitive, there is no
+#  automatic map from capital .C to an object file
+# 
+#  These variables are set by the build system and should not be changed by
+#  a directory-level Mkaefile
+
+COMPILE.c    = translates a C source file to an object
+COMPILE.cxx  = translates a C++ source file to an object
+LINK.c       = links C objects into an executable
+LINK.cxx     = links C++ objects into an executable
+SHLINK.c     = links C objects into a shared library
+SHLINK.cxx   = links C++ objects into a shared library
+ARLIB        = archives C or C++ objects into a static library
+
+The ARLIB, LINK, and SHLINK macros will collect their objects from $^.
+The COMPILE.c and COMPILE.cxx macros get their source file from $<.
+
+The LINK and SHLINK macros will link in libraries from 
+$($(basename $@)-libs-$(PLATFORM))
+
+#
+#  Example:  An example directory-level makefile to build an executable
+#
+
+	#
+	# System required defines
+	#
+	TOP = ../..
+	HERE = foo
+	SUBSYS = clients
+
+	include $(TOP)/bldenv/defs.mk
+
+	#
+	#  Defines for this directory build
+	#
+	EXECS = foo
+	foo-objs =  a.$o b.$o b.$o
+	foo-libs-solaris = -lnsl -lsock
+	foo-libs-winnt = wsock32.lib
+
+	#
+	#  System required rules
+	#
+	include $(TOP)/bldenv/rules.mk
+
+	
+	#
+	#  Rules for this directory build
+	#
+
+	# assume a is build from a.cpp, b is built from b.c, and c is built
+	# from c.C.  Only c.$o is not built by a default object rule.
+	c.$o : c.C
+		$(COMPILE.cxx)
+
+	#
+	#   All EXECS, SHLIBS, and LIBS enumerated above must have a rule 
+	#   to create the target.  ALL the inputs to the rule should be a macro.
+	#
+	foo$(exe) : $(foo-objs)
+		$(LINK.cxx)
+
+
+#
+#
+#  Partial build trees (SHADOW variable)
+#
+#
+
+In a developers personal workspace, it is only necessary to check out and
+build the files that the developer is actually working on.  Other objects
+that you might need to link with can be picked up from the nightly build
+via the SHADOW mechanism.
+
+SHADOW = (list of space-delimited variables)
+
+on Solaris, a good shadow might be:
+
+SHADOW = /export/fs2/NIGHTLY/current/debug-solaris
+
+on NT, the nightly build system isn't running yet, but it might "someday" look
+like:
+
+SHADOW = x:/
+
+where x: is a mount to the designated build share, maybe \\buildbox\current
+
+The SHADOW mechanism is the preferred way to pick up thirdparty software,
+since it's not common to be working on Rogue Wave or TCL source.
+
+This works as follows:  All directories added to LIBDIRS and INCDIRS 
+are expanded to be *either* the directory you specified or $(SHADOW)/dir.
+If you have set up LIBDIRS and INCDIRS to be dot-relative, then 
+$(TOP)/something/x and $(SHADOW)/something/x will both work.  The macros 
+for $(TOP), $(OBJECTS), etc. are dot-relative, so this will pretty much 
+work automagically if you use existing Makefiles as examples for 
+modifying INCDIRS and LIBDIRS
+
+Shadow directories are always searched after the current build tree.
+
+Installation and packaging are not supported from partial build trees.
+
+#
+#
+#  Integrating a thirdparty vendor's product
+#
+#
+
+We have a module specifically for storing an outside vendor's source and
+executables, (/v/thirdparty).  The purpose is to track exactly what we are
+shipping, so if we use a library to compile against, it should be a part of
+the repository, but we don't necessarily require that the build tools
+become a part of the repository.  This is a subtle, but practical
+distinction, and, of course, subject to change.
+
+The source and any derivative binaries and libraries get added under a
+vendor subdirectory.  A CVS tag should be applied so we can find the exact
+source that was placed there and any derivative libraries and binaries as
+well.  This tag can then be used for building against that source.
+
+To use this vendor's product in a build.  Add to the
+src/bldenv/defs.$(PLATFORM).mk file, (these settings will probably move
+into the thirdparty/Makefile, but for now they are in the the defs file),
+the following assignments:
+
+# add the vendor subdirectory
+VENDORS += widget
+
+# use that name to add specific directories for checkout, these settings
+# are all optional, but if they are needed for compiling the product or
+# completing the installation, they need to be specified.
+widget.BINDIRS = bin/solaris
+widget.INCDIRS = include
+widget.LIBDIRS = lib/solaris
+widget.VERSION = -rrel3_2
+
+# TPLIBS contains the thirdparty libraries that need to be installed to
+# complete the installation tree of the product.  They are installed under
+# lib/$(PLATFORM)/
+TPLIBS += widget/$(widget.LIBDIRS)/libwgt.so 
+
+# TPTLC contains the thirdparty Tcl scripts that need to be installed to
+# complete the installation tree of the product.  They are installed under
+# lib/
+TPTCL += widget/lib/widget.tcl
+
+# TPBIN contains the thirdparty binaries that need to be installed to
+# complete the installation tree of the product.  They are installed under
+# bin/$(PLATFORM)/
+TPBIN += widget/bin/$(PLATFORM)/widget.exe

@@ -1,0 +1,58 @@
+To change tag info on a bunch of mp3 files...
+
+1) In the "mp3 files to edit" box, click the Add button  as many times
+as needed to fill the files list box with  the desired mp3 files.
+
+2) In the "Enter tag editing commands" box you enter tag modification
+commands. 
+
+To enter a Set command to be performed on all the above mp3 files, leave
+the Condition blank. In the Set group,  select the field to be modified
+and enter the desired value in the To New Value field.
+
+To enter a conditional Set command fill in the Condition by selecting the
+If Field, Operation and optionally  Value fields. The "is
+blank" and "is not blank" operations require no Value.
+
+The entered tag editing commands will be applied to each mp3 file selected
+in step 1. Each Set command will be  performed on each mp3 file if i)
+there is no Condition or ii) if the Condition evaluates true for that mp3
+file.
+
+3) Once you've entered the desired mp3 files (1) and  commands (2) you're
+ready to click the Apply button  to see what will happen to your mp3
+files. The Apply button will give you a report of what will happen (but
+ won't do it yet).
+
+4) If the Apply report meets your expectation then click "Doit". If you 
+click "Cancel" the edits won't be performed.
+
+Notes: You can edit an existing tag editing command by selecting it and
+clicking the Remove button. This will remove it and place it in the Add
+section where you can edit it and re-Add it.
+
+You can edit your mp3 files list and commands list all you want, do several
+Checks before finally doing Doit.
+
+MACROS:
+a) You can copy data from one tag field to another, by typing a field identifier
+in the Set To Value box.
+
+For example you want to set the Artists to "Various Artists" and you'd like
+the song title to read as "Song Title - Artists". To accomplish this do this;
+
+In the "Set To Value" field enter
+
+	"{Title} - {Artists}"
+
+And add another command that sets the Artist to "Various Artists"
+
+b) Convert to "Lastname, Firstname". To do this just enter
+
+	"{LastName, FirstName}" in the "Set To Value" box, and of course
+	select Artist as the field to modify.
+
+	You'll find this setting in the drop down list of pre defined values
+	as well as one to set back to "{FirstName LastName}".
+
+Have a nice day.
