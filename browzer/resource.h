@@ -238,6 +238,8 @@
 #define IDC_IRPREVIOUS                  1516
 #define IDC_IRFASTFORWARD               1517
 #define IDC_IRREVERSE                   1518
+#define IDC_IRALPHAUP                   1519
+#define IDC_IRALPHADOWN                 1520
 #define IDC_IRUP_DESC                   1600
 #define IDC_IRDOWN_DESC                 1601
 #define IDC_IRLEFT_DESC                 1602
@@ -257,6 +259,8 @@
 #define IDC_IRPREVIOUS_DESC             1616
 #define IDC_IRFASTFORWARD_DESC          1617
 #define IDC_IRREVERSE_DESC              1618
+#define IDC_IRALPHAUP_DESC              1619
+#define IDC_IRALPHADOWN_DESC            1620
 #define IDC_IRUP_STATUS                 1700
 #define IDC_IRDOWN_STATUS               1701
 #define IDC_IRLEFT_STATUS               1702
@@ -276,6 +280,8 @@
 #define IDC_IRPREVIOUS_STATUS           1716
 #define IDC_IRFASTFORWARD_STATUS        1717
 #define IDC_IRREVERSE_STATUS            1718
+#define IDC_IRALPHAUP_STATUS            1719
+#define IDC_IRALPHADOWN_STATUS          1720
 #define IDC_MESSAGEBOX_OK               2001
 #define IDC_CP_FIRSTNAME                2002
 #define IDC_CP_LASTNAME                 2003

@@ -34,6 +34,8 @@ associated with that function. <p class="text">
 	<li><i>Delete</i> will remove the selected song from the Playlist.
 	<li><i>VolUp/Down</i> are not used at this time.
 	<li><i>Page Up/Down</i> scroll a page up or down in the Genres, Artists, Albums, Songs or Playlist windows.
+	<li><i>Alpha Up/Down</i> jumps to the next letter in the alphabet within the Genres, Artists, Albums or Songs windows. This can be faster than Page Up/Down when you have a very long list of Artists or Albums to navigate through.
+
 	<li><i>Play</i> begins playing the current song in the Playlist, i.e.
 	after pressing <i>Pause</i>.
 	<li><i>Pause</i> pauses play.
@@ -44,8 +46,20 @@ associated with that function. <p class="text">
 <a name="KeyboardMouse">
 <li>Keyboard/Mouse
 	<ul class="text">
-	<li>Tab, arrows, page up/down and mouse operate in usual Windows fashion. Tab/Shift Tabadvance to the next/previous window. Arrow keys and page up/down scroll up/down within the current window.
-	<li>Left/Right arrows have a special function inside the Playlist. They allow you to reorder the songs in the Playlist. To do so first select a song in the Playlist you wish to move up or down. Then use the left or right arrow key to move the selected song up or down in the Playlist.
+
+	<li>Tab, arrows, page up/down and mouse operate in usual Windows
+	fashion. Tab/Shift and left/right arrows advance to the next/previous window. Arrow
+	keys and page up/down scroll up/down within the current window.
+
+	<li>Pressing an alpha letter key will jump you to that position in the Genre, Artist,
+	Album window. For instance if you press 'Y' it'll take you to the Y's in your Genre,
+	Artist or Album window.
+
+	<li>The 'u' and 'd' keys have a special function inside the Playlist. They
+	allow you to reorder the songs in the Playlist. To do so first select a
+	song in the Playlist you wish to move up or down. Then use the 'u' or
+	'd' to move the selected song up or down in the Playlist.
+
 	<li>Delete key will delete a song in the Playlist. It has no function in the other windows.
 	<li>Right click on any Genre, Artist, Album or Song to access and optionally edit ID3/Ogg tag information. <i>Note: Any saved playlists that you have may become unusable after performing ID3/Ogg tag editing.</i>
 	<li>Menu. Click on the Menu button in the upper right corner of muzikbrowzer to access the menu of the following functions:
@@ -72,8 +86,18 @@ associated with that function. <p class="text">
 	<li>Currently muzikbrowzer does not "rip" or record from CD's into mp3 files.
 	<li>Certain operations write error and informational messages into the log file, muzikbrowzer.log located in the directory specified in the Configuration dialog. This file may be helpfull in diagnosing problems.
 	<li>While playing music muzikbrowzer will display the song currently playing in the Playing status field at the bottom right. As you navigate around through different windows, the currently selected field will temporarily be displayed in this status field. After a few seconds the status field will go back to displaying the song currently playing.
-	<li>Album cover art is displayed for the song currently playing and while you are 
-	browsing through your mp3 library. Album cover picture is read from the id3 tag of mp3 files if present in an APIC id3 field. Each picture is displayed as you browse through different artists, albums in muzikbrowzer. As well the album cover picture will be displayed as songs are played in muzikbrowzer. Note that you must obtain the album cover picture via software other than muzikbrowzer. 
+
+	<li>Album cover art is displayed for the song currently playing
+	and while you are browsing through your mp3 library. Album cover
+	picture is read from the id3 tag of mp3 files if present in an APIC
+	id3 field. Each picture is displayed as you browse through different
+	artists, albums in muzikbrowzer. As well the album cover picture will
+	be displayed as songs are played in muzikbrowzer. Note that you must
+	obtain the album cover picture via software other than muzikbrowzer.
+	New in version 1.3: if no album art picture is found in the id3 tag muzikbrowzer
+	will look in the folder of the mp3 file for a file called "folder.jpg". This follows
+	Windows XP convention.
+
 	<li>The Player Status field is the smaller field to the left of the Playing Status field. It shows the current status of the player, i.e. Playing, Paused etc.
 	<li>Screen savers: muzikbrowzer attempts to wakeup your screen saver in response to pressing a remote control button, just as if you have pressed a keyboard key or moved the mouse.
 	<li>If muzikbrowzer is minimized, it will maximize itself when a remote control button is pressed.

@@ -50,6 +50,8 @@ public:
 
     BOOL m_reorder;
     void invalidate();
+	void alphaUp();
+	void alphaDown();
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CExtendedListBox)
 	//}}AFX_VIRTUAL

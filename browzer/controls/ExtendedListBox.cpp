@@ -216,10 +216,21 @@ void CExtendedListBox::changeFont(LPLOGFONT lplf) {
 
 void
 CExtendedListBox::OnKeyDown( UINT nChar, UINT nRepCnt, UINT nFlags ) {
-    if (m_reorder) {
+
+    if (nChar == VK_LEFT) {
+		thePlayer->PrevDlgCtrl();
+    } else if (nChar == VK_RIGHT) {
+		thePlayer->NextDlgCtrl();
+    } else if (m_reorder) {
         move(nChar);
-    }
-    CListBox::OnKeyDown(nChar, nRepCnt, nFlags);
+	}
+//    } else if (nChar == 85 || nChar == 117) {
+//		alphaUp();
+//	} else if (nChar == 68 || nChar == 100) {
+//		alphaDown();
+//	} else {
+		CListBox::OnKeyDown(nChar, nRepCnt, nFlags);
+//	}
 }
 
 void
@@ -230,16 +241,19 @@ CExtendedListBox::move(UINT nChar) {
     CString name;
     GetText(sel, name);
 
-    if (nChar == VK_LEFT) {
+    if (nChar == 85 || nChar == 117) { // u or U
         if (sel < 1) return;
         DeleteString(sel);
         InsertString(sel-1, (LPCTSTR)name);
+		sel -= 1;
+		if (sel < 0) sel = 0;
         SetCurSel(sel);
         thePlayer->movePlaylistUp(sel);
-    } else if (nChar == VK_RIGHT) {
+    } else if (nChar == 68 || nChar == 100) { // d or D
         if (sel > GetCount()-2) return;
         DeleteString(sel);
         InsertString(sel+1, (LPCTSTR)name);
+		sel += 1;
         SetCurSel(sel);
         thePlayer->movePlaylistDown(sel);
     }
@@ -609,4 +623,36 @@ CExtendedListBox::OnMouseMove( UINT nFlags, CPoint p) {
         m_Capture = FALSE;
     }
 }
-
+void
+CExtendedListBox::alphaUp() {
+	int cur = GetCurSel();
+	CString text;
+	GetText(cur, text);
+	char ch1 = text.GetAt(0);
+	int i;
+	for(i = cur - 1 ; i >= 0 ; --i) {
+		GetText(i, text);
+		char ch = text.GetAt(0);
+		if (ch != ch1) {
+			SetCurSel(i);
+			return;
+		}
+	}
+}
+void
+CExtendedListBox::alphaDown() {
+	int cur = GetCurSel();
+	CString text;
+	GetText(cur, text);
+	char ch1 = text.GetAt(0);
+	int i;
+	int n = GetCount();
+	for(i = cur + 1 ; i <  n; ++i) {
+		GetText(i, text);
+		char ch = text.GetAt(0);
+		if (ch != ch1) {
+			SetCurSel(i);
+			return;
+		}
+	}
+}

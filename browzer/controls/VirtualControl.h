@@ -24,6 +24,8 @@ class VirtualControl {
 		void operator = (CEdit*);
         void up(int);
         void down(int);
+		void alphaUp();
+		void alphaDown();
 //        void select();
         void * ptr() { return m_Ptr; }
         BOOL isList() { return m_List != 0; }

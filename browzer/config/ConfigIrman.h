@@ -68,6 +68,10 @@ public:
 	CString	m_IRReverseStatus;
 	CString	m_IRFastForwardDesc;
 	CString	m_IRFastForwardStatus;
+	CString	m_IRAlphaDownDesc;
+	CString	m_IRAlphaDownStatus;
+	CString	m_IRAlphaUpDesc;
+	CString	m_IRAlphaUpStatus;
 	//}}AFX_DATA
 
 

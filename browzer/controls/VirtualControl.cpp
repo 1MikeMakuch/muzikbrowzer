@@ -97,7 +97,16 @@ VirtualControl::down(int n) {
         m_Edit->LineScroll(5,0);
     }
 }
-
+void
+VirtualControl::alphaUp() {
+	if (!m_List) return;
+	m_List->alphaUp();
+}
+void
+VirtualControl::alphaDown() {
+	if (!m_List) return;
+	m_List->alphaDown();
+}
 void
 VirtualControl::zero() {
     m_Combo = 0;

@@ -15,7 +15,7 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 #define IDC_IRRECORD_FIRST IDC_IRUP
-#define IDC_IRRECORD_LAST IDC_IRREVERSE
+#define IDC_IRRECORD_LAST IDC_IRALPHADOWN
 #define IDC_IRRECORD_STATUS_FIRST IDC_IRUP_STATUS
 #define IDC_IRRECORD_DESC_FIRST IDC_IRUP_DESC
 
@@ -71,6 +71,10 @@ CConfigIrman::CConfigIrman(CWnd * p) :
 	m_IRReverseStatus = _T("");
 	m_IRFastForwardDesc = _T("");
 	m_IRFastForwardStatus = _T("");
+	m_IRAlphaDownDesc = _T("");
+	m_IRAlphaDownStatus = _T("");
+	m_IRAlphaUpDesc = _T("");
+	m_IRAlphaUpStatus = _T("");
 	//}}AFX_DATA_INIT
 }
 
@@ -124,6 +128,10 @@ void CConfigIrman::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_IRREVERSE_STATUS, m_IRReverseStatus);
 	DDX_Text(pDX, IDC_IRFASTFORWARD_DESC, m_IRFastForwardDesc);
 	DDX_Text(pDX, IDC_IRFASTFORWARD_STATUS, m_IRFastForwardStatus);
+	DDX_Text(pDX, IDC_IRALPHADOWN_DESC, m_IRAlphaDownDesc);
+	DDX_Text(pDX, IDC_IRALPHADOWN_STATUS, m_IRAlphaDownStatus);
+	DDX_Text(pDX, IDC_IRALPHAUP_DESC, m_IRAlphaUpDesc);
+	DDX_Text(pDX, IDC_IRALPHAUP_STATUS, m_IRAlphaUpStatus);
 	//}}AFX_DATA_MAP
 }
 

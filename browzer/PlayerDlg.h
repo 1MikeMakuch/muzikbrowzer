@@ -213,13 +213,8 @@ public:
 	afx_msg void OnPlayButton();
 	afx_msg void OnOpenFileButton();
 	afx_msg void OnStopButton();
-//	afx_msg void OnOpenUrlButton();
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	afx_msg void OnAbout();
-	afx_msg void OnInfoButton();
-//	afx_msg void OnVolumeButton();
-//	afx_msg void OnEqualizerButton();
-//	afx_msg void OnFeedbackRadioSelection();
 	afx_msg void OnSelchangeArtists();
 	afx_msg void OnSelchangeAlbums();
 	afx_msg void OnDblclkSongs();
@@ -228,7 +223,6 @@ public:
 	afx_msg void OnDblclkGenres();
 	afx_msg void OnMenuButton();
 	afx_msg void OnMenuOptions();
-//    afx_msg void OnMenuOptions2();
 	afx_msg void OnMenuClearplaylist();
 	afx_msg void OnMenuExit();
 	afx_msg void OnMenuLoadplaylist();
@@ -252,6 +246,7 @@ public:
 	afx_msg void OnButtonMinimize();
 	afx_msg void OnButtonMaximize();
 	afx_msg void OnCancel();
+//	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 	//}}AFX_MSG
 
 	afx_msg LRESULT OnGraphNotify(UINT wParam, LONG lParam);

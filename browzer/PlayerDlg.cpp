@@ -172,7 +172,7 @@ BEGIN_MESSAGE_MAP(CPlayerDlg, CDialog)
 	ON_COMMAND(ID_MENU_PAUSE, OnMenuPause)
 	ON_COMMAND(ID_MENU_PLAY, OnMenuPlay)
 	ON_COMMAND(ID_MENU_STOP, OnMenuStop)
-	ON_COMMAND(ID_MENU_HELP, HelpInfo)
+	ON_COMMAND(ID_PMENU_HELP, OnMenuHelp)
 	ON_LBN_SELCHANGE(IDC_GENRES, OnSelchangeGenres)
 	ON_LBN_DBLCLK(IDC_PLAYLIST, OnDblclkPlaylist)
 	ON_WM_CONTEXTMENU()
@@ -185,19 +185,19 @@ BEGIN_MESSAGE_MAP(CPlayerDlg, CDialog)
 	ON_BN_CLICKED(IDC_OPTIONS_BUTTON, OnButtonMenu)
 	ON_BN_CLICKED(IDC_BUTTON_MINIMIZE, OnButtonMinimize)
 	ON_BN_CLICKED(IDC_BUTTON_MAXIMIZE, OnButtonMaximize)
+	ON_COMMAND(ID_MENU_HELP, HelpInfo)
 	ON_BN_CLICKED(IDC_BUTTON_EXIT, OnCancel)
 	ON_WM_RBUTTONUP()
 	ON_WM_RBUTTONDOWN()
 	ON_COMMAND(ID_PMENU_EXIT, OnMenuExit)
 	ON_COMMAND(ID_PMENU_CLEAR, OnMenuClearplaylist)
-	ON_COMMAND(ID_PMENU_HELP, OnMenuHelp)
 	ON_COMMAND(ID_PMENU_LOADPLAYLIST, OnMenuLoadplaylist)
 	ON_COMMAND(ID_PMENU_PAUSE, OnMenuPause)
 	ON_COMMAND(ID_PMENU_PLAY, OnMenuPlay)
 	ON_COMMAND(ID_PMENU_SHUFFLE, OnMenuShuffleplaylist)
 	ON_COMMAND(ID_PMENU_STOP, OnMenuStop)
 	ON_WM_COMPAREITEM()
-
+//	ON_WM_KEYDOWN()
 	//}}AFX_MSG_MAP
 
 	ON_MESSAGE(WM_GRAPHNOTIFY, OnGraphNotify)
@@ -1769,6 +1769,14 @@ CPlayerDlg::HandleIRMessage(int key) {
 	case IR_MESSAGE_REVERSE: {
 		OnReverse();
 		break;}
+	case IR_MESSAGE_ALPHAUP: {
+        m_Dialog->control().alphaUp();
+		m_Dialog->OnControlSelChange();
+		break;}
+	case IR_MESSAGE_ALPHADOWN: {
+        m_Dialog->control().alphaDown();
+		m_Dialog->OnControlSelChange();
+		break;}
 	default:
 		wakeitup = 0;
 	}
@@ -2917,5 +2925,6 @@ void CPlayerDlg::displayAlbumArt(const CString & file) {
 	}
 
 }
+
 
 
