@@ -40,9 +40,10 @@ MBConfig::~MBConfig()
     if (m_Irman) delete m_Irman;
     if (m_Fonts) delete m_Fonts;
     if (m_Colors) delete m_Colors;
-#ifdef MB_USING_TRIAL_MODE
+// leave this in, still need it to call trialMode()
+//#ifdef MB_USING_TRIAL_MODE 
 	if (m_Password) delete m_Password;
-#endif
+//#endif
 }
 
 void
@@ -51,9 +52,9 @@ MBConfig::init() {
     m_Colors = new CConfigColors(m_CWnd);
     m_Files = new CConfigFiles(m_PlayerDlg);
     m_Fonts = new CConfigFonts(m_CWnd);
-#ifdef MB_USING_TRIAL_MODE
+//#ifdef MB_USING_TRIAL_MODE
 	m_Password = new CConfigPassword(m_CWnd);
-#endif
+//#endif
 
     AddPage(m_Files);
     AddPage(m_Irman);

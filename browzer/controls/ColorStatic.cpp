@@ -392,7 +392,8 @@ CColorStatic::setText(CString text) {
     m_text = text;
 	SetItemWidth();
 	SetWindowText(m_text);
-    OnPaint();
+//    OnPaint();
+	RedrawWindow();
 }
 void
 CColorStatic::getText(CString & text) {

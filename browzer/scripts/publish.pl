@@ -16,8 +16,8 @@ $exe_rev = "_" . $major . "_" . $minor . "_" . $patch ;
 $exe_sfx = ".exe";
 $exefile = $exe . $exe_rev . $exe_sfx;
 $exesrc = "../Inno/Output/$exefile";
-$exedst  = "cotton.makuch.org:/var/www/virtuals/muzikbrowzer/httpdocs/dl/$exefile";
-$exedst2 = "cotton.makuch.org:/var/www/virtuals/muzikbrowzer/httpdocs/dl/".$exe.$exe_sfx;
+$exedst  = "pecan.makuch.org:/var/www/virtuals/muzikbrowzer/httpdocs/dl/$exefile";
+$exedst2 = "pecan.makuch.org:/var/www/virtuals/muzikbrowzer/httpdocs/dl/".$exe.$exe_sfx;
 #$src  = "/cygdrive/w/muzikbrowzer/httpdocs/dl/muzikbrowzerSrc"."$exe_rev";
 
 # copy to www
@@ -38,6 +38,6 @@ print F $major . '.' . $minor . '.' . $patch . "\n";
 close(F);
 system("touch Publish.exe");
 
-system("scp current_rev cotton.makuch.org:/var/www/virtuals/muzikbrowzer/httpdocs/dl/current_rev");
+system("scp current_rev pecan.makuch.org:/var/www/virtuals/muzikbrowzer/httpdocs/dl/current_rev");
 
 #system("cd /cygdrive/c/mkm/src/muzik/browzer/scripts; /usr/bin/bash --login /cygdrive/c/mkm/src/muzik/browzer/scripts/makezip.sh $src");
