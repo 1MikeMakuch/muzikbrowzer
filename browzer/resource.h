@@ -61,6 +61,8 @@
 #define IDB_SPLASH2                     214
 #define IDB_SPLASH3                     215
 #define IDR_APPGIF                      227
+#define IDB_BITMAP7                     228
+#define IDB_BITMAP8                     230
 #define IDC_VOLUME_BUTTON               1000
 #define IDC_STOP_BUTTON                 1001
 #define IDC_PLAY_BUTTON                 1002
@@ -337,7 +339,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        228
+#define _APS_NEXT_RESOURCE_VALUE        231
 #define _APS_NEXT_COMMAND_VALUE         32817
 #define _APS_NEXT_CONTROL_VALUE         2020
 #define _APS_NEXT_SYMED_VALUE           101

@@ -55,6 +55,7 @@ protected:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnMoreid3();
 	virtual void OnOK();
+	virtual void OnCancel();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 private:

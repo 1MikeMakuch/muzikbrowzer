@@ -375,6 +375,8 @@ int
 Genre_getInt(CString genre) {
     CString val;
     if (gdb.Lookup(genre, val) != 0) {
+		val = val.Right(val.GetLength()-1);
+		val = val.Left(val.GetLength()-1);
         return atoi((LPCTSTR) val);
     } else {
         return -1;

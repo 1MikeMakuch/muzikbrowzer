@@ -141,6 +141,7 @@ void ModifyIDThree::OnMoreid3()
 void ModifyIDThree::OnOK() 
 {
 
+	int somethingchanged = 0;
     CString oldGenre,oldArtist,oldAlbum,oldTitle,oldYear,oldTrack;
     m_OldGenre.GetWindowText(oldGenre);
     m_OldArtist.GetWindowText(oldArtist);
@@ -162,28 +163,45 @@ void ModifyIDThree::OnOK()
     if (oldGenre != genre) {
 //        Genre_addGenre(m_newID3_Tag, (LPCTSTR) genre);
 		m_newSong->setId3(CS("TCON"), genre);
+		somethingchanged = 1;
     }
     if (oldArtist != artist) {
 //        ID3_AddArtist(&m_newID3_Tag, (LPCTSTR) artist, true);
 		m_newSong->setId3(CS("TPE1"), artist);
+		somethingchanged = 1;
     }
     if (oldAlbum != album) {
 //        ID3_AddAlbum(&m_newID3_Tag, (LPCTSTR) album, true);
 		m_newSong->setId3(CS("TALB"), album);
+		somethingchanged = 1;
     }
     if (oldTitle != title) {
 //        ID3_AddTitle(&m_newID3_Tag, (LPCTSTR) title, true);
 		m_newSong->setId3(CS("TIT2"), title);
+		somethingchanged = 1;
     }
     if (oldYear != year) {
 //        ID3_AddYear(&m_newID3_Tag, (LPCTSTR) year, true);
 		m_newSong->setId3(CS("TYER"), year);
+		somethingchanged = 1;
     }
     if (oldTrack != track) {
         int t = atoi((LPCTSTR)track);
 //        ID3_AddTrack(&m_newID3_Tag, t, 0, true);
 		m_newSong->setId3(CS("TRCK"), track);
+		somethingchanged = 1;
     }
 
-	CDialog::OnOK();
+	if (somethingchanged) {
+		CDialog::OnOK();
+	} else {
+		CDialog::OnCancel();
+	}
+}
+
+void ModifyIDThree::OnCancel() 
+{
+	// TODO: Add extra cleanup here
+	
+	CDialog::OnCancel();
 }

@@ -7,7 +7,9 @@ class MyLog {
 		MyLog():m_ready(FALSE){};
 		~MyLog(){};
 		void open(CString);
-		void log(CString);
+		void log(const CString &msg1, const CString &msg2=CString(""), 
+			const CString &msg3=CString(""), const CString &msg4=CString(""));
+		void log(char * msg1, char * msg2=NULL);
         CString location() { return _pathfile; }
 	private:
 		BOOL m_ready;

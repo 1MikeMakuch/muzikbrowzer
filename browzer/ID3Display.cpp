@@ -16,6 +16,7 @@
 #include "MyString.h"
 #include "FExtension.h"
 #include "oggtagger/oggtagger.h"
+#include "WmaTagger.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -76,6 +77,9 @@ ID3Display::displayTag(Song song) {
 	} else if (fext.ext() == "ogg") {
 		OggTag ogg(file);
 		return ogg.getInfo();
+	} else if (fext.ext() == "wma") {
+		WmaTag wma(file);
+		return wma.getInfo();
 	}
 	return "";
 }

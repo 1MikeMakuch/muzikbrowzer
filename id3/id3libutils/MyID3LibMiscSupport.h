@@ -27,7 +27,7 @@ void Genre_init();
 
 CString Genre_normalize(const CString genre);
 
-//int Genre_getInt(CString genre);
+int Genre_getInt(CString genre);
 
 void Genre_getGenres(CStringList &);
 void Genre_addGenre(ID3_Tag & id3, const char * genre);

@@ -44,7 +44,7 @@ private:
 //    ID3_Tag * mID3_Tag;
 	Song m_Song;
 	CString displayTag(Song song);
-	CString displayOgg(const CString & file);
+//	CString displayOgg(const CString & file);
 };
 
 //{{AFX_INSERT_LOCATION}}

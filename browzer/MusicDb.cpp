@@ -15,6 +15,8 @@
 #include "Mp3Header.h"
 #include "TestHarness/TestHarness.h"
 #include "FileUtils.h"
+#include "WmaTagger.h"
+#include "MyID3LibMiscSupport.h"
 
 #include "vorbis/codec.h"
 #include "vorbis/vorbisfile.h"
@@ -1052,6 +1054,10 @@ MusicLib::createSongFromFile(const CString & mp3file,
 		OggTag ogg;
 		error_results += ogg.read(mp3file);
 		song = createSongFromOgg(&ogg);
+	} else if (fext == "wma") {
+		WmaTag wma;
+		error_results += wma.read(mp3file);
+		song = createSongFromWma(&wma);
 	}
 
     song->setId3("FILE", (LPCTSTR)mp3file);
@@ -1150,6 +1156,44 @@ MusicLib::writeSongToFile(Song song) {
 			}
 		}
 		result += ogg.write();
+	} else if (fext == "wma") {
+// WMA attributes
+// Title
+// Author
+// WM/TrackNumber
+// WM/AlbumArtist
+// WM/AlbumTitle
+// WM/Genre
+// WM/GenreID
+// WM/Year
+// Duration
+
+		WmaTag wma(file);
+		POSITION pos;
+		CString key;
+		CString val;
+		for( pos = song->_obj.GetStartPosition(); pos != NULL; ) {
+			song->_obj.GetNextAssoc(pos, key, val);
+			if (key.GetLength() && val.GetLength() && val != MBUNKNOWN) {
+				if (key == "TCON" ) {
+		            wma.setVal("WM/Genre", val);
+					int gid = Genre_getInt(val);
+					// if we get -1 back, leave it since there's no match
+					wma.setVal("WM/GenreID", numToString(gid));
+				} else if (key == "TPE1" ) {
+				    wma.setVal("AlbumArtist", val);
+				} else if (key == "TALB" ) {
+					wma.setVal("WM/AlbumTitle", val);
+				} else if (key == "TIT2" ) {
+					wma.setVal("Title", val);
+				} else if (key == "TRCK" ) {
+					wma.setVal("WM/TrackNumber", val);
+				} else if (key == "TYER" ) {
+					wma.setVal("WM/Year", val);
+				}
+			}
+		}
+		result += wma.write();
 	}
 	return result;
 }
@@ -1248,6 +1292,45 @@ MusicLib::createSongFromOgg(OggTag * ogg) {
     song->setId3("TRCK", track);
     song->setId3("TYER", year);
 	song->setId3("TLEN", numToString(ogg->getTime()*1000));
+
+	return song;
+}
+// WMA attributes
+// Title
+// Author
+// WM/TrackNumber
+// WM/AlbumTitle
+// WM/Genre
+// WM/GenreID
+// WM/Year
+// Duration
+
+Song
+MusicLib::createSongFromWma(WmaTag * wma) {
+
+	CString kv,key,val;
+	Song song = new CSong;
+	CString genre,artist,album,title,year,track, duration;
+
+	genre = wma->getVal("WM/Genre");
+	artist = wma->getVal("Author");
+	album = wma->getVal("WM/AlbumTitle");
+	title = wma->getVal("Title");
+	year = wma->getVal("WM/Year");
+	track = wma->getVal("WM/TrackNumber");
+	duration = wma->getVal("Duration");
+	duration = String::extract(duration, "",",");
+	duration = duration.Left(duration.GetLength()-4);
+
+
+    CString cgenre = Genre_normalize(genre);
+    song->setId3("TCON", (LPCTSTR)cgenre);
+    song->setId3("TPE1", artist);
+    song->setId3("TALB", album);
+    song->setId3("TIT2", title);
+    song->setId3("TRCK", track);
+    song->setId3("TYER", year);
+	song->setId3("TLEN", duration);
 
 	return song;
 }

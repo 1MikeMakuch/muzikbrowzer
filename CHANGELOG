@@ -1,3 +1,33 @@
+2005-03-24 00:28  mkm
+
+	* CHANGELOG (1.2), 3rdparty/id3lib-3.8.2/libprj/id3lib.dsp (1.2),
+	3rdparty/id3lib-3.8.2/zlib/prj/zlib.dsp (1.2),
+	3rdparty/ogg/libogg-1.0/win32/ogg_static.dsp (1.2),
+	3rdparty/ogg/libvorbis-1.0/win32/vorbis_static.dsp (1.2),
+	3rdparty/ogg/libvorbis-1.0/win32/vorbisfile_static.dsp (1.2),
+	3rdparty/ogg/vorbis-tools-1.0/win32/vorbiscomment.dsp (1.3),
+	TestHarness/TestHarness.dsp (1.2), browzer/MBGlobals.h (1.3),
+	browzer/MPtr.cpp (1.2), browzer/MPtr.h (1.2), browzer/PlayerDlg.cpp
+	(1.9), browzer/muzikbrowzer.dsp (1.11), browzer/muzikbrowzer.dsw
+	(1.5), browzer/Serial/Serial.dsp (1.2),
+	browzer/config/ConfigPassword.cpp (1.3),
+	browzer/config/ConfigPassword.h (1.2), browzer/config/MBConfig.cpp
+	(1.6), browzer/config/MBConfig.h (1.4), browzer/config/config.dsp
+	(1.3), browzer/controls/controls.dsp (1.2), browzer/irman/irman.dsp
+	(1.2), browzer/regset/regset.dsp (1.2), id3/id3/id3.dsp (1.2),
+	id3/id3libutils/id3utils.dsp (1.3), id3/mp3tagger/id3tagger.dsp
+	(1.6), mbpwDlg/mbpwDlg.dsp (1.2), md5/mbpw.dsp (1.2), md5/md5.dsp
+	(1.2), mydiff/mydiff.dsp (1.5), oggtagger/oggtagger.dsp (1.3),
+	util/util.dsp (1.4):
+
+	brought back trial mode, disabled by define in mbglobals.h
+
+2005-03-24 00:27  mkm
+
+	* browzer/Changelog (1.2):
+
+	dont need it here
+
 2005-03-23 00:51  mkm
 
 	* id3/id3libutils/MyID3LibMiscSupport.cpp (1.3),
@@ -1792,7 +1822,7 @@
 	3rdparty/ogg/vorbis-tools-1.0/win32/vorbiscomment.dsp (1.1.1.1),
 	browzer/About.cpp (1.1.1.1, release_1_4_2, release_1_3_3),
 	browzer/About.h (1.1.1.1, release_1_4_2, release_1_3_3),
-	browzer/ChangeLog (1.1.1.1, release_1_4_2, release_1_3_3),
+	browzer/Changelog (1.1.1.1, release_1_4_2, release_1_3_3),
 	browzer/DialogData.h (1.1.1.1, release_1_4_2, release_1_3_3),
 	browzer/DirectShow.cpp (1.1.1.1, release_1_4_2, release_1_3_3),
 	browzer/DirectShow.h (1.1.1.1, release_1_4_2, release_1_3_3),
@@ -3080,7 +3110,7 @@
 	3rdparty/ogg/vorbis-tools-1.0/win32/tools.dsw (1.1),
 	3rdparty/ogg/vorbis-tools-1.0/win32/vcut.dsp (1.1),
 	3rdparty/ogg/vorbis-tools-1.0/win32/vorbiscomment.dsp (1.1),
-	browzer/About.cpp (1.1), browzer/About.h (1.1), browzer/ChangeLog
+	browzer/About.cpp (1.1), browzer/About.h (1.1), browzer/Changelog
 	(1.1), browzer/DialogData.h (1.1), browzer/DirectShow.cpp (1.1),
 	browzer/DirectShow.h (1.1), browzer/DirectShowGlobals.cpp (1.1),
 	browzer/DirectShowMediaTypes.h (1.1), browzer/Genres.cpp (1.1),

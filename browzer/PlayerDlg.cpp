@@ -28,6 +28,7 @@
 #include "ModifyIDThree.h"
 #include "MusicDb.h"
 #include "MyID3LibMiscSupport.h"
+#include "WmaTagger.h"
 #include "PlayerApp.h"
 #include "SavePlaylistDlg.h"
 #include "SerialMFC.h"
@@ -313,14 +314,16 @@ BOOL CPlayerDlg::OnInitDialog()
 	m_ButtonExit.AutoLoad(IDC_BUTTON_EXIT, this);
 
 	//m_PlayerStatus.border(TRUE);
-	if (m_Config.UseGenre()) m_GenresLabel.setText("Genres");
+	if (m_Config.UseGenre()) {
+		m_GenresLabel.setText("Genres");
+	}
 	m_ArtistsLabel.setText("Artists");
 	m_AlbumsLabel.setText("Albums");
 	m_SongsLabel.setText("Songs");
 	m_PlaylistLabel.setText("Playlist");
 
 	readConfig();
-//	RunTestHarness();
+
 	if (_initdialog) {
 		time_t now = CTime::GetCurrentTime().GetTime();
 		if (now - _initdialog->m_start.GetTime() < 2) {
@@ -386,6 +389,16 @@ BOOL CPlayerDlg::OnInitDialog()
 	m_AppLabel.load("GIF", MAKEINTRESOURCE(IDR_APPGIF));
 
 	UpdateWindow();
+	if (m_Config.UseGenre()) {m_Genres.RedrawWindow(FALSE);};
+	m_Artists.RedrawWindow(FALSE);
+
+// For CDialog
+//	EnableEasyMove();  // enable moving of the dialog 
+//                       // by clicking anywhere in the dialog
+//    SetBitmap (IDB_BITMAP8); // set background bitmap
+//    SetStyle (LO_RESIZE); // resize dialog to the size of the bitmap
+//    SetTransparentColor(RGB(255, 0, 0)); // set green as the 
+//                                         // transparent color
 
 	return FALSE;  // return TRUE  unless you set the focus to a control
 }
@@ -572,7 +585,7 @@ public:
 		ctrl(p), label(l),
 		height(0), width(0),
 		widthpct(0), heightpct(0),
-		labelwidth(0), labelheight(0), m_desc(desc) {}
+		labelwidth(0), labelheight(0), m_desc(desc), enabled(1) {}
 
 	void dump(CString txt) {
 		CString msg;
@@ -594,6 +607,7 @@ public:
 	double heightpct;
 	int labelwidth;
 	int labelheight;
+	int enabled;
 };
 class Controls {
 public:
@@ -626,6 +640,7 @@ public:
 		if (cw) {
 			cw->DestroyWindow();
 		}
+//		m_controls.RemoveKey((WORD)id);
 //		delete cw;
 	};
 	Control * getObj(int id) {
@@ -664,6 +679,13 @@ CPlayerDlg::resizeControls(BOOL withPic, int init) {
 	static Controls controls(this);
 	CRect rect;
 	const int numRows = 6;
+	if (m_Config.UseGenre()) {
+		m_GenresLabel.ShowWindow(SW_NORMAL);
+		m_Genres.ShowWindow(SW_NORMAL);
+	} else {
+		m_GenresLabel.ShowWindow(SW_HIDE);
+		m_Genres.ShowWindow(SW_HIDE);
+	}
 
 	if (init) {
 		controls.add("options button", IDC_OPTIONS_BUTTON);
@@ -671,9 +693,7 @@ CPlayerDlg::resizeControls(BOOL withPic, int init) {
 		controls.add("button min", IDC_BUTTON_MINIMIZE);
 		controls.add("button max", IDC_BUTTON_MAXIMIZE);
 		controls.add("button exit", IDC_BUTTON_EXIT);
-		if (m_Config.UseGenre()) {
-			controls.add("genre", IDC_GENRES, IDC_GENRESLABEL);
-		}
+		controls.add("genre", IDC_GENRES, IDC_GENRESLABEL);
 		controls.add("artist", IDC_ARTISTS, IDC_ARTISTSLABEL);
 		controls.add("album", IDC_ALBUMS, IDC_ALBUMSLABEL);
 		controls.add("picture", IDC_PICTURE_CTRL);
@@ -685,7 +705,7 @@ CPlayerDlg::resizeControls(BOOL withPic, int init) {
 		controls.add("vol slider", IDC_VOLUME_SLIDER);
 		controls.add("vol label", IDC_VOLUME_LABEL);
 		controls.add("player status", IDC_PLAYER_STATUS);
-
+	}
 		int labelheight=0;
 		int textheight=0;
 		if (m_Config.UseGenre()) {
@@ -694,7 +714,6 @@ CPlayerDlg::resizeControls(BOOL withPic, int init) {
 		} else {
 			labelheight = m_ArtistsLabel.GetItemHeight();
 			textheight = m_Artists.GetItemHeight(0);
-//			controls.remove(IDC_GENRES);
 		}
 	
 		Control * p = controls.getObj(IDC_OPTIONS_BUTTON);
@@ -724,14 +743,17 @@ CPlayerDlg::resizeControls(BOOL withPic, int init) {
 		int colctr = 0;
 		double artistwidthpct = 0.50;
 		double picwidthpct = 0.20;
-		
+	
+		p = controls.getObj(IDC_GENRES);		
 		if (m_Config.UseGenre()) {
-			p = controls.getObj(IDC_GENRES);
 			p->row = rowctr;	p->col = colctr; 
 			p->widthpct = 0.30; p->heightpct = 0.333;
 			p->labelheight = labelheight;
 			colctr++;
+			p->enabled = 1;
 		} else {
+			p->width = 0; p->height = 0;
+			p->enabled = 0;
 			artistwidthpct = 0.70;
 			picwidthpct = 0.30;
 		}
@@ -801,24 +823,23 @@ CPlayerDlg::resizeControls(BOOL withPic, int init) {
 		p->row = rowctr;	p->col = colctr;
 		p->height = labelheight;
 		p->widthpct = 1.0;
-	}
 
-	int labelheight=0;
-	int textheight=0;
+	labelheight=0;
+	textheight=0;
 	if (m_Config.UseGenre()) {
 		labelheight = m_GenresLabel.GetItemHeight();
 		textheight = m_Genres.GetItemHeight(0);
 	} else {
 		labelheight = m_ArtistsLabel.GetItemHeight();
 		textheight = m_Artists.GetItemHeight(0);
-		controls.remove(IDC_GENRES);
 	}
 
-	Control * p;
-
+	p = controls.getObj(IDC_GENRES);
 	if (m_Config.UseGenre()) {
-		p = controls.getObj(IDC_GENRES);
 		p->labelheight = labelheight;
+		p->enabled = 1;
+	} else {
+		p->enabled = 0;
 	}
 
 	p = controls.getObj(IDC_ARTISTS);
@@ -992,10 +1013,12 @@ CPlayerDlg::resizeControls(BOOL withPic, int init) {
 		x = dialog.Width();
 		while (!rjust.IsEmpty()) {
 			cp = rjust.RemoveHead();
-			x -= (CONTROL_HSPACE + cp->width);
-			cp->ctrl->MoveWindow(x, controly, cp->width, cp->height, TRUE);
-			rowMaxHeight = cp->height > rowMaxHeight 
-				? cp->height : rowMaxHeight;
+			if (cp->enabled) {
+				x -= (CONTROL_HSPACE + cp->width);
+				cp->ctrl->MoveWindow(x, controly, cp->width, cp->height, TRUE);
+				rowMaxHeight = cp->height > rowMaxHeight 
+					? cp->height : rowMaxHeight;
+			}
 		}
 	}
 	RedrawWindow();
@@ -2666,6 +2689,10 @@ HBRUSH CPlayerDlg::OnCtlColor( CDC* pDC, CWnd* pWnd, UINT nCtlColor ) {
     }
 
 //    color = m_Config.getColorBkPanel();
+
+// For CDialog, maybe
+//	pDC->SetBkMode(TRANSPARENT);
+
     pDC->SetBkColor(bkcolor);
     pDC->SetTextColor(txcolor);
 //    br = new CBrush(bkcolor);
@@ -3004,3 +3031,10 @@ void CPlayerDlg::displayAlbumArt(const CString & file) {
 }
 
 
+TEST(WmaTag2, read2)
+{
+	CString file = "c:\\mkm\\src\\muzik\\browzer\\testdata\\x.wma";
+	WmaTag wma(file);
+	CString info = wma.getInfo();
+	CString x;
+}

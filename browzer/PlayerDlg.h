@@ -24,6 +24,7 @@
 #include "MusicPlayer.h"
 #include "Mbutton.h"
 #include "PictureStatic.h"
+//#include "CDialogSK.h"
 
 class VirtualControl;
 class VirtualDialog;

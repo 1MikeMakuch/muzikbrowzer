@@ -49,13 +49,22 @@ MyLog::open(CString path) {
 }
 
 void
-MyLog::log(CString msg) {
+MyLog::log(const CString &msg1, const CString &msg2, const CString &msg3, const CString &msg4) {
 	if (m_ready == FALSE) return;
     CString msgx;
     CTime t = CTime::GetCurrentTime();
     msgx = t.Format("%Y%m%d:%H%M%S ");
-    msgx += msg;
+    msgx += msg1;
+	msgx += msg2;
+	msgx += msg3;
+	msgx += msg4;
 	msgx += "\r\n";
 	_file.Write(msgx,msgx.GetLength());
     _file.Flush();
+}
+
+void
+MyLog::log(char * msg1, char * msg2) {
+	CString Msg1(msg1),Msg2(msg2);
+	log(Msg1,Msg2);
 }

@@ -782,6 +782,8 @@ IDB_APP_LABEL3D         BITMAP  DISCARDABLE     "res\\app_labelD.bmp"
 IDB_APP_LABEL3F         BITMAP  DISCARDABLE     "res\\app_labelF.bmp"
 IDB_APP_LABEL3U         BITMAP  DISCARDABLE     "res\\app_labelU.bmp"
 IDB_APP_LABEL3X         BITMAP  DISCARDABLE     "res\\app_labelX.bmp"
+IDB_BITMAP7             BITMAP  DISCARDABLE     "res\\bitmap7.bmp"
+IDB_BITMAP8             BITMAP  DISCARDABLE     "res\\test01.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //

@@ -12,6 +12,8 @@
 //#include "vorbis/vorbisfile.h"
 #include "MBGlobals.h"
 #include "PicCache.h"
+//#include "WmaTagger.h"
+class WmaTag;
 
 // A MemDb is a hierarchical tree looking structure not
 // unlike a file system directory structure. It is comprised
@@ -293,6 +295,7 @@ class MusicLib
         int clearPlaylist();
         Song createSongFromId3(ID3_Tag *);
 		Song createSongFromOgg(OggTag *);
+		Song createSongFromWma(WmaTag *);
 		Song createSongFromFile(const CString & mp3file);
 		Song createSongFromFile(const CString & mp3file,
 			CString & error_results, int & t1, int & t2, int & fc);

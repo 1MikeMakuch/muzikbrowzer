@@ -344,11 +344,11 @@ void CConfigFiles::StoreReg() {
     }
     setRunAtStartup();
 	reg.Write(RegAlbumSort, (unsigned long)m_AlbumSortAlpha);
-	if (useGenreUL != m_UseGenreUL) {
-		MBMessageBox("Notice", "muzikbrowzer must be restarted.\r\nClick OK then restart.", FALSE);
-		m_PlayerDlg->OnCancel();
-		exit(0);
-	}
+//	if (useGenreUL != m_UseGenreUL) {
+//		MBMessageBox("Notice", "muzikbrowzer must be restarted.\r\nClick OK then restart.", FALSE);
+//		m_PlayerDlg->OnCancel();
+//		exit(0);
+//	}
     m_PlayerDlg->init();
 
 }

@@ -18,6 +18,18 @@ Package=<4>
 
 ###############################################################################
 
+Project: "MetadataEdit"=..\WmaEdit\MetadataEdit.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
 Project: "PreBuild"=.\PreBuild\PreBuild.dsp - Package Owner=<4>
 
 Package=<5>
@@ -55,6 +67,18 @@ Package=<4>
 ###############################################################################
 
 Project: "TestHarness"=..\TestHarness\TestHarness.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "WmaTagg"=..\WMAEDIT\WmaTagg.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -265,6 +289,9 @@ Package=<4>
     End Project Dependency
     Begin Project Dependency
     Project_Dep_Name regset
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name WmaTagg
     End Project Dependency
 }}}
 
