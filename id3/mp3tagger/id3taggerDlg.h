@@ -74,12 +74,15 @@ protected:
 	void setField(ID3_Tag & srcId3, ID3_Tag & id3, CString & field, CString & value);
 	CString doLastCommaFirst(const CString & old);
 	CString doFirstLast(const CString & old);
+	CString doValueCommaThe(CString);
+	CString doTheValue(CString);
 	void EnableDisable();
 	void updateRenameRoot();
 	BOOL m_renaming;
 	CString normalFilePath(ID3_Tag & id3, CString & file);
 	CString renameFile(CString src, CString dst);
 	CString prune();
+	void scanDir(CString dir);
 
 	// Generated message map functions
 	//{{AFX_MSG(CId3taggerDlg)
@@ -109,6 +112,7 @@ protected:
 	afx_msg void OnButtonShowall();
 	afx_msg void OnButtonAddrename();
 	afx_msg void OnChangeRenameroot();
+	afx_msg void OnButtonAdddir();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

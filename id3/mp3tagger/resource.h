@@ -31,6 +31,7 @@
 #define IDC_BUTTON_ADDCOMMAND           1015
 #define IDC_BUTTON_ADDRENAME            1016
 #define IDC_RENAMEROOT                  1017
+#define IDC_BUTTON_ADDDIR               1018
 
 // Next default values for new objects
 // 

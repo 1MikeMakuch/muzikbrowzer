@@ -9,7 +9,8 @@
 #define LOGOWNER
 #include "MyLog.h"
 
-#include "FileFolderDialog.h"
+//#include "FileFolderDialog.h"
+#include "FolderDialog.h"
 #include <id3.h>
 #include <id3/tag.h>
 #include <id3/misc_support.h>
@@ -149,6 +150,7 @@ BEGIN_MESSAGE_MAP(CId3taggerDlg, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON_SHOWALL, OnButtonShowall)
 	ON_BN_CLICKED(IDC_BUTTON_ADDRENAME, OnButtonAddrename)
 	ON_EN_CHANGE(IDC_RENAMEROOT, OnChangeRenameroot)
+	ON_BN_CLICKED(IDC_BUTTON_ADDDIR, OnButtonAdddir)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -372,16 +374,19 @@ void CId3taggerDlg::OnButtonAddfiles()
 	dialog->m_ofn.lpstrFile = (char*)malloc(100000);
 	memset(dialog->m_ofn.lpstrFile, 0, 100000);
 	dialog->m_ofn.nMaxFile = 99999;
+	dialog->m_ofn.lpstrInitialDir = m_AddRememberDir;
+
 
 	int ret;
 	ret = dialog->DoModal();
 	if (ret == IDOK) {
         CString file = dialog->GetPathName();
-		m_AddRememberDir = file;
+//		m_AddRememberDir = file;
 		POSITION pos = dialog->GetStartPosition();
 		while (pos) {
 			file = dialog->GetNextPathName(pos);
 			m_Files.AddString(file);
+			m_AddRememberDir = file;
 		}
 	}
 	free(dialog->m_ofn.lpstrFile);
@@ -392,6 +397,64 @@ void CId3taggerDlg::OnButtonAddfiles()
 	updateRenameRoot();
 	
 	EnableDisable();
+}
+
+void CId3taggerDlg::OnButtonAdddir() 
+{
+	char cwd[MAX_PATH];
+	GetCurrentDirectory(MAX_PATH, cwd);
+    // open a file
+	CFolderDialog dialog(m_AddRememberDir);
+
+	int ret;
+	ret = dialog.DoModal();
+	if (ret == IDOK) {
+        // a file was selected
+		CString path = dialog.GetPathName();
+		m_AddRememberDir = path;
+		scanDir(path);
+	}	
+    EnableDisable(); 
+	SetCurrentDirectory(cwd);
+	updateRenameRoot();
+}
+
+void CId3taggerDlg::scanDir(CString dir) {
+    CString glob(dir);
+	if (glob[glob.GetLength()-1] == '\\') {
+		glob += "*.*";
+	} else {
+		glob += "\\*.*";
+	}
+    
+    CFileFind finder;
+    BOOL bWorking = finder.FindFile(glob);
+	DWORD r;
+	if (!bWorking) {
+		r = GetLastError();
+	}
+	CTime mtime;
+    while (bWorking)
+    {
+        bWorking = finder.FindNextFile();
+        CString fname = finder.GetFileName();
+        if (!finder.IsDots()) {
+            if (finder.IsDirectory()) {
+                CString newDir(dir);
+				if (newDir[newDir.GetLength()-1] != '\\') {
+					newDir += "\\";
+				}
+                newDir += fname;
+                scanDir(newDir);
+            } else {
+				FExtension ext(fname);
+				if (String::downcase(ext.ext()) == "mp3") {
+					m_Files.AddString(finder.GetFilePath());
+				}
+            }
+        }
+    }
+	finder.Close();
 }
       
 //To allow the user to select multiple files, set the OFN_ALLOWMULTISELECT
@@ -453,8 +516,9 @@ CString CId3taggerDlg::editMp3(BOOL EditOrDry, CString file) {
 	CString result;
 
 
-	ID3_Tag id3, newid3;
+	ID3_Tag id3, newid3, oldid3;
 	id3.Link(file, ID3TT_ALL);
+	oldid3 = id3;
 	flags_t uflag = ID3TT_ID3V2;
 	if (id3.HasV1Tag()) {
 		uflag |= ID3TT_ID3V1;
@@ -503,7 +567,7 @@ CString CId3taggerDlg::editMp3(BOOL EditOrDry, CString file) {
 		return result;
 	}
 	
-	result = file + crlf;
+//	result = file + crlf;
 
 	CStringArray fields;
 	fields.Add("Genre");
@@ -517,24 +581,38 @@ CString CId3taggerDlg::editMp3(BOOL EditOrDry, CString file) {
 	CString oldval,newval;
 	char buf[500];
 	CString format;
-	if (EditOrDry == TRUE) {
-		format = "   %-12s %s\r\n";
-	} else {
+//	if (EditOrDry == TRUE) {
+//		format = "   %-12s %s\r\n";
+//	} else {
 		format = "   %-12s %-30s\t%s\r\n";
-	}
+//	}
+	BOOL fileadded = FALSE;
 	for(i = 0 ; i < n ; ++i ) {
 		oldval = quotedValueFromField(fields.GetAt(i), id3);
 		if (EditOrDry == TRUE) {
-			sprintf(buf, format, fields.GetAt(i), oldval);
+			oldval = quotedValueFromField(fields.GetAt(i), oldid3);
+			newval = quotedValueFromField(fields.GetAt(i), id3);
+			sprintf(buf, format, fields.GetAt(i), oldval, newval);
 		} else {
+			oldval = quotedValueFromField(fields.GetAt(i), id3);
 			newval = quotedValueFromField(fields.GetAt(i), newid3);
 			sprintf(buf, format, fields.GetAt(i), oldval, newval);
 		}
-		result += buf;
+		if (newval.GetLength() && newval != oldval) {
+			if (fileadded == FALSE) {
+				fileadded = TRUE;
+				result += file + crlf;
+			}
+			result += buf;
+		}
 	}
 	if (updated && EditOrDry == TRUE) {
 		flags_t tags = id3.Update(uflag);
 		if (tags == ID3TT_NONE) {
+			if (fileadded == FALSE) {
+				fileadded = TRUE;
+				result += file + crlf;
+			}
 			result += "Error: unable to update id3 tag.\r\n";
 		}
 	}
@@ -552,6 +630,17 @@ BOOL CId3taggerDlg::DoOp(BOOL EditOrDry, TagOp * Op, ID3_Tag & id3,
 	if (op == "is equal to") {
 		if (Op->m_MatchValue == matchValue) {
 			newvalue = Op->m_SetValue;
+		} else if (Op->m_MatchValue == "The {value}") {
+			if (String::substring(matchValue,0,4) == "The "
+				|| String::substring(matchValue,0,4) == "the ") {
+				newvalue = Op->m_SetValue;
+			}
+		} else if (Op->m_MatchValue == "{value}, The") {
+			int len = matchValue.GetLength();
+			if (String::substring(matchValue,len-5) == ", The"
+				|| String::substring(matchValue,len-5) == ", the") {
+				newvalue = Op->m_SetValue;
+			}
 		}
 	} else if (op == "is not equal to") {
 		if (Op->m_MatchValue != matchValue) {
@@ -690,6 +779,12 @@ void CId3taggerDlg::setField(ID3_Tag & srcid3, ID3_Tag & id3,
 	if (value.Find("{FirstName LastName}") >= 0) {
 		value = doFirstLast(oldval);
 	}
+	if (value.Find("The {value}") >= 0) {
+		value = doTheValue(oldval);
+	}
+	if (value.Find("{value}, The") >= 0) {
+		value = doValueCommaThe(oldval);
+	}
 	
 	if (field == "Genre") {
 		ID3_AddGenre(&id3, value, true);
@@ -734,6 +829,26 @@ CString CId3taggerDlg::doFirstLast(const CString & oldval) {
 	}
 	val.TrimLeft();
 	val.TrimRight();
+	return val;
+}
+CString CId3taggerDlg::doValueCommaThe(CString oldval) {
+	CString val = oldval;
+	if (String::substring(oldval,0,4) == "The "
+		|| String::substring(oldval,0,4) == "the ") {
+		val = String::substring(oldval,4);
+		val += ", The";
+	}
+	return val;
+}
+CString CId3taggerDlg::doTheValue(CString oldval) {
+	CString val = oldval;
+	CString tmp;
+	int len = oldval.GetLength();
+	if (String::substring(oldval,len-5) == ", The"
+		|| String::substring(oldval,len-5) == ", the") {
+		val = "The ";
+		val += String::substring(oldval,0,len-5);
+	}
 	return val;
 }
 

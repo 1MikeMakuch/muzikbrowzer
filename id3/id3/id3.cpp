@@ -546,7 +546,7 @@ void displayTag(const ID3_Tag &myTag)
       }
       default:
       {
-        cout << " frame" << endl;
+        cout << " unknown frame" << endl;
         break;
       }
     }
