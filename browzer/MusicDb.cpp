@@ -516,10 +516,9 @@ public:
                 NameNum * nnj = (NameNum*)array[j];
                 NameNum * nnjm1 = (NameNum*)array[j-1];
                 if (
-					(!alpha && (nnj->m_num < nnjm1->m_num)
-						|| (nnj->m_num == nnjm1->m_num
-						&& (nnj->m_name.CompareNoCase(nnjm1->m_name)) < 0))
-					|| (nnj->m_name.CompareNoCase(nnjm1->m_name) < 0))
+					(alpha && nnj->m_name.CompareNoCase(nnjm1->m_name) < 0)
+					|| (!alpha && nnj->m_num <= nnjm1->m_num)
+					)
                 {
                     CString tmpName = nnj->m_name;
                     int tmpNum = nnj->m_num;

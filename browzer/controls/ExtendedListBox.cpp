@@ -221,13 +221,9 @@ CExtendedListBox::OnKeyDown( UINT nChar, UINT nRepCnt, UINT nFlags ) {
 		thePlayer->PrevDlgCtrl();
     } else if (nChar == VK_RIGHT) {
 		thePlayer->NextDlgCtrl();
-    } else if (m_reorder) {
+    } else if (m_reorder && (nChar == 85 || nChar == 117
+					|| nChar == 68 || nChar == 100)) {
         move(nChar);
-//	}
-//    } else if (nChar == 85 || nChar == 117) {
-//		alphaUp();
-//	} else if (nChar == 68 || nChar == 100) {
-//		alphaDown();
 	} else {
 		CListBox::OnKeyDown(nChar, nRepCnt, nFlags);
 	}
