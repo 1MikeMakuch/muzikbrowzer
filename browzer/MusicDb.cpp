@@ -20,6 +20,7 @@
 #include "oggtagger/oggtagger.h"
 #include <io.h>
 #include <fcntl.h>
+#include <sys/stat.h>
 #include "util/Misc.h"
 
 // xxx make the increment large before shipping!
@@ -1738,9 +1739,9 @@ MusicLib::getLibraryCounts() {
 BOOL
 MusicLib::apic(const CString & file, uchar *& rawdata, size_t & nDataSize) {
 
-	if (m_picCache.read(file, rawdata, nDataSize)) {
-		return TRUE;
-	}
+	//	if (m_picCache.read(file, rawdata, nDataSize)) {
+	//		return TRUE;
+	//	}
 
 	ID3_Tag id3;
 	size_t tagsize = id3.Link(file, ID3TT_ALL);
@@ -1759,7 +1760,7 @@ MusicLib::apic(const CString & file, uchar *& rawdata, size_t & nDataSize) {
 				nDataSize);
 			delete iter;
 
-			m_picCache.write(file, rawdata, nDataSize);
+//			m_picCache.write(file, rawdata, nDataSize);
 
 			return TRUE;
 
@@ -1767,6 +1768,30 @@ MusicLib::apic(const CString & file, uchar *& rawdata, size_t & nDataSize) {
 		}
 	}
 	delete iter;
+
+	// not in apic so look for folder.jpg in dir
+	CString folderjpg = PathUtil::dir(file);
+	folderjpg += "\\folder.jpg";
+	int fd = _open(folderjpg, _O_RDONLY|_O_BINARY);
+	if (fd > 0) {
+		struct _stat statbuf;
+		int fs = _stat(folderjpg, &statbuf );
+		if (fs != 0) {
+			close(fd);
+			return FALSE;
+		}
+
+		nDataSize = statbuf.st_size;
+		rawdata = new BYTE [ nDataSize ];
+		int r = _read(fd, (void*) rawdata, nDataSize);
+		close(fd);
+		if (r != nDataSize) {
+			delete rawdata;
+			return FALSE;
+		}
+//		m_picCache.write(file, rawdata, nDataSize);
+		return TRUE;
+	}
 	return FALSE;
 }
 
