@@ -181,7 +181,7 @@ void RetailOutput(const TCHAR *tszErr, ...)
 
     va_start(valist,tszErr);
     wvsprintf(tszErrOut, tszErr, valist);
-    OutputDebugString(tszErrOut);
+//    OutputDebugString(tszErrOut);
     va_end (valist);
 }
 

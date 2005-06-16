@@ -32,7 +32,6 @@ public:
 	//{{AFX_VIRTUAL(CPlayerApp)
 	public:
 	virtual BOOL InitInstance();
-	virtual BOOL OnIdle(LONG lCount);
 	//}}AFX_VIRTUAL
 
 	private:

@@ -6,18 +6,23 @@
 #endif // _MSC_VER > 1000
 
 #include "StdAfx.h"
+#include "PlayerCallbacks.h"
 
 // MBConfig.h : header file
 //
 
-class CPlayerDlg;
+//class CPlayerDlg;
 class CConfigFiles;
 class CConfigIrman;
-class CConfigFonts;
-class CConfigColors;
+//class CConfigFonts;
+//class CConfigColors;
+class CConfigDisplay;
 class CConfigPassword;
+
 /////////////////////////////////////////////////////////////////////////////
 // MBConfig
+
+
 
 class MBConfig : public CPropertySheet
 {
@@ -28,9 +33,9 @@ public:
 	MBConfig(UINT nIDCaption, CWnd* pParentWnd = NULL, UINT iSelectPage = 0);
 	MBConfig(LPCTSTR pszCaption, CWnd* pParentWnd = NULL, UINT iSelectPage = 0);
     
-	void createit(CPlayerDlg *p) {
+	void createit(CWnd *p, PlayerCallbacks * pcb) {
 		m_CWnd = (CWnd*)p;
-        m_PlayerDlg = p;
+        m_playercallbacks = pcb;
         init();
     }
 
@@ -43,6 +48,8 @@ public:
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(MBConfig)
+	public:
+	virtual BOOL OnInitDialog();
 	//}}AFX_VIRTUAL
 
 // Implementation
@@ -56,12 +63,14 @@ protected:
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 private:
-    CPlayerDlg * m_PlayerDlg;
+	PlayerCallbacks * m_playercallbacks;
+//    CPlayerDlg * m_PlayerDlg;
 	CWnd * m_CWnd;
     CConfigFiles * m_Files;
     CConfigIrman * m_Irman;
-    CConfigFonts * m_Fonts;
-    CConfigColors * m_Colors;
+//    CConfigFonts * m_Fonts;
+//    CConfigColors * m_Colors;
+	CConfigDisplay * m_Display;
 	CConfigPassword * m_Password;
     COLORREF m_BKColor;
     COLORREF m_TColor;
@@ -74,8 +83,9 @@ private:
 public:
     CConfigFiles * files() { return m_Files; }
     CConfigIrman * irman() { return m_Irman; }
-    CConfigFonts * fonts() { return m_Fonts; }
-    CConfigColors * colors() { return m_Colors;}
+//    CConfigFonts * fonts() { return m_Fonts; }
+//    CConfigColors * colors() { return m_Colors;}
+	CConfigDisplay * display() { return m_Display; };
 	CConfigPassword * password() { return m_Password; }
 
     LPLOGFONT getTitlesFont();
@@ -88,6 +98,18 @@ public:
     COLORREF getColorTxNormal();
     COLORREF getColorTxHigh();
     COLORREF getColorTxSel();
+	COLORREF getColorTxColHdr();
+	COLORREF getColorBkColHdr();
+	COLORREF getColorBorder();
+	COLORREF getColorBkCtrls();
+	COLORREF getColorTxCtrls();
+	COLORREF getColorBkPanel2();
+	int getDlgBorderWidth();
+	double getPlaylistHeightPct();
+	double getGenreWidthPct();
+	int getDlgBorderHorz() ;
+	int getDlgBorderVert() ;
+		
 	BOOL UseGenre();
 	BOOL AlbumSortAlpha();
 	void getRegistry(const CString & key, int & value, const int dflt);
@@ -95,6 +117,9 @@ public:
 	void getRegistry(const CString & key, CString & value);
 	void setRegistry(const CString & key, const CString & value);
 	int trialMode();
+	CString mbdir();
+	const CString getSkin(const CString key);
+	int getPanelWidth() ;
 
 };
 

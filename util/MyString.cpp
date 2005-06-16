@@ -275,6 +275,7 @@ String::last(const CString & string, const char ch) {
 }
 AutoBuf::AutoBuf(int size) {
     p = new char[size];
+	memset(p, 0, size-1);
 }
 
 AutoBuf::~AutoBuf() {
@@ -642,7 +643,22 @@ TEST(HexTo62AndBack, BaseC)
 
 }
 
+CString getRGB(COLORREF rgb) {
+	BYTE r = ((BYTE) ((rgb) >> 16)) ;
+	BYTE g = ((BYTE) (((WORD) (rgb)) >> 8));
+	BYTE b =  ((BYTE) (rgb)) ;
+	AutoBuf buf(100);
+	sprintf(buf.p, "%d %d %d", r,g,b);
+	return CString(buf.p);
+}
 
 
-
-
+int
+MyUtil::random(int span) {
+	float ratio = rand() / (float)RAND_MAX;
+	return (int)(ratio * span);
+}
+void
+MyUtil::seed() {
+	srand( (unsigned)time( NULL ) );
+}

@@ -20,16 +20,23 @@
 //#include "MenuDialog.h"
 #include "MBConfig.h"
 #include "ColorStatic.h"
-#include "SliderCtrl.h"
 #include "MusicPlayer.h"
-#include "Mbutton.h"
 #include "PictureStatic.h"
-//#include "CDialogSK.h"
+#include "MyString.h"
+#include "Controls.h"
+#include "ButtonSt.h"
+#include "SkinSlider.h"
+#include "PlayerCallbacks.h"
+
+#define CDialogClassImpl CDialogSK
+
+#include "CDialogSK.h"
 
 class VirtualControl;
 class VirtualDialog;
 class CMenuDialog;
 class CTransparentDialogDlg;
+
 
 class CPlayerDlg;
 
@@ -49,7 +56,7 @@ extern CPlayerDlg * thePlayer;
 
 //class CConfigSettings;
 
-class CPlayerDlg : public CDialog
+class CPlayerDlg : public CDialogClassImpl
 {
 // Construction
 public:
@@ -89,6 +96,7 @@ public:
     void OnNextSong();
     void OnPreviousSong();
     void setFont();
+	void setColors();
     MBConfig & config() { return m_Config; }
     void PlayerStatusSet(CString );
 	void CurrentTitleSet(CString);
@@ -103,30 +111,37 @@ public:
 	void StopStatusTimer();
 	void StopTimers();
 	int HandleIRMessage(int key);
+    void redraw();
+	void Need2Erase(BOOL flag) {
+		m_Need2Erase = flag;
+	}
 private:
-
+	PlayerCallbacks m_callbacks;	
+	Controls m_Controls;
 	int m_PlaylistDuration;
 	CTransparentDialogDlg *_initdialog;
 	Irman m_irman;
+public:
     MBConfig m_Config;
+private:
     CString m_PlayerStatusSave;
     CTime m_PlayerStatusTime;
     CMenuDialog * m_MenuDlg;
     BOOL m_StopFlag;
     int m_PlaylistCurrent;
 	CString m_LastThingQueuedUp;
+	BOOL m_Resizing;
 
     CString m_StatusArray[10];
 
     int mWindowFlag;
 	int m_trialCounter;
 
-    void getControlSettings();
-    void resizeControls(BOOL withPic = FALSE, int init = 0);
+    void resetControls();
     void SaveWindowPos();
     void ReadWindowPos(int &, CRect &);
-    void redraw();
-	void updateVolumeLabel();
+
+//	void updateVolumeLabel();
 	void adjustVolume(int level);
 	void adjustVolume();
 	void OnVolUp();
@@ -161,36 +176,48 @@ private:
     BOOL m_SavePlaylistFlag;
 	REFERENCE_TIME m_timerid;
 	REFERENCE_TIME m_StatusTimerId;
+	REFERENCE_TIME m_VolumeTimerId;
 	CFont m_HeaderFont;
 	CFont m_OptionsButtonFont;
 	CString m_HelpMsg;
+	BOOL m_InitDone;
+	enum ArtOwnedType {
+		AOTPlaylist, AOTLibrary} m_ArtOwnedBy;
 // Dialog Data
 	//{{AFX_DATA(CPlayerDlg)
 	enum { IDD = IDD_PLAYER_DIALOG };
- 	PictureStatic	m_Picture;
+	CButtonST	m_ButtonResize;
+	CButtonST	m_ButtonShuffle;
+	CButtonST	m_ButtonSave;
+	CButtonST	m_ButtonReverse;
+	CButtonST	m_ButtonRandom;
+	CButtonST	m_ButtonLoad;
+	CButtonST	m_ButtonFastForward;
+	CButtonST	m_ButtonClear;
 	CColorStatic	m_GenresLabel;
 	CColorStatic	m_ArtistsLabel;
 	CColorStatic	m_AlbumsLabel;
 	CColorStatic	m_SongsLabel;	
 	CColorStatic	m_PlaylistLabel;
+	CColorStatic	m_PositionLabel;
+	CColorStatic	m_PlayerStatus;
+	CColorStatic	m_CurrentTitle;
 	CExtendedListBox    m_Genres;
 	CExtendedListBox	m_Artists;
 	CExtendedListBox	m_Albums;
 	CExtendedListBox	m_Songs;	
 	CExtendedListBox	m_Playlist;    
-	CMbutton		m_OptionsButton;
-	//CBitmapButton	m_ButtonAppLabel;
-	PictureStatic	m_AppLabel;
-	CBitmapButton	m_ButtonMinimize;
-	CBitmapButton	m_ButtonMaximize;
-	CBitmapButton	m_ButtonExit;
-	CBitmapButton	m_ButtonRestore;
-	SliderCtrl		m_PositionSlider;	
-	SliderCtrl		m_VolumeSlider;
-	CColorStatic	m_VolumeLabel;
-	CColorStatic	m_PositionLabel;
-	CColorStatic	m_PlayerStatus;
-	CColorStatic	m_CurrentTitle;
+	CButtonST		m_OptionsButton;
+	CButtonST		m_ButtonMinimize;
+	CButtonST		m_ButtonMaximize;
+	CButtonST		m_ButtonExit;
+	CButtonST		m_ButtonRestore;
+	CButtonST		m_ButtonStop;
+	CButtonST		m_ButtonPlay;
+	CButtonST		m_ButtonPause;
+ 	PictureStatic	m_Picture;
+	CMySliderCtrl	m_VolumeSlider;
+	CMySliderCtrl	m_PositionSlider;
 	//}}AFX_DATA
 
 	// ClassWizard generated virtual function overrides
@@ -216,6 +243,7 @@ public:
 	afx_msg void OnOpenFileButton();
 	afx_msg void OnStopButton();
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
+	afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	afx_msg void OnAbout();
 	afx_msg void OnSelchangeArtists();
 	afx_msg void OnSelchangeAlbums();
@@ -248,11 +276,13 @@ public:
 	afx_msg void OnButtonMinimize();
 	afx_msg void OnButtonMaximize();
 	afx_msg void OnCancel();
-//	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
+	afx_msg void OnButtonResize();
 	//}}AFX_MSG
-
+	afx_msg void OnCaptureChanged(CWnd *pWnd);
 	afx_msg LRESULT OnGraphNotify(UINT wParam, LONG lParam);
 	afx_msg LRESULT OnPlayloop(UINT wParam, LONG lParam);
+	afx_msg LRESULT OnVolume(UINT wParam, LONG lParam);
+	afx_msg LRESULT OnProgress(UINT wParam, LONG lParam);
     afx_msg LRESULT OnPostMyIdle(UINT wParam, LONG lParam);
 	afx_msg void OnGenresFocus();
 	afx_msg void OnArtistsFocus();
@@ -265,6 +295,7 @@ public:
     afx_msg void OnTestMenu();
     afx_msg BOOL OnHelpInfo(HELPINFO* pHelpInfo);
 	afx_msg LRESULT OnSerialMsg (WPARAM wParam, LPARAM lParam);
+	afx_msg void OnNcPaint( );
 
 	DECLARE_MESSAGE_MAP()
 

@@ -9,8 +9,6 @@
 #include "Resource.h"
 #include "MBGlobals.h"
 #include "ColorStatic.h"
-//#include "VirtualControl.h"
-//#include "PlayerDlg.h"
 
 class VirtualControl;
 /////////////////////////////////////////////////////////////////////////////

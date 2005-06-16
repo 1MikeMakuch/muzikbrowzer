@@ -104,13 +104,6 @@ BOOL CPlayerApp::InitInstance()
 	return FALSE;
 }
 
-BOOL CPlayerApp::OnIdle(LONG lCount) 
-{
-	// TODO: Add your specialized code here and/or call the base class
-	
-	return CWinApp::OnIdle(lCount);
-}
-	
 void CPlayerApp::RunTestHarness() {
 
 	TestResult tr;

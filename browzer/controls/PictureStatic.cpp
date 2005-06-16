@@ -4,7 +4,6 @@
 #include "stdafx.h"
 #include "PictureStatic.h"
 #include "MyString.h"
-#include "PlayerDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -47,6 +46,7 @@ void PictureStatic::OnPaint()
     }
     CRect rect;
     GetClientRect(rect);
+//	blank();
 
 	if (m_ploaded)
 		m_Picture->Draw(cdc);
@@ -60,6 +60,12 @@ void PictureStatic::OnPaint()
     ReleaseDC(cdc);
 	
 	// Do not call CStatic::OnPaint() for painting messages
+}
+void
+PictureStatic::load(CString filename) {
+	m_Picture->Load(filename);
+	m_ploaded= TRUE;
+	RedrawWindow();
 }
 
 void
@@ -85,7 +91,7 @@ PictureStatic::unload() {
 //		m_bytes = NULL;
 //	}
 	m_ploaded = FALSE;	
-	blank();
+//	blank();
 }
 void
 PictureStatic::blank() {
@@ -97,8 +103,7 @@ PictureStatic::blank() {
     CRect rect;
     GetClientRect(rect);
 
-	COLORREF crbg = thePlayer->config().getColorBkNormal();
-	CBrush brush(crbg);
+	CBrush brush(m_BgColor);
 	cdc->FillRect(rect, &brush);
  
     ReleaseDC(cdc);

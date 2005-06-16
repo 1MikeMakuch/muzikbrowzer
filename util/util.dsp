@@ -114,6 +114,10 @@ LIB32=link.exe -lib
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
+SOURCE=.\DIBSectionLite.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\FExtension.cpp
 # End Source File
 # Begin Source File
@@ -138,6 +142,10 @@ SOURCE=.\MyString.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\Registry.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\SMTP.cpp
 # End Source File
 # Begin Source File
@@ -149,6 +157,10 @@ SOURCE=.\StdAfx.cpp
 # Begin Group "Header Files"
 
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
+# Begin Source File
+
+SOURCE=.\DIBSectionLite.h
+# End Source File
 # Begin Source File
 
 SOURCE=.\FExtension.h
@@ -172,6 +184,10 @@ SOURCE=.\MyLog.h
 # Begin Source File
 
 SOURCE=.\MyString.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\Registry.h
 # End Source File
 # Begin Source File
 

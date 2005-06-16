@@ -3,7 +3,7 @@
 #include "MusicPlayer.h"
 #include "Mp3Header.h"
 #include <math.h>
-//#include "PlayerDlg.h"
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE

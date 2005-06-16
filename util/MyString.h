@@ -48,7 +48,8 @@ class String {
 		const CString &oldsubstring, 
 		const unsigned int &occur=0);
 
-	static CString replace(const CString string, const char src, const CString target);
+	static CString replace(const CString string, const char src,
+		const CString target);
 	static CString downcase(const CString string);
 	static CString upcase(const CString string);
 	static int last(const CString & string, const char ch);
@@ -93,6 +94,19 @@ class BaseC {
 		static CString	DecToSixtyTwoString(__int64 i);
 		static CString	HexStringToSixtyTwoString(const CString &h);
 		static CString	SixtyTwoStringToHexString(const CString &s2);
+};
+
+CString getRGB(COLORREF rgb) ;
+
+class MyUtil {
+private:
+	MyUtil(){};
+public:
+	~MyUtil(){};
+	// returns random # between 0 and span-1, inclusive
+	static int random(int span) ;
+	// call this once first
+	static void seed() ;
 };
 
 #endif

@@ -114,15 +114,11 @@ LIB32=link.exe -lib
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
-SOURCE=.\ConfigColors.cpp
+SOURCE=.\ConfigDisplay.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=.\ConfigFiles.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\ConfigFonts.cpp
 # End Source File
 # Begin Source File
 
@@ -146,15 +142,11 @@ SOURCE=.\StdAfx.cpp
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
 # Begin Source File
 
-SOURCE=.\ConfigColors.h
+SOURCE=.\ConfigDisplay.h
 # End Source File
 # Begin Source File
 
 SOURCE=.\ConfigFiles.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\ConfigFonts.h
 # End Source File
 # Begin Source File
 

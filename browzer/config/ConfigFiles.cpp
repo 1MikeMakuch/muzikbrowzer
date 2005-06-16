@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "FolderDialog.h"
-#include "irman_registry.h"
+#include "Registry.h"
 #include "MyLog.h"
 #include "MBMessageBox.h"
 #include "ConfigFiles.h"
@@ -25,9 +25,11 @@ static unsigned long useGenreUL;
 
 IMPLEMENT_DYNCREATE(CConfigFiles, CPropertyPage)
 
-CConfigFiles::CConfigFiles(CPlayerDlg *p) : CPropertyPage(CConfigFiles::IDD),
-    m_PlayerDlg(p), m_RunAtStartupUL(0), m_scanNew(FALSE), m_UseGenreUL(0),
-	m_AlbumSortAlpha(TRUE), m_AlbumSortDate(FALSE)
+CConfigFiles::CConfigFiles(CWnd *p, PlayerCallbacks * pcb) : CPropertyPage(CConfigFiles::IDD),
+    /*m_PlayerDlg(p),*/ m_RunAtStartupUL(0), m_scanNew(FALSE), m_UseGenreUL(0),
+	m_AlbumSortAlpha(TRUE), m_AlbumSortDate(FALSE),
+	m_playercallbacks(pcb)
+
 {
 	//{{AFX_DATA_INIT(CConfigFiles)
 		// NOTE: the ClassWizard will add member initialization here
@@ -69,6 +71,7 @@ BEGIN_MESSAGE_MAP(CConfigFiles, CPropertyPage)
 	ON_BN_CLICKED(IDC_DIRSCAN_NEW, OnDirscanNew)
 	ON_BN_CLICKED(IDC_ALBUMSORT_DATE, OnAlbumsortDate)
 	ON_BN_CLICKED(IDC_ALBUMSORT_ALPHA, OnAlbumsortAlpha)
+	ON_BN_CLICKED(IDC_USEGENRE, OnUsegenre)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -85,7 +88,14 @@ void CConfigFiles::OnDiradd()
 {
 
     // open a file
-	CFolderDialog dialog;
+	int s = m_MP3DirList.GetCurSel();
+	CString dflt;
+	if (s <  0)
+		s = 0;
+	if (m_MP3DirList.GetCount())
+		m_MP3DirList.GetText(s, dflt);
+
+	CFolderDialog dialog(dflt);
 
 	int ret;
 	ret = dialog.DoModal();
@@ -95,6 +105,7 @@ void CConfigFiles::OnDiradd()
         m_MP3DirList.AddString(path);
         EnableDisableButtons(); 
         UpdateData(FALSE);
+		SetModified(TRUE);
 	}
 }
 
@@ -103,6 +114,7 @@ void CConfigFiles::OnSelchangeDirlist()
 {
     CWnd * button = GetDlgItem(IDC_DIRREMOVE);
     button->EnableWindow(TRUE);
+	SetModified(TRUE);
 }
 
 void CConfigFiles::OnDirremove() 
@@ -111,12 +123,15 @@ void CConfigFiles::OnDirremove()
     m_MP3DirList.DeleteString(cursel);
 
     EnableDisableButtons(); 
+	SetModified(TRUE);
 
 }
 
 class ThreadParams {
 public:
-    MusicLib * m_mlib;
+
+	CString (*scanDirectories)(const CStringList & directories,
+						  InitDlg * initDlg, BOOL scanNew);
     CStringList * m_dirs;
     InitDlg * m_InitDialog;
     CString m_result;
@@ -130,9 +145,7 @@ ScanThread(LPVOID pParam) {
     ThreadParams *tp = (ThreadParams *)pParam;
 
 	ScanThread_done = 0;
-//    m_Scan->m_InitLabel.SetWindowText("Scanning directores for mp3 files");
-
-    tp->m_result = tp->m_mlib->scanDirectories(*(tp->m_dirs), tp->m_InitDialog, tp->m_scanNew);
+	tp->m_result = (*tp->scanDirectories)(*(tp->m_dirs), tp->m_InitDialog, tp->m_scanNew);
     tp->m_InitDialog->SendUpdateStatus(4, "", 0,0); // EndDialog;
 
     ScanThread_done = 1;
@@ -181,7 +194,8 @@ void CConfigFiles::dirScan() {
 	InitDlg *m_InitDialog = new InitDlg(0,1);
 
     ThreadParams tp;
-    tp.m_mlib = &m_PlayerDlg->m_mlib;
+    //tp.m_mlib = &m_PlayerDlg->m_mlib;
+	tp.scanDirectories = m_playercallbacks->scanDirectories;
     tp.m_dirs = &dirs;
     tp.m_InitDialog = m_InitDialog;
 	tp.m_scanNew = m_scanNew;
@@ -191,11 +205,13 @@ void CConfigFiles::dirScan() {
 
     CString scaninfo = tp.m_result;
 
-    m_PlayerDlg->initDb();
+	(*m_playercallbacks->initDb)();
 
-    CString libcounts = m_PlayerDlg->m_mlib.getLibraryCounts();
-    m_PlayerDlg->PlayerStatusSet(libcounts);
-    m_PlayerDlg->UpdateWindow();
+    CString libcounts = (*m_playercallbacks->getLibraryCounts)();
+
+	(*m_playercallbacks->statusset)(libcounts);
+
+	(*m_playercallbacks->UpdateWindow)();
 
     delete m_InitDialog;
 
@@ -206,7 +222,9 @@ void CConfigFiles::dirScan() {
 void CConfigFiles::OnLocationButton() 
 {
     // open a file
-	CFolderDialog dialog;
+	CString dflt;
+	m_MdbLocation.GetWindowText(dflt);
+	CFolderDialog dialog(dflt);
 
 	int ret;
 	ret = dialog.DoModal();
@@ -216,8 +234,10 @@ void CConfigFiles::OnLocationButton()
         m_MdbLocation.SetWindowText(path);
         EnableDisableButtons(); 
         UpdateData(FALSE);
-        m_PlayerDlg->m_mlib.setDbLocation(path);
+
+		(*m_playercallbacks->setDbLocation)(path);
         m_path = path;
+		SetModified(TRUE);
 	}	
 }
 
@@ -237,6 +257,7 @@ void CConfigFiles::ReadReg() {
 
     if (Location.GetLength()) {
         m_origMdbLocation = Location;
+		m_path = Location;
     } else {
         TCHAR szBuff[_MAX_PATH];
         ::GetModuleFileName(NULL, szBuff, _MAX_PATH);
@@ -250,7 +271,8 @@ void CConfigFiles::ReadReg() {
         }
         m_origMdbLocation = szBuff;
         reg.Write(RegDbLocation, szBuff);
-        m_PlayerDlg->m_mlib.setDbLocation(m_origMdbLocation);
+
+		(*m_playercallbacks->setDbLocation)(m_origMdbLocation);
         m_path = m_origMdbLocation;
     }
 
@@ -349,7 +371,7 @@ void CConfigFiles::StoreReg() {
 //		m_PlayerDlg->OnCancel();
 //		exit(0);
 //	}
-    m_PlayerDlg->init();
+    //m_PlayerDlg->init();
 
 }
 void
@@ -523,6 +545,7 @@ void CConfigFiles::OnMp3Add()
     m_Mp3Extension.GetWindowText(extension);
     m_Mp3Extensions.AddString(extension);
     UpdateData(FALSE);
+	SetModified(TRUE);
 //    StoreReg();
 	
 }
@@ -531,15 +554,51 @@ void CConfigFiles::OnMp3Remove()
 {
     m_Mp3Extensions.DeleteString(m_Mp3Extensions.GetCurSel());
     UpdateData(FALSE);
+	SetModified(TRUE);
 //    StoreReg();
 }
+
+BOOL CConfigFiles::UseGenre() {
+	return (m_UseGenreUL == 1);
+	return TRUE;
+}
+
+void CConfigFiles::OnAlbumsortDate() 
+{
+	m_AlbumSortAlpha = FALSE;
+	m_AlbumSortDate = TRUE;
+	CheckRadioButton(IDC_ALBUMSORT_DATE,IDC_ALBUMSORT_ALPHA,IDC_ALBUMSORT_DATE);
+	UpdateData(FALSE);
+	SetModified(TRUE);
+}
+
+void CConfigFiles::OnAlbumsortAlpha() 
+{
+	m_AlbumSortAlpha = TRUE;
+	m_AlbumSortDate = FALSE;
+	CheckRadioButton(IDC_ALBUMSORT_DATE,IDC_ALBUMSORT_ALPHA,IDC_ALBUMSORT_ALPHA);
+	UpdateData(FALSE);
+	SetModified(TRUE);
+	
+}
+BOOL CConfigFiles::AlbumSortAlpha()
+{
+	return m_AlbumSortAlpha;
+}
+
+
+BOOL CConfigFiles::OnApply() 
+{
+	return CPropertyPage::OnApply();
+}
+
 void CConfigFiles::OnOK() 
 {
 	CPropertyPage::OnOK();
     StoreReg();
+	SetModified(FALSE);
 
 }
-
 void CConfigFiles::OnCancel() 
 {
 	m_Mp3Extensions.ResetContent();
@@ -562,31 +621,8 @@ void CConfigFiles::OnCancel()
 	CPropertyPage::OnCancel();
 }
 
-
-BOOL CConfigFiles::UseGenre() {
-	return (m_UseGenreUL == 1);
-	return TRUE;
-}
-
-void CConfigFiles::OnAlbumsortDate() 
+void CConfigFiles::OnUsegenre() 
 {
-	m_AlbumSortAlpha = FALSE;
-	m_AlbumSortDate = TRUE;
-	CheckRadioButton(IDC_ALBUMSORT_DATE,IDC_ALBUMSORT_ALPHA,IDC_ALBUMSORT_DATE);
-	UpdateData(FALSE);
+	SetModified(TRUE);
 	
 }
-
-void CConfigFiles::OnAlbumsortAlpha() 
-{
-	m_AlbumSortAlpha = TRUE;
-	m_AlbumSortDate = FALSE;
-	CheckRadioButton(IDC_ALBUMSORT_DATE,IDC_ALBUMSORT_ALPHA,IDC_ALBUMSORT_ALPHA);
-	UpdateData(FALSE);
-	
-}
-BOOL CConfigFiles::AlbumSortAlpha()
-{
-	return m_AlbumSortAlpha;
-}
-

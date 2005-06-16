@@ -7,6 +7,7 @@ class FExtension {
     public:
         FExtension(CString);
         CString ext();
+		CString filename();
         BOOL operator == (CString);
 		BOOL operator == (const char *);
     private:

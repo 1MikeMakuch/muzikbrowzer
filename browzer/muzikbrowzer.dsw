@@ -3,6 +3,39 @@ Microsoft Developer Studio Workspace File, Format Version 6.00
 
 ###############################################################################
 
+Project: "BCDCTest"=.\BCDCTest\BCDCTest.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "BitmapCutter"=..\ButtonSkinner\BitmapCutter.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name controls
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name util
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name TestHarness
+    End Project Dependency
+}}}
+
+###############################################################################
+
 Project: "Inno"=.\Inno\Inno.dsp - Package Owner=<4>
 
 Package=<5>
@@ -79,6 +112,18 @@ Package=<4>
 ###############################################################################
 
 Project: "WmaTagg"=..\WMAEDIT\WmaTagg.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "bitmaptest"=..\..\bitmaptest\bitmaptest.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -194,6 +239,9 @@ Package=<5>
 
 Package=<4>
 {{{
+    Begin Project Dependency
+    Project_Dep_Name md5
+    End Project Dependency
 }}}
 
 ###############################################################################
@@ -252,9 +300,6 @@ Package=<4>
     Project_Dep_Name util
     End Project Dependency
     Begin Project Dependency
-    Project_Dep_Name oggtagger
-    End Project Dependency
-    Begin Project Dependency
     Project_Dep_Name vorbis_static
     End Project Dependency
     Begin Project Dependency
@@ -273,22 +318,10 @@ Package=<4>
     Project_Dep_Name id3
     End Project Dependency
     Begin Project Dependency
-    Project_Dep_Name mydiff
-    End Project Dependency
-    Begin Project Dependency
     Project_Dep_Name vorbiscomment
     End Project Dependency
     Begin Project Dependency
-    Project_Dep_Name id3tagger
-    End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name mbpw
-    End Project Dependency
-    Begin Project Dependency
     Project_Dep_Name md5
-    End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name regset
     End Project Dependency
     Begin Project Dependency
     Project_Dep_Name WmaTagg

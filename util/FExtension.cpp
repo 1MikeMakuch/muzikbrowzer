@@ -33,6 +33,32 @@ FExtension::ext() {
     }
     return extension;
 }
+CString
+FExtension::filename() {
+	CString filename;
+    int l = mFile.GetLength();
+    if (l < 1) {
+        return "";
+    }
+    int i;
+	CString tmp = mFile;
+	AutoBuf buf(mFile.GetLength()+1);
+	strcpy(buf.p, mFile.GetBuffer(0));
+    for (i = l-1 ; i > 0 ; --i) {
+        if (buf.p[i] == '.') {
+			buf.p[i] = 0;
+			filename = buf.p;
+			return filename;
+        }
+    }
+    return "";
+}
+TEST(FExtension, filename)
+{
+	CString s="/one/two/three.txt";
+	FExtension ext(s);
+	CHECK(ext.filename() == CString("/one/two/three"));
+}
 
 BOOL
 FExtension::operator == (CString extension) {

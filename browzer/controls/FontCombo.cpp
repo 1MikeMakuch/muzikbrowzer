@@ -415,6 +415,7 @@ void CFontCombo::OnSetfocus()
 {
 	// Save off original font
 	GetWindowText(m_strFontSave);	
+	GetParent()->SendMessage(MB_CONFIG_CBUTTON, 0, 0);  
 }
 
 ////////////////////////////////////////////////////////////////////////////////

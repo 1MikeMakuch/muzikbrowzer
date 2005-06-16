@@ -114,11 +114,19 @@ LIB32=link.exe -lib
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
+SOURCE=.\ButtonST.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\colorbtn.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=.\ColorStatic.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\Controls.cpp
 # End Source File
 # Begin Source File
 
@@ -142,10 +150,6 @@ SOURCE=.\HyperLink.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\Mbutton.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\Picture.cpp
 # End Source File
 # Begin Source File
@@ -154,7 +158,11 @@ SOURCE=.\PictureStatic.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\SliderCtrl.cpp
+SOURCE=.\SkinBmp.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\SkinSlider.cpp
 # End Source File
 # Begin Source File
 
@@ -175,11 +183,19 @@ SOURCE=.\VirtualControl.cpp
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
 # Begin Source File
 
+SOURCE=.\ButtonST.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\colorbtn.h
 # End Source File
 # Begin Source File
 
 SOURCE=.\ColorStatic.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\Controls.h
 # End Source File
 # Begin Source File
 
@@ -203,10 +219,6 @@ SOURCE=.\HyperLink.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\Mbutton.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\Picture.h
 # End Source File
 # Begin Source File
@@ -215,7 +227,11 @@ SOURCE=.\PictureStatic.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\SliderCtrl.h
+SOURCE=.\SkinBmp.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\SkinSlider.h
 # End Source File
 # Begin Source File
 

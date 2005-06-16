@@ -192,14 +192,30 @@ bool CPicture::Draw(CDC* pDC, int x, int y, int cx, int cy)
 	m_wnd->GetClientRect(rect);
 	cx = rect.Width();
 	cy = rect.Height();
+
+	// center it
+
+
 	if (m_bSquare == TRUE) {
 		int sq = __min(cx,cy);
 		cx = cy = sq;
 	}
+	if (cx < rect.Width()) {
+		x += (rect.Width() - cx) / 2;
+	}
+	if (cy < rect.Height()) {
+		y += (rect.Height() - cy) / 2;
+	}
 
 	if (m_pPicture->Render(pDC->m_hDC, x, y, cx, cy, 0, hmHeight, hmWidth,
-		-hmHeight, NULL) == S_OK)
+		-hmHeight, NULL) == S_OK) {
+
+//		CBrush br(RGB(255,255,255));
+//		CBrush* pOldBrush = pDC->SelectObject(&br);
+//		pDC->FrameRect(rect, &br);
+//		pDC->SelectObject(pOldBrush);
 		return true;
+	}
 
 	return false;
 }

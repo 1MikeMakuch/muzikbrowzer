@@ -8,7 +8,7 @@
 #include "id3/misc_support.h"
 //#include "id3lib-3.8.0/src/mp3_header.h"
 #include "FExtension.h"
-#include "irman_registry.h"
+#include "Registry.h"
 //#include "ID3ModifyStatus.h"
 #include "MBMessageBox.h"
 #include "MyID3LibMiscSupport.h"
@@ -26,11 +26,10 @@
 #include <sys/stat.h>
 #include "util/Misc.h"
 
+#pragma hack
 // xxx make the increment large before shipping!
 #define MMEMORY_SIZE_INCREMENT 5000
 #define MMEMORY_RESERVE_BYTES 100
-#define MBPLAYLIST "_Playlist_"
-#define MBPLAYLISTEXT ".mbp"
 #define MB_GARBAGE_INTERVAL 10
 #define MB_DB_VERSION 4
 
@@ -98,6 +97,7 @@ CSong::unreference() {
 	}
 }
 
+#pragma hack
 //int
 //CSong::operator == (const CSong &a) {
 //	// xxx fix this, compare all keys
@@ -1500,7 +1500,7 @@ void
 MusicLib::shufflePlaylist() {
     int n = _playlist.size();
     int i;
-    char buf[100];
+    AutoBuf buf(100);
     CMapStringToOb map;
     CStringList *list;
     for (i = 0; i < n; ++i) {
@@ -1511,8 +1511,8 @@ MusicLib::shufflePlaylist() {
             map.SetAt(artist, list);
 //            delete list;
         }
-        sprintf(buf, "%d", i);
-        CString spos = buf;
+        sprintf(buf.p, "%d", i);
+        CString spos = buf.p;
         list->AddTail(spos);
     }
 
@@ -1573,20 +1573,20 @@ MusicLib::modifyID3(Song oldSong, Song newSong) {
 	dialog->ProgressRange(0, count);
 
 	msg = "The following files will be modified.\r\nClick OK to continue or Cancel to abort.\r\n";
-	char buf[1000];
+	AutoBuf buf(1000);
 	CString fmt = "%15s: %20s,  %15s: %s\r\n";
-	sprintf(buf,fmt,"old genre",oldGenre,"new genre",newGenre);
-	msg += buf;
-	sprintf(buf,fmt,"old artist",oldArtist,"new artist",newArtist);
-	msg += buf;
-	sprintf(buf,fmt,"old album",oldAlbum,"new album",newAlbum);
-	msg += buf;
-	sprintf(buf,fmt,"old title",oldTitle,"new title",newTitle);
-	msg += buf;
-	sprintf(buf,fmt,"old track#",oldTrack,"new track",newTrack);
-	msg += buf;
-	sprintf(buf,fmt,"old year",oldYear,"new year",newYear);
-	msg += buf;
+	sprintf(buf.p,fmt,"old genre",oldGenre,"new genre",newGenre);
+	msg += buf.p;
+	sprintf(buf.p,fmt,"old artist",oldArtist,"new artist",newArtist);
+	msg += buf.p;
+	sprintf(buf.p,fmt,"old album",oldAlbum,"new album",newAlbum);
+	msg += buf.p;
+	sprintf(buf.p,fmt,"old title",oldTitle,"new title",newTitle);
+	msg += buf.p;
+	sprintf(buf.p,fmt,"old track#",oldTrack,"new track",newTrack);
+	msg += buf.p;
+	sprintf(buf.p,fmt,"old year",oldYear,"new year",newYear);
+	msg += buf.p;
 	msg += "\r\n";
 
     POSITION pos;
@@ -1651,6 +1651,7 @@ MusicLib::modifyID3(Song oldSong, Song newSong) {
 				result += oneresult;
 				result += "\r\n";
 			} else {
+#pragma hack
 				// hack alert m_files only used for scanning/verifying,
 				// so keep it empty cause addSong will pre-exit if...
 				m_SongLib.m_files.removeAll();
@@ -1844,9 +1845,9 @@ MusicLib::searchForSongs(CStringList & songs, MList & songList,
 void
 MusicLib::dumpPL(int playlistCurrent) {
     CString buf;
-    char cbuf[100];
-    sprintf(cbuf,"%d: ", playlistCurrent);
-    buf = cbuf;
+    AutoBuf cbuf(100);
+    sprintf(cbuf.p,"%d: ", playlistCurrent);
+    buf = cbuf.p;
     for (PlaylistNode *p = _playlist.head();
     p != (PlaylistNode*)0; p = _playlist.next(p))
     {
@@ -2199,6 +2200,7 @@ TEST(MMemoryTests, MMemory)
 
 }
 
+#pragma hack
 //////////////////////////////////////////////////////////////////
 // One caveat, one cannot assign an int reference to one of the 
 // reference accessors below. They are only to be used for immediate
@@ -3077,6 +3079,8 @@ MSongLib::removeSong(Song & song2remove) {
 		MList::Iterator songIter(allSongList);
 		BOOL found = FALSE;
 		while (songIter.more() && !found) {
+			if (song)
+				delete song;
 			song = new MRecord (songIter.next() );
 			CString sfile = song->lookupVal("FILE");
 			if (filename == sfile) {
@@ -3109,6 +3113,8 @@ MSongLib::removeSong(Song & song2remove) {
 		MList::Iterator songIter(allAllSongList);
 		BOOL found = FALSE;
 		while (songIter.more() && !found) {
+			if (song)
+				delete song;
 			song = new MRecord (songIter.next() );
 			CString sfile = song->lookupVal("FILE");
 			if (filename == sfile) {

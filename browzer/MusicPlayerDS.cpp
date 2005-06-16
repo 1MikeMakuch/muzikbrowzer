@@ -10,6 +10,7 @@
 #include "MBGlobals.h"
 #include "util/MyLog.h"
 #include "util/Misc.h"
+#include "util/MyString.h"
 #include <atlbase.h>
 
 #ifdef _DEBUG
@@ -765,9 +766,9 @@ void MusicPlayerDS::LogError(HRESULT hr, CString msg)
 			txt += msg;
 			txt += ": ";
 		}
-		char buf[100];
-		sprintf(buf, "0x%2x", hr);
-		txt += buf;
+		AutoBuf buf(1000);
+		sprintf(buf.p, "0x%2x", hr);
+		txt += buf.p;
 		txt += ", ";
 		txt += szErr;
         logger.log(txt);

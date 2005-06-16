@@ -87,6 +87,7 @@ CTransparentDialogDlg::CTransparentDialogDlg(CWnd* pParent /*=NULL*/)
 	//}}AFX_DATA_INIT
 	// Note that LoadIcon does not require a subsequent DestroyIcon in Win32
 //x	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	m_hBitmap = NULL;
 	Create(IDD);
 //	m_start = CTime::GetCurrentTime();
 }
@@ -106,7 +107,11 @@ BEGIN_MESSAGE_MAP(CTransparentDialogDlg, CDialog)
 	ON_WM_CLOSE()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
-
+CTransparentDialogDlg::~CTransparentDialogDlg() {
+	if (m_hBitmap != NULL)
+		DeleteObject(m_hBitmap);	//not really need but what the heck.
+	m_hBitmap = NULL;
+}
 /////////////////////////////////////////////////////////////////////////////
 // CTransparentDialogDlg message handlers
 
@@ -126,14 +131,17 @@ BOOL CTransparentDialogDlg::OnInitDialog()
 
 void CTransparentDialogDlg::OnExit() 
 {
-	// TODO: Add your control notification handler code here
-//x	PostQuitMessage(0);
+	if (m_hBitmap != NULL)
+		DeleteObject(m_hBitmap);	//not really need but what the heck.
+	m_hBitmap = NULL;
 }
 
 void CTransparentDialogDlg::OnClose() 
 {
 	// TODO: Add your message handler code here and/or call default
-	DeleteObject(m_hBitmap);	//not really need but what the heck.
+	if (m_hBitmap != NULL)
+		DeleteObject(m_hBitmap);	//not really need but what the heck.
+	m_hBitmap = NULL;
 	CDialog::OnClose();
 }
 
@@ -164,7 +172,9 @@ void CTransparentDialogDlg::OnSize(UINT nType, int cx, int cy)
 	// Load the image
 //	m_hBitmap = (HBITMAP)LoadImage(GetModuleHandle(NULL), "Image.bmp", 
 //		IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-
+	if (m_hBitmap != NULL)
+		DeleteObject(m_hBitmap);	//not really need but what the heck.
+	m_hBitmap = NULL;
 	m_hBitmap = (HBITMAP) LoadImage (AfxGetInstanceHandle(), 
 		MAKEINTRESOURCE(IDB_SPLASH3), IMAGE_BITMAP, 0, 0, LR_DEFAULTCOLOR);
 
@@ -212,6 +222,8 @@ void CTransparentDialogDlg::OnSize(UINT nType, int cx, int cy)
 		}while(iX < m_Bitmap.bmWidth);
 		iX = 0;
 	}
+	dcMem.SelectObject(pOldBitmap);	// Put the original bitmap back (prevents memory leaks)
+	dcMem.DeleteDC();
 	//Centre it on current desktop
 	SetWindowRgn(crRgn, TRUE);
 	iX = (GetSystemMetrics(SM_CXSCREEN) / 2) - (m_Bitmap.bmWidth / 2);
@@ -220,7 +232,6 @@ void CTransparentDialogDlg::OnSize(UINT nType, int cx, int cy)
 		NULL); 
 
 	// Free resources.
-	dcMem.SelectObject(pOldBitmap);	// Put the original bitmap back (prevents memory leaks)
-	dcMem.DeleteDC();
+
 	crRgn.DeleteObject();
 }

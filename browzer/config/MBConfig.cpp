@@ -3,12 +3,13 @@
 
 #include "stdafx.h"
 #include "MBConfig.h"
-#include "ConfigColors.h"
-#include "ConfigFonts.h"
+//#include "ConfigColors.h"
+//#include "ConfigFonts.h"
+#include "ConfigDisplay.h"
 #include "ConfigIrman.h"
 #include "ConfigFiles.h"
 #include "ConfigPassword.h"
-#include "irman_registry.h"
+#include "Registry.h"
 #include "MyString.h"
 
 #ifdef _DEBUG
@@ -27,42 +28,50 @@ IMPLEMENT_DYNAMIC(MBConfig, CPropertySheet)
 MBConfig::MBConfig(UINT nIDCaption, CWnd* pParentWnd, UINT iSelectPage)
 	:CPropertySheet(nIDCaption, pParentWnd, iSelectPage)
     
-{}
+{m_Password=NULL;}
 
 MBConfig::MBConfig(LPCTSTR pszCaption, CWnd* pParentWnd, UINT iSelectPage)
 	:CPropertySheet(pszCaption, pParentWnd, iSelectPage)
-{}
+{m_Password=NULL;}
 
+CString
+MBConfig::mbdir() {
+	return m_Files->mbdir();
+}
 
 MBConfig::~MBConfig()
 {
     if (m_Files) delete m_Files;
     if (m_Irman) delete m_Irman;
-    if (m_Fonts) delete m_Fonts;
-    if (m_Colors) delete m_Colors;
+	if (m_Display) delete m_Display;
+//    if (m_Fonts) delete m_Fonts;
+//    if (m_Colors) delete m_Colors;
 // leave this in, still need it to call trialMode()
-//#ifdef MB_USING_TRIAL_MODE 
+#ifdef MB_USING_TRIAL_MODE 
 	if (m_Password) delete m_Password;
-//#endif
+#endif
 }
 
 void
 MBConfig::init() {
     m_Irman = new CConfigIrman(m_CWnd);
-    m_Colors = new CConfigColors(m_CWnd);
-    m_Files = new CConfigFiles(m_PlayerDlg);
-    m_Fonts = new CConfigFonts(m_CWnd);
-//#ifdef MB_USING_TRIAL_MODE
+//    m_Colors = new CConfigColors(m_CWnd);
+    m_Files = new CConfigFiles(m_CWnd, m_playercallbacks);
+//    m_Fonts = new CConfigFonts(m_CWnd);
+	m_Display = new CConfigDisplay(m_CWnd, m_playercallbacks);
+#ifdef MB_USING_TRIAL_MODE
 	m_Password = new CConfigPassword(m_CWnd);
-//#endif
+#endif
 
     AddPage(m_Files);
     AddPage(m_Irman);
-    AddPage(m_Fonts);
-    AddPage(m_Colors);
+//    AddPage(m_Fonts);
+//    AddPage(m_Colors);
+	AddPage(m_Display);
 #ifdef MB_USING_TRIAL_MODE
 	AddPage(m_Password);
 #endif
+
 }
 
 BEGIN_MESSAGE_MAP(MBConfig, CPropertySheet)
@@ -76,45 +85,107 @@ END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
 // MBConfig message handlers
+
+BOOL MBConfig::OnInitDialog() 
+{
+	BOOL bResult = CPropertySheet::OnInitDialog();
+	
+//	pApplyButton = GetDlgItem (ID_APPLY_NOW);
+//	ASSERT (pApplyButton);
+//	pApplyButton->ShowWindow (SW_HIDE);
+//	pApplyButton->EnableWindow(TRUE);
+	
+	return bResult;
+}
+
 LPLOGFONT
 MBConfig::getTitlesFont() {
-    return m_Fonts->getTitlesFont();
+    return m_Display->getTitlesFont();
 }
 LPLOGFONT
 MBConfig::getPanelFont() {
-    return m_Fonts->getPanelFont();
+    return m_Display->getPanelFont();
 }
 COLORREF
 MBConfig::getColorBkPanel() {
-    return m_Colors->getBkPanel();
+    return m_Display->getBkPanel();
 }
 COLORREF
 MBConfig::getColorBkNormal() {
-    return m_Colors->getBkNormal();
+    return m_Display->getBkNormal();
 }
 COLORREF
 MBConfig::getColorBkHigh() {
-    return m_Colors->getBkHigh();
+    return m_Display->getBkHigh();
 }
 COLORREF
 MBConfig::getColorBkSel() {
-    return m_Colors->getBkSel();
+    return m_Display->getBkSel();
 }
 COLORREF
 MBConfig::getColorTxPanel() {
-    return m_Colors->getTxPanel();
+    return m_Display->getTxPanel();
 }
 COLORREF
 MBConfig::getColorTxNormal() {
-    return m_Colors->getTxNormal();
+    return m_Display->getTxNormal();
 }
 COLORREF
 MBConfig::getColorTxHigh() {
-    return m_Colors->getTxHigh();
+    return m_Display->getTxHigh();
 }
 COLORREF
 MBConfig::getColorTxSel() {
-    return m_Colors->getTxSel();
+    return m_Display->getTxSel();
+}
+COLORREF
+MBConfig::getColorTxColHdr() {
+    return m_Display->getTxColHdr();
+}
+COLORREF
+MBConfig::getColorBkColHdr() {
+    return m_Display->getBkColHdr();
+}
+COLORREF
+MBConfig::getColorBorder() {
+    return m_Display->getBorder();
+}
+COLORREF
+MBConfig::getColorBkCtrls() {
+    return m_Display->getBkCtrls();
+}
+int
+MBConfig::getPanelWidth() {
+    return m_Display->getPanelWidth();
+}
+COLORREF
+MBConfig::getColorTxCtrls() {
+    return m_Display->getTxCtrls();
+}
+int
+MBConfig::getDlgBorderWidth() {
+	return m_Display->getBorderWidth();
+}
+int
+MBConfig::getDlgBorderHorz() {
+	return m_Display->getBorderHorz();
+}
+int
+MBConfig::getDlgBorderVert() {
+	return m_Display->getBorderVert();
+}
+
+const CString
+MBConfig::getSkin(const CString key) {
+	return m_Display->getSkin(key);
+}
+double
+MBConfig::getPlaylistHeightPct() {
+	return m_Display->getPlaylistHeightPct();
+}
+double
+MBConfig::getGenreWidthPct() {
+	return m_Display->getGenreWidthPct();
 }
 BOOL
 MBConfig::UseGenre() {
@@ -144,7 +215,11 @@ void MBConfig::setRegistry(const CString & key, const CString & value) {
 	RegistryKey reg( HKEY_LOCAL_MACHINE, RegKey );
 	reg.Write((LPCTSTR)key, (LPCTSTR)value);
 }
-int MBConfig::trialMode() { return m_Password->trialMode(); }
+int MBConfig::trialMode() { 
+	if (m_Password) {
+		return m_Password->trialMode(); 
+	} else return FALSE;
+}
 
 BOOL MBConfig::HelpInfo() {
     TCHAR szPath[_MAX_PATH],
@@ -194,3 +269,4 @@ BOOL MBConfig::OnCommand(WPARAM wParam, LPARAM lParam)
 	}
 	return TRUE;
 }
+

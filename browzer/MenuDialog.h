@@ -5,13 +5,10 @@
 #pragma once
 #endif // _MSC_VER > 1000
 // MenuDialog.h : header file
-//
-//#include "PlayerApp.h"
-//#include "StdAfx.h"
-//#include "VirtualControl.h"
-//#include "resource.h"
+
 class VirtualControl;
-#include "PlayerDlg.h"
+
+#include "resource.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // CMenuDialog dialog

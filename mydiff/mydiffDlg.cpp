@@ -413,7 +413,7 @@ void CMydiffDlg::dodiff() {
 
 	CString command ;
 	if (m_currentStatus == "Locally Modified") {
-		command = "cvs diff -e ";
+		command = "cvs diff -e --ignore-all-space ";
 		command += m_currentfile;
 	} else {
 		command = "# noop";

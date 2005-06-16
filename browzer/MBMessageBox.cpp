@@ -6,7 +6,7 @@
 #include "MBMessageBox.h"
 #include "MyLog.h"
 #include "VirtualControl.h"
-//#include "PlayerDlg.h"
+#include "PlayerDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

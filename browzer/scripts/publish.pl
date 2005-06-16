@@ -7,7 +7,7 @@ read(F,$buf,(-s $f));
 close(F);
 
 ($decl,$versionstring,$rest) = split('"',$buf);
-($version,$stamp) = split(' ',$versionstring);
+($version,$ds,$dt) = split(' ',$versionstring);
 
 ($major,$minor,$patch) = split('\.',$version);
 
@@ -34,10 +34,14 @@ $exedst2 = "pecan.makuch.org:/var/www/virtuals/muzikbrowzer/httpdocs/dl/".$exe.$
 system("scp $exesrc $exedst");
 
 open(F,">current_rev");
-print F $major . '.' . $minor . '.' . $patch . "\n";
+print F $major . '.' . $minor . '.' . $patch;
 close(F);
 system("touch Publish.exe");
+open(F,">current_rev_built");
+print F "$ds $dt\n";
+close(F);
 
 system("scp current_rev pecan.makuch.org:/var/www/virtuals/muzikbrowzer/httpdocs/dl/current_rev");
+system("scp current_rev_built pecan.makuch.org:/var/www/virtuals/muzikbrowzer/httpdocs/dl/current_rev_built");
 
 #system("cd /cygdrive/c/mkm/src/muzik/browzer/scripts; /usr/bin/bash --login /cygdrive/c/mkm/src/muzik/browzer/scripts/makezip.sh $src");

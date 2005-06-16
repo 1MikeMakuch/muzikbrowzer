@@ -2,11 +2,12 @@
 //
 
 #include "stdafx.h"
-//#include "PlayerDlg.h"
+
 #include "irman.h"
 #include "IRCodes.h"
 #include "ConfigIrman.h"
-#include "irman_registry.h"
+#include "Registry.h"
+#include "MyString.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -183,13 +184,13 @@ BOOL CConfigIrman::OnInitDialog()
 	CWnd * button;
 	int button_idx;
 	CString desc;
-	char buf[30];
+	AutoBuf buf(30);
 	for (button_idx = 0 ; button_idx < irman().numOfKeys() ; button_idx++) {
 		button = GetDlgItem(IDC_IRRECORD_DESC_FIRST + button_idx);
-		buf[0] = 0;
-		irman().getRemoteDesc(button_idx, buf);
-		if (strlen(buf))
-			button->SetWindowText(buf);
+		buf.p[0] = 0;
+		irman().getRemoteDesc(button_idx, buf.p);
+		if (strlen(buf.p))
+			button->SetWindowText(buf.p);
 	}
 
 	EnableDisableDialog();
@@ -263,6 +264,7 @@ void CConfigIrman::OnRecordButton(UINT nID )
 		//			button_status_w->SetWindowText("error");
 		//		}
 	}
+	SetModified(TRUE);
 }
 
 void CConfigIrman::OnIrrecord() 
@@ -272,7 +274,7 @@ void CConfigIrman::OnIrrecord()
 //    IRReaderStart();
 	irman().Open();
 	EnableDisableDialog();
-	
+	SetModified(TRUE);
 }
 
 void CConfigIrman::OnIrtest() 
@@ -282,6 +284,7 @@ void CConfigIrman::OnIrtest()
 //    IRReaderStart();
 	irman().Open();
 	EnableDisableDialog();
+	SetModified(TRUE);
 }
 
 
@@ -316,6 +319,7 @@ void CConfigIrman::OnIrinitialize()
 //	m_IRComPortStatus = "Ok";
 	UpdateData(FALSE);
 	EnableDisableDialog();
+	SetModified(TRUE);
 }
 void CConfigIrman::OnIrnone() 
 {
@@ -323,7 +327,7 @@ void CConfigIrman::OnIrnone()
 	m_IRComPortStatus = "Uninitialized";
 	UpdateData(FALSE);
 	EnableDisableDialog();	
-	
+	SetModified(TRUE);
 }
 
 void CConfigIrman::OnIrcom1() 
@@ -332,6 +336,7 @@ void CConfigIrman::OnIrcom1()
 	m_IRComPortStatus = "Uninitialized";
 	UpdateData(FALSE);
 	EnableDisableDialog();
+	SetModified(TRUE);
 }
 void CConfigIrman::OnIrcom2() 
 {
@@ -339,6 +344,7 @@ void CConfigIrman::OnIrcom2()
 	m_IRComPortStatus = "Uninitialized";
 	UpdateData(FALSE);	
 	EnableDisableDialog();
+	SetModified(TRUE);
 }
 
 void CConfigIrman::OnIrcom3() 
@@ -347,6 +353,7 @@ void CConfigIrman::OnIrcom3()
 	m_IRComPortStatus = "Uninitialized";
 	UpdateData(FALSE);
 	EnableDisableDialog();
+	SetModified(TRUE);
 }
 
 void CConfigIrman::OnIrcom4() 
@@ -355,6 +362,7 @@ void CConfigIrman::OnIrcom4()
 	m_IRComPortStatus = "Uninitialized";
 	UpdateData(FALSE);	
 	EnableDisableDialog();
+	SetModified(TRUE);
 }
 
 void CConfigIrman::OnIrcom5() 
@@ -363,6 +371,7 @@ void CConfigIrman::OnIrcom5()
 	m_IRComPortStatus = "Uninitialized";
 	UpdateData(FALSE);	
 	EnableDisableDialog();
+	SetModified(TRUE);
 }
 
 void CConfigIrman::OnIrcom6() 
@@ -371,6 +380,7 @@ void CConfigIrman::OnIrcom6()
 	m_IRComPortStatus = "Uninitialized";
 	UpdateData(FALSE);	
 	EnableDisableDialog();
+	SetModified(TRUE);
 }
 
 void CConfigIrman::OnIrcom7() 
@@ -379,6 +389,7 @@ void CConfigIrman::OnIrcom7()
 	m_IRComPortStatus = "Uninitialized";
 	UpdateData(FALSE);	
 	EnableDisableDialog();
+	SetModified(TRUE);
 }
 
 void CConfigIrman::OnIrcom8() 
@@ -387,36 +398,14 @@ void CConfigIrman::OnIrcom8()
 	m_IRComPortStatus = "Uninitialized";
 	UpdateData(FALSE);	
 	EnableDisableDialog();
+	SetModified(TRUE);
 }
 
 void CConfigIrman::OnKillfocusIrdelay() 
 {
 	UpdateData(TRUE);
 	irman().Delay(m_delay);
-	
-}
-
-void CConfigIrman::OnOK() 
-{
-	CWnd * button;
-	int button_idx;
-	CString desc;
-	for (button_idx = 0 ; button_idx < irman().numOfKeys() ; button_idx++) {
-		button = GetDlgItem(IDC_IRRECORD_DESC_FIRST + button_idx);
- 		button->GetWindowText(desc);
-		if (desc.GetLength()) {
-			irman().setRemoteDesc(button_idx, (const char*)desc);
-		}
-
-		button = GetDlgItem(IDC_IRRECORD_FIRST + button_idx);
- 		button->GetWindowText(desc);
-		if (desc.GetLength()) {
-			irman().setKeyDesc(button_idx, (const char*)desc);
-		}
-	}
-	irman().SaveKeys();
-	m_irtesting = FALSE;
-	CPropertyPage::OnOK();
+	SetModified(TRUE);
 }
 
 int
@@ -443,6 +432,42 @@ CConfigIrman::OnSerialMsg (WPARAM wParam, LPARAM lParam) {
 		HandleIRMessage(key);
 	}
 	EnableDisableDialog();
+	SetModified(TRUE);
 	return 0;
 
 }
+void CConfigIrman::OnOK() 
+{
+	CWnd * button;
+	int button_idx;
+	CString desc;
+	for (button_idx = 0 ; button_idx < irman().numOfKeys() ; button_idx++) {
+		button = GetDlgItem(IDC_IRRECORD_DESC_FIRST + button_idx);
+ 		button->GetWindowText(desc);
+		if (desc.GetLength()) {
+			irman().setRemoteDesc(button_idx, (const char*)desc);
+		}
+
+		button = GetDlgItem(IDC_IRRECORD_FIRST + button_idx);
+ 		button->GetWindowText(desc);
+		if (desc.GetLength()) {
+			irman().setKeyDesc(button_idx, (const char*)desc);
+		}
+	}
+	irman().SaveKeys();
+	m_irtesting = FALSE;
+	SetModified(FALSE);
+	CPropertyPage::OnOK();
+}
+BOOL CConfigIrman::OnApply() 
+{
+	return CPropertyPage::OnApply();
+}
+
+void CConfigIrman::OnCancel() 
+{
+	// TODO: Add your specialized code here and/or call the base class
+	
+	CPropertyPage::OnCancel();
+}
+

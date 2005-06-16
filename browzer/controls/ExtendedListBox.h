@@ -14,6 +14,7 @@
 // Microsoft Foundation Classes product.
 
 #include "stdafx.h"
+#include "DIBSectionLite.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // Custom Listbox - containing colors
@@ -21,10 +22,18 @@
 class CExtendedListBox : public CListBox
 {
 public:
-    CExtendedListBox(BOOL usecolors=TRUE);
+    CExtendedListBox(BOOL usecolors=TRUE, CString desc="");
 	~CExtendedListBox();
+
 // Operations
 //	void AddColorItem(COLORREF color);
+	virtual DWORD SetBitmaps(CDC * cdc, 
+		LPCTSTR sBitmapBg, COLORREF crTransBg,
+		LPCTSTR sBitmapUp=NULL, COLORREF crTransUp=0,
+		LPCTSTR sBitmapDown=NULL, COLORREF crTransDown=0,
+		LPCTSTR sBitmapButton=NULL, COLORREF crTransButton=0,
+		LPCTSTR sBitmapSBg=NULL, COLORREF crTransSBg=0
+		);
 
 // Implementation
 //	virtual void MeasureItem(LPMEASUREITEMSTRUCT lpMIS);
@@ -47,14 +56,22 @@ public:
     afx_msg void OnTimer(UINT);
     afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
     afx_msg void OnMouseMove( UINT nFlags, CPoint point );
+	afx_msg void OnPaint();
 
     BOOL m_reorder;
     void invalidate();
 	void alphaUp();
 	void alphaDown();
+	void SetColors(COLORREF bknormal, COLORREF bkhigh, COLORREF bksel,
+		COLORREF txnormal, COLORREF txhigh, COLORREF txsel);
+	void DrawIt(BOOL flag) {
+		m_DrawIt = flag;
+	}
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CExtendedListBox)
+protected:
 	//}}AFX_VIRTUAL
+public:
 	CString m_id;
 
 protected:
@@ -66,10 +83,14 @@ protected:
     void DrawScrollButton();
 
 	//{{AFX_MSG(CExtendedListBox)
-//	afx_msg void OnPaint();
+	public:
+	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	protected:
+	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 	//}}AFX_MSG
     DECLARE_MESSAGE_MAP();
 private:
+	BOOL m_DrawIt;
     COLORREF m_BkNormal;
     COLORREF m_BkHigh;
     COLORREF m_BkSel;
@@ -83,13 +104,15 @@ private:
     CBitmap m_ScrollDownArrowBM;
     CBitmap m_ScrollButtonBM;
 
-    CBitmap * m_ScrollUpArrowBMsave;
-    CBitmap * m_ScrollDownArrowBMsave;
-    CBitmap * m_ScrollButtonBMsave;
+    HBITMAP m_ScrollUpArrowBMsave;
+    HBITMAP m_ScrollDownArrowBMsave;
+    HBITMAP m_ScrollButtonBMsave;
+	HBITMAP m_ScrollSBgBMsave;
 
     CDC m_ScrollUpArrowCDC;
     CDC m_ScrollDownArrowCDC;
     CDC m_ScrollButtonCDC;
+	CDC m_ScrollSBgCDC;
 
     CRect m_ScrollButtonRect;
     CRect m_ScrollBarBorderRect;
@@ -102,7 +125,17 @@ private:
     UINT m_ScrollRange;
     BOOL m_UseColors;
 	CFont m_font;
-
+	CBrush m_brush;
+	UINT m_Count;
+//	SkinBmp m_BmpBg;
+	CDIBSectionLite m_BmpUp;
+	CDIBSectionLite m_BmpDown;
+	CDIBSectionLite m_BmpButton;
+	CDIBSectionLite m_BmpSBg;
+	BOOL m_UseSkin;
+	int m_ScrollWidth;
+	int m_ScrollButtonHeight;
+	CRect m_ClientRect;
 
     void TransparentBlt( HDC hdcDest, int nXDest, int nYDest, int nWidth, 
 			int nHeight, HBITMAP hBitmap, int nXSrc, int nYSrc,

@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "regset.h"
-#include "../irman/irman_registry.h"
+#include "../util/Registry.h"
 #define LOGOWNER
 #include "../util/MyLog.h"
 #include <iostream>

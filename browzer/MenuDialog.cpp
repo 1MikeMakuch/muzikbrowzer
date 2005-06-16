@@ -2,8 +2,7 @@
 //
 
 #include "stdafx.h"
-//#include "mfcplayer.h"
-#include "PlayerApp.h"
+
 #include "PlayerDlg.h"
 #include "MenuDialog.h"
 #include "VirtualControl.h"

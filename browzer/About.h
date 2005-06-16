@@ -8,6 +8,9 @@
 //
 #include "Resource.h"
 #include "HyperLink.h"
+#include "ButtonSt.h"
+
+
 /////////////////////////////////////////////////////////////////////////////
 // About dialog
 
@@ -15,13 +18,13 @@ class About : public CDialog
 {
 // Construction
 public:
-	About(CWnd* pParent = NULL);   // standard constructor
+	About(CRect rect, CWnd* pParent = NULL);   // standard constructor
 
 // Dialog Data
 	//{{AFX_DATA(About)
 	enum { IDD = IDD_ABOUTBOX };
+	CButtonST	m_EasterEgg;
 	CEdit	m_ProdVersion;
-//	CStatic	m_ProdVersion;
 	//}}AFX_DATA
 
 
@@ -31,6 +34,7 @@ public:
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	//}}AFX_VIRTUAL
+	CRect m_rect;
 
 // Implementation
 public:
@@ -38,11 +42,13 @@ public:
 	// Generated message map functions
 	//{{AFX_MSG(About)
 	virtual BOOL OnInitDialog();
+	afx_msg void OnEasteregg();
 	//}}AFX_MSG
 
 	DECLARE_MESSAGE_MAP()
 
 	CHyperLink	m_hyperlink;
+	CString msg;
 };
 
 //{{AFX_INSERT_LOCATION}}

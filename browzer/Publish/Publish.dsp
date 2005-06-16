@@ -41,8 +41,8 @@ CFG=Publish - Win32 Debug
 # PROP Use_Debug_Libraries 0
 # PROP Output_Dir "Release"
 # PROP Intermediate_Dir "Release"
-# PROP Cmd_Line "nmake /f "Publish.mak" all"
-# PROP Rebuild_Opt "/a"
+# PROP Cmd_Line "nmake /f "Publish.mak""
+# PROP Rebuild_Opt ""
 # PROP Target_File "Publish.exe"
 # PROP Bsc_Name ""
 # PROP Target_Dir ""

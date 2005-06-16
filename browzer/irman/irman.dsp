@@ -118,10 +118,6 @@ SOURCE=.\irman.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\irman_registry.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\StdAfx.cpp
 # ADD CPP /Yc"stdafx.h"
 # End Source File
@@ -136,10 +132,6 @@ SOURCE=.\irman.h
 # Begin Source File
 
 SOURCE=.\irman_common.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\irman_registry.h
 # End Source File
 # Begin Source File
 

@@ -78,6 +78,10 @@ public:
 // Overrides
 	// ClassWizard generate virtual function overrides
 	//{{AFX_VIRTUAL(CConfigIrman)
+	public:
+	virtual BOOL OnApply();
+	virtual void OnCancel();
+	virtual void OnOK();
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	//}}AFX_VIRTUAL
@@ -99,7 +103,6 @@ protected:
 	afx_msg void OnIrcom7();
 	afx_msg void OnIrcom8();
 	afx_msg void OnKillfocusIrdelay();
-	virtual void OnOK();
 	afx_msg void OnIrnone();
 	//}}AFX_MSG
 	afx_msg void OnRecordButton(UINT nID );

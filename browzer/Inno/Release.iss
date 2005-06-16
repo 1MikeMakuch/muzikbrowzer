@@ -6,24 +6,30 @@
 
 [Setup]
 AppName=muzikbrowzer
-AppVerName=muzikbrowzer 1.4.2
+AppVerName=muzikbrowzer 1.5.1
 AppCopyright=Copyright (C) 2001 Pecan Ventures, LLC
 DefaultDirName={pf}\muzikbrowzer
 DefaultGroupName=muzikbrowzer
 DisableProgramGroupPage=yes
 UninstallDisplayIcon={app}\muzikbrowzer.exe
 MinVersion=4.1.1998,4
-OutputBaseFilename=muzikbrowzer_setup_1_4_2
+OutputBaseFilename=muzikbrowzer_setup_1_5_1
 LicenseFile=mb_license.txt
 
 [Files]
 Source: "..\Release\muzikbrowzer.exe"; DestDir: "{app}"; CopyMode: alwaysoverwrite
+
 Source: "..\Help\muzikbrowzer.chm"; DestDir: "{app}"; CopyMode: alwaysoverwrite
+
+Source: "..\..\ButtonSkinner\Release\BitmapCutter.exe"; DestDir: "{app}"; CopyMode: alwaysoverwrite
+
 ;Source: "..\Help\KeyHH.exe"; DestDir: "{app}"; CopyMode: alwaysoverwrite
 
 [Icons]
 Name: "{commonprograms}\muzikbrowzer"; Filename: "{app}\muzikbrowzer.exe"; WorkingDir: "{app}"
+Name: "{commonprograms}\BitmapCutter"; Filename: "{app}\BitmapCutter.exe"; WorkingDir: "{app}"
 Name: "{userdesktop}\muzikbrowzer"; Filename: "{app}\muzikbrowzer.exe"; WorkingDir: "{app}"
+Name: "{userdesktop}\BitmapCutter"; Filename: "{app}\BitmapCutter.exe"; WorkingDir: "{app}"
 
 [Registry]
 Root: HKLM; Subkey: "Software\muzikbrowzer";

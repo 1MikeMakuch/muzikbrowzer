@@ -1,17 +1,15 @@
 #ifndef _COLORSTATIC_H
 #define _COLORSTATIC_H
 
-
-
-
 #if _MSC_VER >= 1000
 #pragma once
 #endif // _MSC_VER >= 1000
 
 // ColorStaticST.h : header file
 //
+#include "SkinBmp.h"
 
-class CColorStatic : public CStatic
+class CColorStatic : public CStatic, public SkinBmp
 {
 // Construction
 public:
@@ -34,12 +32,26 @@ public:
 // Implementation
 public:
 	virtual ~CColorStatic();
+	void SizeToContent();
+	virtual DWORD SetBitmaps(CDC * cdc, LPCTSTR nBitmap, COLORREF crTransColor);
 
 	void SetTextColor(COLORREF crTextColor = 0xffffffff);
 	COLORREF GetTextColor();
 
 	void SetBkColor(COLORREF crBkColor = 0xffffffff);
 	COLORREF GetBkColor();
+
+	void SetShadowDark(COLORREF clr = 0) {
+		m_ClrShadowDark = clr;
+	}
+
+	void SetShadowLight(COLORREF clr = 0xffffffff) {
+		m_ClrShadowLight = clr;
+	}
+
+	void SetCornerColor(COLORREF val) {
+		m_crCornerColor = val;
+	}
 
 	void SetBlinkTextColors(COLORREF crBlinkTextColor1, COLORREF crBlinkTextColor2);
 	void StartTextBlink(BOOL bStart = TRUE, UINT nElapse = ST_FLS_NORMAL);
@@ -48,19 +60,18 @@ public:
 	void StartBkBlink(BOOL bStart = TRUE, UINT nElapse = ST_FLS_NORMAL);
 
 	void EnableNotify(CWnd* pParent = NULL, UINT nMsg = WM_USER);
-
 	static const short GetVersionI();
 	static const char* GetVersionC();
 
     void setText(CString);
     void getText(CString &);
 	void changeFont(LPLOGFONT lplf);
+	void changeFont(CFont * f);
 	void initFont();
 	void border(BOOL flag);
 	int GetItemHeight() { return m_height; }
 	int GetItemWidth() { return m_width; }
 	CSize GetSize(CString);
-
 	// Generated message map functions
 protected:
 	//{{AFX_MSG(CColorStatic)
@@ -72,6 +83,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 	void SetItemHeight(int height) { m_height=height; }
 	void SetItemWidth();
+	
 private:
 	UINT m_nTimerId;
 
@@ -85,6 +97,11 @@ private:
 	BOOL m_bBkBlink;
 	int m_nBkBlinkStep;
 
+	COLORREF m_crCornerColor;
+
+	COLORREF m_ClrShadowDark;
+	COLORREF m_ClrShadowLight;
+
 	CBrush m_brBkgnd;
 	CBrush m_brBlinkBkgnd[2];
 
@@ -96,6 +113,9 @@ private:
 	int m_height;
 	int m_width;
 	CFont m_font;
+
+	int first;
+
 public:
 	int m_HCenter;
 };

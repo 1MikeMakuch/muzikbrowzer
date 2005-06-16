@@ -43,6 +43,7 @@ public:
 	public:
 	virtual void OnOK();
 	virtual void OnCancel();
+	virtual BOOL OnApply();
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	//}}AFX_VIRTUAL

@@ -6,7 +6,9 @@
 #endif // _MSC_VER > 1000
 // ConfigFiles.h : header file
 //
-#include "PlayerDlg.h"
+
+#include "InitDlg.h"
+#include "PlayerCallbacks.h"
 class ThreadParams;
 
 /////////////////////////////////////////////////////////////////////////////
@@ -18,7 +20,7 @@ class CConfigFiles : public CPropertyPage
 
 // Construction
 public:
-	CConfigFiles(CPlayerDlg * p = NULL);
+	CConfigFiles(CWnd * p = NULL,PlayerCallbacks * pcb =NULL);
 	~CConfigFiles();
 
 // Dialog Data
@@ -36,6 +38,10 @@ public:
 // Overrides
 	// ClassWizard generate virtual function overrides
 	//{{AFX_VIRTUAL(CConfigFiles)
+	public:
+	virtual BOOL OnApply();
+	virtual void OnCancel();
+	virtual void OnOK();
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	//}}AFX_VIRTUAL
@@ -49,18 +55,18 @@ protected:
 	afx_msg void OnDirremove();
 	afx_msg void OnDirscan();
 	afx_msg void OnLocationButton();
-	virtual void OnOK();
 	virtual BOOL OnInitDialog();
 	afx_msg void OnMp3Add();
 	afx_msg void OnMp3Remove();
-	virtual void OnCancel();
 	afx_msg void OnDirscanNew();
 	afx_msg void OnAlbumsortDate();
 	afx_msg void OnAlbumsortAlpha();
+	afx_msg void OnUsegenre();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 private:
-    CPlayerDlg * m_PlayerDlg;
+//    CPlayerDlg * m_PlayerDlg;
+	PlayerCallbacks * m_playercallbacks;
     void EnableDisableButtons();
     CString m_path;
 
@@ -86,6 +92,7 @@ public:
     void setDefaults();
 	BOOL UseGenre();
 	BOOL AlbumSortAlpha();
+	CString mbdir() { return m_path; };
 
 };
 

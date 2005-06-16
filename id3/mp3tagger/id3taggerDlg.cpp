@@ -579,7 +579,7 @@ CString CId3taggerDlg::editMp3(BOOL EditOrDry, CString file) {
 
 	n = fields.GetSize();
 	CString oldval,newval;
-	char buf[500];
+	AutoBuf buf(500);
 	CString format;
 //	if (EditOrDry == TRUE) {
 //		format = "   %-12s %s\r\n";
@@ -592,18 +592,18 @@ CString CId3taggerDlg::editMp3(BOOL EditOrDry, CString file) {
 		if (EditOrDry == TRUE) {
 			oldval = quotedValueFromField(fields.GetAt(i), oldid3);
 			newval = quotedValueFromField(fields.GetAt(i), id3);
-			sprintf(buf, format, fields.GetAt(i), oldval, newval);
+			sprintf(buf.p, format, fields.GetAt(i), oldval, newval);
 		} else {
 			oldval = quotedValueFromField(fields.GetAt(i), id3);
 			newval = quotedValueFromField(fields.GetAt(i), newid3);
-			sprintf(buf, format, fields.GetAt(i), oldval, newval);
+			sprintf(buf.p, format, fields.GetAt(i), oldval, newval);
 		}
 		if (newval.GetLength() && newval != oldval) {
 			if (fileadded == FALSE) {
 				fileadded = TRUE;
 				result += file + crlf;
 			}
-			result += buf;
+			result += buf.p;
 		}
 	}
 	if (updated && EditOrDry == TRUE) {

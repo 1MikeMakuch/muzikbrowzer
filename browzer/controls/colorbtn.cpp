@@ -250,6 +250,7 @@ void CColorBtn::OnClicked()
     {
         currentcolor = CColorBtnDlg::colors[dlg.colorindex];
         InvalidateRect(NULL);
+		GetParent()->SendMessage(MB_CONFIG_CBUTTON, 0, 0);  
     }	
 }
 

@@ -34,14 +34,19 @@ public:
 	virtual ~PictureStatic();
 	void load(BYTE * data, size_t size);
 	void load(LPTSTR type, LPTSTR resource);
+	void load(CString filename);
 	void unload();
 	void blank();
+	void SetBgColor(COLORREF clr) {
+		m_BgColor = clr;
+	}
 
 	// Generated message map functions
 protected:
 	CPicture * m_Picture;
 	BYTE * m_bytes;
 	BOOL m_ploaded;
+	COLORREF m_BgColor;
 	//{{AFX_MSG(PictureStatic)
 	afx_msg void OnPaint();
 	//}}AFX_MSG

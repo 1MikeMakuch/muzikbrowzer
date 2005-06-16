@@ -11,12 +11,25 @@
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
 #endif
+    
+static COLORREF crbgNormal = RGB(255,255,255);
+static COLORREF crtextNormal = RGB(0,0,0);
+static COLORREF crbgMedium = RGB(225,225,225);
+static COLORREF crtextMedium = RGB(0,0,255);
+static COLORREF crbgHigh = GetSysColor(COLOR_HIGHLIGHT);
+static COLORREF crtextHigh = GetSysColor(COLOR_HIGHLIGHTTEXT);
+
+#define SCROLL_BAR_WIDTH 10
+#define SCROLL_BUTTON_HEIGHT 10
+#define MB_BORDER_WIDTH 2
+#define MB_BORDER_HEIGHT 2
 
 /////////////////////////////////////////////////////////////////////////////
 
 BEGIN_MESSAGE_MAP(CExtendedListBox, CListBox)
 	//{{AFX_MSG_MAP(CExtendedListBox)
-//	ON_WM_PAINT()
+	ON_WM_ERASEBKGND()
+//	ON_WM_CTLCOLOR()
 	//}}AFX_MSG_MAP
     ON_WM_KEYDOWN()
     ON_WM_NCCALCSIZE()
@@ -28,35 +41,51 @@ BEGIN_MESSAGE_MAP(CExtendedListBox, CListBox)
     ON_WM_MOUSEMOVE()
     ON_WM_NCLBUTTONUP()
     ON_WM_NCLBUTTONDBLCLK()
+	ON_WM_PAINT()
 END_MESSAGE_MAP()
 
-
-
-CExtendedListBox::CExtendedListBox(BOOL usecolors) : m_UseColors(usecolors),
+CExtendedListBox::CExtendedListBox(BOOL usecolors, CString desc) 
+	: m_UseColors(usecolors), m_id(desc),
      m_reorder(FALSE), m_ScrollButtonRect(0,0,0,0), m_ScrollHitPos(0),
-     m_Capture(FALSE), m_HaveScroll(FALSE)
+     m_Capture(FALSE), m_HaveScroll(FALSE), m_DrawIt(TRUE)
 {
+	m_UseColors = TRUE;
     CListBox::CListBox();
-    m_ScrollUpArrowBM.LoadBitmap(IDB_SCROLLUPARROW);
-    m_ScrollDownArrowBM.LoadBitmap(IDB_SCROLLDOWNARROW);
-    m_ScrollButtonBM.LoadBitmap(IDB_SCROLLBUTTON);
+
+//	m_ScrollUpArrowBM.LoadBitmap(IDB_SCROLLUPARROW);
+//	m_ScrollDownArrowBM.LoadBitmap(IDB_SCROLLDOWNARROW);
+//	m_ScrollButtonBM.LoadBitmap(IDB_SCROLLBUTTON);
     
     m_ScrollUpArrowCDC.CreateCompatibleDC(NULL);
     m_ScrollDownArrowCDC.CreateCompatibleDC(NULL);
     m_ScrollButtonCDC.CreateCompatibleDC(NULL);
+	m_ScrollSBgCDC.CreateCompatibleDC(NULL);
 
-    m_ScrollUpArrowBMsave = m_ScrollUpArrowCDC.SelectObject(&m_ScrollUpArrowBM);
-    m_ScrollDownArrowBMsave = m_ScrollDownArrowCDC.SelectObject(&m_ScrollDownArrowBM);
-    m_ScrollButtonBMsave = m_ScrollButtonCDC.SelectObject(&m_ScrollButtonBM);
+//    m_ScrollUpArrowBMsave = m_ScrollUpArrowCDC.SelectObject(&m_ScrollUpArrowBM);
+//    m_ScrollDownArrowBMsave = m_ScrollDownArrowCDC.SelectObject(&m_ScrollDownArrowBM);
+//    m_ScrollButtonBMsave = m_ScrollButtonCDC.SelectObject(&m_ScrollButtonBM);
+
+	m_ScrollUpArrowBMsave = NULL;
+	m_ScrollDownArrowBMsave = NULL;
+	m_ScrollButtonBMsave = NULL;
+	m_ScrollSBgBMsave = NULL;
+
+	m_BkNormal = crbgNormal;
+	m_BkHigh = crbgHigh;
+	m_BkSel = crbgMedium;
+	m_TxNormal = crtextNormal;
+	m_TxHigh = crtextHigh;
+	m_TxSel = crtextMedium;
+//	m_UseSkin = FALSE;
+	m_ScrollWidth = SCROLL_BAR_WIDTH;
+	m_ScrollButtonHeight = SCROLL_BUTTON_HEIGHT;
 }
 CExtendedListBox::~CExtendedListBox()
 {
-    if (m_ScrollUpArrowBMsave)
-		m_ScrollUpArrowCDC.SelectObject(m_ScrollUpArrowBMsave);
-	if (m_ScrollDownArrowBMsave)
-		m_ScrollDownArrowCDC.SelectObject(m_ScrollDownArrowBMsave);
-    if (m_ScrollButtonBMsave)
-		m_ScrollButtonCDC.SelectObject(m_ScrollButtonBMsave);
+	::SelectObject(m_ScrollUpArrowCDC.m_hDC, m_ScrollUpArrowBMsave);
+	::SelectObject(m_ScrollDownArrowCDC.m_hDC,m_ScrollDownArrowBMsave);
+	::SelectObject(m_ScrollButtonCDC.m_hDC, m_ScrollButtonBMsave);
+	::SelectObject(m_ScrollSBgCDC.m_hDC, m_ScrollSBgBMsave);
 	m_font.DeleteObject();
 }
 
@@ -74,35 +103,22 @@ public:
 };
 
 /////////////////////////////////////////////////////////////////////////////
-    static COLORREF crbgNormal = RGB(255,255,255);
-    static COLORREF crtextNormal = RGB(0,0,0);
-    static COLORREF crbgMedium = RGB(225,225,225);
-    static COLORREF crtextMedium = RGB(0,0,255);
-    static COLORREF crbgHigh = GetSysColor(COLOR_HIGHLIGHT);
-    static COLORREF crtextHigh = GetSysColor(COLOR_HIGHLIGHTTEXT);
+
 // CExtendedListBox message handlers
 void CExtendedListBox::DrawItem(LPDRAWITEMSTRUCT lpDIS)
 {
+
+	if (!m_DrawIt) {
+#pragma hack
+		m_DrawIt = TRUE;
+		return;
+	}
 
     CSize size;
 	CDC dc;
 	dc.Attach(lpDIS->hDC);
 
-    if (m_UseColors == TRUE) {
-        m_BkNormal = thePlayer->config().getColorBkNormal();
-        m_BkHigh = thePlayer->config().getColorBkHigh();
-        m_BkSel = thePlayer->config().getColorBkSel();
-        m_TxNormal = thePlayer->config().getColorTxNormal();
-        m_TxHigh = thePlayer->config().getColorTxHigh();
-        m_TxSel = thePlayer->config().getColorTxSel();
-    } else {
-        m_BkNormal = crbgNormal;
-        m_BkHigh = crbgMedium;
-        m_BkSel = crbgHigh;
-        m_TxNormal = crtextNormal;
-        m_TxHigh = crtextMedium;
-        m_TxSel = crtextHigh;
-    }
+
     COLORREF crbg, crtext;
 
     crbg = m_BkNormal;
@@ -134,11 +150,16 @@ void CExtendedListBox::DrawItem(LPDRAWITEMSTRUCT lpDIS)
     } else {
         data = "none";
     }
+	if (selectedbit && focusbit) {
+		thePlayer->PlayerStatusTempSet(data);
+	}
 
     if (0 <= idx && idx <= GetCount()) {
     
         CBrush br(crbg);
-        dc.FillRect(&lpDIS->rcItem, &br);
+//		if (selectedbit && focusbit)
+			dc.FillRect(&lpDIS->rcItem, &br);
+
         dc.SetBkColor(crbg);
         dc.SetTextColor(crtext);
 
@@ -216,10 +237,18 @@ void CExtendedListBox::changeFont(LPLOGFONT lplf) {
 
 void
 CExtendedListBox::OnKeyDown( UINT nChar, UINT nRepCnt, UINT nFlags ) {
+// Note: relying on the fact that CPlayerDlg::m_Playlist.m_reorder
+// is the only CExtendedListBox setting to TRUE!!!!!!!!!!!!!!!!!!!!
+// since it calls movePlaylist[Up|Down] in move below!!!!!!!!!!!!!!
+
+#pragma hack
+	thePlayer->Need2Erase(FALSE);
 
     if (nChar == VK_LEFT) {
+		Invalidate();
 		thePlayer->PrevDlgCtrl();
     } else if (nChar == VK_RIGHT) {
+		Invalidate();
 		thePlayer->NextDlgCtrl();
     } else if (m_reorder && (nChar == 85 || nChar == 117
 					|| nChar == 68 || nChar == 100)) {
@@ -255,76 +284,6 @@ CExtendedListBox::move(UINT nChar) {
     }
 }
 
-#define SCROLL_BAR_WIDTH 10
-#define SCROLL_BUTTON_HEIGHT 10
-#define MB_BORDER_WIDTH 2
-#define MB_BORDER_HEIGHT 2
-
-void CExtendedListBox::OnNcCalcSize(BOOL bCalcValidRects,
-                                    NCCALCSIZE_PARAMS FAR* lpncsp) 
-{
-    if (m_UseColors == FALSE) {
-        CListBox::OnNcCalcSize(bCalcValidRects, lpncsp);
-        return;
-    }
-	CRect rect;
-	GetClientRect(rect); //Gets the dimensions
- 
-    int iheight = GetItemHeight(0);
-    int count = GetCount();
-    int height = rect.bottom - rect.top;
-    int fit = height / iheight;
-
-    if (count > fit && m_UseColors == TRUE) {
-        m_HaveScroll = TRUE;
-        lpncsp->rgrc[0].right -= (SCROLL_BAR_WIDTH + 1);
-    } else {
-        m_HaveScroll = FALSE;
-        //lpncsp->rgrc[0].right += SCROLL_BAR_WIDTH;
-    }
-//    DrawBorders();
-//    DrawScroll();
-    
-//	lpncsp->rgrc[0].bottom -= 16; //Bottom
-	
-	CListBox::OnNcCalcSize(bCalcValidRects, lpncsp);
-//	OutputDebugString(m_id + " OnNcCalcSize()\r\n");
-}
-void CExtendedListBox::OnNcPaint() 
-{
-//	OutputDebugString("CExtendedListBox::OnNcPaint\r\n");
-    if (m_UseColors == FALSE) {
-        CListBox::OnNcPaint();
-        return;
-    }
-
-	static BOOL before=FALSE;
-	if (!before) { //If first time, the OnNcCalcSize function will be called
-			SetWindowPos(NULL,0,0,0,0,SWP_FRAMECHANGED|SWP_NOMOVE|SWP_NOSIZE
-                |SWP_NOZORDER); 
-			before=TRUE;
-	}
-	DrawBorders();
-    DrawScroll();
-//	OutputDebugString(m_id + " OnNcPaint()\r\n");
-
-	// Do not call CListBox::OnNcPaint() for painting messages
-}
-
-void
-CExtendedListBox::invalidate() {
-	
-//    if (m_UseColors == TRUE)
-		// Causes OnNCPaint to get called.
-        SetWindowPos(NULL,0,0,0,0,SWP_FRAMECHANGED|SWP_NOMOVE|SWP_NOSIZE|SWP_NOZORDER); 
-
-	
-//	DrawScroll();
-
-	// Trying calling DrawScroll directly instead of calling
-	// SetWindowPos to get scroll bars drawn.
-
-}
 
 void CExtendedListBox::DrawBorders()
 {
@@ -335,55 +294,64 @@ void CExtendedListBox::DrawBorders()
 	//Gets the size of the control's client area
 	CRect rect;
 	GetClientRect(rect);
+	m_ClientRect = rect;
     CRect srect(rect);
-    rect.InflateRect(MB_BORDER_WIDTH, MB_BORDER_HEIGHT);
 
-    CBrush br(thePlayer->config().getColorTxPanel());
-	
-	CBrush* pOldBrush = pDC->SelectObject(&br);
-    
+	// 1st inflate the background by 1 with bknormal
+	rect.InflateRect(MB_BORDER_WIDTH-1, MB_BORDER_HEIGHT-1);    
+    CBrush br(thePlayer->config().getColorBkNormal());
+//	CBrush* pOldBrush = pDC->SelectObject(&br);
 	pDC->FrameRect(rect, &br);
-	
-	pDC->SelectObject(pOldBrush);
+	rect.InflateRect(MB_BORDER_WIDTH-1, MB_BORDER_HEIGHT-1);    
+	pDC->FrameRect(rect, &br);
+
+	// now inflate by 2 for border
+//	rect.InflateRect(MB_BORDER_WIDTH-1, MB_BORDER_HEIGHT-1);
+//    CBrush br2(thePlayer->config().getColorBorder());
+//	pDC->FrameRect(rect, &br2);
+//	pDC->SelectObject(pOldBrush);
 	
 	ReleaseDC(pDC); //Frees the DC
 
     if (m_HaveScroll == TRUE) {
         m_ScrollBarBorderRect = rect;
 
-        m_ScrollBarBorderRect.left = m_ScrollBarBorderRect.right-1;
+        m_ScrollBarBorderRect.left = m_ScrollBarBorderRect.right+1;
         m_ScrollBarBorderRect.right = (m_ScrollBarBorderRect.left +
-            SCROLL_BAR_WIDTH + MB_BORDER_WIDTH);
+            (m_ScrollWidth )/*+ MB_BORDER_WIDTH*/);
 
         CRect innerRect  = m_ScrollBarBorderRect;
-        innerRect.DeflateRect(1,1);
+//        innerRect.DeflateRect(1,1);
 
         m_ScrollUpArrowRect = innerRect;
         m_ScrollUpArrowRect.bottom = m_ScrollUpArrowRect.top
-            + SCROLL_BUTTON_HEIGHT;
+            + m_ScrollButtonHeight;
 
         m_ScrollDownArrowRect = innerRect;
         m_ScrollDownArrowRect.top = m_ScrollDownArrowRect.bottom
-            - SCROLL_BUTTON_HEIGHT;
+            - m_ScrollButtonHeight;
 
         m_ScrollBgRect = innerRect;
-        m_ScrollBgRect.top = m_ScrollUpArrowRect.bottom + 1;
-        m_ScrollBgRect.bottom = m_ScrollDownArrowRect.top -1;
+        m_ScrollBgRect.top = m_ScrollUpArrowRect.bottom /*+ 1*/;
+        m_ScrollBgRect.bottom = m_ScrollDownArrowRect.top /*-1*/;
 
         m_ScrollButtonRect = innerRect;
         m_ScrollButtonRect.bottom = m_ScrollButtonRect.top
-            + SCROLL_BUTTON_HEIGHT;
+            + m_ScrollButtonHeight;
 
-        m_ScrollRange = (m_ScrollBgRect.bottom - SCROLL_BUTTON_HEIGHT)
+        m_ScrollRange = (m_ScrollBgRect.bottom - m_ScrollButtonHeight)
             - m_ScrollBgRect.top;
 
         m_ScrollPageUpRect = m_ScrollUpArrowRect;
         m_ScrollPageUpRect.top = m_ScrollUpArrowRect.bottom;
         m_ScrollPageDownRect = m_ScrollDownArrowRect;
         m_ScrollPageDownRect.bottom = m_ScrollDownArrowRect.top;
-    }
 
-//OutputDebugString("DrawBorders\r\n");
+		m_ScrollBarBorderRect.top += m_ScrollButtonHeight;
+		m_ScrollBarBorderRect.bottom -= (m_ScrollButtonHeight);
+    }
+//	m_BmpBg.SetClientRect(m_ClientRect);
+
 }
 
 void CExtendedListBox::DrawScrollBg()
@@ -393,16 +361,21 @@ void CExtendedListBox::DrawScrollBg()
 	CRect rect;
 	GetClientRect(rect); //Gets the dimensions
  
-    // Fill entire scrollbar area with hatch pattern
-
-    CBrush brbg(thePlayer->config().getColorBkPanel());
-	CBrush* pOldBrush = pDC->SelectObject(&brbg);
-    pDC->FillRect(m_ScrollBgRect, &brbg);
-    CBrush br(thePlayer->config().getColorTxPanel());
-	
-    pDC->FrameRect(m_ScrollBarBorderRect, &br);
-
-	pDC->SelectObject(pOldBrush);
+//    // Fill entire scrollbar area with hatch pattern
+//
+//    CBrush brbg(thePlayer->config().getColorBkCtrls());
+//	CBrush* pOldBrush = pDC->SelectObject(&brbg);
+//    pDC->FillRect(m_ScrollBgRect, &brbg);
+//    CBrush br(thePlayer->config().getColorTxCtrls());
+//	
+//    pDC->FrameRect(m_ScrollBarBorderRect, &br);
+//
+//	pDC->SelectObject(pOldBrush);
+	pDC->StretchBlt(m_ScrollBarBorderRect.left,m_ScrollBarBorderRect.top, 
+		m_ScrollBarBorderRect.Width(),m_ScrollBarBorderRect.Height(), 
+		&m_ScrollSBgCDC, 0,0, 
+		m_BmpSBg.GetWidth(), m_BmpSBg.GetHeight(), 
+		SRCCOPY);
 
     ReleaseDC(pDC);
 }
@@ -415,16 +388,18 @@ void CExtendedListBox::DrawScrollArrows()
 //    CRect saverect(rect);
 
     //Draws the scroll up button
-    pDC->SetBkColor(thePlayer->config().getColorBkPanel());
-    pDC->SetTextColor(thePlayer->config().getColorTxPanel());
+//    pDC->SetBkColor(thePlayer->config().getColorBkCtrls());
+//    pDC->SetTextColor(thePlayer->config().getColorTxCtrls());
 
 
     // BitBlt converts src white to foreground and src black to background color of the cdc.
-    pDC->BitBlt(m_ScrollUpArrowRect.left,m_ScrollUpArrowRect.top, rect.Width(), rect.Height(), &m_ScrollUpArrowCDC, 0,0, SRCCOPY);
+    pDC->BitBlt(m_ScrollUpArrowRect.left,m_ScrollUpArrowRect.top, 
+		m_BmpUp.GetWidth(), m_BmpUp.GetHeight(), &m_ScrollUpArrowCDC, 0,0, SRCCOPY);
 
     // Draw the scroll down button
 
-    pDC->BitBlt(m_ScrollDownArrowRect.left, m_ScrollDownArrowRect.top, rect.Width(), rect.Height(), &m_ScrollDownArrowCDC, 0,0, SRCCOPY);
+    pDC->BitBlt(m_ScrollDownArrowRect.left, m_ScrollDownArrowRect.top, 
+		m_BmpDown.GetWidth(), m_BmpDown.GetHeight(), &m_ScrollDownArrowCDC, 0,0, SRCCOPY);
     ReleaseDC(pDC);
 }
 
@@ -440,13 +415,13 @@ void CExtendedListBox::DrawScrollButton()
     UINT cursel = GetTopIndex();
     float relpos;
     if (cursel > 0) {
-        UINT count = GetCount();
+        m_Count = GetCount();
         int iheight = GetItemHeight(0);
         int itemsPerPage = saverect.Height() / iheight;
-        if (cursel >= (count - itemsPerPage)) {
-            relpos = (float)count;
+        if (cursel >= (m_Count  - itemsPerPage)) {
+            relpos = (float)m_Count ;
         } else {
-            relpos = (float)cursel / (float)count;
+            relpos = (float)cursel / (float)m_Count ;
         }
     } else {
         relpos = 0;
@@ -455,14 +430,14 @@ void CExtendedListBox::DrawScrollButton()
     m_ScrollButtonRect.top = m_ScrollBgRect.top
         + (UINT) (m_ScrollRange * relpos);
     if (m_ScrollButtonRect.top
-            > m_ScrollBgRect.bottom - SCROLL_BUTTON_HEIGHT) {
-        m_ScrollButtonRect.top = m_ScrollBgRect.bottom - SCROLL_BUTTON_HEIGHT;
+            > m_ScrollBgRect.bottom - m_ScrollButtonHeight) {
+        m_ScrollButtonRect.top = m_ScrollBgRect.bottom - m_ScrollButtonHeight;
     }
-    m_ScrollButtonRect.bottom = m_ScrollButtonRect.top + SCROLL_BUTTON_HEIGHT;
+    m_ScrollButtonRect.bottom = m_ScrollButtonRect.top + m_ScrollButtonHeight;
     DrawScrollBg();
 
-    pDC->SetBkColor(thePlayer->config().getColorBkPanel());
-    pDC->SetTextColor(thePlayer->config().getColorTxPanel());
+    pDC->SetBkColor(thePlayer->config().getColorBkCtrls());
+    pDC->SetTextColor(thePlayer->config().getColorTxCtrls());
     pDC->BitBlt(m_ScrollButtonRect.left, m_ScrollButtonRect.top, rect.Width(), rect.Height(), &m_ScrollButtonCDC, 0,0, SRCCOPY);
 
 	ReleaseDC(pDC);
@@ -482,7 +457,7 @@ void CExtendedListBox::DrawScroll()
 
 UINT CExtendedListBox::OnNcHitTest(CPoint point) 
 {
-	// TODO: Add your message handler code here and/or call default
+	thePlayer->Need2Erase(FALSE);
 	UINT where = CListBox::OnNcHitTest(point); //Obtains where the mouse is
     if (m_HaveScroll == FALSE) return where;
     
@@ -601,16 +576,16 @@ CExtendedListBox::OnMouseMove( UINT nFlags, CPoint p) {
     if (nFlags & MK_LBUTTON) {
         if (m_ScrollHitPos == SB_THUMBPOSITION
                 || m_ScrollHitPos == SB_THUMBTRACK) {
-            UINT count = GetCount();
+            m_Count = GetCount();
             CRect rect;
             GetClientRect(rect);
-            //p.y = p.y - ((SCROLL_BUTTON_HEIGHT * 3)
+            //p.y = p.y - ((m_ScrollButtonHeight * 3)
               //  + GetSystemMetrics(SM_CYEDGE));
-            p.y = p.y - (SCROLL_BUTTON_HEIGHT + GetSystemMetrics(SM_CYEDGE));
-            UINT range = rect.bottom - ((SCROLL_BUTTON_HEIGHT * 3)
+            p.y = p.y - (m_ScrollButtonHeight + GetSystemMetrics(SM_CYEDGE));
+            UINT range = rect.bottom - ((m_ScrollButtonHeight * 3)
                 + GetSystemMetrics(SM_CYEDGE));
             float pct = (float) p.y / (float) range;
-            UINT pos = (UINT)( pct * (float)count);
+            UINT pos = (UINT)( pct * (float)m_Count );
             SetTopIndex(pos);
             DrawScrollButton();            
         }
@@ -651,4 +626,145 @@ CExtendedListBox::alphaDown() {
 			return;
 		}
 	}
+}
+
+void CExtendedListBox::SetColors(COLORREF bknormal, COLORREF bkhigh, COLORREF bksel,
+		COLORREF txnormal, COLORREF txhigh, COLORREF txsel)
+{
+        m_BkNormal = bknormal;
+        m_BkHigh = bkhigh;
+        m_BkSel = bksel;
+        m_TxNormal = txnormal;
+        m_TxHigh = txhigh;
+        m_TxSel = txsel;
+}
+
+HBRUSH CExtendedListBox::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor) 
+{
+	HBRUSH hbr = CListBox::OnCtlColor(pDC, pWnd, nCtlColor);
+	
+	if (nCtlColor == CTLCOLOR_LISTBOX) {
+		pDC->SetBkColor(m_BkNormal);
+		m_brush.DeleteObject();
+		m_brush.CreateSolidBrush(m_BkNormal);
+		return (HBRUSH)m_brush;
+	}
+	return hbr;
+}
+DWORD CExtendedListBox::SetBitmaps(CDC * cdc, 
+		LPCTSTR sBitmapBg, COLORREF crTransBg,
+		LPCTSTR sBitmapUp, COLORREF crTransUp,
+		LPCTSTR sBitmapDown, COLORREF crTransDown,
+		LPCTSTR sBitmapButton, COLORREF crTransButton,
+		LPCTSTR sBitmapSBg, COLORREF crTransSBg
+		) {
+	m_BmpUp.Load(sBitmapUp);
+	m_BmpDown.Load(sBitmapDown);
+	m_BmpButton.Load(sBitmapButton);
+	m_BmpSBg.Load(sBitmapSBg);
+
+	m_ScrollWidth = __max(m_ScrollWidth,m_BmpUp.GetWidth());
+	m_ScrollWidth = __max(m_ScrollWidth,m_BmpDown.GetWidth());
+	m_ScrollWidth = __max(m_ScrollWidth,m_BmpButton.GetWidth());
+	m_ScrollWidth = __max(m_ScrollWidth,m_BmpSBg.GetWidth());
+	m_ScrollButtonHeight = __max(m_ScrollButtonHeight,m_BmpUp.GetHeight());
+	m_ScrollButtonHeight = __max(m_ScrollButtonHeight,m_BmpDown.GetHeight());
+	m_ScrollButtonHeight = __max(m_ScrollButtonHeight,m_BmpButton.GetHeight());
+
+	if (NULL == m_ScrollUpArrowBMsave) {
+		m_ScrollUpArrowBMsave = (HBITMAP)::SelectObject(m_ScrollUpArrowCDC.m_hDC, m_BmpUp);
+		m_ScrollDownArrowBMsave = (HBITMAP)::SelectObject(m_ScrollDownArrowCDC.m_hDC,m_BmpDown);
+		m_ScrollButtonBMsave = (HBITMAP)::SelectObject(m_ScrollButtonCDC.m_hDC, m_BmpButton);
+		m_ScrollSBgBMsave = (HBITMAP)::SelectObject(m_ScrollSBgCDC.m_hDC, m_BmpSBg);
+	} else {
+		::SelectObject(m_ScrollUpArrowCDC.m_hDC, (HBITMAP)m_BmpUp);
+		::SelectObject(m_ScrollDownArrowCDC.m_hDC,(HBITMAP)m_BmpDown);
+		::SelectObject(m_ScrollButtonCDC.m_hDC, (HBITMAP)m_BmpButton);
+		::SelectObject(m_ScrollSBgCDC.m_hDC, (HBITMAP)m_BmpSBg);
+	}
+	
+	return 0;
+}
+void CExtendedListBox::OnPaint() 
+{
+
+	CListBox::OnPaint();
+
+}
+void CExtendedListBox::OnNcCalcSize(BOOL bCalcValidRects,
+                                    NCCALCSIZE_PARAMS FAR* lpncsp) 
+{
+
+    if (m_UseColors == FALSE) {
+        CListBox::OnNcCalcSize(bCalcValidRects, lpncsp);
+        return;
+    }
+	CRect rect;
+	GetClientRect(rect); //Gets the dimensions
+ 
+    UINT iheight = GetItemHeight(0);
+    m_Count = GetCount();
+    UINT height = rect.bottom - rect.top;
+    UINT fit = height / iheight;
+
+    if (m_Count > fit && m_UseColors == TRUE) {
+        m_HaveScroll = TRUE;
+        lpncsp->rgrc[0].right -= (m_ScrollWidth + 1);
+    } else {
+        m_HaveScroll = FALSE;
+        //lpncsp->rgrc[0].right += m_ScrollWidth;
+    }
+	
+	CListBox::OnNcCalcSize(bCalcValidRects, lpncsp);
+
+}
+void CExtendedListBox::OnNcPaint() 
+{
+//	logger.log("CExt::OnNcPaint " + m_id); 
+    if (m_UseColors == FALSE) {
+        CListBox::OnNcPaint();
+        return;
+    }
+
+	static BOOL before=FALSE;
+	if (!before) { 
+//If first time, the OnNcCalcSize function will be called
+			SetWindowPos(NULL,0,0,0,0,SWP_FRAMECHANGED|SWP_NOMOVE|SWP_NOSIZE
+                |SWP_NOZORDER); 
+			before=TRUE;
+	}
+
+	DrawBorders();
+    DrawScroll();
+
+
+	// Do not call CListBox::OnNcPaint() for painting messages
+}
+BOOL CExtendedListBox::OnEraseBkgnd(CDC* pDC) 
+{
+//	logger.log("CExt::OnEraseBkgnd " + m_id); 
+
+//	if (m_UseSkin) {
+//		m_BmpBg.PaintBk(pDC);
+//		m_BmpBg.DrawTheBitmap(pDC);
+//		return TRUE;
+//	} else {
+		pDC->SetBkColor(m_BkNormal);
+		CBrush br(m_BkNormal);
+		CRect rc;
+		GetClientRect(rc);
+		pDC->FillRect(rc, &br);
+		return TRUE;
+//	}
+	return CListBox::OnEraseBkgnd(pDC);
+}
+void
+CExtendedListBox::invalidate() {
+	SetWindowPos(NULL,0,0,0,0,
+		SWP_FRAMECHANGED|SWP_NOMOVE|SWP_NOSIZE|SWP_NOZORDER); 	
+//    if (m_UseColors == TRUE)
+		// Causes OnNCPaint to get called.
+//	DrawScroll();
+	// Trying calling DrawScroll directly instead of calling
+	// SetWindowPos to get scroll bars drawn.
 }

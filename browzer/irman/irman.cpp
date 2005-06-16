@@ -18,7 +18,7 @@
 #include "irman_common.h"
 #define THE_IRMAN
 #include "irman.h"
-#include "irman_registry.h"
+#include "Registry.h"
 #include <io.h>
 #include <stdio.h>
 #include <stdlib.h>

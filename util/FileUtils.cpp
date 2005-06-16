@@ -7,6 +7,7 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <direct.h>
+#include "DIBSectionLite.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -64,6 +65,7 @@ TEST(FileUtils, dirname)
 	x = "\\";         y = FileUtil::dirname(x);
 	CHECK(y == CString ("\\"));
 }
+// this doesn't appear to work on dirs
 BOOL
 FileUtil::IsReadable(CString & file) {
 	CFile myFile;
@@ -80,6 +82,7 @@ FileUtil::IsReadable(CString & file) {
 	}
 
 }
+
 //TEST(FileUtils, IsReadable)
 //{
 //	CString file = "c:\\tmp\\xyz.txt";
@@ -124,3 +127,64 @@ FileUtil::rm_dir(CString & dirname, BOOL f1, BOOL f2) {
 	return _rmdir(dirname);
 }
 
+BOOL
+FileUtil::mkdirp(CString & dirname)
+{
+	CString tmp;
+	tmp = String::replace(dirname, "\\", "/");  // normalize
+	long numparts = String::delCount(tmp, "\\");
+	long i;
+	CString dir(String::field(tmp, "\\", 1));
+	dir += "\\";
+	for(i = 2 ; i <= numparts ; i++) {
+		dir += String::field(tmp, "\\", i);
+		dir += "\\";
+		if (_mkdir(dir.GetBuffer(0)) != 0) {
+			//return FALSE;
+		}
+	}
+	return TRUE;
+}
+TEST(FileUtil, mkdirp)
+{
+	CString dir("c:\\mkm\\tmp\\xyz\\xyz2");
+	BOOL r = FileUtil::mkdirp(dir);
+	CHECK(r == TRUE);
+
+}
+
+BOOL
+FileUtil::BmpSave(HBITMAP hbitmap, CString file) {
+
+	CDIBSectionLite dib;
+	dib.SetBitmap((HBITMAP) hbitmap);
+	return dib.Save(file);
+
+	return TRUE;
+}
+
+void
+FileUtil::BmpSave(HDC hdcsrc, CString name, int width, int height, int x, int y) {
+
+	static int counter = 0;
+	HBITMAP hbmp = ::CreateCompatibleBitmap(hdcsrc,width,height);
+	HDC hdc = ::CreateCompatibleDC(NULL);
+	HBITMAP oldbmp = (HBITMAP)::SelectObject(hdc, (HBITMAP)hbmp);
+	::BitBlt(hdc,0,0,width,height,hdcsrc,x,y,SRCCOPY);
+	::SelectObject(hdc, oldbmp);
+	CString bmpname = "c:\\mkm\\bmps\\" + name + numToString(counter++) + ".bmp";
+	FileUtil::BmpSave(hbmp,bmpname);
+	::DeleteObject((HBITMAP)hbmp);
+	::DeleteObject((HDC)hdc);
+	::DeleteObject((HBITMAP)oldbmp);
+}
+void
+FileUtil::BmpLog(HBITMAP hbitmap, CString name) {
+#ifdef _DEBUG
+	CDIBSectionLite dib;
+	dib.SetBitmap((HBITMAP) hbitmap);
+	static int counter =0;
+	CString file = "c:\\mkm\\bmps\\" + name + numToString(counter++) + ".bmp";
+	dib.Save(file);
+#endif
+}

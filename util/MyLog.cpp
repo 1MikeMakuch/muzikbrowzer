@@ -8,7 +8,7 @@
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
+//static char THIS_FILE[] = __FILE__;
 #endif
 
 void
@@ -47,24 +47,59 @@ MyLog::open(CString path) {
 	m_ready = TRUE;
     log("started");
 }
-
 void
-MyLog::log(const CString &msg1, const CString &msg2, const CString &msg3, const CString &msg4) {
+MyLog::logd(const CString &m1, const CString &m2, 
+		   const CString &m3, const CString &m4,
+		   const CString &m5, const CString &m6
+		   ) {
+#ifndef _DEBUG
+	return;
+#endif
+	log(m1,m2,m3,m4,m5,m6);
+}
+void
+MyLog::log(const CString &m1, const CString &m2, 
+		   const CString &m3, const CString &m4,
+		   const CString &m5, const CString &m6
+		   ) {
 	if (m_ready == FALSE) return;
-    CString msgx;
+    CString mx;
     CTime t = CTime::GetCurrentTime();
-    msgx = t.Format("%Y%m%d:%H%M%S ");
-    msgx += msg1;
-	msgx += msg2;
-	msgx += msg3;
-	msgx += msg4;
-	msgx += "\r\n";
-	_file.Write(msgx,msgx.GetLength());
+    mx = t.Format("%Y%m%d:%H%M%S ");
+    mx += m1 ; 
+	if (m2.GetLength()) {
+		mx += " " ;	mx += m2 ; 
+		if (m3.GetLength()) {
+			mx += " " ;	mx += m3 ;
+			if (m4.GetLength()) {
+				mx += " ";	mx += m4 ; 
+				if (m5.GetLength()) {
+					mx += " ";	mx += m5 ; 
+					if (m6.GetLength()) {
+						mx += " "; mx += m6;
+					}
+				}
+			}
+		}
+	}
+	mx += "\r\n";
+	OutputDebugString(mx);
+	_file.Write(mx,mx.GetLength());
     _file.Flush();
 }
 
 void
-MyLog::log(char * msg1, char * msg2) {
-	CString Msg1(msg1),Msg2(msg2);
-	log(Msg1,Msg2);
+MyLog::log(char * m1, char * m2,char*m3,char*m4,char*m5,char*m6) {
+	CString M1(m1),M2(m2),M3(m3),M4(m4),M5(m5),M6(m6);
+	log(M1,M2,M3,M4,M5,M6);
 }
+
+AutoLog::AutoLog(CString desc) : m_desc(desc)
+{
+	logger.logd(m_desc + " begin");
+
+}
+AutoLog::~AutoLog() 
+	{
+		logger.logd(m_desc + " end");
+	}

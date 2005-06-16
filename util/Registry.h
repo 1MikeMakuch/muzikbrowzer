@@ -17,6 +17,8 @@
 
 const static TCHAR RegKeyIrman[] = _T(MBREGKEYIRMAN);
 const static TCHAR RegKey[] = _T(MBREGKEY);
+const static TCHAR RegKeyPrevVals[] = _T(MBREGKEYLAST);
+
 const static TCHAR RegDbLocation[] = _T( "DbLocation" );
 const static TCHAR RegDirKey[] = _T("Dir_");
 const static TCHAR RegNumDirs[] = _T("NumDirs");
@@ -30,23 +32,43 @@ const static TCHAR RegWindowY2[] = _T("BottomRight_y");
 const static TCHAR RegWindowMaximized[] = _T("Maximized");
 const static TCHAR RegWindowsFontTitles[] = _T("FontTitles");
 const static TCHAR RegWindowsFontPanel[] = _T("FontPanel");
+const static TCHAR RegWindowsFontColHdr[] = _T("FontColHdr");
 
 const static TCHAR RegWindowsColorBkPanel[] = _T("ColorBkPanel");
+const static TCHAR RegWindowsColorBkColHdr[] = _T("ColorBkColHdr");
 const static TCHAR RegWindowsColorBkNormal[] = _T("ColorBkNormal");
 const static TCHAR RegWindowsColorBkHigh[] = _T("ColorBkHigh");
 const static TCHAR RegWindowsColorBkSel[] = _T("ColorBkSel");
 const static TCHAR RegWindowsColorTxPanel[] = _T("ColorTxPanel");
+const static TCHAR RegWindowsColorTxColHdr[] = _T("ColorTxColHdr");
 const static TCHAR RegWindowsColorTxNormal[] = _T("ColorTxNormal");
 const static TCHAR RegWindowsColorTxHigh[] = _T("ColorTxHigh");
 const static TCHAR RegWindowsColorTxSel[] = _T("ColorTxSel");
+const static TCHAR RegWindowsColorBorder[] = _T("ColorBorder");
+const static TCHAR RegWindowsColorBkCtrls[] = _T("ColorBkCtrls");
+const static TCHAR RegWindowsColorTxCtrls[] = _T("ColorTxCtrls");
+const static TCHAR RegWindowsColorShadowDark[] = _T("ColorShadowDark");
+const static TCHAR RegWindowsColorShadowLight[] = _T("ColorShadowLight");
+const static TCHAR RegWindowsColorBkPanel2[] = _T("ColorBkPanel2");
 const static TCHAR RegRunAtStartup[] =_T("RunAtStartup");
 const static TCHAR RegUseGenre[] =_T("UseGenre");
 const static TCHAR RegAlbumSort[] = _T("AlbumSort");
+const static TCHAR RegWindowsRoundCorners[] = _T("RoundCorners");
+const static TCHAR RegWindowsThemeName[] = _T("ThemeName");
+const static TCHAR RegWindowsSkinName[] = _T("SkinName");
+const static TCHAR RegWindowsBorderWidth[] = _T("BorderWidth");
+const static TCHAR RegWindowsPanelWidth[] = _T("PanelWidth");
+const static TCHAR RegWindowsPlaylistHeightPct[] = _T("PlaylistHeightPct");
+const static TCHAR RegWindowsGenreWidthPct[] = _T("GenreWidthPct");
+const static TCHAR RegWindowsBorderHorz[] = _T("BorderHorz");
+const static TCHAR RegWindowsBorderVert[] = _T("BorderVert");
+
 class RegistryKey
 {
 public:
   // Open (or create, if necessary) the key below the specified handle
   RegistryKey( HKEY base, const TCHAR* keyName );
+  RegistryKey(CString filename);
 
   // Close the key
   ~RegistryKey();
@@ -69,9 +91,13 @@ public:
   void Read( const TCHAR* value, void* data, unsigned long size,
       const void* deflt ) const;
   void Write( const TCHAR* value, const void* data, unsigned long size ) const;
+  BOOL WriteFile();
+  BOOL ReadFile();
 
 private:
   HKEY key;
+  CString mFileName;
+  CMapStringToString * mKeyValPairs;
 
   // Return true if successful - used by the public read/write routines above
   bool ReadData( const TCHAR* value, void* data, unsigned long& size,

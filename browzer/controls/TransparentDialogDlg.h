@@ -24,7 +24,7 @@ private:
 // Construction
 public:
 	CTransparentDialogDlg(CWnd* pParent = NULL);	// standard constructor
-
+	~CTransparentDialogDlg();
 	CTime m_start;
 // Dialog Data
 	//{{AFX_DATA(CTransparentDialogDlg)

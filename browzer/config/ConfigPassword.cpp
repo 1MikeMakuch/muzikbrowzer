@@ -2,7 +2,7 @@
 //
 
 //#include "stdafx.h"
-#include "irman_registry.h"
+#include "Registry.h"
 #include "ConfigPassword.h"
 #include "MyString.h"
 #include "TestHarness.h"
@@ -25,7 +25,7 @@ static char THIS_FILE[] = __FILE__;
 IMPLEMENT_DYNCREATE(CConfigPassword, CPropertyPage)
 
 CConfigPassword::CConfigPassword(CWnd * p) : CPropertyPage(CConfigPassword::IDD),
-    m_PlayerDlg(p), m_TrialMode(1)
+    /*m_PlayerDlg(p), */m_TrialMode(1)
 {
 	//{{AFX_DATA_INIT(CConfigPassword)
 	m_HostId = _T("");
@@ -144,12 +144,7 @@ CConfigPassword::StoreReg() {
 
 	reg.Write("WindowData", h);
 }
-void CConfigPassword::OnOK() 
-{
-	StoreReg();
-	validate();	
-	CPropertyPage::OnOK();
-}
+
 
 BOOL CConfigPassword::OnInitDialog() 
 {
@@ -159,10 +154,6 @@ BOOL CConfigPassword::OnInitDialog()
 	              // EXCEPTION: OCX Property Pages should return FALSE
 }
 
-void CConfigPassword::OnCancel() 
-{
-	CPropertyPage::OnCancel();
-}
 CString
 CConfigPassword::s2h(const CString & s) {
 	CString h;
@@ -227,10 +218,10 @@ CConfigPassword::genHost() {
 	// return unique;
 	//} 
 
-	char buf[MAX_PATH];
+	AutoBuf buf(MAX_PATH);
 	DWORD size = MAX_PATH;
-	GetComputerName(buf,&size);
-	CString hostname = buf;
+	GetComputerName(buf.p,&size);
+	CString hostname = buf.p;
 	if (hostname != "") {
 		return hostname;
 	}
@@ -396,6 +387,7 @@ m_Notice += "go to www.muzikbrowzer.com Support and enter a support Ticket.";
 		}
 		
 	}
+	SetModified(TRUE);
 }
 
 CString
@@ -437,5 +429,21 @@ void CConfigPassword::OnValidatePw()
 //		m_RequestPw.EnableWindow(FALSE);
 	}
 	UpdateData(FALSE);
+	SetModified(TRUE);
 	
+}
+void CConfigPassword::OnOK() 
+{
+	StoreReg();
+	validate();	
+	SetModified(FALSE);
+	CPropertyPage::OnOK();
+}
+void CConfigPassword::OnCancel() 
+{
+	CPropertyPage::OnCancel();
+}
+BOOL CConfigPassword::OnApply() 
+{
+	return CPropertyPage::OnApply();
 }

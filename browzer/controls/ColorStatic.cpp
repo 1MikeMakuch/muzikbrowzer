@@ -4,8 +4,9 @@
 #include "stdafx.h"
 #include "ColorStatic.h"
 #include "MBGlobals.h"
-#include "PlayerDlg.h"
+#include "MyString.h"
 #include "MyLog.h"
+#include "FileUtils.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -18,6 +19,8 @@ static char THIS_FILE[] = __FILE__;
 
 CColorStatic::CColorStatic()
 {
+	first = 1;
+	m_UseSkin = FALSE;
 	// Set default parent window and notification message
 	m_pParent = NULL;
 	m_nMsg = WM_USER;
@@ -53,12 +56,20 @@ CColorStatic::CColorStatic()
 	m_height = 0;
 	m_width = 0;
 	m_HCenter = 0;
+
+	m_crCornerColor = 0;
+
+	m_ClrShadowDark = RGB(0,0,0);
+	m_ClrShadowLight = RGB(255,255,255);
+
+
 } // End of CColorStatic
 
 
 CColorStatic::~CColorStatic()
 {
 	m_font.DeleteObject();
+
 } // End of ~CColorStatic
 
 
@@ -130,7 +141,7 @@ void CColorStatic::SetTextColor(COLORREF crTextColor)
 	}
 
 	// Repaint control
-	Invalidate();
+	//Invalidate();
 } // End of SetTextColor
 
 
@@ -156,7 +167,7 @@ void CColorStatic::SetBkColor(COLORREF crBkColor)
     m_brBkgnd.CreateSolidBrush(m_crBkColor);
 
 	// Repaint control
-	Invalidate();
+	//Invalidate();
 } // End of SetBkColor
 
 
@@ -223,7 +234,7 @@ void CColorStatic::SetBlinkBkColors(COLORREF crBlinkBkColor1, COLORREF crBlinkBk
     m_brBlinkBkgnd[1].CreateSolidBrush(m_crBlinkBkColors[1]);
 
 	// Repaint control
-	Invalidate();
+	//Invalidate();
 } // End of SetBlinkBkColor
 
 
@@ -326,30 +337,27 @@ void CColorStatic::OnPaint() {
 
     CPaintDC paintdc(this);
 
-    CDC * cdc = GetDC();
-    if (cdc == NULL) {
-        logger.log("cdc null in CColorStatic::OnPaint()");
-        return;
-    }
     CRect rect;
     GetClientRect(rect);
 
-    cdc->FillSolidRect(&rect, thePlayer->config().getColorBkPanel() );
-
-//    CRgn Region;
-//    Region.CreateRectRgn(rect.left, rect.top, rect.right, rect.bottom);
-//    cdc->SelectClipRgn(&Region);
+    if (!m_UseSkin) { 
+		paintdc.FillSolidRect(&rect, m_crBkColor  );
+//		OutputDebugString("CS " + numToString(m_crBkColor) + "\r\n");
+	}
  
 	if (m_border) {
 		CBrush br;
-		br.CreateSolidBrush(thePlayer->config().getColorTxPanel());
+		br.CreateSolidBrush(m_crTextColor);
 	//    rect.InflateRect(1,1,1,1);
-		CBrush * oldbrush = cdc->SelectObject(&br);
-		cdc->FrameRect(&rect, &br);
-		cdc->SelectObject(oldbrush);
+		CBrush * oldbrush = paintdc.SelectObject(&br);
+		paintdc.FrameRect(&rect, &br);
+		paintdc.SelectObject(oldbrush);
 	}
 
-
+	if (m_UseSkin) {
+		PaintBk(&paintdc);
+		DrawTheBitmap(&paintdc);
+	}
 
     CString S;
     getText(S);
@@ -358,21 +366,20 @@ void CColorStatic::OnPaint() {
 		if (m_HCenter) {
 			centerFlag = DT_CENTER;
 		}
-		CFont * oldfont = cdc->SelectObject(&m_font);
-        cdc->SetTextColor(thePlayer->config().getColorTxPanel());
+		CFont * oldfont = paintdc.SelectObject(&m_font);
+        paintdc.SetTextColor(m_crTextColor);
         rect.DeflateRect(2,0);
-        cdc->DrawText(S, rect, 
+		paintdc.SetBkMode(TRANSPARENT);
+        paintdc.DrawText(S, rect, 
 			DT_VCENTER
 			|centerFlag
 			|DT_LEFT
 			|DT_SINGLELINE /* |DT_NOCLIP */);
-		cdc->SelectObject(oldfont);
-    }
-	
+		paintdc.SelectObject(oldfont);
+		paintdc.SetBkMode(OPAQUE);
 
-//    Region.DeleteObject();
-//    cdc->SelectClipRgn(NULL);
-    ReleaseDC(cdc);
+	}
+
 
 }
 void
@@ -398,6 +405,12 @@ CColorStatic::setText(CString text) {
 void
 CColorStatic::getText(CString & text) {
     text = m_text;
+}
+void CColorStatic::changeFont(CFont * f) {
+	LOGFONT lf;
+	memset(&lf, 0, sizeof(LOGFONT));
+	f->GetLogFont(&lf);
+	changeFont(&lf);
 }
 void CColorStatic::changeFont(LPLOGFONT lplf) {
     if (lplf == 0) { return; }
@@ -442,4 +455,15 @@ CSize CColorStatic::GetSize(CString string) {
 	cdc->SelectObject(oldfont);
 	ReleaseDC(cdc);
 	return s;
+}
+
+
+void CColorStatic::SizeToContent()
+{
+	GetClientRect(m_ClientRect);
+
+} // End of SizeToContent
+DWORD CColorStatic::SetBitmaps(CDC * cdc, LPCTSTR nBitmap, 
+							   COLORREF crTransColor) {
+	return SkinBmp::SetBitmaps(this,cdc,nBitmap,crTransColor);
 }
