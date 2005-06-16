@@ -1041,6 +1041,12 @@ const CString CConfigDisplay::getSkin(const CString key) {
 	if (FileUtil::IsReadable(glob)) {
 		return glob;
 	}
+	if (MB_SKIN_ALBUMART == key) {
+		CString skey(key);
+		if (FileUtil::IsReadable(skey)) {
+			return key;
+		}
+	}
 	return CString ("");
 }
 void CConfigDisplay::OnThemeDelete() 

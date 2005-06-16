@@ -121,6 +121,7 @@ private:
 	int m_PlaylistDuration;
 	CTransparentDialogDlg *_initdialog;
 	Irman m_irman;
+	CString m_AlbumArt;
 public:
     MBConfig m_Config;
 private:

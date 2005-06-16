@@ -404,6 +404,9 @@ BOOL CPlayerDlg::OnInitDialog()
 	FileUtil::mkdirp(tmp);
 
 	readConfig();
+
+	m_AlbumArt = m_Config.getSkin(MB_SKIN_ALBUMART);
+
 	if (_initdialog) {
 		time_t now = CTime::GetCurrentTime().GetTime();
 		if (now - _initdialog->m_start.GetTime() < 2) {
@@ -1948,6 +1951,7 @@ void CPlayerDlg::OnMenuOptions() {
 	//    IRReaderStop();
 	irman().Close();
 	m_Config.DoModal();
+	m_AlbumArt = m_Config.getSkin(MB_SKIN_ALBUMART);
 
     PlayerStatusTempSet(m_mlib.getLibraryCounts());
 //	resizeControls();
@@ -3009,7 +3013,11 @@ void CPlayerDlg::displayAlbumArt(const CString & file) {
 		m_Picture.load(data,size);
 	} else {
 		first = FALSE;
-		m_Picture.load(m_Config.getSkin(MB_SKIN_ALBUMART));
+		if (m_AlbumArt != "") {
+			m_Picture.load(m_AlbumArt);
+		} else {
+			m_Picture.blank();
+		}
 	}
 	if (data)
 		delete [] data;
