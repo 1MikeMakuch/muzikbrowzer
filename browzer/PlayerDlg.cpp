@@ -729,53 +729,53 @@ CPlayerDlg::resetControls() {
 //		+ " " + numToString(m_Controls.dialogrect.Height()) + "\r\n";
 //	OutputDebugString(msg);
 
-	const int ControlBoxWidth = regSD.Read("ControlBoxWidth",0);
-	const int ControlBoxHeight = regSD.Read("ControlBoxHeight",0);
+	int ControlBoxWidth = regSD.Read("ControlBoxWidth",0);
+	int ControlBoxHeight = regSD.Read("ControlBoxHeight",0);
 
 	int border = m_Config.getDlgBorderWidth();
 	int panelborder = m_Config.getPanelWidth();
 	int borderhorz = m_Config.getDlgBorderHorz();
 	int bordervert = m_Config.getDlgBorderVert();
 
-	if (firsttime) {
-		firsttime = FALSE;
-		m_Controls.add(0,0, "options button", IDC_OPTIONS_BUTTON);
-		m_Controls.add(0,1, "app label",		IDC_APP_LABEL);
-		m_Controls.add(0,2, "button min",		IDC_BUTTON_MINIMIZE);
-		m_Controls.add(0,3, "button max",		IDC_BUTTON_MAXIMIZE);
-		m_Controls.add(0,4, "button exit",	IDC_BUTTON_EXIT);
-		m_Controls.add(0,5, "button resize",IDC_BUTTON_RESIZE);
-		m_Controls.add(1,0, "button reverse",	IDC_BUTTON_REVERSE);
-		m_Controls.add(1,1, "button stop",	IDC_BUTTON_STOP);
-		m_Controls.add(1,2, "button play",	IDC_BUTTON_PLAY);
-		m_Controls.add(1,3, "button pause",	IDC_BUTTON_PAUSE);
-		m_Controls.add(1,4,	"button fford", IDC_BUTTON_FASTFORWARD);
-		m_Controls.add(1,5, "playlist",		IDC_PLAYLIST, IDC_PLAYLISTLABEL);
-		m_Controls.add(1,6, "picture",		IDC_PICTURE_CTRL);
-		m_Controls.add(2,0, "random",	IDC_BUTTON_RANDOM);
-		m_Controls.add(2,1, "vol slider",		IDC_VOLUME_SLIDER);
-		m_Controls.add(3,0, "shuffle",		IDC_BUTTON_SHUFFLE);
-		m_Controls.add(4,0, "clear",		IDC_BUTTON_CLEAR);
-		m_Controls.add(5,0, "load",			IDC_BUTTON_LOAD);
-		m_Controls.add(6,0, "save",			IDC_BUTTON_SAVE);
-		m_Controls.add(7,0, "pos label",		IDC_POSITION_LABEL);
 
-		m_Controls.add(7,1, "title",			IDC_CURRENT_TITLE);
-		m_Controls.add(8,0, "genre",			IDC_GENRES, IDC_GENRESLABEL);
-		m_Controls.add(8,1, "artist",			IDC_ARTISTS, IDC_ARTISTSLABEL);
-		m_Controls.add(8,2, "album",			IDC_ALBUMS, IDC_ALBUMSLABEL);
-		m_Controls.add(8,3, "songs",			IDC_SONGS, IDC_SONGSLABEL);
-		m_Controls.add(9,0, "player status",	IDC_PLAYER_STATUS);
+	m_Controls.FreeEm();
 
-		m_Controls.add(2,0, "pos slider",		IDC_POSITION_SLIDER);
+	m_Controls.add(0,0, "options button", IDC_OPTIONS_BUTTON);
+	m_Controls.add(0,1, "app label",		IDC_APP_LABEL);
+	m_Controls.add(0,2, "button min",		IDC_BUTTON_MINIMIZE);
+	m_Controls.add(0,3, "button max",		IDC_BUTTON_MAXIMIZE);
+	m_Controls.add(0,4, "button exit",	IDC_BUTTON_EXIT);
+	m_Controls.add(0,5, "button resize",IDC_BUTTON_RESIZE);
+	m_Controls.add(1,0, "button reverse",	IDC_BUTTON_REVERSE);
+	m_Controls.add(1,1, "button stop",	IDC_BUTTON_STOP);
+	m_Controls.add(1,2, "button play",	IDC_BUTTON_PLAY);
+	m_Controls.add(1,3, "button pause",	IDC_BUTTON_PAUSE);
+	m_Controls.add(1,4,	"button fford", IDC_BUTTON_FASTFORWARD);
+	m_Controls.add(1,5, "playlist",		IDC_PLAYLIST, IDC_PLAYLISTLABEL);
+	m_Controls.add(1,6, "picture",		IDC_PICTURE_CTRL);
+	m_Controls.add(2,0, "random",	IDC_BUTTON_RANDOM);
+	m_Controls.add(2,1, "vol slider",		IDC_VOLUME_SLIDER);
+	m_Controls.add(3,0, "shuffle",		IDC_BUTTON_SHUFFLE);
+	m_Controls.add(4,0, "clear",		IDC_BUTTON_CLEAR);
+	m_Controls.add(5,0, "load",			IDC_BUTTON_LOAD);
+	m_Controls.add(6,0, "save",			IDC_BUTTON_SAVE);
+	m_Controls.add(7,0, "pos label",		IDC_POSITION_LABEL);
 
-	}
+	m_Controls.add(7,1, "title",			IDC_CURRENT_TITLE);
+	m_Controls.add(8,0, "genre",			IDC_GENRES, IDC_GENRESLABEL);
+	m_Controls.add(8,1, "artist",			IDC_ARTISTS, IDC_ARTISTSLABEL);
+	m_Controls.add(8,2, "album",			IDC_ALBUMS, IDC_ALBUMSLABEL);
+	m_Controls.add(8,3, "songs",			IDC_SONGS, IDC_SONGSLABEL);
+	m_Controls.add(9,0, "player status",	IDC_PLAYER_STATUS);
+
+	m_Controls.add(2,0, "pos slider",		IDC_POSITION_SLIDER);
+
 	int labelheight=0;
 	int textheight=0;
 
-	const double PlaylistHeightPct = m_Config.getPlaylistHeightPct();
-	const double GenreWidthPct = m_Config.getGenreWidthPct();
-	const double LibraryWidthPct = (1 - GenreWidthPct) / 3;
+	double PlaylistHeightPct = m_Config.getPlaylistHeightPct();
+	double GenreWidthPct = m_Config.getGenreWidthPct();
+	double LibraryWidthPct = (1 - GenreWidthPct) / 3;
 	int fixedy = bordervert * 3;
 	int y = border;
 	int x = border;
@@ -823,10 +823,10 @@ CPlayerDlg::resetControls() {
 
 	y = panelborder + rowMaxY + bordervert;
 	x = border + panelborder;
-	const int ControlBoxLeft = x;
-	const int ControlBoxTop  = y;
-	const int ControlBoxRight = x + ControlBoxWidth;
-	const int ControlBoxBottom = y + ControlBoxHeight;
+	int ControlBoxLeft = x;
+	int ControlBoxTop  = y;
+	int ControlBoxRight = x + ControlBoxWidth;
+	int ControlBoxBottom = y + ControlBoxHeight;
 
 	x = ControlBoxLeft + regSD.Read("StopX",0);
 	y = ControlBoxTop + regSD.Read("StopY", 0);

@@ -56,6 +56,9 @@ void Controls::init(CWnd * w) {
 	//m_HDWPHandle = BeginDeferWindowPos(m_NumControls);
 }
 Controls::~Controls() {
+	FreeEm();
+}
+void Controls::FreeEm() {
 	POSITION pos;
 	WORD dlgid;
 	Control *cp;

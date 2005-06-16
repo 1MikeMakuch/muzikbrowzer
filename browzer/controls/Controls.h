@@ -29,6 +29,7 @@ public:
 	Controls();
 	void init(CWnd * w);
 	~Controls();
+	void FreeEm();
 	CMapWordToPtr m_controls;
 	void add(const int row, const int col, const CString & desc, 
 			int id, int label=0);

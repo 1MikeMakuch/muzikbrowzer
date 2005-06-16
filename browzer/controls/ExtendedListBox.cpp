@@ -658,6 +658,12 @@ DWORD CExtendedListBox::SetBitmaps(CDC * cdc,
 		LPCTSTR sBitmapButton, COLORREF crTransButton,
 		LPCTSTR sBitmapSBg, COLORREF crTransSBg
 		) {
+	if (NULL != m_ScrollUpArrowBMsave) {
+		::SelectObject(m_ScrollUpArrowCDC.m_hDC, (HBITMAP)m_ScrollUpArrowBMsave);
+		::SelectObject(m_ScrollDownArrowCDC.m_hDC,(HBITMAP)m_ScrollDownArrowBMsave);
+		::SelectObject(m_ScrollButtonCDC.m_hDC, (HBITMAP)m_ScrollButtonBMsave);
+		::SelectObject(m_ScrollSBgCDC.m_hDC, (HBITMAP)m_ScrollSBgBMsave);
+	}
 	m_BmpUp.Load(sBitmapUp);
 	m_BmpDown.Load(sBitmapDown);
 	m_BmpButton.Load(sBitmapButton);
@@ -671,17 +677,10 @@ DWORD CExtendedListBox::SetBitmaps(CDC * cdc,
 	m_ScrollButtonHeight = __max(m_ScrollButtonHeight,m_BmpDown.GetHeight());
 	m_ScrollButtonHeight = __max(m_ScrollButtonHeight,m_BmpButton.GetHeight());
 
-	if (NULL == m_ScrollUpArrowBMsave) {
-		m_ScrollUpArrowBMsave = (HBITMAP)::SelectObject(m_ScrollUpArrowCDC.m_hDC, m_BmpUp);
-		m_ScrollDownArrowBMsave = (HBITMAP)::SelectObject(m_ScrollDownArrowCDC.m_hDC,m_BmpDown);
-		m_ScrollButtonBMsave = (HBITMAP)::SelectObject(m_ScrollButtonCDC.m_hDC, m_BmpButton);
-		m_ScrollSBgBMsave = (HBITMAP)::SelectObject(m_ScrollSBgCDC.m_hDC, m_BmpSBg);
-	} else {
-		::SelectObject(m_ScrollUpArrowCDC.m_hDC, (HBITMAP)m_BmpUp);
-		::SelectObject(m_ScrollDownArrowCDC.m_hDC,(HBITMAP)m_BmpDown);
-		::SelectObject(m_ScrollButtonCDC.m_hDC, (HBITMAP)m_BmpButton);
-		::SelectObject(m_ScrollSBgCDC.m_hDC, (HBITMAP)m_BmpSBg);
-	}
+	m_ScrollUpArrowBMsave = (HBITMAP)::SelectObject(m_ScrollUpArrowCDC.m_hDC, m_BmpUp);
+	m_ScrollDownArrowBMsave = (HBITMAP)::SelectObject(m_ScrollDownArrowCDC.m_hDC,m_BmpDown);
+	m_ScrollButtonBMsave = (HBITMAP)::SelectObject(m_ScrollButtonCDC.m_hDC, m_BmpButton);
+	m_ScrollSBgBMsave = (HBITMAP)::SelectObject(m_ScrollSBgCDC.m_hDC, m_BmpSBg);
 	
 	return 0;
 }
