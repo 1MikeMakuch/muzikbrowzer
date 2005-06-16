@@ -97,7 +97,7 @@ END
 IDD_PLAYER_DIALOG DIALOGEX 0, 0, 401, 282
 STYLE WS_POPUP | WS_THICKFRAME
 EXSTYLE WS_EX_APPWINDOW
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     LISTBOX         IDC_PLAYLIST,111,41,172,87,LBS_OWNERDRAWFIXED | 
                     LBS_HASSTRINGS | LBS_NOINTEGRALHEIGHT | 
@@ -812,61 +812,14 @@ IDB_BITMAP2             BITMAP  DISCARDABLE     "res\\bitmap2.bmp"
 IDB_BITMAP3             BITMAP  DISCARDABLE     "res\\bitmap3.bmp"
 IDB_BITMAP4             BITMAP  DISCARDABLE     "res\\bitmap4.bmp"
 IDB_BITMAP5             BITMAP  DISCARDABLE     "res\\muzikbrowzer.bmp"
-IDB_BUTTON_MINIMIZEU    BITMAP  DISCARDABLE     "res\\button_minimizeU.bmp"
-IDB_BUTTON_MINIMIZED    BITMAP  DISCARDABLE     "res\\button_minimizeD.bmp"
-IDB_BUTTON_MINIMIZEF    BITMAP  DISCARDABLE     "res\\button_minimizeF.bmp"
-IDB_BUTTON_MINIMIZEX    BITMAP  DISCARDABLE     "res\\button_minimizeX.bmp"
-IDB_BUTTON_MAXIMIZEU    BITMAP  DISCARDABLE     "res\\button_maximizeU.bmp"
-IDB_BUTTON_MAXIMIZED    BITMAP  DISCARDABLE     "res\\button_maximizeD.bmp"
-IDB_BUTTON_MAXIMIZEF    BITMAP  DISCARDABLE     "res\\button_maximizeF.bmp"
-IDB_BUTTON_MAXIMIZEX    BITMAP  DISCARDABLE     "res\\button_maximizeX.bmp"
-IDB_BUTTON_RESTOREU     BITMAP  DISCARDABLE     "res\\button_restoreU.bmp"
-IDB_BUTTON_RESTORED     BITMAP  DISCARDABLE     "res\\button_restoreD.bmp"
-IDB_BUTTON_RESTOREF     BITMAP  DISCARDABLE     "res\\button_restoreF.bmp"
-IDB_BUTTON_RESTOREX     BITMAP  DISCARDABLE     "res\\button_restoreX.bmp"
-IDB_BUTTON_EXITU        BITMAP  DISCARDABLE     "res\\button_exitU.bmp"
-IDB_BUTTON_EXITD        BITMAP  DISCARDABLE     "res\\button_exitD.bmp"
-IDB_BUTTON_EXITF        BITMAP  DISCARDABLE     "res\\button_exitF.bmp"
-IDB_BUTTON_EXITX        BITMAP  DISCARDABLE     "res\\button_exitX.bmp"
-IDB_APP_LABELD          BITMAP  DISCARDABLE     "res\\mtitle3D.bmp"
-IDB_APP_LABELF          BITMAP  DISCARDABLE     "res\\mtitle3F.bmp"
-IDB_APP_LABELU          BITMAP  DISCARDABLE     "res\\mtitle3U.bmp"
-IDB_APP_LABELX          BITMAP  DISCARDABLE     "res\\mtitle3X.bmp"
 IDB_SPLASH2             BITMAP  DISCARDABLE     "res\\splash.bmp"
 IDB_SPLASH3             BITMAP  DISCARDABLE     "res\\splash0.bmp"
-IDB_APP_LABEL2D         BITMAP  DISCARDABLE     "res\\mtitle4D.bmp"
-IDB_APP_LABEL2F         BITMAP  DISCARDABLE     "res\\mtitle4F.bmp"
-IDB_APP_LABEL2U         BITMAP  DISCARDABLE     "res\\mtitle4U.bmp"
-IDB_APP_LABEL2X         BITMAP  DISCARDABLE     "res\\mtitle4X.bmp"
-IDB_APP_LABEL3D         BITMAP  DISCARDABLE     "res\\app_labelD.bmp"
-IDB_APP_LABEL3F         BITMAP  DISCARDABLE     "res\\app_labelF.bmp"
-IDB_APP_LABEL3U         BITMAP  DISCARDABLE     "res\\app_labelU.bmp"
-IDB_APP_LABEL3X         BITMAP  DISCARDABLE     "res\\app_labelX.bmp"
 IDB_BITMAP7             BITMAP  DISCARDABLE     "res\\bitmap7.bmp"
 IDB_BITMAP8             BITMAP  DISCARDABLE     "res\\test01.bmp"
 IDB_BITMAP9             BITMAP  DISCARDABLE     "res\\bitmap9.bmp"
-IDB_BUTTON_STOPD        BITMAP  DISCARDABLE     "res\\buttonStopD.bmp"
-IDB_BUTTON_STOPF        BITMAP  DISCARDABLE     "res\\buttonStopF.bmp"
-IDB_BUTTON_STOPU        BITMAP  DISCARDABLE     "res\\buttonStopU.bmp"
-IDB_BUTTON_PLAYD        BITMAP  DISCARDABLE     "res\\buttonPlayD.bmp"
-IDB_BUTTON_STOPX        BITMAP  DISCARDABLE     "res\\buttonStopX.bmp"
-IDB_BUTTON_PLAYF        BITMAP  DISCARDABLE     "res\\buttonPlayF.bmp"
-IDB_BUTTON_PLAYU        BITMAP  DISCARDABLE     "res\\buttonPlayU.bmp"
-IDB_BUTTON_PLAYX        BITMAP  DISCARDABLE     "res\\buttonPlayX.bmp"
-IDB_BUTTON_PAUSED       BITMAP  DISCARDABLE     "res\\buttonPauseD.bmp"
-IDB_BUTTON_PAUSEF       BITMAP  DISCARDABLE     "res\\buttonPauseF.bmp"
-IDB_BUTTON_PAUSEU       BITMAP  DISCARDABLE     "res\\buttonPauseU.bmp"
-IDB_BUTTON_PAUSEX       BITMAP  DISCARDABLE     "res\\buttonPauseX.bmp"
 IDB_GROUP_TEST          BITMAP  DISCARDABLE     "res\\group_te.bmp"
 IDB_BITMAP10            BITMAP  DISCARDABLE     "res\\slidevert.bmp"
 IDB_BITMAP11            BITMAP  DISCARDABLE     "res\\tick_vert.bmp"
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// GIF
-//
-
-IDR_APPGIF              GIF     DISCARDABLE     "res\\app.gif"
 
 /////////////////////////////////////////////////////////////////////////////
 //
