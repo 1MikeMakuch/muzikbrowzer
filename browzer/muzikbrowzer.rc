@@ -802,24 +802,8 @@ IDC_CURSOR3             CURSOR  DISCARDABLE     "res\\cursor3.cur"
 // Bitmap
 //
 
-IDB_GLYPHS              BITMAP  DISCARDABLE     "res\\printer.bmp"
-IDB_SCROLLDOWNARROW     BITMAP  DISCARDABLE     "res\\ScrollDownArrowButton.bmp"
-IDB_SCROLLUPARROW       BITMAP  DISCARDABLE     "res\\ScrollUpArrowButton.bmp"
-IDB_SCROLLBUTTON        BITMAP  DISCARDABLE     "res\\ScrollButton.bmp"
-IDB_SCREENSHOT          BITMAP  DISCARDABLE     "res\\screenshot.bmp"
-IDB_RED_BUTTON          BITMAP  DISCARDABLE     "res\\bitmap1.bmp"
-IDB_BITMAP2             BITMAP  DISCARDABLE     "res\\bitmap2.bmp"
-IDB_BITMAP3             BITMAP  DISCARDABLE     "res\\bitmap3.bmp"
-IDB_BITMAP4             BITMAP  DISCARDABLE     "res\\bitmap4.bmp"
-IDB_BITMAP5             BITMAP  DISCARDABLE     "res\\muzikbrowzer.bmp"
 IDB_SPLASH2             BITMAP  DISCARDABLE     "res\\splash.bmp"
 IDB_SPLASH3             BITMAP  DISCARDABLE     "res\\splash0.bmp"
-IDB_BITMAP7             BITMAP  DISCARDABLE     "res\\bitmap7.bmp"
-IDB_BITMAP8             BITMAP  DISCARDABLE     "res\\test01.bmp"
-IDB_BITMAP9             BITMAP  DISCARDABLE     "res\\bitmap9.bmp"
-IDB_GROUP_TEST          BITMAP  DISCARDABLE     "res\\group_te.bmp"
-IDB_BITMAP10            BITMAP  DISCARDABLE     "res\\slidevert.bmp"
-IDB_BITMAP11            BITMAP  DISCARDABLE     "res\\tick_vert.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
