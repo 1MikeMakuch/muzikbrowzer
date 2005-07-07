@@ -98,9 +98,12 @@ public:
     void setFont();
 	void setColors();
     MBConfig & config() { return m_Config; }
-    void PlayerStatusSet(CString );
-	void CurrentTitleSet(CString);
-    void PlayerStatusTempSet(CString );
+    void PlayerStatusSet(CString &);
+	void PlayerStatusSet(LPCTSTR);
+	void CurrentTitleSet(CString &);
+	void CurrentTitleSet(LPCTSTR);
+    void PlayerStatusTempSet(CString &);
+	void PlayerStatusTempSet(LPCTSTR);
     void setPlaylistCurrent(int sel) {
         m_PlaylistCurrent = sel; }
     void movePlaylistUp(int);

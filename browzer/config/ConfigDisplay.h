@@ -33,17 +33,17 @@ public:
 	CComboBox	m_BorderVert;
 	CComboBox	m_BorderHorz;
 	CSpinButtonCtrl	m_GenreSpin;
-	CSpinButtonCtrl		m_PlaylistSpin;
-	CEdit				m_PlaylistHeight;
+//	CSpinButtonCtrl		m_PlaylistSpin;
+//	CEdit				m_PlaylistHeight;
 	CComboBox		m_PanelWidth;
 	CComboBox		m_SkinList;
 	CComboBox		m_BorderWidth;
 	CButton         m_BoldColHdr;
 	CButton         m_BoldPanel;
 	CButton         m_BoldTitles;
-	CButton         m_ThemeChoose;
-	CButton         m_ThemeCreate;
-	CButton         m_ThemeDelete;
+//	CButton         m_ThemeChoose;
+//	CButton         m_ThemeCreate;
+//	CButton         m_ThemeDelete;
 	CColorBtn       m_BkColHdr;
 	CColorBtn       m_BkCtrls;
 	CColorBtn       m_BkHigh;
@@ -65,7 +65,7 @@ public:
 	CComboBox       m_SizeColHdr;
 	CComboBox       m_SizePanel;
 	CComboBox       m_SizeTitles;
-	CComboBox       m_ThemeList;
+//	CComboBox       m_ThemeList;
 	CFontCombo      m_FontColHdr;
 	CFontCombo      m_FontPanel;
 	CFontCombo      m_FontTitles;
@@ -91,17 +91,17 @@ protected:
 	afx_msg void OnSetDefault();
 	afx_msg void OnPaint();
 	afx_msg void OnSelchangeFont();
-	afx_msg void OnSaveTheme();
-	afx_msg void OnUseTheme();
-	afx_msg void OnThemeChoose();
+//	afx_msg void OnSaveTheme();
+//	afx_msg void OnUseTheme();
+//	afx_msg void OnThemeChoose();
 	afx_msg void OnSkinChoose();
-	afx_msg void OnThemeDelete();
-	afx_msg void OnUpdateThemeName();
-	afx_msg void OnSelchangeThemeList();
-	afx_msg void OnDblclkThemeList();
-	afx_msg void OnEditchangeThemeList();
-	afx_msg void OnEditupdateThemeList();
-	afx_msg void OnThemeCreate();
+//	afx_msg void OnThemeDelete();
+//	afx_msg void OnUpdateThemeName();
+//	afx_msg void OnSelchangeThemeList();
+//	afx_msg void OnDblclkThemeList();
+//	afx_msg void OnEditchangeThemeList();
+//	afx_msg void OnEditupdateThemeList();
+//	afx_msg void OnThemeCreate();
 	afx_msg void OnSkinDelete();
 	afx_msg void OnEditchangeSkinList();
 	afx_msg void OnSelendokSkinList();
@@ -157,11 +157,11 @@ private:
 	CFont m_FontSampleSel;
 	CFont m_FontSampleHigh;
 
-	CString m_sThemeName;
+//	CString m_sThemeName;
 	CString m_sSkinName;
 	int m_vBorderWidth;
 	int m_vPanelWidth;
-	int m_vPlaylistHeightPct;
+//	int m_vPlaylistHeightPct;
 	int m_vGenreWidthPct;
 	int m_vBorderHorz;
 	int m_vBorderVert;
@@ -170,9 +170,9 @@ private:
 	void initFontSels();
     void showSample();
     void copy2lf(LOGFONT &, LOGFONT &, LOGFONT &);
-	CString m_ThemeDir;
+//	CString m_ThemeDir;
 	CString m_SkinDir;
-	void readThemes();
+//	void readThemes();
 	void readSkins();
 	
 public:
@@ -199,7 +199,7 @@ public:
 	int getPanelWidth() { return m_vPanelWidth; }
 	int getBorderHorz() { return m_vBorderHorz; }
 	int getBorderVert() { return m_vBorderVert; }
-	double getPlaylistHeightPct();
+//	double getPlaylistHeightPct();
 	double getGenreWidthPct();
 	const CString getSkin(const CString key);
 };

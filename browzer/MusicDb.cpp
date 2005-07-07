@@ -1181,7 +1181,7 @@ MusicLib::writeSongToFile(Song song) {
 					// if we get -1 back, leave it since there's no match
 					wma.setVal("WM/GenreID", numToString(gid));
 				} else if (key == "TPE1" ) {
-				    wma.setVal("AlbumArtist", val);
+				    wma.setVal("WM/AlbumArtist", val);
 				} else if (key == "TALB" ) {
 					wma.setVal("WM/AlbumTitle", val);
 				} else if (key == "TIT2" ) {
@@ -1313,15 +1313,18 @@ MusicLib::createSongFromWma(WmaTag * wma) {
 	CString genre,artist,album,title,year,track, duration;
 
 	genre = wma->getVal("WM/Genre");
-	artist = wma->getVal("Author");
+	artist = wma->getVal("WM/AlbumArtist");
 	album = wma->getVal("WM/AlbumTitle");
 	title = wma->getVal("Title");
 	year = wma->getVal("WM/Year");
 	track = wma->getVal("WM/TrackNumber");
 	duration = wma->getVal("Duration");
-	duration = String::extract(duration, "",",");
-	duration = duration.Left(duration.GetLength()-4);
-
+	if (duration.GetLength()) {
+		float d = atof(duration);
+		d = d / 10000;
+		int d2 = (int)d;
+		duration = numToString(d2);
+	}
 
     CString cgenre = Genre_normalize(genre);
     song->setId3("TCON", (LPCTSTR)cgenre);
@@ -1920,32 +1923,34 @@ MusicLib::apic(const CString & file, uchar *& rawdata, size_t & nDataSize) {
 	//	if (m_picCache.read(file, rawdata, nDataSize)) {
 	//		return TRUE;
 	//	}
+	FExtension fext(file);
+	if (fext == "mp3") {
+		ID3_Tag id3;
+		size_t tagsize = id3.Link(file, ID3TT_ALL);
 
-	ID3_Tag id3;
-	size_t tagsize = id3.Link(file, ID3TT_ALL);
+		ID3_Tag::Iterator* iter = id3.CreateIterator();
+		const ID3_Frame* frame = NULL; 
 
-	ID3_Tag::Iterator* iter = id3.CreateIterator();
-	const ID3_Frame* frame = NULL; 
+		while (rawdata == NULL && NULL != (frame = iter->GetNext())) { 
+			ID3_FrameID eFrameID = frame->GetID();
+			if (eFrameID == ID3FID_PICTURE) {
 
-	while (rawdata == NULL && NULL != (frame = iter->GetNext())) { 
-		ID3_FrameID eFrameID = frame->GetID();
-		if (eFrameID == ID3FID_PICTURE) {
+				nDataSize  = frame->GetField(ID3FN_DATA)->Size();
 
-			nDataSize  = frame->GetField(ID3FN_DATA)->Size();
+				rawdata = new BYTE [ nDataSize ];
+				memcpy(rawdata, frame->GetField(ID3FN_DATA)->GetRawBinary(),
+					nDataSize);
+				delete iter;
 
-			rawdata = new BYTE [ nDataSize ];
-			memcpy(rawdata, frame->GetField(ID3FN_DATA)->GetRawBinary(),
-				nDataSize);
-			delete iter;
+	//			m_picCache.write(file, rawdata, nDataSize);
 
-//			m_picCache.write(file, rawdata, nDataSize);
-
-			return TRUE;
+				return TRUE;
 
 
+			}
 		}
+		delete iter;
 	}
-	delete iter;
 
 	// not in apic so look for folder.jpg in dir
 	CString folderjpg = FileUtil::dirname(file);

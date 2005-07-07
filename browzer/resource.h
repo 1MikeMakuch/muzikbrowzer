@@ -353,6 +353,7 @@
 #define IDC_GENRE_WIDTH                 2033
 #define IDC_SPIN_GENRE                  2034
 #define IDC_EASTEREGG                   2036
+#define IDC_BUTTON_PLAY2                2039
 #define ID_XXX                          32775
 #define ID__EXIT                        32785
 #define ID_PMENU_EXIT                   32785
@@ -392,7 +393,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        253
 #define _APS_NEXT_COMMAND_VALUE         32817
-#define _APS_NEXT_CONTROL_VALUE         2038
+#define _APS_NEXT_CONTROL_VALUE         2039
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

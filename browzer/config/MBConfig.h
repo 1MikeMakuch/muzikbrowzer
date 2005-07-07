@@ -105,7 +105,7 @@ public:
 	COLORREF getColorTxCtrls();
 	COLORREF getColorBkPanel2();
 	int getDlgBorderWidth();
-	double getPlaylistHeightPct();
+//	double getPlaylistHeightPct();
 	double getGenreWidthPct();
 	int getDlgBorderHorz() ;
 	int getDlgBorderVert() ;

@@ -397,8 +397,8 @@ BOOL CPlayerDlg::OnInitDialog()
 
 //	create themes dir, playlists dir here
 	CString tmp = m_Config.mbdir();
-	tmp += "\\themes";
-	FileUtil::mkdirp(tmp);
+//	tmp += "\\themes";
+//	FileUtil::mkdirp(tmp);
 	tmp = m_Config.mbdir();
 	tmp += "\\playlists";
 	FileUtil::mkdirp(tmp);
@@ -776,7 +776,7 @@ CPlayerDlg::resetControls() {
 	int labelheight=0;
 	int textheight=0;
 
-	double PlaylistHeightPct = m_Config.getPlaylistHeightPct();
+//	double PlaylistHeightPct = m_Config.getPlaylistHeightPct();
 	double GenreWidthPct = m_Config.getGenreWidthPct();
 	double LibraryWidthPct = (1 - GenreWidthPct) / 3;
 	int fixedy = bordervert * 3;
@@ -2580,18 +2580,33 @@ void CPlayerDlg::OnSize(UINT nType, int cx, int cy)
 	}
 }
 void
-CPlayerDlg::CurrentTitleSet(CString msg) {
+CPlayerDlg::CurrentTitleSet(LPCTSTR lpmsg) {
+	CString msg(lpmsg);
+	CurrentTitleSet(msg);
+}
+void
+CPlayerDlg::CurrentTitleSet(CString & msg) {
 	m_CurrentTitle.setText(msg);
 }
 void
-CPlayerDlg::PlayerStatusSet(CString msg) {
+CPlayerDlg::PlayerStatusSet(LPCTSTR lpmsg) {
+	CString msg(lpmsg);
+	PlayerStatusSet(msg);
+}
+
+void
+CPlayerDlg::PlayerStatusSet(CString & msg) {
     m_PlayerStatus.setText(msg);
     m_PlayerStatusSave = msg;
 }
 void
-CPlayerDlg::PlayerStatusTempSet(CString msg) {
-//	OutputDebugString("PSTS " + msg + "\r\n");
-    m_PlayerStatus.setText(msg);
+CPlayerDlg::PlayerStatusTempSet(LPCTSTR lpmsg) {
+	CString msg(lpmsg);
+	PlayerStatusTempSet(msg);
+}
+void
+CPlayerDlg::PlayerStatusTempSet(CString & msg) {
+	PlayerStatusSet(msg);
     m_PlayerStatusTime = CTime::GetCurrentTime();
 	StartStatusTimer();
 }
@@ -3003,6 +3018,7 @@ void CPlayerDlg::killAlbumArt() {
 void CPlayerDlg::displayAlbumArt(const CString & file) {
 
 	static BOOL first = TRUE;
+	// first time up show the dflt skin art
 
 	killAlbumArt();
 	size_t size = 0;

@@ -372,6 +372,7 @@ void CColorStatic::OnPaint() {
 		paintdc.SetBkMode(TRANSPARENT);
         paintdc.DrawText(S, rect, 
 			DT_VCENTER
+			|DT_NOPREFIX
 			|centerFlag
 			|DT_LEFT
 			|DT_SINGLELINE /* |DT_NOCLIP */);

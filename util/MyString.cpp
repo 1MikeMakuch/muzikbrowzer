@@ -138,6 +138,8 @@ String::extract(const CString &string, const CString &substring1,
     const CString &substring2, const long occur) {
 
     CString substring;
+	if (string.GetLength() == 0) 
+		return substring;
 
     unsigned long len_string, len_sub1, len_sub2, start_pos, end_pos, sublen;
     len_string = string.GetLength();

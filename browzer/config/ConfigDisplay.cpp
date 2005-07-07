@@ -63,15 +63,15 @@ void CConfigDisplay::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BORDER_VERT, m_BorderVert);
 	DDX_Control(pDX, IDC_BORDER_HORZ, m_BorderHorz);
      DDX_Control(pDX, IDC_SPIN_GENRE,			m_GenreSpin);
-     DDX_Control(pDX, IDC_SPIN_PLAYLIST,        m_PlaylistSpin);
-     DDX_Control(pDX, IDC_PLAYLIST_HEIGHT,      m_PlaylistHeight);
+//     DDX_Control(pDX, IDC_SPIN_PLAYLIST,        m_PlaylistSpin);
+//     DDX_Control(pDX, IDC_PLAYLIST_HEIGHT,      m_PlaylistHeight);
      DDX_Control(pDX, IDC_BORDER_PANEL,         m_PanelWidth);
      DDX_Control(pDX, IDC_SKIN_LIST,            m_SkinList);
      DDX_Control(pDX, IDC_BORDER_WIDTH,         m_BorderWidth);
      DDX_Control(pDX, IDC_BOLD_COLHDR,          m_BoldColHdr);
      DDX_Control(pDX, IDC_BOLD_PANEL,           m_BoldPanel);
      DDX_Control(pDX, IDC_BOLD_TITLES,          m_BoldTitles);
-     DDX_Control(pDX, IDC_THEME_DELETE,         m_ThemeDelete);
+//     DDX_Control(pDX, IDC_THEME_DELETE,         m_ThemeDelete);
      DDX_Control(pDX, IDC_COLOR_BK_COLHDR,		m_BkColHdr);
      DDX_Control(pDX, IDC_COLOR_BK_CTRLS,		m_BkCtrls);
      DDX_Control(pDX, IDC_COLOR_BK_HIGH,        m_BkHigh);
@@ -93,7 +93,7 @@ void CConfigDisplay::DoDataExchange(CDataExchange* pDX)
      DDX_Control(pDX, IDC_FONTSIZE_COLHDR,		m_SizeColHdr);
      DDX_Control(pDX, IDC_FONTSIZE_PANEL,		m_SizePanel);
      DDX_Control(pDX, IDC_FONTSIZE,             m_SizeTitles);
-     DDX_Control(pDX, IDC_THEME_LIST,           m_ThemeList);
+//     DDX_Control(pDX, IDC_THEME_LIST,           m_ThemeList);
      DDX_Control(pDX, IDC_FONT_COLHDR,          m_FontColHdr);
      DDX_Control(pDX, IDC_FONT_PANEL,           m_FontPanel);
      DDX_Control(pDX, IDC_FONT,                 m_FontTitles);
@@ -105,8 +105,8 @@ BEGIN_MESSAGE_MAP(CConfigDisplay, CPropertyPage)
 	//{{AFX_MSG_MAP(CConfigDisplay)
     ON_WM_PAINT()	
     ON_CBN_EDITCHANGE(IDC_FONT_COLHDR,              OnSelchangeFont)
-    ON_BN_CLICKED(IDC_THEME_DELETE,                 OnThemeDelete)
-    ON_CBN_EDITCHANGE(IDC_THEME_LIST,               OnThemeChoose)
+//    ON_BN_CLICKED(IDC_THEME_DELETE,                 OnThemeDelete)
+//    ON_CBN_EDITCHANGE(IDC_THEME_LIST,               OnThemeChoose)
     ON_BN_CLICKED(IDC_SKIN_DELETE,                  OnSkinDelete)
     ON_CBN_EDITCHANGE(IDC_SKIN_LIST,                OnSkinChoose)
     ON_BN_CLICKED(IDC_BOLD_COLHDR,                  onbold)
@@ -132,7 +132,7 @@ BEGIN_MESSAGE_MAP(CConfigDisplay, CPropertyPage)
     ON_CBN_EDITUPDATE(IDC_FONTSIZE,                 OnSelchangeFont)
     ON_CBN_EDITUPDATE(IDC_FONTSIZE_PANEL,			OnSelchangeFont)
     ON_CBN_EDITUPDATE(IDC_SKIN_LIST,                OnSkinChoose)
-    ON_CBN_EDITUPDATE(IDC_THEME_LIST,               OnThemeChoose)
+//    ON_CBN_EDITUPDATE(IDC_THEME_LIST,               OnThemeChoose)
     ON_CBN_SELCHANGE(IDC_BORDER_PANEL,              OnUpdateWidth)
     ON_CBN_SELCHANGE(IDC_BORDER_WIDTH,              OnUpdateWidth)
 	ON_CBN_SELCHANGE(IDC_BORDER_HORZ,              OnUpdateWidth)
@@ -144,7 +144,7 @@ BEGIN_MESSAGE_MAP(CConfigDisplay, CPropertyPage)
     ON_CBN_SELCHANGE(IDC_FONTSIZE,                  OnSelchangeFont)
     ON_CBN_SELCHANGE(IDC_FONTSIZE_PANEL,			OnSelchangeFont)
     ON_CBN_SELCHANGE(IDC_SKIN_LIST,                 OnSkinChoose)
-    ON_CBN_SELCHANGE(IDC_THEME_LIST,                OnThemeChoose)
+//    ON_CBN_SELCHANGE(IDC_THEME_LIST,                OnThemeChoose)
     ON_CBN_SELENDOK(IDC_BORDER_PANEL,               OnUpdateWidth)
     ON_CBN_SELENDOK(IDC_BORDER_WIDTH,               OnUpdateWidth)
 	ON_CBN_SELENDOK(IDC_BORDER_HORZ,               OnUpdateWidth)
@@ -156,9 +156,9 @@ BEGIN_MESSAGE_MAP(CConfigDisplay, CPropertyPage)
     ON_CBN_SELENDOK(IDC_FONTSIZE,                   OnSelchangeFont)
     ON_CBN_SELENDOK(IDC_FONTSIZE_PANEL,             OnSelchangeFont)
     ON_CBN_SELENDOK(IDC_SKIN_LIST,                  OnSkinChoose)
-    ON_CBN_SELENDOK(IDC_THEME_LIST,                 OnThemeChoose)
+//    ON_CBN_SELENDOK(IDC_THEME_LIST,                 OnThemeChoose)
     ON_EN_CHANGE(IDC_GENRE_WIDTH,                   OnUpdateWidth)
-    ON_EN_CHANGE(IDC_PLAYLIST_HEIGHT,               OnUpdateWidth)
+//    ON_EN_CHANGE(IDC_PLAYLIST_HEIGHT,               OnUpdateWidth)
 	ON_BN_CLICKED(IDC_COLOR_BK_COLHDR,              OnColorButton)
 	ON_BN_CLICKED(IDC_COLOR_BK_CTRLS,               OnColorButton)
 	ON_BN_CLICKED(IDC_COLOR_BK_HIGH,                OnColorButton)
@@ -227,15 +227,15 @@ BOOL CConfigDisplay::OnInitDialog()
 		m_BorderVert.AddString(buf.p);
     }
 
-	readThemes();
+//	readThemes();
 	readSkins();
 	initFontSels();
 
-	int sel = m_ThemeList.SelectString(-1, m_sThemeName);
-	m_ThemeList.SetCurSel(sel);
-	OnThemeChoose();
+//	int sel = m_ThemeList.SelectString(-1, m_sThemeName);
+//	m_ThemeList.SetCurSel(sel);
+//	OnThemeChoose();
 
-	sel = m_SkinList.SelectString(-1, m_sSkinName);
+	int sel = m_SkinList.SelectString(-1, m_sSkinName);
 	m_SkinList.SetCurSel(sel);
 	OnSkinChoose();
 
@@ -252,8 +252,8 @@ BOOL CConfigDisplay::OnInitDialog()
 
     showSample();
 
-	m_PlaylistSpin.SetRange(MB_PLAYLIST_HEIGHT_PCT_MIN,MB_PLAYLIST_HEIGHT_PCT_MAX);
-	m_PlaylistSpin.SetPos(m_vPlaylistHeightPct);
+//	m_PlaylistSpin.SetRange(MB_PLAYLIST_HEIGHT_PCT_MIN,MB_PLAYLIST_HEIGHT_PCT_MAX);
+//	m_PlaylistSpin.SetPos(m_vPlaylistHeightPct);
 
 	m_GenreSpin.SetRange(MB_GENRE_WIDTH_PCT_MIN,MB_GENRE_WIDTH_PCT_MAX);
 	m_GenreSpin.SetPos(m_vGenreWidthPct);
@@ -268,8 +268,8 @@ CConfigDisplay::init() {
 	CString dir;
 	dir = (*m_playercallbacks->mbdir)();
     setDefaults();
-	m_ThemeDir = dir;
-	m_ThemeDir += "\\themes";
+//	m_ThemeDir = dir;
+//	m_ThemeDir += "\\themes";
 	m_SkinDir = dir;
 	m_SkinDir += "\\skins";
 }
@@ -289,13 +289,13 @@ CConfigDisplay::setDefaults() {
 	m_vBkCtrls = m_vBkNormal;
 	m_vTxCtrls = m_vTxNormal;
     v2m();
-	m_sThemeName = MUZIKBROWZER;
+//	m_sThemeName = MUZIKBROWZER;
 	m_sSkinName = MUZIKBROWZER;
 	m_vBorderWidth = 5;
 	m_vPanelWidth = 5;
 	m_vBorderHorz = 5;
 	m_vBorderVert = 5;
-	m_vPlaylistHeightPct = 30;
+//	m_vPlaylistHeightPct = 30;
 	m_vGenreWidthPct = 15;
 
     sscanf(deffont, CCFONTFMT, &m_lfTitles.lfHeight, &m_lfTitles.lfWidth, 
@@ -360,21 +360,21 @@ CConfigDisplay::ReadReg(RegistryKey & reg) {
 
 	m_vBorderWidth = reg.Read(RegWindowsBorderWidth, m_vBorderWidth);
 	m_vPanelWidth = reg.Read(RegWindowsPanelWidth, m_vPanelWidth);
-	m_vPlaylistHeightPct = reg.Read(RegWindowsPlaylistHeightPct, m_vPlaylistHeightPct);
+//	m_vPlaylistHeightPct = reg.Read(RegWindowsPlaylistHeightPct, m_vPlaylistHeightPct);
 	m_vGenreWidthPct = reg.Read(RegWindowsGenreWidthPct, m_vGenreWidthPct);
 	m_vBorderHorz = reg.Read(RegWindowsBorderHorz, m_vBorderHorz);
 	m_vBorderVert = reg.Read(RegWindowsBorderVert, m_vBorderVert);
 
 
-	if (MB_PLAYLIST_HEIGHT_PCT_MIN <= m_vPlaylistHeightPct
-		&& m_vPlaylistHeightPct <= MB_PLAYLIST_HEIGHT_PCT_MAX) {
-		if (IsWindow(m_PlaylistSpin.m_hWnd))
-			m_PlaylistSpin.SetPos(m_vPlaylistHeightPct);
-	} else {
-		if (IsWindow(m_PlaylistSpin.m_hWnd))
-			m_PlaylistSpin.SetPos(MB_PLAYLIST_HEIGHT_PCT_DFLT);
-		m_vPlaylistHeightPct = MB_PLAYLIST_HEIGHT_PCT_DFLT;
-	}
+//	if (MB_PLAYLIST_HEIGHT_PCT_MIN <= m_vPlaylistHeightPct
+//		&& m_vPlaylistHeightPct <= MB_PLAYLIST_HEIGHT_PCT_MAX) {
+//		if (IsWindow(m_PlaylistSpin.m_hWnd))
+//			m_PlaylistSpin.SetPos(m_vPlaylistHeightPct);
+//	} else {
+//		if (IsWindow(m_PlaylistSpin.m_hWnd))
+//			m_PlaylistSpin.SetPos(MB_PLAYLIST_HEIGHT_PCT_DFLT);
+//		m_vPlaylistHeightPct = MB_PLAYLIST_HEIGHT_PCT_DFLT;
+//	}
 	if (MB_GENRE_WIDTH_PCT_MIN <= m_vGenreWidthPct
 		&& m_vGenreWidthPct <= MB_GENRE_WIDTH_PCT_MAX) {
 		if (IsWindow(m_GenreSpin.m_hWnd))
@@ -387,16 +387,17 @@ CConfigDisplay::ReadReg(RegistryKey & reg) {
 
     AutoBuf buf(1000);
 	
-	reg.Read(RegWindowsThemeName, buf.p, 999,m_sThemeName.GetBuffer(0));
-	m_sThemeName = buf.p;
+//	reg.Read(RegWindowsThemeName, buf.p, 999,m_sThemeName.GetBuffer(0));
+//	m_sThemeName = buf.p;
 
-	if (IsWindow(m_ThemeList.m_hWnd)) {
-		int sel = m_ThemeList.SelectString(-1, m_sThemeName);
-		if (sel > -1) {
-			m_ThemeList.SetCurSel(sel);
-//			OnThemeChoose();
-		}
-	}
+//	if (IsWindow(m_ThemeList.m_hWnd)) {
+//		int sel = m_ThemeList.SelectString(-1, m_sThemeName);
+//		if (sel > -1) {
+//			m_ThemeList.SetCurSel(sel);
+////			OnThemeChoose();
+//		}
+//	}
+
 
 	reg.Read(RegWindowsSkinName, buf.p, 999,m_sSkinName.GetBuffer(0));
 	m_sSkinName = buf.p;
@@ -503,15 +504,15 @@ CConfigDisplay::StoreReg(RegistryKey & reg) {
 	reg.Write(RegWindowsColorBkCtrls, m_vBkCtrls);
 	reg.Write(RegWindowsColorTxCtrls, m_vTxCtrls);
 
-	int sel = m_ThemeList.GetCurSel();
-	if (sel > -1) {
-		m_ThemeList.GetLBText(sel, m_sThemeName);
-	} else {
-		m_ThemeList.GetWindowText(m_sThemeName);
-	}
-	reg.Write(RegWindowsThemeName, m_sThemeName);
+//	int sel = m_ThemeList.GetCurSel();
+//	if (sel > -1) {
+//		m_ThemeList.GetLBText(sel, m_sThemeName);
+//	} else {
+//		m_ThemeList.GetWindowText(m_sThemeName);
+//	}
+//	reg.Write(RegWindowsThemeName, m_sThemeName);
 
-	sel = m_SkinList.GetCurSel();
+	int sel = m_SkinList.GetCurSel();
 	if (sel > -1) {
 		m_SkinList.GetLBText(sel, m_sSkinName);
 	} else {
@@ -567,8 +568,8 @@ CConfigDisplay::StoreReg(RegistryKey & reg) {
 	}
 	reg.Write(RegWindowsPanelWidth, m_vPanelWidth);
 
-	m_vPlaylistHeightPct = m_PlaylistSpin.GetPos();
-	reg.Write(RegWindowsPlaylistHeightPct, m_vPlaylistHeightPct);
+//	m_vPlaylistHeightPct = m_PlaylistSpin.GetPos();
+//	reg.Write(RegWindowsPlaylistHeightPct, m_vPlaylistHeightPct);
 	
 	m_vGenreWidthPct = m_GenreSpin.GetPos();
 	reg.Write(RegWindowsGenreWidthPct, m_vGenreWidthPct);
@@ -834,15 +835,15 @@ void CConfigDisplay::OnOK()
     m2v();
     copy2lf(m_lfTitles, m_lfPanel, m_lfColHdr);
 
-	OnThemeCreate();
-	int sel = m_ThemeList.GetCurSel();
-	if (sel > -1) {
-		m_ThemeList.GetLBText(sel, m_sThemeName);
-	} else {
-		m_ThemeList.GetWindowText(m_sThemeName);
-	}
+//	OnThemeCreate();
+//	int sel = m_ThemeList.GetCurSel();
+//	if (sel > -1) {
+//		m_ThemeList.GetLBText(sel, m_sThemeName);
+//	} else {
+//		m_ThemeList.GetWindowText(m_sThemeName);
+//	}
 
-	sel = m_SkinList.GetCurSel();
+	int sel = m_SkinList.GetCurSel();
 	if (sel > -1) {
 		m_SkinList.GetLBText(sel, m_sSkinName);
 	} else {
@@ -876,12 +877,22 @@ void CConfigDisplay::OnOK()
 		m_vBorderVert = atoi(tmp);
 	}
 
-	m_vPlaylistHeightPct = m_PlaylistSpin.GetPos();
-	m_vGenreWidthPct = m_GenreSpin.GetPos();
+//	m_vPlaylistHeightPct = m_PlaylistSpin.GetPos();
+//	m_vGenreWidthPct = m_GenreSpin.GetPos();
 
 	StoreReg(RegistryKey( HKEY_LOCAL_MACHINE, RegKey ));
+
+	CString tmp = m_SkinDir;
+	tmp += "\\";
+	tmp += m_sSkinName;
+	tmp += "\\SkinDef";
+	tmp += MBTHEMEEXT;
+	RegistryKey theme(tmp);
+	StoreReg(theme);
+	theme.WriteFile();
+
+
 	modified(FALSE);
-	//((CPlayerDlg*)m_PlayerDlg)->redraw();
 	(*m_playercallbacks->redraw)();
 
 	CPropertyPage::OnOK();
@@ -896,8 +907,8 @@ void CConfigDisplay::OnCancel()
 //	v2m();
 
 	ReadReg(RegistryKey( HKEY_LOCAL_MACHINE, RegKeyPrevVals ));
-	OnThemeCreate();
-	OnThemeChoose();
+//	OnThemeCreate();
+//	OnThemeChoose();
 	OnSkinChoose();
 	OnOK();
 	
@@ -910,7 +921,7 @@ void CConfigDisplay::OnSelchangeFont()
 	modified(TRUE);
 }
 
-
+#ifdef asdf
 void CConfigDisplay::OnThemeChoose() 
 {
 	CString sTheme(m_ThemeDir);
@@ -938,6 +949,7 @@ void CConfigDisplay::OnThemeChoose()
 	modified(TRUE);
     RedrawWindow();
 }
+#endif
 void CConfigDisplay::OnSkinChoose() 
 {
 	CString sSkin(m_SkinDir);
@@ -950,6 +962,7 @@ void CConfigDisplay::OnSkinChoose()
 //			setDefaults();
 		} else {
 			if (tmp.GetLength() > 0) {
+				m_sSkinName = tmp;
 //				sSkin += tmp;
 //				sSkin += MBSkinEXT;
 //				RegistryKey Skin(sSkin);
@@ -958,13 +971,34 @@ void CConfigDisplay::OnSkinChoose()
 			}
 		}
 	}
+
+	tmp = m_SkinDir;
+	tmp += "\\";
+	tmp += m_sSkinName;
+	tmp += "\\SkinDef";
+	tmp += MBTHEMEEXT;
+	RegistryKey theme(tmp);
+	theme.ReadFile();
+	tmp = m_sSkinName;
+	ReadReg(theme);
+	m_sSkinName = tmp;
+
+	if (IsWindow(m_SkinList.m_hWnd)) {
+		int sel = m_SkinList.SelectString(-1, m_sSkinName);
+		if (sel > -1) {
+			m_SkinList.SetCurSel(sel);
+//			OnSkinChoose();
+		}
+	}
+
+
     UpdateData(FALSE);
 	initFontSels();
 	showSample();
 	modified(TRUE);
     RedrawWindow();
 }
-
+#ifdef asdf
 void CConfigDisplay::OnThemeCreate() 
 {
 	CString sTheme(m_ThemeDir);
@@ -1012,6 +1046,7 @@ void CConfigDisplay::readThemes() {
     }
 	finder.Close();
 }
+#endif
 void CConfigDisplay::readSkins() {
 	m_SkinList.ResetContent();
 	//m_SkinList.AddString(MUZIKBROWZER);
@@ -1049,6 +1084,7 @@ const CString CConfigDisplay::getSkin(const CString key) {
 	}
 	return CString ("");
 }
+#ifdef asdf
 void CConfigDisplay::OnThemeDelete() 
 {
     int sel = m_ThemeList.GetCurSel();
@@ -1075,32 +1111,33 @@ void CConfigDisplay::OnThemeDelete()
 		modified(TRUE);
 	}
 }
+#endif
 
 
 
 
-void CConfigDisplay::OnSelchangeThemeList() 
-{
-	OnThemeChoose() ;
-	modified(TRUE);
-}
-void CConfigDisplay::OnUpdateThemeName()		{modified(TRUE);}
+//void CConfigDisplay::OnSelchangeThemeList() 
+//{
+//	OnThemeChoose() ;
+//	modified(TRUE);
+//}
+//void CConfigDisplay::OnUpdateThemeName()		{modified(TRUE);}
 void CConfigDisplay::OnSkinDelete()				{modified(TRUE);}
-void CConfigDisplay::OnDblclkThemeList()		{modified(TRUE);}
-void CConfigDisplay::OnEditchangeThemeList()	{modified(TRUE);}
+//void CConfigDisplay::OnDblclkThemeList()		{modified(TRUE);}
+//void CConfigDisplay::OnEditchangeThemeList()	{modified(TRUE);}
 void CConfigDisplay::OnEditchangeSkinList()		{modified(TRUE);}
-void CConfigDisplay::OnEditupdateThemeList()	{modified(TRUE);}
+//void CConfigDisplay::OnEditupdateThemeList()	{modified(TRUE);}
 void CConfigDisplay::OnUpdateWidth()			{modified(TRUE);}
 void CConfigDisplay::OnSelendokSkinList()		{modified(TRUE);}
 void CConfigDisplay::OnColorButton()			{modified(TRUE);}
 
-double CConfigDisplay::getPlaylistHeightPct() {
-	int nTmp = m_vPlaylistHeightPct;
-	nTmp = __min(nTmp, MB_PLAYLIST_HEIGHT_PCT_MAX);
-	nTmp = __max(nTmp, MB_PLAYLIST_HEIGHT_PCT_MIN);
-	double phpct = (double) nTmp / 100;
-	return phpct;
-}
+//double CConfigDisplay::getPlaylistHeightPct() {
+//	int nTmp = m_vPlaylistHeightPct;
+//	nTmp = __min(nTmp, MB_PLAYLIST_HEIGHT_PCT_MAX);
+//	nTmp = __max(nTmp, MB_PLAYLIST_HEIGHT_PCT_MIN);
+//	double phpct = (double) nTmp / 100;
+//	return phpct;
+//}
 double CConfigDisplay::getGenreWidthPct() {
 	int nTmp = m_vGenreWidthPct;
 	nTmp = __min(nTmp, MB_GENRE_WIDTH_PCT_MAX);

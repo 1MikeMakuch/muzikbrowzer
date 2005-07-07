@@ -179,10 +179,10 @@ const CString
 MBConfig::getSkin(const CString key) {
 	return m_Display->getSkin(key);
 }
-double
-MBConfig::getPlaylistHeightPct() {
-	return m_Display->getPlaylistHeightPct();
-}
+//double
+//MBConfig::getPlaylistHeightPct() {
+//	return m_Display->getPlaylistHeightPct();
+//}
 double
 MBConfig::getGenreWidthPct() {
 	return m_Display->getGenreWidthPct();

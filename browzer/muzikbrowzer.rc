@@ -97,7 +97,7 @@ END
 IDD_PLAYER_DIALOG DIALOGEX 0, 0, 401, 282
 STYLE WS_POPUP | WS_THICKFRAME
 EXSTYLE WS_EX_APPWINDOW
-FONT 8, "MS Sans Serif", 0, 0, 0x1
+FONT 8, "MS Sans Serif"
 BEGIN
     LISTBOX         IDC_PLAYLIST,111,41,172,87,LBS_OWNERDRAWFIXED | 
                     LBS_HASSTRINGS | LBS_NOINTEGRALHEIGHT | 
@@ -122,12 +122,12 @@ BEGIN
     PUSHBUTTON      "",IDC_BUTTON_MAXIMIZE,363,3,10,9,BS_FLAT | NOT 
                     WS_TABSTOP
     PUSHBUTTON      "",IDC_BUTTON_EXIT,377,3,10,9,BS_FLAT | NOT WS_TABSTOP
-    CTEXT           "",IDC_PLAYER_STATUS,142,243,105,10,SS_CENTERIMAGE | NOT 
-                    WS_GROUP
+    CTEXT           "",IDC_PLAYER_STATUS,138,249,105,10,SS_NOPREFIX | 
+                    SS_CENTERIMAGE | NOT WS_GROUP
     CONTROL         "",IDC_POSITION_LABEL,"Static",SS_SIMPLE | 
                     SS_CENTERIMAGE,113,138,20,10
-    CTEXT           "",IDC_CURRENT_TITLE,147,137,140,10,SS_CENTERIMAGE | NOT 
-                    WS_GROUP
+    CTEXT           "",IDC_CURRENT_TITLE,147,137,140,10,SS_NOPREFIX | 
+                    SS_CENTERIMAGE | NOT WS_GROUP
     LTEXT           ".",IDC_PICTURE_CTRL,302,43,89,105
     PUSHBUTTON      "",IDC_BUTTON_STOP,15,39,10,9,BS_FLAT | NOT WS_TABSTOP
     PUSHBUTTON      "",IDC_BUTTON_PLAY,26,39,10,9,BS_FLAT | NOT WS_TABSTOP
@@ -448,110 +448,101 @@ FONT 8, "MS Sans Serif"
 BEGIN
 END
 
-IDD_CONFIG_DISPLAY DIALOG DISCARDABLE  0, 0, 309, 222
+IDD_CONFIG_DISPLAY DIALOG DISCARDABLE  0, 0, 290, 190
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Display"
 FONT 8, "MS Sans Serif"
 BEGIN
-    COMBOBOX        IDC_THEME_LIST,17,12,64,123,CBS_DROPDOWN | WS_VSCROLL | 
+    COMBOBOX        IDC_SKIN_LIST,26,4,64,122,CBS_DROPDOWNLIST | WS_VSCROLL | 
                     WS_TABSTOP
-    PUSHBUTTON      "Delete",IDC_THEME_DELETE,85,12,27,12
-    COMBOBOX        IDC_SKIN_LIST,153,195,64,122,CBS_DROPDOWNLIST | 
-                    WS_VSCROLL | WS_TABSTOP
     CONTROL         "",IDC_COLOR_BK_COLHDR,"Button",BS_OWNERDRAW | BS_NOTIFY | 
-                    WS_TABSTOP,49,54,24,12
+                    WS_TABSTOP,43,44,24,12
     CONTROL         "",IDC_COLOR_TX_COLHDR,"Button",BS_OWNERDRAW | 
-                    WS_TABSTOP,76,54,24,12
+                    WS_TABSTOP,70,44,24,12
     CONTROL         "",IDC_BOLD_COLHDR,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
-                    102,54,8,8
-    COMBOBOX        IDC_FONTSIZE_COLHDR,112,54,25,61,CBS_DROPDOWN | 
+                    96,44,8,8
+    COMBOBOX        IDC_FONTSIZE_COLHDR,106,44,25,61,CBS_DROPDOWN | 
                     WS_VSCROLL | WS_TABSTOP
-    COMBOBOX        IDC_FONT_COLHDR,138,54,91,114,CBS_DROPDOWN | 
+    COMBOBOX        IDC_FONT_COLHDR,132,44,91,114,CBS_DROPDOWN | 
                     CBS_OWNERDRAWFIXED | CBS_SORT | CBS_HASSTRINGS | 
                     WS_VSCROLL | WS_TABSTOP
     CONTROL         "",IDC_COLOR_BK_NORMAL,"Button",BS_OWNERDRAW | 
-                    WS_TABSTOP,49,71,24,12
+                    WS_TABSTOP,43,61,24,12
     CONTROL         "",IDC_COLOR_TX_NORMAL,"Button",BS_OWNERDRAW | 
-                    WS_TABSTOP,76,71,24,12
+                    WS_TABSTOP,70,61,24,12
     CONTROL         "",IDC_BOLD_TITLES,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
-                    102,71,8,8
-    COMBOBOX        IDC_FONTSIZE,112,71,25,61,CBS_DROPDOWN | WS_VSCROLL | 
+                    96,61,8,8
+    COMBOBOX        IDC_FONTSIZE,106,61,25,61,CBS_DROPDOWN | WS_VSCROLL | 
                     WS_TABSTOP
-    COMBOBOX        IDC_FONT,138,71,91,114,CBS_DROPDOWN | CBS_OWNERDRAWFIXED | 
+    COMBOBOX        IDC_FONT,132,61,91,114,CBS_DROPDOWN | CBS_OWNERDRAWFIXED | 
                     CBS_SORT | CBS_HASSTRINGS | WS_VSCROLL | WS_TABSTOP
     CONTROL         "",IDC_COLOR_BK_HIGH,"Button",BS_OWNERDRAW | WS_TABSTOP,
-                    49,88,24,12
+                    43,78,24,12
     CONTROL         "",IDC_COLOR_TX_HIGH,"Button",BS_OWNERDRAW | WS_TABSTOP,
-                    76,88,24,12
+                    70,78,24,12
     CONTROL         "",IDC_COLOR_BK_SEL,"Button",BS_OWNERDRAW | WS_TABSTOP,
-                    49,106,24,12
+                    43,96,24,12
     CONTROL         "",IDC_COLOR_TX_SEL,"Button",BS_OWNERDRAW | WS_TABSTOP,
-                    76,106,24,12
+                    70,96,24,12
     CONTROL         "",IDC_COLOR_BK_PANEL,"Button",BS_OWNERDRAW | BS_NOTIFY | 
-                    WS_TABSTOP,49,123,24,12
+                    WS_TABSTOP,43,113,24,12
     CONTROL         "",IDC_COLOR_TX_PANEL,"Button",BS_OWNERDRAW | WS_TABSTOP,
-                    76,123,24,12
+                    70,113,24,12
     CONTROL         "",IDC_BOLD_PANEL,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
-                    102,123,8,8
-    COMBOBOX        IDC_FONTSIZE_PANEL,112,123,25,61,CBS_DROPDOWN | 
+                    96,113,8,8
+    COMBOBOX        IDC_FONTSIZE_PANEL,106,113,25,61,CBS_DROPDOWN | 
                     WS_VSCROLL | WS_TABSTOP
-    COMBOBOX        IDC_FONT_PANEL,138,123,91,114,CBS_DROPDOWN | 
+    COMBOBOX        IDC_FONT_PANEL,132,113,91,114,CBS_DROPDOWN | 
                     CBS_OWNERDRAWFIXED | CBS_SORT | CBS_HASSTRINGS | 
                     WS_VSCROLL | WS_TABSTOP
     CONTROL         "",IDC_COLOR_BK_CTRLS,"Button",BS_OWNERDRAW | BS_NOTIFY | 
-                    WS_TABSTOP,49,139,24,12
+                    WS_TABSTOP,43,129,24,12
     CONTROL         "",IDC_COLOR_TX_CTRLS,"Button",BS_OWNERDRAW | WS_TABSTOP,
-                    76,139,24,12
+                    70,129,24,12
     CONTROL         "",IDC_COLOR_BORDERS,"Button",BS_OWNERDRAW | BS_NOTIFY | 
-                    WS_TABSTOP,49,155,24,12
-    EDITTEXT        IDC_GENRE_WIDTH,70,175,25,14,ES_AUTOHSCROLL
+                    WS_TABSTOP,43,145,24,12
+    EDITTEXT        IDC_GENRE_WIDTH,64,165,25,14,ES_AUTOHSCROLL
     CONTROL         "Spin1",IDC_SPIN_GENRE,"msctls_updown32",UDS_SETBUDDYINT | 
                     UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | 
-                    UDS_NOTHOUSANDS,102,175,11,16
-    COMBOBOX        IDC_BORDER_WIDTH,161,153,25,61,CBS_DROPDOWN | WS_VSCROLL | 
+                    UDS_NOTHOUSANDS,96,165,11,16
+    COMBOBOX        IDC_BORDER_WIDTH,155,143,25,61,CBS_DROPDOWN | WS_VSCROLL | 
                     WS_TABSTOP
-    COMBOBOX        IDC_BORDER_PANEL,217,153,25,61,CBS_DROPDOWN | WS_VSCROLL | 
+    COMBOBOX        IDC_BORDER_PANEL,211,143,25,61,CBS_DROPDOWN | WS_VSCROLL | 
                     WS_TABSTOP
-    EDITTEXT        IDC_PLAYLIST_HEIGHT,70,196,25,14,ES_AUTOHSCROLL
-    CONTROL         "Spin1",IDC_SPIN_PLAYLIST,"msctls_updown32",
-                    UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | 
-                    UDS_ARROWKEYS | UDS_NOTHOUSANDS,102,196,11,16
-    LTEXT           "Genre Width %",IDC_STATIC,19,175,47,10
-    LTEXT           "Back\r\nground",IDC_STATIC,49,36,22,16
-    LTEXT           "Titles",IDC_STATIC,14,71,22,10
-    LTEXT           "Highlight",IDC_STATIC,14,88,29,10
-    LTEXT           "Selected",IDC_STATIC,14,106,28,10
-    LTEXT           "Fore\r\nground",IDC_STATIC,76,36,22,16
-    LTEXT           "Panel",IDC_STATIC,14,123,24,10
-    LTEXT           "Font",IDC_STATIC,169,36,17,10
-    LTEXT           "Bold",IDC_STATIC,98,36,17,8
-    LTEXT           "Size",IDC_STATIC,117,36,14,10
-    CTEXT           "",IDC_SAMPLE_TITLES,231,71,58,17,SS_CENTERIMAGE | 
+    LTEXT           "Genre Width %",IDC_STATIC,13,165,47,10
+    LTEXT           "Back\r\nground",IDC_STATIC,43,26,22,16
+    LTEXT           "Titles",IDC_STATIC,8,61,22,10
+    LTEXT           "Highlight",IDC_STATIC,8,78,29,10
+    LTEXT           "Selected",IDC_STATIC,8,96,28,10
+    LTEXT           "Fore\r\nground",IDC_STATIC,70,26,22,16
+    LTEXT           "Status",IDC_STATIC,8,113,24,10
+    LTEXT           "Font",IDC_STATIC,163,26,17,10
+    LTEXT           "Bold",IDC_STATIC,92,26,17,8
+    LTEXT           "Size",IDC_STATIC,111,26,14,10
+    CTEXT           "",IDC_SAMPLE_TITLES,225,61,58,17,SS_CENTERIMAGE | 
                     SS_SUNKEN
-    CTEXT           "",IDC_SAMPLE_PANEL,231,123,58,17,SS_CENTERIMAGE | 
+    CTEXT           "",IDC_SAMPLE_PANEL,225,113,58,17,SS_CENTERIMAGE | 
                     SS_SUNKEN
-    LTEXT           "Col Hdr",IDC_STATIC,14,54,25,10
-    CTEXT           "",IDC_SAMPLE_HIGH,231,88,58,17,SS_CENTERIMAGE | 
+    LTEXT           "Col Hdr",IDC_STATIC,8,44,25,10
+    CTEXT           "",IDC_SAMPLE_HIGH,225,78,58,17,SS_CENTERIMAGE | 
                     SS_SUNKEN
-    CTEXT           "",IDC_SAMPLE_SEL,231,106,58,17,SS_CENTERIMAGE | 
+    CTEXT           "",IDC_SAMPLE_SEL,225,96,58,17,SS_CENTERIMAGE | 
                     SS_SUNKEN
-    CTEXT           "",IDC_SAMPLE_COLHDR,231,54,58,17,SS_CENTERIMAGE | 
+    CTEXT           "",IDC_SAMPLE_COLHDR,225,44,58,17,SS_CENTERIMAGE | 
                     SS_SUNKEN
-    GROUPBOX        "Themes",IDC_STATIC,10,3,106,27
-    LTEXT           "Borders",IDC_STATIC,14,156,24,10
-    LTEXT           "Elevators",IDC_STATIC,14,139,29,10
-    LTEXT           "Outer",IDC_STATIC,138,153,20,9
-    LTEXT           "Skin",IDC_STATIC,131,197,15,8
-    GROUPBOX        "Margins",IDC_STATIC,133,144,114,47
-    LTEXT           "Inner",IDC_STATIC,194,153,18,9
-    LTEXT           "Playlist Height %",IDC_STATIC,14,196,51,10
-    PUSHBUTTON      "Delete",IDC_SKIN_DELETE,221,196,27,12
-    COMBOBOX        IDC_BORDER_HORZ,161,173,25,61,CBS_DROPDOWN | WS_VSCROLL | 
+    LTEXT           "Borders",IDC_STATIC,8,146,24,10
+    LTEXT           "Elevators",IDC_STATIC,8,129,29,10
+    LTEXT           "Outer",IDC_STATIC,132,143,20,9
+    LTEXT           "Skin",IDC_STATIC,4,6,15,8
+    GROUPBOX        "Margins",IDC_STATIC,127,134,114,47
+    LTEXT           "Inner",IDC_STATIC,188,143,18,9
+    PUSHBUTTON      "Delete",IDC_SKIN_DELETE,94,5,27,12
+    COMBOBOX        IDC_BORDER_HORZ,155,163,25,61,CBS_DROPDOWN | WS_VSCROLL | 
                     WS_TABSTOP
-    COMBOBOX        IDC_BORDER_VERT,217,173,25,61,CBS_DROPDOWN | WS_VSCROLL | 
+    COMBOBOX        IDC_BORDER_VERT,211,163,25,61,CBS_DROPDOWN | WS_VSCROLL | 
                     WS_TABSTOP
-    LTEXT           "Horiz",IDC_STATIC,137,172,20,9
-    LTEXT           "Vert",IDC_STATIC,193,172,18,9
+    LTEXT           "Horiz",IDC_STATIC,131,162,20,9
+    LTEXT           "Vert",IDC_STATIC,187,162,18,9
 END
 
 IDD_FRACTAL_DLG DIALOG DISCARDABLE  0, 0, 351, 242
@@ -726,9 +717,9 @@ BEGIN
     IDD_CONFIG_DISPLAY, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 302
+        RIGHTMARGIN, 283
         TOPMARGIN, 7
-        BOTTOMMARGIN, 215
+        BOTTOMMARGIN, 183
     END
 
     IDD_FRACTAL_DLG, DIALOG
@@ -802,7 +793,6 @@ IDC_CURSOR3             CURSOR  DISCARDABLE     "res\\cursor3.cur"
 // Bitmap
 //
 
-IDB_SPLASH2             BITMAP  DISCARDABLE     "res\\splash.bmp"
 IDB_SPLASH3             BITMAP  DISCARDABLE     "res\\splash0.bmp"
 
 /////////////////////////////////////////////////////////////////////////////

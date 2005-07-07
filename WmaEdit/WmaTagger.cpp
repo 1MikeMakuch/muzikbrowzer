@@ -491,8 +491,10 @@ HRESULT PrintAttributeString( WORD wIndex,
     // DWORD
     //
     case WMT_TYPE_DWORD:
-        swprintf( wszNum, L"%ld, 0x%08lx", 
-            ( (DWORD *)pbValue )[0], ( (DWORD *)pbValue )[0] );
+//        swprintf( wszNum, L"%ld, 0x%08lx", 
+//            ( (DWORD *)pbValue )[0], ( (DWORD *)pbValue )[0] );
+        swprintf( wszNum, L"%ld", 
+            ( (DWORD *)pbValue )[0] );
         wcscat( pwszValue, wszNum );
         break;
 
@@ -502,17 +504,19 @@ HRESULT PrintAttributeString( WORD wIndex,
     case WMT_TYPE_QWORD:
         _ui64tow( *( (QWORD* )pbValue ), wszNum, 10 );
         wcscat( pwszValue, wszNum );
-        swprintf( wszNum, L", 0x%08lx%08lx", 
-            ( (DWORD *)pbValue )[1], ( (DWORD *) pbValue )[0] );
-        wcscat( pwszValue, wszNum );
+//        swprintf( wszNum, L", 0x%08lx%08lx", 
+//            ( (DWORD *)pbValue )[1], ( (DWORD *) pbValue )[0] );
+//        wcscat( pwszValue, wszNum );
         break;
 
     //
     // WORD
     //
     case WMT_TYPE_WORD:
-        swprintf( wszNum, L"%d, 0x%04x", 
-            ( ( WORD* )pbValue )[0], ( ( WORD* ) pbValue )[0] );
+//        swprintf( wszNum, L"%d, 0x%04x", 
+//            ( ( WORD* )pbValue )[0], ( ( WORD* ) pbValue )[0] );
+        swprintf( wszNum, L"%d", 
+            ( ( WORD* )pbValue )[0]);
         wcscat( pwszValue, wszNum );
         break;
 
@@ -774,7 +778,7 @@ WmaTag::getVal(const CString & srcKey) {
 
 	CString val;
 	CString key(srcKey);
-	key.MakeLower();
+//	key.MakeLower();
 	if (m_tags.Lookup(key, val) != 0) {
 		return val;
 	} else {
@@ -785,7 +789,7 @@ BOOL
 WmaTag::exists(const CString & srcKey) {
 	CString val;
 	CString key(srcKey);
-	key.MakeLower();
+//	key.MakeLower();
 	if (m_tags.Lookup(key, val) != 0) {
 		return TRUE;
 	} else {
@@ -814,7 +818,7 @@ WmaTag::setVal(const CString & srcKey, const CString & srcVal) {
 			val = val.Left(val.GetLength()-1);
 		}
 
-		key.MakeLower();
+//		key.MakeLower();
 		m_tags.SetAt(key, val);
 	}
 }
@@ -864,10 +868,11 @@ WmaTag::write() {
         }
 
 		POSITION pos;
-		CString key,val;
+		CString key,val,oldval;
 		for(pos = m_tags.GetStartPosition(); pos != NULL;) {
 			m_tags.GetNextAssoc(pos, key, val);
-			if (val != old.getVal(key)) {
+			oldval = old.getVal(key);
+			if (val != oldval) {
 				if (old.exists(key)) {
 					// set
 					LPTSTR  ptszAttribName  = (char*)(LPCTSTR)key;
@@ -912,7 +917,7 @@ WmaTag::write() {
 					if( FAILED( hr ) )
 					{
 						out += "AddAttribute";
-						break;
+//						break;
 					}
 				}
 			}
