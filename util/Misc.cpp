@@ -17,3 +17,24 @@ CString MBFormatError(LONG e) {
 	return msg;
 }
 
+
+CPoint crtopright(CRect & rect) {
+	CPoint p;
+	p.x = rect.right;
+	p.y = rect.top;
+	return p;
+}
+CPoint crtopleft(CRect & rect) {
+	CPoint p(rect.TopLeft());
+	return p;
+}
+CPoint crbottomright(CRect & rect) {
+	CPoint p(rect.BottomRight());
+	return p;
+}
+CPoint crbottomleft(CRect & rect) {
+	CPoint p;
+	p.x = rect.left;
+	p.y = rect.bottom;
+	return p;
+}
