@@ -336,7 +336,7 @@ BOOL CPlayerDlg::OnInitDialog()
         /* facename */ 				"Arial"
 		);
 
-	m_OptionsButton.SetWindowText("&Menu");
+//	m_OptionsButton.SetWindowText("&Menu");
 
 	if (m_Config.UseGenre()) {
 		m_GenresLabel.setText("Genres");
@@ -518,7 +518,7 @@ void CPlayerDlg::setFont() {
 //	m_VolumeLabel.changeFont(lplfPanel);
 	m_CurrentTitle.changeFont(lplfTitles);
 
-	m_OptionsButton.SetFont(&m_OptionsButtonFont);
+//	m_OptionsButton.SetFont(&m_OptionsButtonFont);
 
 
 }
@@ -653,11 +653,11 @@ CPlayerDlg::setColors() {
 		m_Config.getSkin(MB_SKIN_BUTTONCLEARHOVER), transclr, 
 		m_Config.getSkin(MB_SKIN_BUTTONCLEAROUT), transclr);
 
-	m_OptionsButton.SetColor(CButtonST::BTNST_COLOR_FG_IN, m_Config.getColorTxPanel(), TRUE);
-	m_OptionsButton.SetColor(CButtonST::BTNST_COLOR_FG_OUT, m_Config.getColorTxPanel(), TRUE);
-	m_OptionsButton.SetColor(CButtonST::BTNST_COLOR_FG_FOCUS, m_Config.getColorTxPanel(), TRUE);
+//	m_OptionsButton.SetColor(CButtonST::BTNST_COLOR_FG_IN, m_Config.getColorTxPanel(), TRUE);
+//	m_OptionsButton.SetColor(CButtonST::BTNST_COLOR_FG_OUT, m_Config.getColorTxPanel(), TRUE);
+//	m_OptionsButton.SetColor(CButtonST::BTNST_COLOR_FG_FOCUS, m_Config.getColorTxPanel(), TRUE);
 	
-	m_OptionsButton.SetAlign(CButtonST::ST_ALIGN_OVERLAP,TRUE);
+//	m_OptionsButton.SetAlign(CButtonST::ST_ALIGN_OVERLAP,TRUE);
 	m_ButtonMinimize.SetAlign(CButtonST::ST_ALIGN_OVERLAP,TRUE);
 	m_ButtonResize.SetAlign(CButtonST::ST_ALIGN_OVERLAP,TRUE);
 	m_ButtonMaximize.SetAlign(CButtonST::ST_ALIGN_OVERLAP,TRUE);
@@ -2695,8 +2695,10 @@ void CPlayerDlg::OnButtonMenu()
         ctrl = GetDlgItem(IDC_OPTIONS_BUTTON);
         CRect button;
         ctrl->GetWindowRect(button);
-        popup->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON,button.TopLeft().x,
-            button.TopLeft().y, AfxGetMainWnd());
+        popup->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON,
+			crbottomleft(button).x,
+            crbottomleft(button).y, 
+			AfxGetMainWnd());
     }
 }
 

@@ -45,13 +45,11 @@ public:
 //	CButton         m_ThemeCreate;
 //	CButton         m_ThemeDelete;
 	CColorBtn       m_BkColHdr;
-	CColorBtn       m_BkCtrls;
 	CColorBtn       m_BkHigh;
 	CColorBtn       m_BkNormal;
 	CColorBtn       m_BkPanel;
 	CColorBtn       m_BkSel;
 	CColorBtn       m_TxColHdr;
-	CColorBtn       m_TxCtrls;
 	CColorBtn       m_TxHigh;
 	CColorBtn       m_TxNormal;
 	CColorBtn       m_TxPanel;
@@ -122,8 +120,6 @@ private:
     COLORREF m_vTxSel;
 	COLORREF m_vTxColHdr;
 	COLORREF m_vBkColHdr;
-	COLORREF m_vBkCtrls;
-	COLORREF m_vTxCtrls;
 
     void ReadReg(RegistryKey & key);
     void StoreReg(RegistryKey & key);
@@ -189,8 +185,6 @@ public:
     COLORREF getTxSel() { return m_vTxSel; }
 	COLORREF getBkColHdr() { return m_vBkColHdr; }
 	COLORREF getTxColHdr() { return m_vTxColHdr; }
-	COLORREF getTxCtrls() { return m_vTxCtrls; }
-	COLORREF getBkCtrls() { return m_vBkCtrls; }
 
 	int getBorderWidth() { return m_vBorderWidth; }
 	int getPanelWidth() { return m_vPanelWidth; }

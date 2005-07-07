@@ -73,13 +73,11 @@ void CConfigDisplay::DoDataExchange(CDataExchange* pDX)
      DDX_Control(pDX, IDC_BOLD_TITLES,          m_BoldTitles);
 //     DDX_Control(pDX, IDC_THEME_DELETE,         m_ThemeDelete);
      DDX_Control(pDX, IDC_COLOR_BK_COLHDR,		m_BkColHdr);
-     DDX_Control(pDX, IDC_COLOR_BK_CTRLS,		m_BkCtrls);
      DDX_Control(pDX, IDC_COLOR_BK_HIGH,        m_BkHigh);
      DDX_Control(pDX, IDC_COLOR_BK_NORMAL,		m_BkNormal);
      DDX_Control(pDX, IDC_COLOR_BK_PANEL,		m_BkPanel);
      DDX_Control(pDX, IDC_COLOR_BK_SEL,         m_BkSel);
      DDX_Control(pDX, IDC_COLOR_TX_COLHDR,		m_TxColHdr);
-     DDX_Control(pDX, IDC_COLOR_TX_CTRLS,		m_TxCtrls);
      DDX_Control(pDX, IDC_COLOR_TX_HIGH,        m_TxHigh);
      DDX_Control(pDX, IDC_COLOR_TX_NORMAL,		m_TxNormal);
      DDX_Control(pDX, IDC_COLOR_TX_PANEL,		m_TxPanel);
@@ -159,14 +157,12 @@ BEGIN_MESSAGE_MAP(CConfigDisplay, CPropertyPage)
     ON_EN_CHANGE(IDC_GENRE_WIDTH,                   OnUpdateWidth)
 //    ON_EN_CHANGE(IDC_PLAYLIST_HEIGHT,               OnUpdateWidth)
 	ON_BN_CLICKED(IDC_COLOR_BK_COLHDR,              OnColorButton)
-	ON_BN_CLICKED(IDC_COLOR_BK_CTRLS,               OnColorButton)
 	ON_BN_CLICKED(IDC_COLOR_BK_HIGH,                OnColorButton)
 	ON_BN_CLICKED(IDC_COLOR_BK_NORMAL,              OnColorButton)
 	ON_BN_CLICKED(IDC_COLOR_BK_PANEL,               OnColorButton)
 	ON_BN_CLICKED(IDC_COLOR_BK_SEL,					OnColorButton)
 	ON_BN_CLICKED(IDC_COLOR_BORDERS,                OnColorButton)
 	ON_BN_CLICKED(IDC_COLOR_TX_COLHDR,              OnColorButton)
-	ON_BN_CLICKED(IDC_COLOR_TX_CTRLS,               OnColorButton)
 	ON_BN_CLICKED(IDC_COLOR_TX_HIGH,                OnColorButton)
 	ON_BN_CLICKED(IDC_COLOR_TX_NORMAL,              OnColorButton)
 	ON_BN_CLICKED(IDC_COLOR_TX_PANEL,               OnColorButton)
@@ -284,8 +280,6 @@ CConfigDisplay::setDefaults() {
     m_vTxSel = 65535;
 	m_vTxColHdr = 16777215;
 	m_vBkColHdr = RGB(0,0,0);
-	m_vBkCtrls = m_vBkNormal;
-	m_vTxCtrls = m_vTxNormal;
     v2m();
 //	m_sThemeName = MUZIKBROWZER;
 	m_sSkinName = MUZIKBROWZER;
@@ -351,8 +345,6 @@ CConfigDisplay::ReadReg(RegistryKey & reg) {
     m_vTxSel = reg.Read(RegWindowsColorTxSel, m_vTxSel);
 	m_vBkColHdr = reg.Read(RegWindowsColorBkColHdr, m_vBkColHdr);
 	m_vTxColHdr = reg.Read(RegWindowsColorTxColHdr, m_vTxColHdr);
-	m_vBkCtrls = reg.Read(RegWindowsColorBkCtrls, m_vBkCtrls);
-	m_vTxCtrls = reg.Read(RegWindowsColorTxCtrls, m_vTxCtrls);
     v2m();
 
 	m_vBorderWidth = reg.Read(RegWindowsBorderWidth, m_vBorderWidth);
@@ -497,8 +489,6 @@ CConfigDisplay::StoreReg(RegistryKey & reg) {
     reg.Write(RegWindowsColorTxSel, m_vTxSel);
     reg.Write(RegWindowsColorBkColHdr, m_vBkColHdr);
     reg.Write(RegWindowsColorTxColHdr, m_vTxColHdr);
-	reg.Write(RegWindowsColorBkCtrls, m_vBkCtrls);
-	reg.Write(RegWindowsColorTxCtrls, m_vTxCtrls);
 
 //	int sel = m_ThemeList.GetCurSel();
 //	if (sel > -1) {
@@ -612,8 +602,6 @@ void CConfigDisplay::v2m() {
     m_TxSel.currentcolor = m_vTxSel;
 	m_BkColHdr.currentcolor = m_vBkColHdr;
 	m_TxColHdr.currentcolor = m_vTxColHdr;
-	m_BkCtrls.currentcolor = m_vBkCtrls;
-	m_TxCtrls.currentcolor = m_vTxCtrls;
 }
 void CConfigDisplay::m2v() {
     m_vBkPanel = m_BkPanel.currentcolor;
@@ -626,8 +614,6 @@ void CConfigDisplay::m2v() {
     m_vTxSel = m_TxSel.currentcolor;
 	m_vBkColHdr = m_BkColHdr.currentcolor;
 	m_vTxColHdr = m_TxColHdr.currentcolor;
-	m_vBkCtrls= m_BkCtrls.currentcolor;
-	m_vTxCtrls= m_TxCtrls.currentcolor;
 }
 
 void CConfigDisplay::initFontSels() {

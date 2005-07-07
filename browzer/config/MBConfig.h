@@ -100,8 +100,6 @@ public:
     COLORREF getColorTxSel();
 	COLORREF getColorTxColHdr();
 	COLORREF getColorBkColHdr();
-	COLORREF getColorBkCtrls();
-	COLORREF getColorTxCtrls();
 	COLORREF getColorBkPanel2();
 	int getDlgBorderWidth();
 //	double getPlaylistHeightPct();

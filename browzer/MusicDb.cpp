@@ -649,11 +649,20 @@ MusicLib::getPlaylist(CExtendedListBox & box) {
 			p != (PlaylistNode*)0;
 			p = _playlist.next(p)) {
 		CString buf;
-		buf = p->_item->getId3("TPE1");
-		buf += " / ";
+
+//		buf = p->_item->getId3("TPE1");
+//		buf += " / ";
+//		buf += p->_item->getId3("TALB");
+//		buf += " / ";
+//		buf += p->_item->getId3("TIT2");
+
+		buf = p->_item->getId3("TIT2");
+		buf += ", ";
+		buf += p->_item->getId3("TPE1");
+		buf += " on ";
 		buf += p->_item->getId3("TALB");
-		buf += " / ";
-		buf += p->_item->getId3("TIT2");
+
+
 		int sel = box.AddString(buf);
 //        SongKeys * sk = p->_item->createSongKeys();
         box.SetItemDataPtr(sel, (void *) p);

@@ -436,8 +436,8 @@ void CExtendedListBox::DrawScrollButton()
     m_ScrollButtonRect.bottom = m_ScrollButtonRect.top + m_ScrollButtonHeight;
     DrawScrollBg();
 
-    pDC->SetBkColor(thePlayer->config().getColorBkCtrls());
-    pDC->SetTextColor(thePlayer->config().getColorTxCtrls());
+//    pDC->SetBkColor(thePlayer->config().getColorBkCtrls());
+//    pDC->SetTextColor(thePlayer->config().getColorTxCtrls());
     pDC->BitBlt(m_ScrollButtonRect.left, m_ScrollButtonRect.top, rect.Width(), rect.Height(), &m_ScrollButtonCDC, 0,0, SRCCOPY);
 
 	ReleaseDC(pDC);

@@ -495,10 +495,6 @@ BEGIN
     COMBOBOX        IDC_FONT_PANEL,132,113,91,114,CBS_DROPDOWN | 
                     CBS_OWNERDRAWFIXED | CBS_SORT | CBS_HASSTRINGS | 
                     WS_VSCROLL | WS_TABSTOP
-    CONTROL         "",IDC_COLOR_BK_CTRLS,"Button",BS_OWNERDRAW | BS_NOTIFY | 
-                    WS_TABSTOP,43,129,24,12
-    CONTROL         "",IDC_COLOR_TX_CTRLS,"Button",BS_OWNERDRAW | WS_TABSTOP,
-                    70,129,24,12
     EDITTEXT        IDC_GENRE_WIDTH,64,165,25,14,ES_AUTOHSCROLL
     CONTROL         "Spin1",IDC_SPIN_GENRE,"msctls_updown32",UDS_SETBUDDYINT | 
                     UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | 
@@ -528,7 +524,6 @@ BEGIN
                     SS_SUNKEN
     CTEXT           "",IDC_SAMPLE_COLHDR,225,44,58,17,SS_CENTERIMAGE | 
                     SS_SUNKEN
-    LTEXT           "Elevators",IDC_STATIC,8,129,29,10
     LTEXT           "Outer",IDC_STATIC,132,143,20,9
     LTEXT           "Skin",IDC_STATIC,4,6,15,8
     GROUPBOX        "Margins",IDC_STATIC,127,134,114,47
@@ -760,15 +755,6 @@ IDR_MENU2 MENU DISCARDABLE
 BEGIN
     POPUP ""
     BEGIN
-        MENUITEM "Shuffle Playlist",            ID_MENU_SHUFFLEPLAYLIST
-        MENUITEM "Randomize Playlist",          ID_MENU_RANDOMIZE_PLAYLIST
-        MENUITEM "Clear Playlist",              ID_MENU_CLEARPLAYLIST
-        MENUITEM "Save Playlist",               ID_MENU_SAVEPLAYLIST
-        MENUITEM "Load Playlist",               ID_MENU_LOADPLAYLIST
-        MENUITEM "Pause",                       ID_MENU_PAUSE
-        MENUITEM "Play",                        ID_MENU_PLAY
-        MENUITEM "Stop",                        ID_MENU_STOP
-        MENUITEM SEPARATOR
         MENUITEM "Configuration",               ID_MENU_OPTIONS
         MENUITEM "Help",                        ID_MENU_HELP
         MENUITEM "About",                       IDD_ABOUT
