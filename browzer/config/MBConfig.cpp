@@ -146,10 +146,7 @@ COLORREF
 MBConfig::getColorBkColHdr() {
     return m_Display->getBkColHdr();
 }
-COLORREF
-MBConfig::getColorBorder() {
-    return m_Display->getBorder();
-}
+
 COLORREF
 MBConfig::getColorBkCtrls() {
     return m_Display->getBkCtrls();

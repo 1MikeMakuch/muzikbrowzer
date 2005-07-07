@@ -78,7 +78,6 @@ void CConfigDisplay::DoDataExchange(CDataExchange* pDX)
      DDX_Control(pDX, IDC_COLOR_BK_NORMAL,		m_BkNormal);
      DDX_Control(pDX, IDC_COLOR_BK_PANEL,		m_BkPanel);
      DDX_Control(pDX, IDC_COLOR_BK_SEL,         m_BkSel);
-     DDX_Control(pDX, IDC_COLOR_BORDERS,        m_Border);
      DDX_Control(pDX, IDC_COLOR_TX_COLHDR,		m_TxColHdr);
      DDX_Control(pDX, IDC_COLOR_TX_CTRLS,		m_TxCtrls);
      DDX_Control(pDX, IDC_COLOR_TX_HIGH,        m_TxHigh);
@@ -285,7 +284,6 @@ CConfigDisplay::setDefaults() {
     m_vTxSel = 65535;
 	m_vTxColHdr = 16777215;
 	m_vBkColHdr = RGB(0,0,0);
-	m_vBorder = RGB(255,255,255);
 	m_vBkCtrls = m_vBkNormal;
 	m_vTxCtrls = m_vTxNormal;
     v2m();
@@ -353,7 +351,6 @@ CConfigDisplay::ReadReg(RegistryKey & reg) {
     m_vTxSel = reg.Read(RegWindowsColorTxSel, m_vTxSel);
 	m_vBkColHdr = reg.Read(RegWindowsColorBkColHdr, m_vBkColHdr);
 	m_vTxColHdr = reg.Read(RegWindowsColorTxColHdr, m_vTxColHdr);
-	m_vBorder= reg.Read(RegWindowsColorBorder, m_vBorder);
 	m_vBkCtrls = reg.Read(RegWindowsColorBkCtrls, m_vBkCtrls);
 	m_vTxCtrls = reg.Read(RegWindowsColorTxCtrls, m_vTxCtrls);
     v2m();
@@ -500,7 +497,6 @@ CConfigDisplay::StoreReg(RegistryKey & reg) {
     reg.Write(RegWindowsColorTxSel, m_vTxSel);
     reg.Write(RegWindowsColorBkColHdr, m_vBkColHdr);
     reg.Write(RegWindowsColorTxColHdr, m_vTxColHdr);
-	reg.Write(RegWindowsColorBorder, m_vBorder);
 	reg.Write(RegWindowsColorBkCtrls, m_vBkCtrls);
 	reg.Write(RegWindowsColorTxCtrls, m_vTxCtrls);
 
@@ -616,7 +612,6 @@ void CConfigDisplay::v2m() {
     m_TxSel.currentcolor = m_vTxSel;
 	m_BkColHdr.currentcolor = m_vBkColHdr;
 	m_TxColHdr.currentcolor = m_vTxColHdr;
-	m_Border.currentcolor = m_vBorder;
 	m_BkCtrls.currentcolor = m_vBkCtrls;
 	m_TxCtrls.currentcolor = m_vTxCtrls;
 }
@@ -631,7 +626,6 @@ void CConfigDisplay::m2v() {
     m_vTxSel = m_TxSel.currentcolor;
 	m_vBkColHdr = m_BkColHdr.currentcolor;
 	m_vTxColHdr = m_TxColHdr.currentcolor;
-	m_vBorder= m_Border.currentcolor;
 	m_vBkCtrls= m_BkCtrls.currentcolor;
 	m_vTxCtrls= m_TxCtrls.currentcolor;
 }

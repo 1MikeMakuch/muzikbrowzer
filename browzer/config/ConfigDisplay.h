@@ -50,7 +50,6 @@ public:
 	CColorBtn       m_BkNormal;
 	CColorBtn       m_BkPanel;
 	CColorBtn       m_BkSel;
-	CColorBtn       m_Border;
 	CColorBtn       m_TxColHdr;
 	CColorBtn       m_TxCtrls;
 	CColorBtn       m_TxHigh;
@@ -123,7 +122,6 @@ private:
     COLORREF m_vTxSel;
 	COLORREF m_vTxColHdr;
 	COLORREF m_vBkColHdr;
-	COLORREF m_vBorder;
 	COLORREF m_vBkCtrls;
 	COLORREF m_vTxCtrls;
 
@@ -191,7 +189,6 @@ public:
     COLORREF getTxSel() { return m_vTxSel; }
 	COLORREF getBkColHdr() { return m_vBkColHdr; }
 	COLORREF getTxColHdr() { return m_vTxColHdr; }
-	COLORREF getBorder() { return m_vBorder; }
 	COLORREF getTxCtrls() { return m_vTxCtrls; }
 	COLORREF getBkCtrls() { return m_vBkCtrls; }
 

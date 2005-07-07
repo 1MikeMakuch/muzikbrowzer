@@ -100,7 +100,6 @@ public:
     COLORREF getColorTxSel();
 	COLORREF getColorTxColHdr();
 	COLORREF getColorBkColHdr();
-	COLORREF getColorBorder();
 	COLORREF getColorBkCtrls();
 	COLORREF getColorTxCtrls();
 	COLORREF getColorBkPanel2();
