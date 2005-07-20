@@ -174,7 +174,7 @@ public:
 	LPLOGFONT getCurPlayFont() { return m_lplfCurPlay; }
 
 public:
-	void OnSkinChoose(CString skin);
+	BOOL OnSkinChoose(CString skin);
     COLORREF getBkPanel() { return m_vBkPanel; }
     COLORREF getBkNormal() { return m_vBkNormal; }
     COLORREF getBkHigh() { return m_vBkHigh; }
@@ -195,8 +195,10 @@ public:
 //	double getPlaylistHeightPct();
 	double getGenreWidthPct();
 	const CString getSkin(const CString key);
+	const CString getSkin(const CString skiname, const CString key);
 	void getSkins(CStringList &);
 	const CString getCurrentSkin() { return m_sSkinName; }
+	BOOL verifySkin(CString skin);
 };
 
 //{{AFX_INSERT_LOCATION}}

@@ -239,6 +239,7 @@
 #define IDC_COLOR_BK_NORMAL             1200
 #define IDC_BUTTON_SAVE                 1200
 #define IDC_COLOR_BK_HIGH               1201
+#define IDC_BUTTON_RESTORE              1201
 #define IDC_COLOR_BK_SEL                1202
 #define IDC_COLOR_TX_NORMAL             1203
 #define IDC_COLOR_TX_HIGH               1204

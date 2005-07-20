@@ -28,7 +28,6 @@ public:
 // Operations
 //	void AddColorItem(COLORREF color);
 	virtual DWORD SetBitmaps(CDC * cdc, 
-		LPCTSTR sBitmapBg, COLORREF crTransBg,
 		LPCTSTR sBitmapUp=NULL, COLORREF crTransUp=0,
 		LPCTSTR sBitmapDown=NULL, COLORREF crTransDown=0,
 		LPCTSTR sBitmapButton=NULL, COLORREF crTransButton=0,

@@ -7,6 +7,7 @@
 #include "MyString.h"
 #include "MBGlobals.h"
 #include "SkinDefs.h"
+#include "MBMessageBox.h"
 
 #include "FileUtils.h"
 
@@ -123,7 +124,7 @@ BEGIN_MESSAGE_MAP(CConfigDisplay, CPropertyPage)
 //    ON_BN_CLICKED(IDC_THEME_DELETE,                 OnThemeDelete)
 //    ON_CBN_EDITCHANGE(IDC_THEME_LIST,               OnThemeChoose)
     ON_BN_CLICKED(IDC_SKIN_DELETE,                  OnSkinDelete)
-    ON_CBN_EDITCHANGE(IDC_SKIN_LIST,                OnSkinChoose)
+//    ON_CBN_EDITCHANGE(IDC_SKIN_LIST,                OnSkinChoose)
     ON_BN_CLICKED(IDC_BOLD_COLHDR,                  onbold)
     ON_BN_CLICKED(IDC_BOLD_PANEL,                   onbold)
     ON_BN_CLICKED(IDC_BOLD_TITLES,                  onbold)
@@ -148,7 +149,7 @@ BEGIN_MESSAGE_MAP(CConfigDisplay, CPropertyPage)
     ON_CBN_EDITUPDATE(IDC_FONTSIZE_COLHDR,			OnSelchangeFont)
     ON_CBN_EDITUPDATE(IDC_FONTSIZE,                 OnSelchangeFont)
     ON_CBN_EDITUPDATE(IDC_FONTSIZE_PANEL,			OnSelchangeFont)
-    ON_CBN_EDITUPDATE(IDC_SKIN_LIST,                OnSkinChoose)
+//    ON_CBN_EDITUPDATE(IDC_SKIN_LIST,                OnSkinChoose)
 //    ON_CBN_EDITUPDATE(IDC_THEME_LIST,               OnThemeChoose)
     ON_CBN_SELCHANGE(IDC_BORDER_PANEL,              OnUpdateWidth)
     ON_CBN_SELCHANGE(IDC_BORDER_WIDTH,              OnUpdateWidth)
@@ -161,7 +162,7 @@ BEGIN_MESSAGE_MAP(CConfigDisplay, CPropertyPage)
 	ON_CBN_SELCHANGE(IDC_FONTSIZE_CURPLY,			OnSelchangeFont)
     ON_CBN_SELCHANGE(IDC_FONTSIZE,                  OnSelchangeFont)
     ON_CBN_SELCHANGE(IDC_FONTSIZE_PANEL,			OnSelchangeFont)
-    ON_CBN_SELCHANGE(IDC_SKIN_LIST,                 OnSkinChoose)
+//    ON_CBN_SELCHANGE(IDC_SKIN_LIST,                 OnSkinChoose)
 //    ON_CBN_SELCHANGE(IDC_THEME_LIST,                OnThemeChoose)
     ON_CBN_SELENDOK(IDC_BORDER_PANEL,               OnUpdateWidth)
     ON_CBN_SELENDOK(IDC_BORDER_WIDTH,               OnUpdateWidth)
@@ -1041,7 +1042,95 @@ void CConfigDisplay::OnCancel()
 	
 	CPropertyPage::OnCancel();
 }
+BOOL CConfigDisplay::verifySkin(CString skin) {
+	CStringList bmps;
+	bmps.AddTail(MB_SKIN_DEF);
+	bmps.AddTail(MB_SKIN_ALBUMART);
+	bmps.AddTail(MB_SKIN_BACKGROUNDALBUMART);
+	bmps.AddTail(MB_SKIN_BACKGROUNDLIBRARY);
+	bmps.AddTail(MB_SKIN_BACKGROUNDMAIN);
+	bmps.AddTail(MB_SKIN_BACKGROUNDPLAYLIST);
+	bmps.AddTail(MB_SKIN_BUTTONAPPLABELOUT);
+	bmps.AddTail(MB_SKIN_BUTTONBACKGROUND);
+	bmps.AddTail(MB_SKIN_BUTTONCLEARHOVER);
+	bmps.AddTail(MB_SKIN_BUTTONCLEARIN);
+	bmps.AddTail(MB_SKIN_BUTTONCLEAROUT);
+	bmps.AddTail(MB_SKIN_BUTTONEXITHOVER);
+	bmps.AddTail(MB_SKIN_BUTTONEXITIN);
+	bmps.AddTail(MB_SKIN_BUTTONEXITOUT);
+	bmps.AddTail(MB_SKIN_BUTTONFASTFORWARDHOVER);
+	bmps.AddTail(MB_SKIN_BUTTONFASTFORWARDIN);
+	bmps.AddTail(MB_SKIN_BUTTONFASTFORWARDOUT);
+	bmps.AddTail(MB_SKIN_BUTTONLOADHOVER);
+	bmps.AddTail(MB_SKIN_BUTTONLOADIN);
+	bmps.AddTail(MB_SKIN_BUTTONLOADOUT);
+	bmps.AddTail(MB_SKIN_BUTTONMAXIMIZEHOVER);
+	bmps.AddTail(MB_SKIN_BUTTONMAXIMIZEIN);
+	bmps.AddTail(MB_SKIN_BUTTONMAXIMIZEOUT);
+	bmps.AddTail(MB_SKIN_BUTTONMINIMIZEHOVER);
+	bmps.AddTail(MB_SKIN_BUTTONMINIMIZEIN);
+	bmps.AddTail(MB_SKIN_BUTTONMINIMIZEOUT);
+	bmps.AddTail(MB_SKIN_BUTTONOPTIONSHOVER);
+	bmps.AddTail(MB_SKIN_BUTTONOPTIONSIN);
+	bmps.AddTail(MB_SKIN_BUTTONOPTIONSOUT);
+	bmps.AddTail(MB_SKIN_BUTTONPAUSEHOVER);
+	bmps.AddTail(MB_SKIN_BUTTONPAUSEIN);
+	bmps.AddTail(MB_SKIN_BUTTONPAUSEOUT);
+	bmps.AddTail(MB_SKIN_BUTTONPLAYHOVER);
+	bmps.AddTail(MB_SKIN_BUTTONPLAYIN);
+	bmps.AddTail(MB_SKIN_BUTTONPLAYOUT);
+	bmps.AddTail(MB_SKIN_BUTTONPROGRESSBACKGROUND);
+	bmps.AddTail(MB_SKIN_BUTTONPROGRESSKNOB);
+	bmps.AddTail(MB_SKIN_BUTTONRANDOMHOVER);
+	bmps.AddTail(MB_SKIN_BUTTONRANDOMIN);
+	bmps.AddTail(MB_SKIN_BUTTONRANDOMOUT);
+	bmps.AddTail(MB_SKIN_BUTTONRESIZEHOVER);
+	bmps.AddTail(MB_SKIN_BUTTONRESIZEIN);
+	bmps.AddTail(MB_SKIN_BUTTONRESIZEOUT);
+	bmps.AddTail(MB_SKIN_BUTTONRESTOREHOVER);
+	bmps.AddTail(MB_SKIN_BUTTONRESTOREIN);
+	bmps.AddTail(MB_SKIN_BUTTONRESTOREOUT);
+	bmps.AddTail(MB_SKIN_BUTTONREVERSEHOVER);
+	bmps.AddTail(MB_SKIN_BUTTONREVERSEIN);
+	bmps.AddTail(MB_SKIN_BUTTONREVERSEOUT);
+	bmps.AddTail(MB_SKIN_BUTTONSAVEHOVER);
+	bmps.AddTail(MB_SKIN_BUTTONSAVEIN);
+	bmps.AddTail(MB_SKIN_BUTTONSAVEOUT);
+	bmps.AddTail(MB_SKIN_BUTTONSHUFFLEHOVER);
+	bmps.AddTail(MB_SKIN_BUTTONSHUFFLEIN);
+	bmps.AddTail(MB_SKIN_BUTTONSHUFFLEOUT);
+	bmps.AddTail(MB_SKIN_BUTTONSTOPHOVER);
+	bmps.AddTail(MB_SKIN_BUTTONSTOPIN);
+	bmps.AddTail(MB_SKIN_BUTTONSTOPOUT);
+	bmps.AddTail(MB_SKIN_BUTTONVOLUMEBACKGROUND);
+	bmps.AddTail(MB_SKIN_BUTTONVOLUMEKNOB);
+	bmps.AddTail(MB_SKIN_SCROLLBACKGROUND);
+	bmps.AddTail(MB_SKIN_SCROLLBUTTON);
+	bmps.AddTail(MB_SKIN_SCROLLDOWNARROW);
+	bmps.AddTail(MB_SKIN_SCROLLUPARROW);
 
+	POSITION pos;
+	CString name,msg,bmp;
+	for(pos = bmps.GetHeadPosition(); pos != NULL; ) {
+		name = bmps.GetAt(pos);
+		bmp = getSkin(skin, name);
+		if (bmp == "") {
+			msg += name;
+			msg += "\r\n";
+		}
+		bmps.GetNext(pos);
+	}
+	if (msg != "") {
+		CString tmp = "The following bitmaps are missing from the\r\n";
+		tmp += skin;
+		tmp += " skin.\r\n\r\n";
+		tmp += msg;
+		MBMessageBox("Corrupted Skin", tmp, TRUE, FALSE);
+		return FALSE;
+	}
+
+	return TRUE;
+}
 void CConfigDisplay::OnSkinChoose() 
 {
 	CString sSkin(m_SkinDir);
@@ -1050,18 +1139,13 @@ void CConfigDisplay::OnSkinChoose()
 	int sel = m_SkinList.GetCurSel();
 	if (sel > -1) {
 		m_SkinList.GetLBText(sel, tmp);
-		if (tmp == MUZIKBROWZER) {
-//			setDefaults();
-		} else {
-			if (tmp.GetLength() > 0) {
-				m_sSkinName = tmp;
-//				sSkin += tmp;
-//				sSkin += MBSkinEXT;
-//				RegistryKey Skin(sSkin);
-//				Skin.ReadFile();
-//				ReadReg(Skin);
-			}
-		}
+	}
+
+	if (verifySkin(tmp)) {
+		m_sSkinName = tmp;
+	} else {
+		m_SkinList.SelectString(-1,m_sSkinName);
+		return;
 	}
 
 	tmp = m_SkinDir;
@@ -1090,8 +1174,13 @@ void CConfigDisplay::OnSkinChoose()
 	modified(TRUE);
     RedrawWindow();
 }
-void CConfigDisplay::OnSkinChoose(CString skin) 
+BOOL CConfigDisplay::OnSkinChoose(CString skin) 
 {
+	if (verifySkin(skin)) {
+		m_sSkinName = skin;
+	} else 
+		return FALSE;
+
 	m_sSkinName = skin;
 	CString tmp = m_SkinDir;
 	tmp += "\\";
@@ -1105,6 +1194,7 @@ void CConfigDisplay::OnSkinChoose(CString skin)
 	m_sSkinName = tmp;
 	RegistryKey reg( HKEY_LOCAL_MACHINE, RegKey );
 	reg.Write(RegWindowsSkinName, m_sSkinName);
+	return TRUE;
 
 //	initFontSels();
 
@@ -1177,6 +1267,14 @@ void CConfigDisplay::readSkins() {
 		}
     }
 	finder.Close();
+}
+const CString CConfigDisplay::getSkin(const CString skinname, 
+									  const CString key) {
+	CString saveit = m_sSkinName;
+	m_sSkinName = skinname;
+	CString skin = getSkin(key);
+	m_sSkinName = saveit;
+	return skin;
 }
 const CString CConfigDisplay::getSkin(const CString key) {
 	CString glob(m_SkinDir);

@@ -97,7 +97,8 @@ CPlayerDlg::CPlayerDlg(CPlayerApp * theApp, CTransparentDialogDlg *ip,
 	m_Artists(TRUE,"artists"),
 	m_Albums(TRUE,"albums"),
 	m_Songs(TRUE,"songs"),
-	m_Playlist(TRUE, "playlist")
+	m_Playlist(TRUE, "playlist"),
+	m_Maximized(FALSE)
 
 {
 	//{{AFX_DATA_INIT(CPlayerDlg)
@@ -158,6 +159,7 @@ void CPlayerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_OPTIONS_BUTTON,            m_OptionsButton);
 	DDX_Control(pDX, IDC_BUTTON_MINIMIZE,           m_ButtonMinimize);
 	DDX_Control(pDX, IDC_BUTTON_MAXIMIZE,           m_ButtonMaximize);
+	DDX_Control(pDX, IDC_BUTTON_RESTORE,            m_ButtonRestore);
 	DDX_Control(pDX, IDC_BUTTON_EXIT,               m_ButtonExit);
 	DDX_Control(pDX, IDC_BUTTON_STOP,               m_ButtonStop);
 	DDX_Control(pDX, IDC_BUTTON_PLAY,               m_ButtonPlay);
@@ -170,33 +172,53 @@ void CPlayerDlg::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CPlayerDlg, CDialogClassImpl)
 	//{{AFX_MSG_MAP(CPlayerDlg)
+	ON_WM_SYSCOMMAND()
+	ON_WM_PAINT()
+	ON_WM_QUERYDRAGICON()
+	ON_BN_CLICKED(IDC_PLAY_BUTTON, OnPlayButton)
+	ON_BN_CLICKED(IDC_OPEN_FILE_BUTTON, OnOpenFileButton)
+	ON_BN_CLICKED(IDC_STOP_BUTTON, OnStopButton)
+	ON_WM_HSCROLL()
+	ON_WM_VSCROLL()
+	ON_BN_CLICKED(IDD_ABOUT, OnAbout)
+	ON_LBN_SELCHANGE(IDC_ARTISTS, OnSelchangeArtists)
+	ON_LBN_SELCHANGE(IDC_ALBUMS, OnSelchangeAlbums)
+	ON_LBN_DBLCLK(IDC_SONGS, OnDblclkSongs)
+	ON_LBN_DBLCLK(IDC_ALBUMS, OnDblclkAlbums)
+	ON_LBN_DBLCLK(IDC_ARTISTS, OnDblclkArtists)
+	ON_LBN_DBLCLK(IDC_GENRES, OnDblclkGenres)
+	ON_BN_CLICKED(IDC_MENU_BUTTON, OnMenuButton)
+	ON_COMMAND(ID_MENU_OPTIONS, OnMenuOptions)
 	ON_BN_CLICKED(IDC_BUTTON_CLEAR,OnMenuClearplaylist)
-	ON_BN_CLICKED(IDC_BUTTON_EXIT, OnCancel)
-	ON_BN_CLICKED(IDC_BUTTON_FASTFORWARD, OnNextSong)
+	ON_COMMAND(ID_MENU_EXIT, OnMenuExit)
 	ON_BN_CLICKED(IDC_BUTTON_LOAD,OnMenuLoadplaylist)
-	ON_BN_CLICKED(IDC_BUTTON_MAXIMIZE, OnButtonMaximize)
-	ON_BN_CLICKED(IDC_BUTTON_MINIMIZE, OnButtonMinimize)
+	ON_BN_CLICKED(IDC_BUTTON_SAVE,OnMenuSaveplaylist)
+	ON_COMMAND(ID_MENU_EXPORT, OnMenuExportLibrary)
+	ON_BN_CLICKED(IDC_BUTTON_SHUFFLE,OnMenuShuffleplaylist)
 	ON_BN_CLICKED(IDC_BUTTON_PAUSE, OnMenuPause)
 	ON_BN_CLICKED(IDC_BUTTON_PLAY, OnMenuPlay)
-	ON_BN_CLICKED(IDC_BUTTON_RANDOM,OnMenuRandomizePlaylist)
-	ON_BN_CLICKED(IDC_BUTTON_RESIZE, OnButtonResize)
-	ON_BN_CLICKED(IDC_BUTTON_REVERSE, OnPreviousSong)
-	ON_BN_CLICKED(IDC_BUTTON_SAVE,OnMenuSaveplaylist)
-	ON_BN_CLICKED(IDC_BUTTON_SHUFFLE,OnMenuShuffleplaylist)
 	ON_BN_CLICKED(IDC_BUTTON_STOP, OnMenuStop)
-	ON_BN_CLICKED(IDC_MENU_BUTTON, OnMenuButton)
-	ON_BN_CLICKED(IDC_OPEN_FILE_BUTTON, OnOpenFileButton)
-	ON_BN_CLICKED(IDC_OPTIONS_BUTTON, OnButtonMenu)
-	ON_BN_CLICKED(IDC_PLAY_BUTTON, OnPlayButton)
-	ON_BN_CLICKED(IDC_STOP_BUTTON, OnStopButton)
-	ON_BN_CLICKED(IDD_ABOUT, OnAbout)
+	ON_COMMAND(ID_PMENU_HELP, OnMenuHelp)
+	ON_LBN_SELCHANGE(IDC_GENRES, OnSelchangeGenres)
+	ON_LBN_DBLCLK(IDC_PLAYLIST, OnDblclkPlaylist)
+	ON_WM_CONTEXTMENU()
 	ON_COMMAND(ID_EDIT_ID3TAG, OnUserEditSong)
+	ON_WM_SIZE()
+	ON_WM_SIZING()
+	ON_LBN_SELCHANGE(IDC_SONGS, OnSelchangeSongs)
+	ON_LBN_SELCHANGE(IDC_PLAYLIST, OnSelchangePlaylist)
+	ON_BN_CLICKED(IDC_BUTTON_RANDOM,OnMenuRandomizePlaylist)
+	ON_BN_CLICKED(IDC_OPTIONS_BUTTON, OnButtonMenu)
+	ON_BN_CLICKED(IDC_BUTTON_MINIMIZE, OnButtonMinimize)
+	ON_BN_CLICKED(IDC_BUTTON_MAXIMIZE, OnButtonMaximize)
+	ON_BN_CLICKED(IDC_BUTTON_RESTORE, OnButtonMaximize)
+	ON_BN_CLICKED(IDC_BUTTON_RESIZE, OnButtonResize)
+	ON_BN_CLICKED(IDC_BUTTON_EXIT, OnCancel)
+	ON_BN_CLICKED(IDC_BUTTON_FASTFORWARD, OnNextSong)
+	ON_BN_CLICKED(IDC_BUTTON_REVERSE, OnPreviousSong)
 	ON_COMMAND(ID_MENU_CLEARPLAYLIST, OnMenuClearplaylist)
-	ON_COMMAND(ID_MENU_EXIT, OnMenuExit)
-	ON_COMMAND(ID_MENU_EXPORT, OnMenuExportLibrary)
 	ON_COMMAND(ID_MENU_HELP, HelpInfo)
 	ON_COMMAND(ID_MENU_LOADPLAYLIST, OnMenuLoadplaylist)
-	ON_COMMAND(ID_MENU_OPTIONS, OnMenuOptions)
 	ON_COMMAND(ID_MENU_PAUSE, OnMenuPause)
 	ON_COMMAND(ID_MENU_PLAY, OnMenuPlay)
 	ON_COMMAND(ID_MENU_RANDOMIZE_PLAYLIST, OnMenuRandomizePlaylist)
@@ -205,33 +227,14 @@ BEGIN_MESSAGE_MAP(CPlayerDlg, CDialogClassImpl)
 	ON_COMMAND(ID_MENU_STOP, OnMenuStop)
 	ON_COMMAND(ID_PMENU_CLEAR, OnMenuClearplaylist)
 	ON_COMMAND(ID_PMENU_EXIT, OnMenuExit)
-	ON_COMMAND(ID_PMENU_HELP, OnMenuHelp)
 	ON_COMMAND(ID_PMENU_LOADPLAYLIST, OnMenuLoadplaylist)
 	ON_COMMAND(ID_PMENU_PAUSE, OnMenuPause)
 	ON_COMMAND(ID_PMENU_PLAY, OnMenuPlay)
 	ON_COMMAND(ID_PMENU_SHUFFLE, OnMenuShuffleplaylist)
 	ON_COMMAND(ID_PMENU_STOP, OnMenuStop)
-	ON_LBN_DBLCLK(IDC_ALBUMS, OnDblclkAlbums)
-	ON_LBN_DBLCLK(IDC_ARTISTS, OnDblclkArtists)
-	ON_LBN_DBLCLK(IDC_GENRES, OnDblclkGenres)
-	ON_LBN_DBLCLK(IDC_PLAYLIST, OnDblclkPlaylist)
-	ON_LBN_DBLCLK(IDC_SONGS, OnDblclkSongs)
-	ON_LBN_SELCHANGE(IDC_ALBUMS, OnSelchangeAlbums)
-	ON_LBN_SELCHANGE(IDC_ARTISTS, OnSelchangeArtists)
-	ON_LBN_SELCHANGE(IDC_GENRES, OnSelchangeGenres)
-	ON_LBN_SELCHANGE(IDC_PLAYLIST, OnSelchangePlaylist)
-	ON_LBN_SELCHANGE(IDC_SONGS, OnSelchangeSongs)
 	ON_WM_COMPAREITEM()
-	ON_WM_CONTEXTMENU()
-	ON_WM_HSCROLL()
-	ON_WM_PAINT()
-	ON_WM_QUERYDRAGICON()
 	ON_WM_RBUTTONDOWN()
 	ON_WM_RBUTTONUP()
-	ON_WM_SIZE()
-	ON_WM_SIZING()
-	ON_WM_SYSCOMMAND()
-	ON_WM_VSCROLL()
 	//}}AFX_MSG_MAP
 
 	ON_MESSAGE(WM_GRAPHNOTIFY, OnGraphNotify)
@@ -356,14 +359,20 @@ BOOL CPlayerDlg::OnInitDialog()
     int max;
     ReadWindowPos(max, rect);
     if (max) {
+		m_Maximized = TRUE;
         ShowWindow(SW_SHOWMAXIMIZED);
+		m_ButtonMaximize.ShowWindow(SW_HIDE);
+		m_ButtonRestore.ShowWindow(SW_NORMAL);
     } else if (rect.TopLeft().x != 0) {
         MoveWindow(rect, TRUE );
+		m_Maximized = FALSE;
+		m_ButtonMaximize.ShowWindow(SW_NORMAL);
+		m_ButtonRestore.ShowWindow(SW_HIDE);
     }
 
 // For CDialogSK
 	EnableEasyMove();  // enable moving of the dialog 
-    SetTransparentColor(RGB(255, 0, 0)); // set green as the 
+    SetTransparentColor(RGB(255, 0, 0)); // set red as the 
 
     resetControls();
 
@@ -529,7 +538,7 @@ void CPlayerDlg::setFont() {
 }
 void
 CPlayerDlg::setColors() {
-	COLORREF transclr = RGB(255,0,0);
+	COLORREF transclr = RGB(254,0,0);
 	m_GenresLabel.SetTextColor(m_Config.getColorTxColHdr());
 	m_ArtistsLabel.SetTextColor(m_Config.getColorTxColHdr());
 	m_AlbumsLabel.SetTextColor(m_Config.getColorTxColHdr());
@@ -601,6 +610,11 @@ CPlayerDlg::setColors() {
 		m_Config.getSkin(MB_SKIN_BUTTONMAXIMIZEHOVER),	transclr,	
 		m_Config.getSkin(MB_SKIN_BUTTONMAXIMIZEOUT),		transclr);
 
+	m_ButtonRestore.SetBitmaps(
+		m_Config.getSkin(MB_SKIN_BUTTONRESTOREIN),	transclr,	
+		m_Config.getSkin(MB_SKIN_BUTTONRESTOREHOVER),	transclr,	
+		m_Config.getSkin(MB_SKIN_BUTTONRESTOREOUT),		transclr);
+
 	m_ButtonExit.SetBitmaps(
 		m_Config.getSkin(MB_SKIN_BUTTONEXITIN),	transclr,	
 		m_Config.getSkin(MB_SKIN_BUTTONEXITHOVER),	transclr,	
@@ -667,7 +681,7 @@ CPlayerDlg::setColors() {
 	m_ButtonResize.SetAlign(CButtonST::ST_ALIGN_OVERLAP,TRUE);
 	m_ButtonMaximize.SetAlign(CButtonST::ST_ALIGN_OVERLAP,TRUE);
 	m_ButtonExit.SetAlign(CButtonST::ST_ALIGN_OVERLAP,TRUE);
-//	m_ButtonRestore.SetAlign(CButtonST::ST_ALIGN_OVERLAP,TRUE);
+	m_ButtonRestore.SetAlign(CButtonST::ST_ALIGN_OVERLAP,TRUE);
 	m_ButtonStop.SetAlign(CButtonST::ST_ALIGN_OVERLAP,TRUE);
 	m_ButtonPlay.SetAlign(CButtonST::ST_ALIGN_OVERLAP,TRUE);
 	m_ButtonPause.SetAlign(CButtonST::ST_ALIGN_OVERLAP,TRUE);
@@ -677,7 +691,7 @@ CPlayerDlg::setColors() {
 	m_ButtonResize.DrawTransparent(TRUE);
 	m_ButtonMaximize.DrawTransparent(TRUE);
 	m_ButtonExit.DrawTransparent(TRUE);
-//	m_ButtonRestore.DrawTransparent(TRUE);
+	m_ButtonRestore.DrawTransparent(TRUE);
 	m_ButtonStop.DrawTransparent(TRUE);
 	m_ButtonPlay.DrawTransparent(TRUE);
 	m_ButtonPause.DrawTransparent(TRUE);
@@ -756,6 +770,7 @@ CPlayerDlg::resetControls() {
 	m_Controls.add(0,1, "app label",		IDC_APP_LABEL);
 	m_Controls.add(0,2, "button min",		IDC_BUTTON_MINIMIZE);
 	m_Controls.add(0,3, "button max",		IDC_BUTTON_MAXIMIZE);
+	m_Controls.add(0,3, "button restore",	IDC_BUTTON_RESTORE);
 	m_Controls.add(0,4, "button exit",	IDC_BUTTON_EXIT);
 	m_Controls.add(0,5, "button resize",IDC_BUTTON_RESIZE);
 	m_Controls.add(1,0, "button reverse",	IDC_BUTTON_REVERSE);
@@ -821,6 +836,9 @@ CPlayerDlg::resetControls() {
 	p = m_Controls.getObj(IDC_BUTTON_MAXIMIZE);
 	x -= (borderhorz + p->width);
 	rowMaxY = __max(rowMaxY, y + p->height);
+	m_Controls.move(p, x, y, p->row, p->col);
+
+	p = m_Controls.getObj(IDC_BUTTON_RESTORE);
 	m_Controls.move(p, x, y, p->row, p->col);
 
 	p = m_Controls.getObj(IDC_BUTTON_MINIMIZE);
@@ -1123,32 +1141,32 @@ CPlayerDlg::resetControls() {
 	// This sends a WM_NCPAINT to repaint the resize frame
 	RedrawWindow(NULL,NULL, RDW_FRAME|RDW_INVALIDATE);
 
-	COLORREF transclr = RGB(255,0,0);
+	COLORREF transclr = RGB(254,0,0);
 
 	m_InitDone = TRUE;
 
-	m_Genres.SetBitmaps(cdc, m_Config.getSkin(MB_SKIN_BACKGROUNDTITLES),transclr,
-	m_Config.getSkin(MB_SKIN_SCROLLUPARROW),transclr,
-		m_Config.getSkin(MB_SKIN_SCROLLDOWNARROW),transclr,
-		m_Config.getSkin(MB_SKIN_SCROLLBUTTON),transclr,
-		m_Config.getSkin(MB_SKIN_SCROLLBACKGROUND),transclr);
-	m_Artists.SetBitmaps(cdc, m_Config.getSkin(MB_SKIN_BACKGROUNDTITLES),transclr,
+	m_Genres.SetBitmaps(cdc, 
 		m_Config.getSkin(MB_SKIN_SCROLLUPARROW),transclr,
 		m_Config.getSkin(MB_SKIN_SCROLLDOWNARROW),transclr,
 		m_Config.getSkin(MB_SKIN_SCROLLBUTTON),transclr,
 		m_Config.getSkin(MB_SKIN_SCROLLBACKGROUND),transclr);
-	m_Albums.SetBitmaps(cdc, m_Config.getSkin(MB_SKIN_BACKGROUNDTITLES),transclr,
+	m_Artists.SetBitmaps(cdc,
 		m_Config.getSkin(MB_SKIN_SCROLLUPARROW),transclr,
 		m_Config.getSkin(MB_SKIN_SCROLLDOWNARROW),transclr,
 		m_Config.getSkin(MB_SKIN_SCROLLBUTTON),transclr,
 		m_Config.getSkin(MB_SKIN_SCROLLBACKGROUND),transclr);
-	m_Songs.SetBitmaps(cdc, m_Config.getSkin(MB_SKIN_BACKGROUNDTITLES),transclr,
+	m_Albums.SetBitmaps(cdc, 
+		m_Config.getSkin(MB_SKIN_SCROLLUPARROW),transclr,
+		m_Config.getSkin(MB_SKIN_SCROLLDOWNARROW),transclr,
+		m_Config.getSkin(MB_SKIN_SCROLLBUTTON),transclr,
+		m_Config.getSkin(MB_SKIN_SCROLLBACKGROUND),transclr);
+	m_Songs.SetBitmaps(cdc, 
 		m_Config.getSkin(MB_SKIN_SCROLLUPARROW),transclr,
 		m_Config.getSkin(MB_SKIN_SCROLLDOWNARROW),transclr,
 		m_Config.getSkin(MB_SKIN_SCROLLBUTTON),transclr,
 		m_Config.getSkin(MB_SKIN_SCROLLBACKGROUND),transclr);
 	m_Playlist.SetBitmaps(cdc, 
-		m_Config.getSkin(MB_SKIN_BACKGROUNDTITLES),transclr,
+		
 		m_Config.getSkin(MB_SKIN_SCROLLUPARROW),transclr,
 		m_Config.getSkin(MB_SKIN_SCROLLDOWNARROW),transclr,
 		m_Config.getSkin(MB_SKIN_SCROLLBUTTON),transclr,
@@ -2756,8 +2774,8 @@ CPlayerDlg::OnSkinPic(UINT wParam, LONG lParam) {
 		m_Skins.GetNext(pos);
 	}
 	if (skin != "") {
-		m_Config.ChooseSkin(skin);
-		redraw();
+		if (m_Config.ChooseSkin(skin))
+			redraw();
 	}
 
 	return 0;
@@ -2788,13 +2806,21 @@ void CPlayerDlg::OnButtonMaximize()
     WINDOWPLACEMENT lpwndpl;
     BOOL r = GetWindowPlacement(&lpwndpl);
     UINT newstate;
+	m_Maximized = FALSE;
     if (lpwndpl.showCmd == SW_SHOWMAXIMIZED) {
         newstate = SW_SHOWNORMAL;
+		m_ButtonMaximize.ShowWindow(SW_NORMAL);
+		m_ButtonRestore.ShowWindow(SW_HIDE);
     } else if (lpwndpl.showCmd == SW_SHOWMINIMIZED
         || lpwndpl.showCmd == SW_SHOWNORMAL) {
         newstate = SW_SHOWMAXIMIZED;
+		m_Maximized = TRUE;
+		m_ButtonMaximize.ShowWindow(SW_HIDE);
+		m_ButtonRestore.ShowWindow(SW_NORMAL);
     } else {
         newstate = SW_SHOWNORMAL;
+		m_ButtonMaximize.ShowWindow(SW_NORMAL);
+		m_ButtonRestore.ShowWindow(SW_HIDE);
     }
 
 	ShowWindow(newstate);
@@ -3139,3 +3165,5 @@ void CPlayerDlg::OnButtonResize()
 {
 	resetControls();	
 }
+
+

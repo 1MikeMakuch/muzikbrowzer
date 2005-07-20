@@ -652,7 +652,6 @@ HBRUSH CExtendedListBox::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 	return hbr;
 }
 DWORD CExtendedListBox::SetBitmaps(CDC * cdc, 
-		LPCTSTR sBitmapBg, COLORREF crTransBg,
 		LPCTSTR sBitmapUp, COLORREF crTransUp,
 		LPCTSTR sBitmapDown, COLORREF crTransDown,
 		LPCTSTR sBitmapButton, COLORREF crTransButton,

@@ -188,6 +188,7 @@ private:
 	BOOL m_InitDone;
 	enum ArtOwnedType {
 		AOTPlaylist, AOTLibrary} m_ArtOwnedBy;
+	BOOL m_Maximized;
 // Dialog Data
 	//{{AFX_DATA(CPlayerDlg)
 	enum { IDD = IDD_PLAYER_DIALOG };
@@ -311,7 +312,8 @@ public:
 //	AFX_THREADPROC  IRReader( LPVOID pParam );
 };
 
-//{{AFX_INSERT_LOCATION}}
-// Microsoft Developer Studio will insert additional declarations immediately before the previous line.
+
 
 #endif // !defined(AFX_PLAYERDLG_H__FCF45C46_7793_11D2_9317_0020AFF7E192__INCLUDED_)
+
+

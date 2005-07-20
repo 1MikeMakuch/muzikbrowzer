@@ -187,8 +187,8 @@ MBConfig::getSkin(const CString key) {
 void MBConfig::getSkins(CStringList & l) {
 	m_Display->getSkins(l);
 }
-void MBConfig::ChooseSkin(CString s) {
-	m_Display->OnSkinChoose(s);
+BOOL MBConfig::ChooseSkin(CString s) {
+	return m_Display->OnSkinChoose(s);
 }
 const CString MBConfig::getCurrentSkin() {
 	return m_Display->getCurrentSkin();

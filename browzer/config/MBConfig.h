@@ -123,7 +123,7 @@ public:
 	const CString getSkin(const CString key);
 	const CString getCurrentSkin();
 	void getSkins(CStringList &);
-	void ChooseSkin(CString);
+	BOOL ChooseSkin(CString);
 	int getPanelWidth() ;
 
 	void AddMusic(CStringList &);
