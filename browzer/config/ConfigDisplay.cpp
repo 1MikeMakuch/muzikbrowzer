@@ -43,8 +43,23 @@ CConfigDisplay::CConfigDisplay(CWnd * p, PlayerCallbacks * pcb)
     memset(&m_lfTitles, 0, sizeof(LOGFONT));
 	memset(&m_lfPanel, 0, sizeof(LOGFONT));
 	memset(&m_lfColHdr, 0, sizeof(LOGFONT));
+	memset(&m_lfCurPlay,0,sizeof(LOGFONT));
     init();
     ReadReg(RegistryKey( HKEY_LOCAL_MACHINE, RegKey ));
+
+	CString skindef = getSkin(MB_SKIN_DEF);
+	RegistryKey regSD(skindef);
+	regSD.ReadFile();
+	ReadReg(regSD);
+
+	CString tmp = m_SkinDir;
+	tmp += "\\";
+	tmp += m_sSkinName;
+	tmp += "\\SkinDef";
+	tmp += MBTHEMEEXT;
+	RegistryKey theme(tmp);
+	theme.ReadFile();
+	ReadReg(theme);
 }
 
 CConfigDisplay::~CConfigDisplay()
@@ -54,24 +69,28 @@ CConfigDisplay::~CConfigDisplay()
 	m_FontSampleColHdr.DeleteObject();
 	m_FontSampleSel.DeleteObject();
 	m_FontSampleHigh.DeleteObject();
+	m_FontSampleCurPlay.DeleteObject();
 }
 
 void CConfigDisplay::DoDataExchange(CDataExchange* pDX)
 {
 	CPropertyPage::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CConfigDisplay)
+	DDX_Control(pDX, IDC_SAMPLE_CURPLY, m_SampleCurPlay);
+	DDX_Control(pDX, IDC_FONTSIZE_CURPLY, m_SizeCurPlay);
+	DDX_Control(pDX, IDC_FONT_CURPLY, m_FontCurPlay);
+	DDX_Control(pDX, IDC_COLOR_TX_CURPLY, m_TxCurPlay);
+	DDX_Control(pDX, IDC_COLOR_BK_CURPLY, m_BkCurPlay);
+	DDX_Control(pDX, IDC_BOLD_CURPLY, m_BoldCurPlay);
 	DDX_Control(pDX, IDC_BORDER_VERT, m_BorderVert);
 	DDX_Control(pDX, IDC_BORDER_HORZ, m_BorderHorz);
      DDX_Control(pDX, IDC_SPIN_GENRE,			m_GenreSpin);
-//     DDX_Control(pDX, IDC_SPIN_PLAYLIST,        m_PlaylistSpin);
-//     DDX_Control(pDX, IDC_PLAYLIST_HEIGHT,      m_PlaylistHeight);
      DDX_Control(pDX, IDC_BORDER_PANEL,         m_PanelWidth);
      DDX_Control(pDX, IDC_SKIN_LIST,            m_SkinList);
      DDX_Control(pDX, IDC_BORDER_WIDTH,         m_BorderWidth);
      DDX_Control(pDX, IDC_BOLD_COLHDR,          m_BoldColHdr);
      DDX_Control(pDX, IDC_BOLD_PANEL,           m_BoldPanel);
      DDX_Control(pDX, IDC_BOLD_TITLES,          m_BoldTitles);
-//     DDX_Control(pDX, IDC_THEME_DELETE,         m_ThemeDelete);
      DDX_Control(pDX, IDC_COLOR_BK_COLHDR,		m_BkColHdr);
      DDX_Control(pDX, IDC_COLOR_BK_HIGH,        m_BkHigh);
      DDX_Control(pDX, IDC_COLOR_BK_NORMAL,		m_BkNormal);
@@ -90,7 +109,6 @@ void CConfigDisplay::DoDataExchange(CDataExchange* pDX)
      DDX_Control(pDX, IDC_FONTSIZE_COLHDR,		m_SizeColHdr);
      DDX_Control(pDX, IDC_FONTSIZE_PANEL,		m_SizePanel);
      DDX_Control(pDX, IDC_FONTSIZE,             m_SizeTitles);
-//     DDX_Control(pDX, IDC_THEME_LIST,           m_ThemeList);
      DDX_Control(pDX, IDC_FONT_COLHDR,          m_FontColHdr);
      DDX_Control(pDX, IDC_FONT_PANEL,           m_FontPanel);
      DDX_Control(pDX, IDC_FONT,                 m_FontTitles);
@@ -109,6 +127,7 @@ BEGIN_MESSAGE_MAP(CConfigDisplay, CPropertyPage)
     ON_BN_CLICKED(IDC_BOLD_COLHDR,                  onbold)
     ON_BN_CLICKED(IDC_BOLD_PANEL,                   onbold)
     ON_BN_CLICKED(IDC_BOLD_TITLES,                  onbold)
+	ON_BN_CLICKED(IDC_BOLD_CURPLY,                  onbold)
     ON_CBN_EDITCHANGE(IDC_BORDER_PANEL,             OnUpdateWidth)
     ON_CBN_EDITCHANGE(IDC_BORDER_WIDTH,             OnUpdateWidth)
 	ON_CBN_EDITCHANGE(IDC_BORDER_HORZ,             OnUpdateWidth)
@@ -118,6 +137,7 @@ BEGIN_MESSAGE_MAP(CConfigDisplay, CPropertyPage)
     ON_CBN_EDITCHANGE(IDC_FONTSIZE_COLHDR,			OnSelchangeFont)
     ON_CBN_EDITCHANGE(IDC_FONTSIZE,                 OnSelchangeFont)
     ON_CBN_EDITCHANGE(IDC_FONTSIZE_PANEL,			OnSelchangeFont)
+	ON_CBN_EDITCHANGE(IDC_FONTSIZE_CURPLY,			OnSelchangeFont)
     ON_CBN_EDITUPDATE(IDC_BORDER_PANEL,             OnUpdateWidth)
     ON_CBN_EDITUPDATE(IDC_BORDER_WIDTH,             OnUpdateWidth)
 	ON_CBN_EDITUPDATE(IDC_BORDER_HORZ,             OnUpdateWidth)
@@ -138,6 +158,7 @@ BEGIN_MESSAGE_MAP(CConfigDisplay, CPropertyPage)
     ON_CBN_SELCHANGE(IDC_FONT,                      OnSelchangeFont)
     ON_CBN_SELCHANGE(IDC_FONT_PANEL,                OnSelchangeFont)
     ON_CBN_SELCHANGE(IDC_FONTSIZE_COLHDR,			OnSelchangeFont)
+	ON_CBN_SELCHANGE(IDC_FONTSIZE_CURPLY,			OnSelchangeFont)
     ON_CBN_SELCHANGE(IDC_FONTSIZE,                  OnSelchangeFont)
     ON_CBN_SELCHANGE(IDC_FONTSIZE_PANEL,			OnSelchangeFont)
     ON_CBN_SELCHANGE(IDC_SKIN_LIST,                 OnSkinChoose)
@@ -156,7 +177,10 @@ BEGIN_MESSAGE_MAP(CConfigDisplay, CPropertyPage)
 //    ON_CBN_SELENDOK(IDC_THEME_LIST,                 OnThemeChoose)
     ON_EN_CHANGE(IDC_GENRE_WIDTH,                   OnUpdateWidth)
 //    ON_EN_CHANGE(IDC_PLAYLIST_HEIGHT,               OnUpdateWidth)
+	ON_CBN_SELENDOK(IDC_COLOR_BK_COLHDR,			OnColorButton)
 	ON_BN_CLICKED(IDC_COLOR_BK_COLHDR,              OnColorButton)
+	ON_BN_CLICKED(IDC_COLOR_BK_CURPLY,              OnColorButton)
+	ON_BN_CLICKED(IDC_COLOR_TX_CURPLY,              OnColorButton)
 	ON_BN_CLICKED(IDC_COLOR_BK_HIGH,                OnColorButton)
 	ON_BN_CLICKED(IDC_COLOR_BK_NORMAL,              OnColorButton)
 	ON_BN_CLICKED(IDC_COLOR_BK_PANEL,               OnColorButton)
@@ -178,7 +202,14 @@ BOOL CConfigDisplay::OnInitDialog()
 	CPropertyPage::OnInitDialog();	
     
 //	m_FontTitles.SubclassDlgItem(IDC_FONT, (CWnd*)m_PlayerDlg);
+//	m_FontPanel.SubclassDlgItem(IDC_FONT_PANEL, (CWnd*)m_PlayerDlg);
+//	m_FontColHdr.SubclassDlgItem(IDC_FONT_COLHDR, (CWnd*)m_PlayerDlg);
+//	m_FontCurPlay.SubclassDlgItem(IDC_FONT_CURPLY, (CWnd*)m_PlayerDlg);
+    m_FontPanel.Initialize();
     m_FontTitles.Initialize();
+    m_FontColHdr.Initialize();
+	m_FontCurPlay.Initialize();
+
 
 //	m_BkColHdr.SubclassDlgItem(IDC_COLOR_BK_COLHDR, (CWnd*)m_PlayerDlg);
 //	m_BkCtrls.SubclassDlgItem(IDC_COLOR_BK_CTRLS, (CWnd*)m_PlayerDlg);
@@ -194,11 +225,6 @@ BOOL CConfigDisplay::OnInitDialog()
 //	m_TxPanel.SubclassDlgItem(IDC_COLOR_TX_PANEL, (CWnd*)m_PlayerDlg);
 //	m_TxSel.SubclassDlgItem(IDC_COLOR_TX_SEL, (CWnd*)m_PlayerDlg);    
 
-//    m_FontPanel.SubclassDlgItem(IDC_FONT_PANEL, (CWnd*)m_PlayerDlg);
-    m_FontPanel.Initialize();
-
-//    m_FontColHdr.SubclassDlgItem(IDC_FONT_COLHDR, (CWnd*)m_PlayerDlg);
-    m_FontColHdr.Initialize();
 
 //	init();
 
@@ -209,6 +235,7 @@ BOOL CConfigDisplay::OnInitDialog()
         m_SizeTitles.AddString(buf.p);
 		m_SizePanel.AddString(buf.p);
 		m_SizeColHdr.AddString(buf.p);
+		m_SizeCurPlay.AddString(buf.p);
     }
 
     for (i = 0 ; i < 40; ++i) {
@@ -263,8 +290,6 @@ CConfigDisplay::init() {
 	CString dir;
 	dir = (*m_playercallbacks->mbdir)();
     setDefaults();
-//	m_ThemeDir = dir;
-//	m_ThemeDir += "\\themes";
 	m_SkinDir = dir;
 	m_SkinDir += "\\skins";
 }
@@ -273,15 +298,16 @@ CConfigDisplay::setDefaults() {
     m_vBkPanel = RGB(0,0,0);
     m_vBkNormal = RGB(0,0,0);
     m_vBkHigh = RGB(0,0,0);
-    m_vBkSel = 16711680;
+	m_vBkCurPlay = RGB(0,0,0);
+	m_vBkSel = 16711680;
     m_vTxPanel = 16777215;
     m_vTxNormal = 16777215;
     m_vTxHigh = 65535;
     m_vTxSel = 65535;
 	m_vTxColHdr = 16777215;
 	m_vBkColHdr = RGB(0,0,0);
+	m_vTxCurPlay = RGB(255,255,255);
     v2m();
-//	m_sThemeName = MUZIKBROWZER;
 	m_sSkinName = MUZIKBROWZER;
 	m_vBorderWidth = 5;
 	m_vPanelWidth = 5;
@@ -329,6 +355,19 @@ CConfigDisplay::setDefaults() {
     memcpy(&m_samplelfColHdr, &m_lfColHdr, sizeof(LOGFONT));
     m_lplfColHdr = &m_lfColHdr;
 
+    sscanf(deffont, CCFONTFMT, &m_lfCurPlay.lfHeight, &m_lfCurPlay.lfWidth, 
+		&m_lfCurPlay.lfEscapement,&m_lfCurPlay.lfOrientation,
+        &m_lfCurPlay.lfWeight,&italic,&underline,&strikeout,&charset,
+        &outprecision,&clipprecision,&quality,&pitchandfamily);
+    m_lfCurPlay.lfItalic = italic;m_lfCurPlay.lfUnderline = underline;
+    m_lfCurPlay.lfStrikeOut = strikeout;m_lfCurPlay.lfCharSet = charset;
+    m_lfCurPlay.lfOutPrecision = outprecision;m_lfCurPlay.lfClipPrecision = clipprecision;
+    m_lfCurPlay.lfQuality = quality;m_lfCurPlay.lfPitchAndFamily = pitchandfamily;
+
+    strcpy(m_lfCurPlay.lfFaceName, deffontfacename);
+    memcpy(&m_samplelfCurPlay, &m_lfCurPlay, sizeof(LOGFONT));
+    m_lplfCurPlay = &m_lfCurPlay;
+
 
 
 }
@@ -345,6 +384,8 @@ CConfigDisplay::ReadReg(RegistryKey & reg) {
     m_vTxSel = reg.Read(RegWindowsColorTxSel, m_vTxSel);
 	m_vBkColHdr = reg.Read(RegWindowsColorBkColHdr, m_vBkColHdr);
 	m_vTxColHdr = reg.Read(RegWindowsColorTxColHdr, m_vTxColHdr);
+	m_vBkCurPlay = reg.Read(RegWindowsColorBkCurPlay, m_vBkCurPlay);
+	m_vTxCurPlay = reg.Read(RegWindowsColorTxCurPlay, m_vTxCurPlay);
     v2m();
 
 	m_vBorderWidth = reg.Read(RegWindowsBorderWidth, m_vBorderWidth);
@@ -353,6 +394,26 @@ CConfigDisplay::ReadReg(RegistryKey & reg) {
 	m_vGenreWidthPct = reg.Read(RegWindowsGenreWidthPct, m_vGenreWidthPct);
 	m_vBorderHorz = reg.Read(RegWindowsBorderHorz, m_vBorderHorz);
 	m_vBorderVert = reg.Read(RegWindowsBorderVert, m_vBorderVert);
+
+	int sel;
+	if (IsWindow(m_BorderWidth.m_hWnd)) {
+		sel = m_BorderWidth.SelectString(-1, numToString(m_vBorderWidth));
+		m_BorderWidth.SetCurSel(sel);
+	}
+
+	if (IsWindow(m_PanelWidth.m_hWnd)) {
+		sel = m_PanelWidth.SelectString(-1, numToString(m_vPanelWidth));
+		m_PanelWidth.SetCurSel(sel);
+	}
+
+	if (IsWindow(m_BorderHorz.m_hWnd)) {
+		sel = m_BorderHorz.SelectString(-1, numToString(m_vBorderHorz));
+		m_BorderHorz.SetCurSel(sel);
+	}
+	if (IsWindow(m_BorderVert.m_hWnd)) {
+		sel = m_BorderVert.SelectString(-1, numToString(m_vBorderVert));
+		m_BorderVert.SetCurSel(sel);
+	}
 
 
 //	if (MB_PLAYLIST_HEIGHT_PCT_MIN <= m_vPlaylistHeightPct
@@ -474,6 +535,31 @@ CConfigDisplay::ReadReg(RegistryKey & reg) {
         m_lfColHdr.lfPitchAndFamily = pitchandfamily;
         strcpy(m_lfColHdr.lfFaceName, (buf.p + CCFONTFACEPOS));
     }
+
+    reg.Read(RegWindowsFontCurPlay, buf.p, 999, "");
+    if (strlen(buf.p) > CCFONTFACEPOS) {
+        sscanf(buf.p, CCFONTFMT, 
+            &m_lfCurPlay.lfHeight, &m_lfCurPlay.lfWidth, &m_lfCurPlay.lfEscapement,
+            &m_lfCurPlay.lfOrientation,
+            &m_lfCurPlay.lfWeight,
+                    &italic,
+            &underline,
+            &strikeout,
+            &charset,
+            &outprecision,
+            &clipprecision,
+            &quality,
+            &pitchandfamily);
+        m_lfCurPlay.lfItalic = italic;
+        m_lfCurPlay.lfUnderline = underline;
+        m_lfCurPlay.lfStrikeOut = strikeout;
+        m_lfCurPlay.lfCharSet = charset;
+        m_lfCurPlay.lfOutPrecision = outprecision;
+        m_lfCurPlay.lfClipPrecision = clipprecision;
+        m_lfCurPlay.lfQuality = quality;
+        m_lfCurPlay.lfPitchAndFamily = pitchandfamily;
+        strcpy(m_lfCurPlay.lfFaceName, (buf.p + CCFONTFACEPOS));
+    }
 }
 void
 CConfigDisplay::StoreReg(RegistryKey & reg) {
@@ -489,6 +575,8 @@ CConfigDisplay::StoreReg(RegistryKey & reg) {
     reg.Write(RegWindowsColorTxSel, m_vTxSel);
     reg.Write(RegWindowsColorBkColHdr, m_vBkColHdr);
     reg.Write(RegWindowsColorTxColHdr, m_vTxColHdr);
+    reg.Write(RegWindowsColorBkCurPlay, m_vBkCurPlay);
+    reg.Write(RegWindowsColorTxCurPlay, m_vTxCurPlay);
 
 //	int sel = m_ThemeList.GetCurSel();
 //	if (sel > -1) {
@@ -588,6 +676,15 @@ CConfigDisplay::StoreReg(RegistryKey & reg) {
     p = buf.p + strlen(buf.p);
     sprintf(p, "%s", m_lfColHdr.lfFaceName);
     reg.Write(RegWindowsFontColHdr, buf.p);
+
+    sprintf(buf.p, CCFONTFMT,
+        m_lfCurPlay.lfHeight, m_lfCurPlay.lfWidth, m_lfCurPlay.lfEscapement, m_lfCurPlay.lfOrientation,
+        m_lfCurPlay.lfWeight, m_lfCurPlay.lfItalic, m_lfCurPlay.lfUnderline, m_lfCurPlay.lfStrikeOut,
+        m_lfCurPlay.lfCharSet, m_lfCurPlay.lfOutPrecision, m_lfCurPlay.lfClipPrecision,
+        m_lfCurPlay.lfQuality, m_lfCurPlay.lfPitchAndFamily);
+    p = buf.p + strlen(buf.p);
+    sprintf(p, "%s", m_lfCurPlay.lfFaceName);
+    reg.Write(RegWindowsFontCurPlay, buf.p);
 }
 
 
@@ -602,6 +699,8 @@ void CConfigDisplay::v2m() {
     m_TxSel.currentcolor = m_vTxSel;
 	m_BkColHdr.currentcolor = m_vBkColHdr;
 	m_TxColHdr.currentcolor = m_vTxColHdr;
+	m_BkCurPlay.currentcolor = m_vBkCurPlay;
+	m_TxCurPlay.currentcolor = m_vTxCurPlay;
 }
 void CConfigDisplay::m2v() {
     m_vBkPanel = m_BkPanel.currentcolor;
@@ -614,12 +713,15 @@ void CConfigDisplay::m2v() {
     m_vTxSel = m_TxSel.currentcolor;
 	m_vBkColHdr = m_BkColHdr.currentcolor;
 	m_vTxColHdr = m_TxColHdr.currentcolor;
+	m_vBkCurPlay = m_BkCurPlay.currentcolor;
+	m_vTxCurPlay = m_TxCurPlay.currentcolor;
 }
 
 void CConfigDisplay::initFontSels() {
 	int r = m_FontTitles.SelectString(-1,m_lfTitles.lfFaceName);
 	r = m_FontPanel.SelectString(-1,m_lfPanel.lfFaceName);
 	m_FontColHdr.SelectString(-1,m_lfColHdr.lfFaceName);
+	m_FontCurPlay.SelectString(-1,m_lfCurPlay.lfFaceName);
 
 	AutoBuf buf(5);
 	sprintf(buf.p, "%d", abs(m_lfTitles.lfHeight));
@@ -628,6 +730,8 @@ void CConfigDisplay::initFontSels() {
 	m_SizePanel.SelectString(0, buf.p);
 	sprintf(buf.p, "%d", abs(m_lfColHdr.lfHeight));
 	m_SizeColHdr.SelectString(0, buf.p);
+	sprintf(buf.p, "%d", abs(m_lfCurPlay.lfHeight));
+	m_SizeCurPlay.SelectString(0, buf.p);
 
 	if (m_lfTitles.lfWeight >= 700) {
 		m_BoldTitles.SetCheck(1);
@@ -644,6 +748,11 @@ void CConfigDisplay::initFontSels() {
 	} else {
 		m_BoldColHdr.SetCheck(0);
 	}
+	if (m_lfCurPlay.lfWeight >= 700) {
+		m_BoldCurPlay.SetCheck(1);
+	} else {
+		m_BoldCurPlay.SetCheck(0);
+	}
 
 }
 
@@ -659,7 +768,8 @@ void CConfigDisplay::OnSetDefault()
 }
 
 void
-CConfigDisplay::copy2lf(LOGFONT & lfT, LOGFONT & lfP, LOGFONT & lfC) {
+CConfigDisplay::copy2lf(LOGFONT & lfT, LOGFONT & lfP, LOGFONT & lfC, 
+						LOGFONT & lfCP) {
     CString msg;
 
 // titles
@@ -742,13 +852,40 @@ CConfigDisplay::copy2lf(LOGFONT & lfT, LOGFONT & lfP, LOGFONT & lfC) {
         h = -h;
         lfC.lfHeight = h;
 	}
+// cur play
+    m_FontSelCurPlay = m_FontCurPlay.GetCurSel();
+    if (m_FontSelCurPlay > -1) {
+        m_FontCurPlay.GetLBText(m_FontSelCurPlay, msg);
+        strcpy(lfCP.lfFaceName, (LPCTSTR)msg);
+
+        int c = m_BoldCurPlay.GetCheck();
+        if (c == 0) {
+            lfCP.lfWeight = 400;
+        } else 
+            lfCP.lfWeight = 700;
+    }
+    m_SizeSelCurPlay = m_SizeCurPlay.GetCurSel();
+    if (m_SizeSelCurPlay > -1) {
+        m_SizeCurPlay.GetLBText(m_SizeSelCurPlay, msg);
+        LONG h;
+        sscanf((LPCTSTR)msg, "%d", &h);
+        h = -h;
+        lfCP.lfHeight = h;
+    } else {
+        m_SizeCurPlay.GetWindowText( msg);
+        LONG h;
+        sscanf((LPCTSTR)msg, "%d", &h);
+        h = -h;
+        lfCP.lfHeight = h;
+	}
 }
 
 void
 CConfigDisplay::showSample() {
 	UpdateData(TRUE);
 	m2v();
-	copy2lf(m_samplelfTitles,m_samplelfPanel,m_samplelfColHdr);
+	copy2lf(m_samplelfTitles,m_samplelfPanel,m_samplelfColHdr,m_samplelfCurPlay);
+
 	m_FontSampleTitles.DeleteObject();
 	m_FontSampleTitles.CreateFontIndirect(&m_samplelfTitles);
 	m_SampleTitles.SetFont(&m_FontSampleTitles, TRUE);
@@ -789,6 +926,15 @@ CConfigDisplay::showSample() {
 	m_SampleHigh.SetTextColor(m_vTxHigh);
 	m_SampleHigh.SetBkColor(m_vBkHigh);
 
+	m_FontSampleCurPlay.DeleteObject();
+	m_FontSampleCurPlay.CreateFontIndirect(&m_samplelfCurPlay);
+	m_SampleCurPlay.SetFont(&m_FontSampleCurPlay, TRUE);
+	m_SampleCurPlay.changeFont(&m_FontSampleCurPlay);
+	m_SampleCurPlay.setText("Got Fish? by Big Fish Howlers");
+	m_SampleCurPlay.SetTextColor(m_vTxCurPlay);
+	m_SampleCurPlay.SetBkColor(m_vBkCurPlay);
+
+
 }
 
 void CConfigDisplay::OnPaint() 
@@ -805,6 +951,7 @@ void CConfigDisplay::OnPaint()
 void CConfigDisplay::OnCButtonMessage(WPARAM w, LPARAM l) {
 	modified(TRUE);
 	showSample();
+	Invalidate();
 }
 void CConfigDisplay::onbold() {
 	modified(TRUE);
@@ -813,7 +960,7 @@ void CConfigDisplay::onbold() {
 void CConfigDisplay::OnOK() 
 {
     m2v();
-    copy2lf(m_lfTitles, m_lfPanel, m_lfColHdr);
+    copy2lf(m_lfTitles, m_lfPanel, m_lfColHdr,m_lfCurPlay);
 
 //	OnThemeCreate();
 //	int sel = m_ThemeList.GetCurSel();
@@ -895,41 +1042,6 @@ void CConfigDisplay::OnCancel()
 	CPropertyPage::OnCancel();
 }
 
-void CConfigDisplay::OnSelchangeFont() 
-{
-	showSample();
-	modified(TRUE);
-}
-
-#ifdef asdf
-void CConfigDisplay::OnThemeChoose() 
-{
-	CString sTheme(m_ThemeDir);
-	sTheme += "\\";
-	CString tmp;
-	int sel = m_ThemeList.GetCurSel();
-	if (sel > -1) {
-		m_ThemeList.GetLBText(sel, tmp);
-		if (tmp == MUZIKBROWZER) {
-			setDefaults();
-		} else {
-			if (tmp.GetLength() > 0) {
-				sTheme += tmp;
-				sTheme += MBTHEMEEXT;
-				RegistryKey theme(sTheme);
-				theme.ReadFile();
-				ReadReg(theme);
-			}
-		}
-	}
-	OnSkinChoose();
-    UpdateData(FALSE);
-	initFontSels();
-	showSample();
-	modified(TRUE);
-    RedrawWindow();
-}
-#endif
 void CConfigDisplay::OnSkinChoose() 
 {
 	CString sSkin(m_SkinDir);
@@ -977,6 +1089,25 @@ void CConfigDisplay::OnSkinChoose()
 	showSample();
 	modified(TRUE);
     RedrawWindow();
+}
+void CConfigDisplay::OnSkinChoose(CString skin) 
+{
+	m_sSkinName = skin;
+	CString tmp = m_SkinDir;
+	tmp += "\\";
+	tmp += skin;
+	tmp += "\\SkinDef";
+	tmp += MBTHEMEEXT;
+	RegistryKey theme(tmp);
+	theme.ReadFile();
+	tmp = m_sSkinName;
+	ReadReg(theme);
+	m_sSkinName = tmp;
+	RegistryKey reg( HKEY_LOCAL_MACHINE, RegKey );
+	reg.Write(RegWindowsSkinName, m_sSkinName);
+
+//	initFontSels();
+
 }
 #ifdef asdf
 void CConfigDisplay::OnThemeCreate() 
@@ -1109,7 +1240,11 @@ void CConfigDisplay::OnEditchangeSkinList()		{modified(TRUE);}
 //void CConfigDisplay::OnEditupdateThemeList()	{modified(TRUE);}
 void CConfigDisplay::OnUpdateWidth()			{modified(TRUE);}
 void CConfigDisplay::OnSelendokSkinList()		{modified(TRUE);}
-void CConfigDisplay::OnColorButton()			{modified(TRUE);}
+void CConfigDisplay::OnColorButton()			{
+	showSample();
+	modified(TRUE);
+}
+void CConfigDisplay::OnSelchangeFont() {	showSample();	modified(TRUE);}
 
 //double CConfigDisplay::getPlaylistHeightPct() {
 //	int nTmp = m_vPlaylistHeightPct;
@@ -1129,4 +1264,21 @@ double CConfigDisplay::getGenreWidthPct() {
 void CConfigDisplay::modified(BOOL b) {
 	SetModified(b);
 }
-
+void CConfigDisplay::getSkins(CStringList & skinlist) {
+    CString glob(m_SkinDir);
+    glob += "\\";
+    glob += "*";
+    CFileFind finder;
+    BOOL bWorking = finder.FindFile(glob);
+    while (bWorking)
+    {
+        bWorking = finder.FindNextFile();
+        CString fname = finder.GetFileName();
+		CString skin = fname;
+		if (skin != MUZIKBROWZER && skin != "." && skin != "..") {
+			if (/*validSkin?*/ 1)
+				skinlist.AddTail(skin);
+		}
+    }
+	finder.Close();
+}

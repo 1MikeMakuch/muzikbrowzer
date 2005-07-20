@@ -103,8 +103,16 @@ MBConfig::getTitlesFont() {
     return m_Display->getTitlesFont();
 }
 LPLOGFONT
-MBConfig::getPanelFont() {
-    return m_Display->getPanelFont();
+MBConfig::getStatusFont() {
+    return m_Display->getStatusFont();
+}
+LPLOGFONT
+MBConfig::getColHdrFont() {
+    return m_Display->getColHdrFont();
+}
+LPLOGFONT
+MBConfig::getCurPlayFont() {
+    return m_Display->getCurPlayFont();
 }
 COLORREF
 MBConfig::getColorBkPanel() {
@@ -146,6 +154,14 @@ COLORREF
 MBConfig::getColorBkColHdr() {
     return m_Display->getBkColHdr();
 }
+COLORREF
+MBConfig::getColorTxCurPlay() {
+    return m_Display->getTxCurPlay();
+}
+COLORREF
+MBConfig::getColorBkCurPlay() {
+    return m_Display->getBkCurPlay();
+}
 int
 MBConfig::getPanelWidth() {
     return m_Display->getPanelWidth();
@@ -168,6 +184,15 @@ const CString
 MBConfig::getSkin(const CString key) {
 	return m_Display->getSkin(key);
 }
+void MBConfig::getSkins(CStringList & l) {
+	m_Display->getSkins(l);
+}
+void MBConfig::ChooseSkin(CString s) {
+	m_Display->OnSkinChoose(s);
+}
+const CString MBConfig::getCurrentSkin() {
+	return m_Display->getCurrentSkin();
+}
 //double
 //MBConfig::getPlaylistHeightPct() {
 //	return m_Display->getPlaylistHeightPct();
@@ -176,6 +201,13 @@ double
 MBConfig::getGenreWidthPct() {
 	return m_Display->getGenreWidthPct();
 }
+void MBConfig::AddMusic(CStringList & list) {
+	m_Files->AddMusic(list);
+}
+void MBConfig::Scan(BOOL fornew) {
+	m_Files->Scan(fornew);
+}
+
 BOOL
 MBConfig::UseGenre() {
 	return m_Files->UseGenre();

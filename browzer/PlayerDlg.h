@@ -128,6 +128,7 @@ private:
 public:
     MBConfig m_Config;
 private:
+	CStringList m_Skins;
     CString m_PlayerStatusSave;
     CTime m_PlayerStatusTime;
     CMenuDialog * m_MenuDlg;
@@ -288,6 +289,10 @@ public:
 	afx_msg LRESULT OnVolume(UINT wParam, LONG lParam);
 	afx_msg LRESULT OnProgress(UINT wParam, LONG lParam);
     afx_msg LRESULT OnPostMyIdle(UINT wParam, LONG lParam);
+	afx_msg LRESULT OnSkinPic(UINT wParam, LONG lParam);
+	afx_msg LRESULT OnMusicAdd(UINT wParam, LONG lParam);
+	afx_msg LRESULT OnMusicScan(UINT wParam, LONG lParam);
+	afx_msg LRESULT OnMusicScanNew(UINT wParam, LONG lParam);
 	afx_msg void OnGenresFocus();
 	afx_msg void OnArtistsFocus();
 	afx_msg void OnAlbumsFocus();

@@ -8,6 +8,7 @@
 #include "MBMessageBox.h"
 #include "ConfigFiles.h"
 #include "MyString.h"
+#include "FileAndFolder.h"
 //#define _WIN32_DCOM
 #include <objbase.h>
 #include <winbase.h>
@@ -28,7 +29,7 @@ IMPLEMENT_DYNCREATE(CConfigFiles, CPropertyPage)
 CConfigFiles::CConfigFiles(CWnd *p, PlayerCallbacks * pcb) : CPropertyPage(CConfigFiles::IDD),
     /*m_PlayerDlg(p),*/ m_RunAtStartupUL(0), m_scanNew(FALSE), m_UseGenreUL(0),
 	m_AlbumSortAlpha(TRUE), m_AlbumSortDate(FALSE),
-	m_playercallbacks(pcb)
+	m_playercallbacks(pcb), m_bAdd(FALSE)
 
 {
 	//{{AFX_DATA_INIT(CConfigFiles)
@@ -50,8 +51,8 @@ void CConfigFiles::DoDataExchange(CDataExchange* pDX)
 	CPropertyPage::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CConfigFiles)
 	DDX_Control(pDX, IDC_RUNATSTARTUP, m_RunAtStartup);
-	DDX_Control(pDX, IDC_MP3_EXTENSION, m_Mp3Extensions);
-	DDX_Control(pDX, IDC_MP3_ADD_EXT, m_Mp3Extension);
+//	DDX_Control(pDX, IDC_MP3_EXTENSION, m_Mp3Extensions);
+//	DDX_Control(pDX, IDC_MP3_ADD_EXT, m_Mp3Extension);
 	DDX_Control(pDX, IDC_MDB_LOCATION, m_MdbLocation);
 	DDX_Control(pDX, IDC_DIRLIST, m_MP3DirList);
 	DDX_Control(pDX, IDC_USEGENRE, m_UseGenre);
@@ -103,6 +104,7 @@ void CConfigFiles::OnDiradd()
         // a file was selected
 		CString path = dialog.GetPathName();
         m_MP3DirList.AddString(path);
+		m_slMP3DirList.AddTail(path);
         EnableDisableButtons(); 
         UpdateData(FALSE);
 		SetModified(TRUE);
@@ -121,9 +123,18 @@ void CConfigFiles::OnDirremove()
 {
     int cursel = m_MP3DirList.GetCurSel();
     m_MP3DirList.DeleteString(cursel);
+	m_MP3DirList.SetCurSel(
+		cursel < m_MP3DirList.GetCount() ? cursel : cursel -1);
 
     EnableDisableButtons(); 
 	SetModified(TRUE);
+
+	m_slMP3DirList.RemoveAll();
+	CString tmp;
+	for(cursel = 0; cursel < m_MP3DirList.GetCount(); cursel++) {
+		m_MP3DirList.GetText(cursel,tmp);
+		m_slMP3DirList.AddTail(tmp);
+	}
 
 }
 
@@ -131,11 +142,12 @@ class ThreadParams {
 public:
 
 	CString (*scanDirectories)(const CStringList & directories,
-						  InitDlg * initDlg, BOOL scanNew);
+						  InitDlg * initDlg, BOOL scanNew, BOOL bAdd);
     CStringList * m_dirs;
     InitDlg * m_InitDialog;
     CString m_result;
 	BOOL m_scanNew;
+	BOOL m_bAdd;
 };
 
 static int ScanThread_done = 0;
@@ -145,7 +157,8 @@ ScanThread(LPVOID pParam) {
     ThreadParams *tp = (ThreadParams *)pParam;
 
 	ScanThread_done = 0;
-	tp->m_result = (*tp->scanDirectories)(*(tp->m_dirs), tp->m_InitDialog, tp->m_scanNew);
+	tp->m_result = (*tp->scanDirectories)(*(tp->m_dirs), 
+		tp->m_InitDialog, tp->m_scanNew, tp->m_bAdd);
     tp->m_InitDialog->SendUpdateStatus(4, "", 0,0); // EndDialog;
 
     ScanThread_done = 1;
@@ -168,27 +181,37 @@ void CConfigFiles::OnDirscan()
 {
 
 	m_scanNew = FALSE;
-	dirScan();
+	CStringList x;
+	dirScan(x);
 }
 void CConfigFiles::OnDirscanNew() 
 {
 	m_scanNew = TRUE;
-	dirScan();	
+	CStringList x;
+	dirScan(x);	
 }
 
-void CConfigFiles::dirScan() {
+void CConfigFiles::dirScan(CStringList & mp3list) {
 
     CStringList dirs;
+	CStringList * pcsl;
     CString dir;
-    int n = m_MP3DirList.GetCount();
+    int n = m_slMP3DirList.GetCount();
 	if (n < 1) {
-		MBMessageBox("Scan", "You must enter at least one directory");
+		MBMessageBox("Scan", "You must enter at least one directory in Settings.");
 		return;
 	}
-    int i;
-    for(i = 0 ; i < n ; ++i) {
-        m_MP3DirList.GetText(i, dir);
+	if (m_bAdd) {
+		pcsl = &mp3list;
+	} else {
+		pcsl = &m_slMP3DirList;
+	}
+
+	POSITION pos;
+	for (pos = pcsl->GetHeadPosition(); pos != NULL; ) {
+        dir = pcsl->GetAt(pos);
         dirs.AddTail(dir);
+		pcsl->GetNext(pos);
     }
 
 	InitDlg *m_InitDialog = new InitDlg(0,1);
@@ -199,6 +222,7 @@ void CConfigFiles::dirScan() {
     tp.m_dirs = &dirs;
     tp.m_InitDialog = m_InitDialog;
 	tp.m_scanNew = m_scanNew;
+	tp.m_bAdd = m_bAdd;
     ScanThreadStart(tp);
 
 	m_InitDialog->DoModal();
@@ -247,10 +271,11 @@ void CConfigFiles::ReadReg() {
 
     CString Location;
     m_origMP3DirList.RemoveAll();
-    m_origMp3Extensions.RemoveAll();
+//    m_origMp3Extensions.RemoveAll();
+	m_slMP3DirList.RemoveAll();
 
     AutoBuf buf(1000);
-    unsigned long numdirs,numExtensions;
+    unsigned long numdirs/*,numExtensions*/;
 
     reg.Read(RegDbLocation, buf.p, 999, "");
     Location = buf.p;
@@ -284,8 +309,9 @@ void CConfigFiles::ReadReg() {
         TCHAR dir[1000];
         reg.Read(buf.p, dir, 999, "");
         m_origMP3DirList.AddTail(dir);
+		m_slMP3DirList.AddTail(dir);
     }
-
+#ifdef asdf
     numExtensions = reg.Read(RegNumMp3Extensions, 0);
     if (numExtensions == 0) {
         m_origMp3Extensions.AddTail("mp3");
@@ -297,6 +323,7 @@ void CConfigFiles::ReadReg() {
             m_origMp3Extensions.AddTail(extension);
         }
     }
+#endif
     m_RunAtStartupUL = reg.Read(RegRunAtStartup, 0);
 	m_UseGenreUL = reg.Read(RegUseGenre, 0);
 	useGenreUL = m_UseGenreUL;
@@ -311,11 +338,30 @@ void CConfigFiles::ReadReg() {
 	}
 
 }
+void CConfigFiles::StoreReg2() {
+    AutoBuf buf(1000);
+    unsigned long num = m_slMP3DirList.GetCount();
+    RegistryKey reg( HKEY_LOCAL_MACHINE, RegKey );
+    reg.Write(RegNumDirs, num);
 
+    m_origMP3DirList.RemoveAll();
+
+    unsigned long i=0;
+	POSITION pos;
+	CString dir;
+	for (pos = m_slMP3DirList.GetHeadPosition(); pos != NULL; ) {
+        dir = m_slMP3DirList.GetAt(pos);
+		m_origMP3DirList.AddTail(dir);
+		m_slMP3DirList.GetNext(pos);
+		sprintf(buf.p, "%s%02d", RegDirKey, i);
+		reg.Write(buf.p, dir);
+		i++;
+    }
+}
 
 void CConfigFiles::StoreReg() {
     AutoBuf buf(1000);
-    RegistryKey reg( HKEY_LOCAL_MACHINE, RegKey );
+
 
     CString Location;
     m_MdbLocation.GetWindowText(Location);
@@ -323,6 +369,8 @@ void CConfigFiles::StoreReg() {
 
     const TCHAR * location = (LPCTSTR) Location;
 
+	StoreReg2();
+#ifdef asdf
     unsigned long num = m_MP3DirList.GetCount();
     reg.Write(RegDbLocation, location);
     reg.Write(RegNumDirs, num);
@@ -338,11 +386,13 @@ void CConfigFiles::StoreReg() {
 
         reg.Write(buf.p, dir);
     }
-
+#endif
+    RegistryKey reg( HKEY_LOCAL_MACHINE, RegKey );
+#ifdef asdf
     m_origMp3Extensions.RemoveAll();
-    num = m_Mp3Extensions.GetCount();
+    unsigned long num = m_Mp3Extensions.GetCount();
     reg.Write(RegNumMp3Extensions, num);
-    for (i = 0 ; i < num ; ++i) {
+    for (unsigned long i = 0 ; i < num ; ++i) {
         sprintf(buf.p, "%s%02d", RegMp3ExtensionsKey, i);
         CString extension;
         m_Mp3Extensions.GetText(i, extension);
@@ -350,6 +400,7 @@ void CConfigFiles::StoreReg() {
         reg.Write(buf.p, exten);
         m_origMp3Extensions.AddTail(exten);
     }
+#endif
     if (m_RunAtStartup.GetCheck() == 0) {
         m_RunAtStartupUL = 0;
         reg.Write(RegRunAtStartup, (unsigned long) 0);
@@ -475,14 +526,17 @@ CConfigFiles::setRunAtStartup() {
     }
 }
 
+
 BOOL CConfigFiles::OnInitDialog() 
 {
 	CPropertyPage::OnInitDialog();
+
+#ifdef asdf
     CWnd * button = GetDlgItem(IDC_DIRREMOVE);
     button->EnableWindow(FALSE);
 
 	m_Mp3Extensions.ResetContent();
-    m_MP3DirList.ResetContent();
+
 
     POSITION pos;
     for (pos = m_origMp3Extensions.GetHeadPosition(); pos != NULL; ) {
@@ -490,11 +544,15 @@ BOOL CConfigFiles::OnInitDialog()
         m_Mp3Extensions.AddString(extension);
 	    m_origMp3Extensions.GetNext(pos);
     }
+#endif
+	POSITION pos;
+    m_MP3DirList.ResetContent();
     for (pos = m_origMP3DirList.GetHeadPosition(); pos != NULL; ) {
         CString extension = m_origMP3DirList.GetAt(pos);
         m_MP3DirList.AddString(extension);
 	    m_origMP3DirList.GetNext(pos);
     }
+
     m_MdbLocation.SetWindowText(m_origMdbLocation);
 
 
@@ -601,18 +659,20 @@ void CConfigFiles::OnOK()
 }
 void CConfigFiles::OnCancel() 
 {
-	m_Mp3Extensions.ResetContent();
+//	m_Mp3Extensions.ResetContent();
     m_MP3DirList.ResetContent();
+	m_slMP3DirList.RemoveAll();
 
     POSITION pos;
-    for (pos = m_origMp3Extensions.GetHeadPosition(); pos != NULL; ) {
-        CString extension = m_origMp3Extensions.GetAt(pos);
-        m_Mp3Extensions.AddString(extension);
-	    m_origMp3Extensions.GetNext(pos);
-    }
+//    for (pos = m_origMp3Extensions.GetHeadPosition(); pos != NULL; ) {
+//        CString extension = m_origMp3Extensions.GetAt(pos);
+//        m_Mp3Extensions.AddString(extension);
+//	    m_origMp3Extensions.GetNext(pos);
+//    }
     for (pos = m_origMP3DirList.GetHeadPosition(); pos != NULL; ) {
-        CString extension = m_origMP3DirList.GetAt(pos);
-        m_MP3DirList.AddString(extension);
+        CString dir = m_origMP3DirList.GetAt(pos);
+        m_MP3DirList.AddString(dir);
+		m_slMP3DirList.AddTail(dir);
 	    m_origMP3DirList.GetNext(pos);
     }
     m_MdbLocation.SetWindowText(m_origMdbLocation);
@@ -624,5 +684,45 @@ void CConfigFiles::OnCancel()
 void CConfigFiles::OnUsegenre() 
 {
 	SetModified(TRUE);
-	
 }
+//CFileDialog( 
+//	BOOL bOpenFileDialog, 
+//	LPCTSTR lpszDefExt = NULL, 
+//	LPCTSTR lpszFileName = NULL, 
+//	DWORD dwFlags = OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
+//	LPCTSTR lpszFilter = NULL, 
+//	CWnd* pParentWnd = NULL );
+
+void CConfigFiles::AddMusic(CStringList & mp3list) {
+
+	CFileAndFolder dialog;
+	dialog.setTitle("Add music to muzikbrowzer library");
+	dialog.setMsg("Select file(s)/folder(s) to be added.");
+	int ret;
+	ret = dialog.DoModal();
+	if (ret == IDOK) {
+		CStringList list;
+		dialog.GetPaths(list);
+		POSITION pos;
+		for(pos = list.GetHeadPosition(); pos != NULL;) {
+			CString path = list.GetNext(pos);
+			if (path.GetLength())
+				m_slMP3DirList.AddTail(path);
+		}
+		StoreReg2();
+		m_bAdd = TRUE;
+		dirScan(list);
+	}
+}
+
+
+
+void CConfigFiles::Scan(BOOL fornew) {
+	m_bAdd=FALSE;
+	if (fornew) {
+		OnDirscanNew();
+	} else {
+		OnDirscan();
+	}
+}
+

@@ -23,4 +23,6 @@
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 
+#include <afxtempl.h>
+
 #endif // !defined(AFX_STDAFX_H__DD1DE98E_5856_48BF_8018_D0A54A7C2CC1__INCLUDED_)

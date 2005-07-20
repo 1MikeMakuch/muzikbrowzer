@@ -73,8 +73,9 @@ void SetDbLocation(CString path) {
 	thePlayer->m_mlib.setDbLocation(path);
 }
 CString ScanDirectories(const CStringList & directories,
-						InitDlg * initDlg, BOOL scanNew) {
-	return thePlayer->m_mlib.scanDirectories(directories, initDlg, scanNew);
+						InitDlg * initDlg, BOOL scanNew, BOOL bAdd) {
+	return thePlayer->m_mlib.scanDirectories(directories, 
+											initDlg, scanNew, bAdd);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -252,6 +253,11 @@ BEGIN_MESSAGE_MAP(CPlayerDlg, CDialogClassImpl)
 	ON_WM_TIMER()
 	ON_MESSAGE(MB_SERIAL_MESSAGE, OnSerialMsg)
 
+	ON_COMMAND_RANGE(MB_SKINPICS_MSGS_BEGIN,MB_SKINPICS_MSGS_END, OnSkinPic)
+	ON_COMMAND(ID_MENU_ADD, OnMusicAdd)
+	ON_COMMAND(ID_MENU_SCAN, OnMusicScan)
+	ON_COMMAND(ID_MENU_SCANNEW, OnMusicScanNew)
+
 
 END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
@@ -261,7 +267,7 @@ void changeFont(CWnd *, CFont &);
 BOOL CPlayerDlg::OnInitDialog()
 {
 	CDialogClassImpl::OnInitDialog();
-	
+	CWaitCursor c;
 	m_Genres.m_id = "genres";
 	m_Artists.m_id = "artists";
 	m_Albums.m_id = "albums";
@@ -368,6 +374,7 @@ BOOL CPlayerDlg::OnInitDialog()
 		m_Artists.SetFocus();
 		OnArtistsFocus();
 	}
+	m_AlbumArt = m_Config.getSkin(MB_SKIN_ALBUMART);
 	initDb();
 
 	SetIcon(m_hIcon, TRUE);			// Set big icon
@@ -405,7 +412,7 @@ BOOL CPlayerDlg::OnInitDialog()
 
 	readConfig();
 
-	m_AlbumArt = m_Config.getSkin(MB_SKIN_ALBUMART);
+
 
 	if (_initdialog) {
 		time_t now = CTime::GetCurrentTime().GetTime();
@@ -495,31 +502,29 @@ void CPlayerDlg::setFont() {
 		m_PlaylistLabel.initFont();
 		m_PlayerStatus.initFont();
 		m_PositionLabel.initFont();
-//		m_VolumeLabel.initFont();
 		m_CurrentTitle.initFont();
 		m_CurrentTitle.m_HCenter = 0;
 		m_PlayerStatus.m_HCenter = 1;
     }
-    LPLOGFONT lplfTitles = m_Config.getTitlesFont();
-    if (m_Config.UseGenre()) m_Genres.changeFont(lplfTitles);
-    m_Artists.changeFont(lplfTitles);
-    m_Albums.changeFont(lplfTitles);
-    m_Songs.changeFont(lplfTitles);
-    m_Playlist.changeFont(lplfTitles);
-	LPLOGFONT lplfPanel = m_Config.getPanelFont();
-	if (m_Config.UseGenre()) m_GenresLabel.changeFont(lplfPanel);
-	m_ArtistsLabel.changeFont(lplfPanel);
-	m_AlbumsLabel.changeFont(lplfPanel);
-	m_SongsLabel.changeFont(lplfPanel);
-	m_PlaylistLabel.changeFont(lplfPanel);
+    LPLOGFONT lplf = m_Config.getTitlesFont();
+    if (m_Config.UseGenre()) m_Genres.changeFont(lplf);
+    m_Artists.changeFont(lplf);
+    m_Albums.changeFont(lplf);
+    m_Songs.changeFont(lplf);
+    m_Playlist.changeFont(lplf);
 
-	m_PlayerStatus.changeFont(lplfPanel);
-	m_PositionLabel.changeFont(lplfPanel);
-//	m_VolumeLabel.changeFont(lplfPanel);
-	m_CurrentTitle.changeFont(lplfTitles);
+	lplf = m_Config.getColHdrFont();
+	if (m_Config.UseGenre()) m_GenresLabel.changeFont(lplf);
+	m_ArtistsLabel.changeFont(lplf);
+	m_AlbumsLabel.changeFont(lplf);
+	m_SongsLabel.changeFont(lplf);
+	m_PlaylistLabel.changeFont(lplf);
 
-//	m_OptionsButton.SetFont(&m_OptionsButtonFont);
-
+	lplf = m_Config.getCurPlayFont();
+	m_CurrentTitle.changeFont(lplf);
+	m_PositionLabel.changeFont(lplf);
+	lplf = m_Config.getStatusFont();
+	m_PlayerStatus.changeFont(lplf);
 
 }
 void
@@ -531,9 +536,9 @@ CPlayerDlg::setColors() {
 	m_SongsLabel.SetTextColor(m_Config.getColorTxColHdr());
 	m_PlaylistLabel.SetTextColor(m_Config.getColorTxColHdr());
 //	m_VolumeLabel.SetTextColor(m_Config.getColorTxPanel());
-	m_PositionLabel.SetTextColor(m_Config.getColorTxPanel());
+	m_PositionLabel.SetTextColor(m_Config.getColorTxCurPlay());
+	m_CurrentTitle.SetTextColor(m_Config.getColorTxCurPlay());
 	m_PlayerStatus.SetTextColor(m_Config.getColorTxPanel());
-	m_CurrentTitle.SetTextColor(m_Config.getColorTxPanel());
 
 	m_GenresLabel.SetBkColor(m_Config.getColorBkColHdr());
 	m_ArtistsLabel.SetBkColor(m_Config.getColorBkColHdr());
@@ -541,9 +546,9 @@ CPlayerDlg::setColors() {
 	m_SongsLabel.SetBkColor(m_Config.getColorBkColHdr());
 	m_PlaylistLabel.SetBkColor(m_Config.getColorBkColHdr());
 //	m_VolumeLabel.SetBkColor(m_Config.getColorBkPanel());
-	m_PositionLabel.SetBkColor(m_Config.getColorBkPanel());
+	m_PositionLabel.SetBkColor(m_Config.getColorBkCurPlay());
+	m_CurrentTitle.SetBkColor(m_Config.getColorBkCurPlay());
 	m_PlayerStatus.SetBkColor(m_Config.getColorBkPanel());
-	m_CurrentTitle.SetBkColor(m_Config.getColorBkPanel());
 
 	m_Genres.SetColors(m_Config.getColorBkNormal(),
 		m_Config.getColorBkHigh(),
@@ -703,12 +708,16 @@ CPlayerDlg::setColors() {
 void
 CPlayerDlg::resetControls() {
 	static BOOL firsttime = TRUE;
+	  CWaitCursor c;
 
 	CString skindef = m_Config.getSkin(MB_SKIN_DEF);
 	RegistryKey regSD(skindef);
 	regSD.ReadFile();
-//#ifdef _DEBUG	
+
+#pragma hack
+//#ifdef _DEBUG	 get rid of this before shipping!
 	if (firsttime) {
+		firsttime=FALSE;
 		int w = regSD.Read("StartWidth",0);
 		int h = regSD.Read("StartHeight",0);
 		if (w && h) {
@@ -775,6 +784,8 @@ CPlayerDlg::resetControls() {
 
 	int labelheight=0;
 	int textheight=0;
+	int curplayheight = 0;
+	int statusheight = 0;
 
 //	double PlaylistHeightPct = m_Config.getPlaylistHeightPct();
 	double GenreWidthPct = m_Config.getGenreWidthPct();
@@ -788,6 +799,8 @@ CPlayerDlg::resetControls() {
 
 	labelheight = m_ArtistsLabel.GetItemHeight();
 	textheight = m_Artists.GetItemHeight(0);
+	curplayheight = m_CurrentTitle.GetItemHeight();
+	statusheight = m_PlayerStatus.GetItemHeight();
 
 	labelheight += 2;
 
@@ -942,9 +955,9 @@ CPlayerDlg::resetControls() {
 	plmaxx = __max(plmaxx,ControlBoxRight) + borderhorz;
 
 	p = m_Controls.getObj(IDC_PLAYLIST);
-	p->height = plmaxy - (labelheight + textheight + bordervert
-		+ stopy);
-	p->height = ControlBoxHeight - (labelheight + textheight + bordervert);
+//	p->height = plmaxy - (labelheight + textheight + bordervert
+//		+ stopy);
+	p->height = ControlBoxHeight - (labelheight + curplayheight + bordervert);
 	p->labelheight = labelheight;
 	x = plmaxx;
 	p->width = (picleft - (((2 * panelborder) + borderhorz))) - x;
@@ -962,7 +975,7 @@ CPlayerDlg::resetControls() {
 	p = m_Controls.getObj(IDC_POSITION_LABEL);
 	CSize s = m_PositionLabel.GetSize("000000000");
 	p->width = s.cx;
-	p->height = textheight;
+	p->height = curplayheight;
 	x = border + panelborder; 
 	x = playlistleft;
 //	y = posy;
@@ -971,7 +984,7 @@ CPlayerDlg::resetControls() {
 
 	x = x + p->width + borderhorz;
 	p = m_Controls.getObj(IDC_CURRENT_TITLE);
-	p->height = textheight;
+	p->height = curplayheight;
 	p->width = playlistright - x;
 	m_Controls.move(p,x,y,p->row,p->col);
 	int titlebottom = y + p->height;
@@ -980,13 +993,13 @@ CPlayerDlg::resetControls() {
 	int genrey = y + (panelborder * 2);
 
 	p = m_Controls.getObj(IDC_PLAYER_STATUS);
-	p->height = labelheight;
+	p->height = statusheight;
 	x = border + panelborder;
 	p->width = m_Controls.dialogrect.Width()
 		- (2 * (border + panelborder));
 //	p->setRects();
 	y = m_Controls.dialogrect.Height() 
-		- (labelheight + border + panelborder);
+		- (statusheight + border + panelborder);
 	m_Controls.move(p,x,y,p->row,p->col);
 	int statusbottom = y + p->height;
 
@@ -2300,6 +2313,8 @@ void CPlayerDlg::PlayLoop() {
             msg = m_mlib._playlist[m_PlaylistCurrent]->getId3("TIT2");
 			msg += " by ";
 			msg += m_mlib._playlist[m_PlaylistCurrent]->getId3("TPE1");
+			msg += " on ";
+			msg += m_mlib._playlist[m_PlaylistCurrent]->getId3("TALB");
             CurrentTitleSet(msg);
 			if (m_Config.trialMode() == 1) {
 				PlayerStatusTempSet("Trial Mode. Set Password in Configuration.");
@@ -2513,8 +2528,7 @@ void CPlayerDlg::OnUserEditSong()
 	delete dialog;    	
 }
 
-#define MB_MIN_WIDTH 500
-#define MB_MIN_HEIGHT 400
+
 
 void CPlayerDlg::OnSizing(UINT fwSide, LPRECT pRect) 
 {
@@ -2606,7 +2620,7 @@ CPlayerDlg::PlayerStatusTempSet(LPCTSTR lpmsg) {
 }
 void
 CPlayerDlg::PlayerStatusTempSet(CString & msg) {
-	PlayerStatusSet(msg);
+	m_PlayerStatus.setText(msg);
     m_PlayerStatusTime = CTime::GetCurrentTime();
 	StartStatusTimer();
 }
@@ -2695,17 +2709,78 @@ void CPlayerDlg::OnButtonMenu()
         ctrl = GetDlgItem(IDC_OPTIONS_BUTTON);
         CRect button;
         ctrl->GetWindowRect(button);
+
+		m_Skins.RemoveAll();
+		m_Config.getSkins(m_Skins);
+		CMenu * skinmenu = popup->GetSubMenu(1);
+		ASSERT(skinmenu != NULL);
+		CString currentskin = m_Config.getCurrentSkin();
+
+		POSITION pos = m_Skins.GetHeadPosition();
+		UINT i=0;
+		UINT needscheck = 0;
+		for (pos = m_Skins.GetHeadPosition(); pos != NULL 
+				&& (MB_SKINPICS_MSGS_BEGIN + i) < MB_SKINPICS_MSGS_END; ) {
+			CString skin = m_Skins.GetAt(pos);
+			if (currentskin == skin) {
+				needscheck = MB_SKINPICS_MSGS_BEGIN + i;
+			}
+			skinmenu->AppendMenu(MF_STRING, MB_SKINPICS_MSGS_BEGIN + i++, skin);
+			m_Skins.GetNext(pos);
+		}
+		if (needscheck) {
+			skinmenu->CheckMenuItem(needscheck, MF_CHECKED | MF_BYCOMMAND);
+		}
+
         popup->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON,
 			crbottomleft(button).x,
             crbottomleft(button).y, 
 			AfxGetMainWnd());
     }
 }
+LRESULT
+CPlayerDlg::OnSkinPic(UINT wParam, LONG lParam) {
+	int skinp = wParam - MB_SKINPICS_MSGS_BEGIN;
+	CString skin;
+	POSITION pos = m_Skins.GetHeadPosition();
+	int i=0;
+	for (pos = m_Skins.GetHeadPosition(); pos != NULL; ) {
+		if (i == skinp) {
+			skin = m_Skins.GetAt(pos);
+			break;
+		}
+		if (i > skinp) {
+			break;
+		}
+		i++;
+		m_Skins.GetNext(pos);
+	}
+	if (skin != "") {
+		m_Config.ChooseSkin(skin);
+		redraw();
+	}
 
+	return 0;
+}
+LRESULT
+CPlayerDlg::OnMusicAdd(UINT wParam, LONG lParam) {
+	CStringList mp3list;
+	m_Config.AddMusic(mp3list);
+	return 0;
+}
+LRESULT
+CPlayerDlg::OnMusicScan(UINT wParam, LONG lParam) {
+	m_Config.Scan();
+	return 0;
+}
+LRESULT
+CPlayerDlg::OnMusicScanNew(UINT wParam, LONG lParam) {
+	m_Config.Scan(TRUE);
+	return 0;
+}
 void CPlayerDlg::OnButtonMinimize() 
 {
 	ShowWindow(SW_MINIMIZE);
-	
 }
 
 void CPlayerDlg::OnButtonMaximize() 
@@ -3027,7 +3102,7 @@ void CPlayerDlg::displayAlbumArt(const CString & file) {
 	uchar * data = NULL;
 	BOOL pic = m_mlib.apic(file, data, size);
 
-	if (!first && pic) {
+	if (!first && pic && size > 50) {
 		m_Picture.load(data,size);
 	} else {
 		first = FALSE;

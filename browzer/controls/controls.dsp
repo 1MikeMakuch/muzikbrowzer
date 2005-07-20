@@ -134,6 +134,10 @@ SOURCE=.\ExtendedListBox.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\FileAndFolder.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\FolderDialog.cpp
 # End Source File
 # Begin Source File
@@ -175,6 +179,10 @@ SOURCE=.\TransparentDialogDlg.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\TreeCtrlEx.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\VirtualControl.cpp
 # End Source File
 # End Group
@@ -200,6 +208,10 @@ SOURCE=.\Controls.h
 # Begin Source File
 
 SOURCE=.\ExtendedListBox.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\FileAndFolder.h
 # End Source File
 # Begin Source File
 
@@ -236,6 +248,10 @@ SOURCE=.\SkinSlider.h
 # Begin Source File
 
 SOURCE=.\TransparentDialogDlg.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\TreeCtrlEx.h
 # End Source File
 # Begin Source File
 

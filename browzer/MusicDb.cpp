@@ -180,6 +180,10 @@ MusicLib::setDbLocation(const CString & loc) {
 }
 int
 MusicLib::init() {
+    
+	m_mp3Extensions.RemoveAll();
+	m_mp3Extensions.AddTail("mp3");
+	m_mp3Extensions.AddTail("wma");
 
 	readDbLocation();
 	Genre_init();
@@ -657,7 +661,7 @@ MusicLib::getPlaylist(CExtendedListBox & box) {
 //		buf += p->_item->getId3("TIT2");
 
 		buf = p->_item->getId3("TIT2");
-		buf += ", ";
+		buf += " by ";
 		buf += p->_item->getId3("TPE1");
 		buf += " on ";
 		buf += p->_item->getId3("TALB");
@@ -792,12 +796,13 @@ MusicLib::clearPlaylist() {
 
 CString
 MusicLib::scanDirectories(const CStringList & directories,
-						  InitDlg * initDlg, BOOL scanNew) {
+						  InitDlg * initDlg, BOOL scanNew, BOOL bAdd) {
     CStringList mp3Files,mp3Extensions;
     CString good_results, error_results;
     _id = initDlg;
     AutoBuf buf(1000);
-	if (scanNew) {
+
+	if (bAdd || scanNew) {
 		// if no m_files present have to start from scratch
 		if (m_SongLib.m_files.read() == -1) {
 			m_SongLib.init();
@@ -806,10 +811,9 @@ MusicLib::scanDirectories(const CStringList & directories,
 		m_SongLib.init(); // does an m_files.removeAll()
 	}
     
+#ifdef asdf
     RegistryKey reg( HKEY_LOCAL_MACHINE, RegKey );
     unsigned long numExtensions = reg.Read(RegNumMp3Extensions, 0);
-
-    m_mp3Extensions.RemoveAll();
     if (numExtensions == 0) {
         m_mp3Extensions.AddTail("mp3");
     } else {
@@ -821,12 +825,14 @@ MusicLib::scanDirectories(const CStringList & directories,
             m_mp3Extensions.AddTail(String::downcase(extension));
         }
     }
+#endif
 
     POSITION pos;
     int * abortflag = &(_id->m_Abort);
     _id->SendUpdateStatus(0, "Scanning directories for audio files", 0,0);
     for (pos = directories.GetHeadPosition(); pos != NULL; ) {
-        scanDirectory(abortflag, mp3Files, directories.GetAt(pos), scanNew);
+        scanDirectory(abortflag, mp3Files, directories.GetAt(pos), 
+			scanNew, bAdd);
         directories.GetNext(pos);
         if (_id->m_Abort) {
             error_results += "Aborted by user.";
@@ -835,7 +841,7 @@ MusicLib::scanDirectories(const CStringList & directories,
         }
     }
     m_totalMp3s = mp3Files.GetCount();
-	
+
 	// now done with m_files
 	m_SongLib.m_files.write();
 	m_SongLib.m_files.removeAll();
@@ -948,7 +954,16 @@ MusicLib::scanDirectories(const CStringList & directories,
 
 int
 MusicLib::scanDirectory(int * abortflag, CStringList &mp3Files,
-					   const CString & directory, BOOL scanNew) {
+					   const CString & directory, BOOL scanNew, BOOL bAdd) {
+
+	// this kludge added so that; if file names appear in the mp3dirlist
+	// we'll add 'em. This can happen via Menu/Music/Add
+	FExtension ext(directory);
+	if (m_mp3Extensions.Find(String::downcase(ext.ext())) != NULL) {
+		insertSort(mp3Files, directory);
+		return 0;
+	} // end of kludge
+
     CString glob(directory);
 	if (glob[glob.GetLength()-1] == '\\') {
 		glob += "*.*";
@@ -981,7 +996,7 @@ MusicLib::scanDirectory(int * abortflag, CStringList &mp3Files,
 					newDir += "\\";
 				}
                 newDir += fname;
-                scanDirectory(abortflag, mp3Files, newDir, scanNew);
+                scanDirectory(abortflag, mp3Files, newDir, scanNew, bAdd);
             } else {
 //				BOOL doit = TRUE;
 //				if (scanNew) {
@@ -993,7 +1008,7 @@ MusicLib::scanDirectory(int * abortflag, CStringList &mp3Files,
 //					}
 //				}
 //				if (doit) {
-				if (!scanNew ||
+				if ((!scanNew && !bAdd) ||
 						!m_SongLib.m_files.contains(finder.GetFilePath())) {
 					FExtension ext(fname);
 					if (m_mp3Extensions.Find(String::downcase(ext.ext())) != NULL) {

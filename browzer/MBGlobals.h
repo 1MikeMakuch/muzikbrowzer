@@ -39,6 +39,10 @@
 #define MB_VOLUME_MSG			(WM_APP + 15)
 #define MB_PROGRESS_MSG			(WM_APP + 16)
 #define MB_BITMAP_CUTTER_MSG	(WM_APP + 17)
+#define MB_TV_MSG				(WM_APP + 18)
+
+#define MB_SKINPICS_MSGS_BEGIN	(WM_APP + 1000)
+#define MB_SKINPICS_MSGS_END    (WM_APP + 1999)
 
 #define MB_PLAYLOOP_TIMER_ID	1
 #define MB_SEEK_TIMER_ID		2
@@ -60,5 +64,7 @@
 	 __FILE__ "(" $Line ") : Reminder: "
 #define hack message(Reminder "Fix this hack!") 
 
+#define MB_MIN_WIDTH 500
+#define MB_MIN_HEIGHT 400
 
 #endif

@@ -73,6 +73,7 @@ private:
     CStringList m_origMp3Extensions;
     CString m_origMdbLocation;
     CStringList m_origMP3DirList;
+	CStringList m_slMP3DirList;
     unsigned long m_RunAtStartupUL;
 	unsigned long m_UseGenreUL;
 	BOOL m_AlbumSortAlpha;
@@ -83,16 +84,21 @@ private:
     void ScanThreadStart(ThreadParams &);
     void ScanThreadStop();
     void StoreReg();
+	void StoreReg2();
     void ReadReg();
     void init();
     void setRunAtStartup();
-	void dirScan();
+	void dirScan(CStringList &);
 public:
 	BOOL m_scanNew;
+	BOOL m_bAdd;
     void setDefaults();
 	BOOL UseGenre();
 	BOOL AlbumSortAlpha();
 	CString mbdir() { return m_path; };
+	void AddMusic(CStringList & list);
+	void Scan(BOOL fornew);
+
 
 };
 

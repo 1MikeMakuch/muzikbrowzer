@@ -69,6 +69,8 @@ using a button.
 //x#include "TransparentDialog.h"
 #include "TransparentDialogDlg.h"
 #include "util/Misc.h"
+#include "FileUtils.h"
+#include "MBGlobals.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -175,8 +177,19 @@ void CTransparentDialogDlg::OnSize(UINT nType, int cx, int cy)
 	if (m_hBitmap != NULL)
 		DeleteObject(m_hBitmap);	//not really need but what the heck.
 	m_hBitmap = NULL;
-	m_hBitmap = (HBITMAP) LoadImage (AfxGetInstanceHandle(), 
-		MAKEINTRESOURCE(IDB_SPLASH3), IMAGE_BITMAP, 0, 0, LR_DEFAULTCOLOR);
+
+#pragma hack 
+	// this is temp just for dev pusposes. Final splash
+	//should be compiled in.
+	CString splash = "splash.bmp";
+	if (FileUtil::IsReadable(splash)) {
+		m_hBitmap = (HBITMAP) LoadImage (NULL,
+		splash, IMAGE_BITMAP, 0, 0, LR_DEFAULTCOLOR
+		|LR_LOADFROMFILE);
+	} else {
+		m_hBitmap = (HBITMAP) LoadImage (AfxGetInstanceHandle(), 
+			MAKEINTRESOURCE(IDB_SPLASH3), IMAGE_BITMAP, 0, 0, LR_DEFAULTCOLOR);
+	}
 
 	if (m_hBitmap == NULL)
 	{

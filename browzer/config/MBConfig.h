@@ -89,7 +89,10 @@ public:
 	CConfigPassword * password() { return m_Password; }
 
     LPLOGFONT getTitlesFont();
-    LPLOGFONT getPanelFont();
+    LPLOGFONT getStatusFont();
+	LPLOGFONT getColHdrFont();
+	LPLOGFONT getCurPlayFont();
+
     COLORREF getColorBkPanel();
     COLORREF getColorBkNormal();
     COLORREF getColorBkHigh();
@@ -101,6 +104,8 @@ public:
 	COLORREF getColorTxColHdr();
 	COLORREF getColorBkColHdr();
 	COLORREF getColorBkPanel2();
+	COLORREF getColorBkCurPlay();
+	COLORREF getColorTxCurPlay();
 	int getDlgBorderWidth();
 //	double getPlaylistHeightPct();
 	double getGenreWidthPct();
@@ -116,8 +121,13 @@ public:
 	int trialMode();
 	CString mbdir();
 	const CString getSkin(const CString key);
+	const CString getCurrentSkin();
+	void getSkins(CStringList &);
+	void ChooseSkin(CString);
 	int getPanelWidth() ;
 
+	void AddMusic(CStringList &);
+	void Scan(BOOL fornew=FALSE);
 };
 
 /////////////////////////////////////////////////////////////////////////////

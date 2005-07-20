@@ -17,7 +17,7 @@ public:
 	void (*UpdateWindow)();
 	void (*setDbLocation)(CString);
 	CString (*scanDirectories)(const CStringList & directories,
-						  InitDlg * initDlg, BOOL scanNew);
+						  InitDlg * initDlg, BOOL scanNew, BOOL bAdd);
 };
 
 #endif

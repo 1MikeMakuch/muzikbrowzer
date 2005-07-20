@@ -340,7 +340,7 @@ class MusicLib
         void savePlaylist(const CString &);
 		void savePlaylist(Playlist & playlist, const CString & file);
         CString scanDirectories(const CStringList & dirs, InitDlg*,
-			BOOL scanNew);
+			BOOL scanNew, BOOL bAdd);
         void searchForMp3s(CStringList & songs, const CString & genre,
 			const CString & artist, const CString & album,
 			const CString & song);
@@ -368,7 +368,7 @@ class MusicLib
         CStringList m_mp3Extensions;
 
         int scanDirectory(int * abortf, CStringList &, const CString &,
-			BOOL scanNew);
+			BOOL scanNew, BOOL bAdd);
         int garbageCollect(InitDlg * dialog = NULL);
         
 };

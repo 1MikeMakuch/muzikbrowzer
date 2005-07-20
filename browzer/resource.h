@@ -70,6 +70,7 @@
 #define IDB_BITMAP10                    250
 #define IDB_BITMAP11                    251
 #define IDD_FRACTAL_DLG                 252
+#define IDD_FILEANDFOLDER               254
 #define IDC_VOLUME_BUTTON               1000
 #define IDC_STOP_BUTTON                 1001
 #define IDC_PLAY_BUTTON                 1002
@@ -257,11 +258,16 @@
 #define IDC_BOLD2                       1213
 #define IDC_SAMPLE_COLHDR               1213
 #define IDC_COLOR_BORDERS               1214
+#define IDC_COLOR_BK_CURPLY             1214
 #define IDC_COLOR_BK_CTRLS              1215
+#define IDC_COLOR_TX_CURPLY             1215
 #define IDC_COLOR_TX_CTRLS              1216
+#define IDC_FONTSIZE_CURPLY             1216
 #define IDC_BORDER_PANEL                1217
 #define IDC_BORDER_HORZ                 1218
 #define IDC_BORDER_VERT                 1219
+#define IDC_FONT_CURPLY                 1220
+#define IDC_SAMPLE_CURPLY               1221
 #define IDC_IRUP                        1500
 #define IDC_IRDOWN                      1501
 #define IDC_IRLEFT                      1502
@@ -344,6 +350,7 @@
 #define IDC_ALBUMSORT_ALPHA             2020
 #define IDC_BOLD_PANEL                  2020
 #define IDC_BOLD_COLHDR                 2021
+#define IDC_BOLD_CURPLY                 2022
 #define IDC_THEME_CREATE                2024
 #define IDC_THEME_LIST                  2026
 #define IDC_ROUND_CORNERS               2027
@@ -353,7 +360,8 @@
 #define IDC_GENRE_WIDTH                 2033
 #define IDC_SPIN_GENRE                  2034
 #define IDC_EASTEREGG                   2036
-#define IDC_BUTTON_PLAY2                2039
+#define IDC_TREE                        2039
+#define IDC_MSG                         2040
 #define ID_XXX                          32775
 #define ID__EXIT                        32785
 #define ID_PMENU_EXIT                   32785
@@ -386,14 +394,17 @@
 #define ID_MENU_RANDOMIZE_PLAYLIST      32813
 #define ID_MYTEST                       32815
 #define ID_MENU_EXPORT                  32816
+#define ID_MENU_ADD                     32821
+#define ID_MENU_SCAN                    32822
+#define ID_MENU_SCANNEW                 32823
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        253
-#define _APS_NEXT_COMMAND_VALUE         32817
-#define _APS_NEXT_CONTROL_VALUE         2039
+#define _APS_NEXT_RESOURCE_VALUE        255
+#define _APS_NEXT_COMMAND_VALUE         32824
+#define _APS_NEXT_CONTROL_VALUE         2041
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

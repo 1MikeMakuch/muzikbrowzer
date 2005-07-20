@@ -50,7 +50,6 @@ CFontCombo::CFontCombo() : m_first_init(true)
 {
 	// Load up glyphs
 	m_img.Create(IDB_GLYPHS,15,1,RGB(255,0,255));
-
 }
 
 ////////////////////////////////////////////////////////////////////////////////

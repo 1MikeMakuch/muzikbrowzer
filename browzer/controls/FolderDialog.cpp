@@ -1,6 +1,5 @@
 // FolderDialog.cpp: implementation of the CFolderDialog class.
-//	$Copyright ©  1998 Kenneth M. Reed, ALL RIGHTS RESERVED. $
-//	$Header$
+
 
 #include "stdafx.h"
 #include "FolderDialog.h"
