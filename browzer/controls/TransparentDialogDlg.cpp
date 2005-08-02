@@ -81,8 +81,9 @@ static char THIS_FILE[] = __FILE__;
 /////////////////////////////////////////////////////////////////////////////
 // CTransparentDialogDlg dialog
 
-CTransparentDialogDlg::CTransparentDialogDlg(CWnd* pParent /*=NULL*/)
-	: CDialog(CTransparentDialogDlg::IDD, pParent)
+CTransparentDialogDlg::CTransparentDialogDlg(CWnd* pParent /*=NULL*/,
+											 COLORREF xclr)
+	: CDialog(CTransparentDialogDlg::IDD, pParent), m_Xclr(xclr)
 {
 	//{{AFX_DATA_INIT(CTransparentDialogDlg)
 		// NOTE: the ClassWizard will add member initialization here
@@ -212,7 +213,7 @@ void CTransparentDialogDlg::OnSize(UINT nType, int cx, int cy)
 	//create an empty region
 	crRgn.CreateRectRgn(0, 0, 0, 0);
 	//Create a region from a bitmap with transparency colour of Purple
-	COLORREF crTransparent = TRANSPARENTCOLOR;	
+	COLORREF crTransparent = m_Xclr;	
 	int iX = 0;
 	for (int iY = 0; iY < m_Bitmap.bmHeight; iY++)
 	{

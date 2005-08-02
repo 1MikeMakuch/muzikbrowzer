@@ -58,9 +58,11 @@ CConfigDisplay::CConfigDisplay(CWnd * p, PlayerCallbacks * pcb)
 	tmp += m_sSkinName;
 	tmp += "\\SkinDef";
 	tmp += MBTHEMEEXT;
+	CString save = m_sSkinName;
 	RegistryKey theme(tmp);
 	theme.ReadFile();
 	ReadReg(theme);
+	m_sSkinName = save;
 }
 
 CConfigDisplay::~CConfigDisplay()

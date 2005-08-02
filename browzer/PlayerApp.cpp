@@ -66,8 +66,9 @@ BOOL CPlayerApp::InitInstance()
 	// If you are not using these features and wish to reduce the size
 	//  of your final executable, you should remove from the following
 	//  the specific initialization routines you do not need.
-
+#ifdef _DEBUG
 	RunTestHarness();
+#endif
 
 
 #ifdef _AFXDLL
@@ -84,19 +85,24 @@ BOOL CPlayerApp::InitInstance()
     // If in eval mode just continue, but throw up a reminder dialog
 
 //	InitDlg *InitDialog = new InitDlg(1,0);
+
+#ifdef doingithere
 	CTransparentDialogDlg * splashDlg = new CTransparentDialogDlg();
     CString msg = MUZIKBROWZER;
     msg += " initializing";
-//    splashDlg->SetLabel(msg);
 	splashDlg->ShowWindow(SW_SHOWNORMAL /* CWinApp::m_nCmdShow */);
 	splashDlg->UpdateWindow();
-//	Sleep(10000);
+
+
+	
 
     m_PlayerDlg = new CPlayerDlg(this, splashDlg);
+#endif
+    m_PlayerDlg = new CPlayerDlg(this);
 	m_pMainWnd = m_PlayerDlg;
 	int nResponse = m_PlayerDlg->DoModal();
 	
-	delete splashDlg;
+//	delete splashDlg;
     delete m_PlayerDlg;
 
 	// Since the dialog has been closed, return FALSE so that we exit the

@@ -81,10 +81,10 @@ CString ScanDirectories(const CStringList & directories,
 /////////////////////////////////////////////////////////////////////////////
 // CPlayerDlg dialog
 
-CPlayerDlg::CPlayerDlg(CPlayerApp * theApp, CTransparentDialogDlg *ip, 
+CPlayerDlg::CPlayerDlg(CPlayerApp * theApp, 
 					   CWnd* pParent /*=NULL*/)
 	: CDialogClassImpl(CPlayerDlg::IDD, pParent), m_PlayerApp(theApp), 
-	_initdialog(ip),
+//	_initdialog(ip),
 	m_mlib(NULL), m_PlaylistCurrent(-1),
     m_MenuDlg(0), m_StopFlag(FALSE), m_LButtonDown(FALSE),
     m_Config("Configuration"), m_SavePlaylistFlag(TRUE),
@@ -271,6 +271,28 @@ BOOL CPlayerDlg::OnInitDialog()
 {
 	CDialogClassImpl::OnInitDialog();
 	CWaitCursor c;
+
+	m_Config.createit(this, &m_callbacks);
+	CString skindef = m_Config.getSkin(MB_SKIN_DEF);
+	RegistryKey regSD(skindef);
+	regSD.ReadFile();
+	int r,g,b;
+	r = regSD.Read("TransRedMain",254);
+	g = regSD.Read("TransGreenMain",0);
+	b = regSD.Read("TransBlueMain",0);
+	m_TransMain = RGB(r,g,b);
+	r = regSD.Read("TransRedPanel",253);
+	g = regSD.Read("TransGreenPanel",0);
+	b = regSD.Read("TransBluePanel",0);
+	m_TransPanel = RGB(r,g,b);
+
+	_initdialog = new CTransparentDialogDlg(NULL, m_TransMain);
+    CString msg = MUZIKBROWZER;
+    msg += " initializing";
+	_initdialog->ShowWindow(SW_SHOWNORMAL /* CWinApp::m_nCmdShow */);
+	_initdialog->UpdateWindow();
+
+
 	m_Genres.m_id = "genres";
 	m_Artists.m_id = "artists";
 	m_Albums.m_id = "albums";
@@ -282,12 +304,13 @@ BOOL CPlayerDlg::OnInitDialog()
     CString lpath = m_mlib.getDbLocation();
     logger.open(lpath);
 	logger.log(CS("muzikbrowzer version: ") + CS(MUZIKBROWZER_VERSION));
-	m_Config.createit(this, &m_callbacks);
+
+
 
 	OSVERSIONINFO osvi;
 	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
 	GetVersionEx(&osvi);
-	CString msg = "GetVersionEx=";
+	msg = "GetVersionEx=";
 	msg += osvi.dwPlatformId;
 	logger.log(msg);
 
@@ -372,7 +395,7 @@ BOOL CPlayerDlg::OnInitDialog()
 
 // For CDialogSK
 	EnableEasyMove();  // enable moving of the dialog 
-    SetTransparentColor(RGB(255, 0, 0)); // set red as the 
+    SetTransparentColor(m_TransMain, m_TransPanel); // set red as the 
 
     resetControls();
 
@@ -538,7 +561,6 @@ void CPlayerDlg::setFont() {
 }
 void
 CPlayerDlg::setColors() {
-	COLORREF transclr = RGB(254,0,0);
 	m_GenresLabel.SetTextColor(m_Config.getColorTxColHdr());
 	m_ArtistsLabel.SetTextColor(m_Config.getColorTxColHdr());
 	m_AlbumsLabel.SetTextColor(m_Config.getColorTxColHdr());
@@ -591,86 +613,84 @@ CPlayerDlg::setColors() {
 		m_Config.getColorTxSel());
 
 	m_OptionsButton.SetBitmaps(
-		m_Config.getSkin(MB_SKIN_BUTTONOPTIONSIN),	transclr,
-		m_Config.getSkin(MB_SKIN_BUTTONOPTIONSHOVER),	transclr,
-		m_Config.getSkin(MB_SKIN_BUTTONOPTIONSOUT),	transclr
+		m_Config.getSkin(MB_SKIN_BUTTONOPTIONSIN),	m_TransPanel,
+		m_Config.getSkin(MB_SKIN_BUTTONOPTIONSHOVER),	m_TransPanel,
+		m_Config.getSkin(MB_SKIN_BUTTONOPTIONSOUT),	m_TransPanel
 		);
 	m_ButtonResize.SetBitmaps(
-		m_Config.getSkin(MB_SKIN_BUTTONRESIZEIN),	transclr,	
-		m_Config.getSkin(MB_SKIN_BUTTONRESIZEHOVER),	transclr,	
-		m_Config.getSkin(MB_SKIN_BUTTONRESIZEOUT),		transclr);
+		m_Config.getSkin(MB_SKIN_BUTTONRESIZEIN),	m_TransPanel,	
+		m_Config.getSkin(MB_SKIN_BUTTONRESIZEHOVER),	m_TransPanel,	
+		m_Config.getSkin(MB_SKIN_BUTTONRESIZEOUT),		m_TransPanel);
 
 	m_ButtonMinimize.SetBitmaps(
-		m_Config.getSkin(MB_SKIN_BUTTONMINIMIZEIN),	transclr,	
-		m_Config.getSkin(MB_SKIN_BUTTONMINIMIZEHOVER),	transclr,	
-		m_Config.getSkin(MB_SKIN_BUTTONMINIMIZEOUT),		transclr);
+		m_Config.getSkin(MB_SKIN_BUTTONMINIMIZEIN),	m_TransPanel,	
+		m_Config.getSkin(MB_SKIN_BUTTONMINIMIZEHOVER),	m_TransPanel,	
+		m_Config.getSkin(MB_SKIN_BUTTONMINIMIZEOUT),		m_TransPanel);
 
 	m_ButtonMaximize.SetBitmaps(
-		m_Config.getSkin(MB_SKIN_BUTTONMAXIMIZEIN),	transclr,	
-		m_Config.getSkin(MB_SKIN_BUTTONMAXIMIZEHOVER),	transclr,	
-		m_Config.getSkin(MB_SKIN_BUTTONMAXIMIZEOUT),		transclr);
+		m_Config.getSkin(MB_SKIN_BUTTONMAXIMIZEIN),	m_TransPanel,	
+		m_Config.getSkin(MB_SKIN_BUTTONMAXIMIZEHOVER),	m_TransPanel,	
+		m_Config.getSkin(MB_SKIN_BUTTONMAXIMIZEOUT),		m_TransPanel);
 
 	m_ButtonRestore.SetBitmaps(
-		m_Config.getSkin(MB_SKIN_BUTTONRESTOREIN),	transclr,	
-		m_Config.getSkin(MB_SKIN_BUTTONRESTOREHOVER),	transclr,	
-		m_Config.getSkin(MB_SKIN_BUTTONRESTOREOUT),		transclr);
+		m_Config.getSkin(MB_SKIN_BUTTONRESTOREIN),	m_TransPanel,	
+		m_Config.getSkin(MB_SKIN_BUTTONRESTOREHOVER),	m_TransPanel,	
+		m_Config.getSkin(MB_SKIN_BUTTONRESTOREOUT),		m_TransPanel);
 
 	m_ButtonExit.SetBitmaps(
-		m_Config.getSkin(MB_SKIN_BUTTONEXITIN),	transclr,	
-		m_Config.getSkin(MB_SKIN_BUTTONEXITHOVER),	transclr,	
-		m_Config.getSkin(MB_SKIN_BUTTONEXITOUT),		transclr);
+		m_Config.getSkin(MB_SKIN_BUTTONEXITIN),	m_TransPanel,	
+		m_Config.getSkin(MB_SKIN_BUTTONEXITHOVER),	m_TransPanel,	
+		m_Config.getSkin(MB_SKIN_BUTTONEXITOUT),		m_TransPanel);
 
 	m_ButtonStop.SetBitmaps(
-		m_Config.getSkin(MB_SKIN_BUTTONSTOPIN),	transclr,	
-		m_Config.getSkin(MB_SKIN_BUTTONSTOPHOVER),	transclr,	
-		m_Config.getSkin(MB_SKIN_BUTTONSTOPOUT),		transclr);
+		m_Config.getSkin(MB_SKIN_BUTTONSTOPIN),	m_TransPanel,	
+		m_Config.getSkin(MB_SKIN_BUTTONSTOPHOVER),	m_TransPanel,	
+		m_Config.getSkin(MB_SKIN_BUTTONSTOPOUT),		m_TransPanel);
 
 	m_ButtonPlay.SetBitmaps(
-		m_Config.getSkin(MB_SKIN_BUTTONPLAYIN),	transclr,	
-		m_Config.getSkin(MB_SKIN_BUTTONPLAYHOVER),	transclr,	
-		m_Config.getSkin(MB_SKIN_BUTTONPLAYOUT),		transclr);
+		m_Config.getSkin(MB_SKIN_BUTTONPLAYIN),	m_TransPanel,	
+		m_Config.getSkin(MB_SKIN_BUTTONPLAYHOVER),	m_TransPanel,	
+		m_Config.getSkin(MB_SKIN_BUTTONPLAYOUT),		m_TransPanel);
 
 	m_ButtonPause.SetBitmaps(
-		m_Config.getSkin(MB_SKIN_BUTTONPAUSEIN),	transclr,	
-		m_Config.getSkin(MB_SKIN_BUTTONPAUSEHOVER),	transclr,	
-		m_Config.getSkin(MB_SKIN_BUTTONPAUSEOUT),		transclr);
+		m_Config.getSkin(MB_SKIN_BUTTONPAUSEIN),	m_TransPanel,	
+		m_Config.getSkin(MB_SKIN_BUTTONPAUSEHOVER),	m_TransPanel,	
+		m_Config.getSkin(MB_SKIN_BUTTONPAUSEOUT),		m_TransPanel);
 
 	m_ButtonShuffle.SetBitmaps(
-		m_Config.getSkin(MB_SKIN_BUTTONSHUFFLEIN), transclr, 
-		m_Config.getSkin(MB_SKIN_BUTTONSHUFFLEHOVER), transclr, 
-		m_Config.getSkin(MB_SKIN_BUTTONSHUFFLEOUT), transclr);
-
+		m_Config.getSkin(MB_SKIN_BUTTONSHUFFLEIN), m_TransPanel, 
+		m_Config.getSkin(MB_SKIN_BUTTONSHUFFLEHOVER), m_TransPanel, 
+		m_Config.getSkin(MB_SKIN_BUTTONSHUFFLEOUT), m_TransPanel);
+//	m_ButtonSave.logit = TRUE;
 	m_ButtonSave.SetBitmaps(
-		m_Config.getSkin(MB_SKIN_BUTTONSAVEIN), transclr, 
-		m_Config.getSkin(MB_SKIN_BUTTONSAVEHOVER), transclr, 
-		m_Config.getSkin(MB_SKIN_BUTTONSAVEOUT), transclr);
+		m_Config.getSkin(MB_SKIN_BUTTONSAVEIN), m_TransPanel, 
+		m_Config.getSkin(MB_SKIN_BUTTONSAVEHOVER), m_TransPanel, 
+		m_Config.getSkin(MB_SKIN_BUTTONSAVEOUT), m_TransPanel);
 
 	m_ButtonReverse.SetBitmaps(
-		m_Config.getSkin(MB_SKIN_BUTTONREVERSEIN), transclr, 
-		m_Config.getSkin(MB_SKIN_BUTTONREVERSEHOVER), transclr, 
-		m_Config.getSkin(MB_SKIN_BUTTONREVERSEOUT), transclr);
+		m_Config.getSkin(MB_SKIN_BUTTONREVERSEIN), m_TransPanel, 
+		m_Config.getSkin(MB_SKIN_BUTTONREVERSEHOVER), m_TransPanel, 
+		m_Config.getSkin(MB_SKIN_BUTTONREVERSEOUT), m_TransPanel);
 
 	m_ButtonRandom.SetBitmaps(
-		m_Config.getSkin(MB_SKIN_BUTTONRANDOMIN), transclr, 
-		m_Config.getSkin(MB_SKIN_BUTTONRANDOMHOVER), transclr, 
-		m_Config.getSkin(MB_SKIN_BUTTONRANDOMOUT), transclr);
-
-	m_ButtonLoad.logit = TRUE;
+		m_Config.getSkin(MB_SKIN_BUTTONRANDOMIN), m_TransPanel, 
+		m_Config.getSkin(MB_SKIN_BUTTONRANDOMHOVER), m_TransPanel, 
+		m_Config.getSkin(MB_SKIN_BUTTONRANDOMOUT), m_TransPanel);
 
 	m_ButtonLoad.SetBitmaps(
-		m_Config.getSkin(MB_SKIN_BUTTONLOADIN), transclr, 
-		m_Config.getSkin(MB_SKIN_BUTTONLOADHOVER), transclr, 
-		m_Config.getSkin(MB_SKIN_BUTTONLOADOUT), transclr);
+		m_Config.getSkin(MB_SKIN_BUTTONLOADIN), m_TransPanel, 
+		m_Config.getSkin(MB_SKIN_BUTTONLOADHOVER), m_TransPanel, 
+		m_Config.getSkin(MB_SKIN_BUTTONLOADOUT), m_TransPanel);
 
 	m_ButtonFastForward.SetBitmaps(
-		m_Config.getSkin(MB_SKIN_BUTTONFASTFORWARDIN), transclr, 
-		m_Config.getSkin(MB_SKIN_BUTTONFASTFORWARDHOVER), transclr, 
-		m_Config.getSkin(MB_SKIN_BUTTONFASTFORWARDOUT), transclr);
+		m_Config.getSkin(MB_SKIN_BUTTONFASTFORWARDIN), m_TransPanel, 
+		m_Config.getSkin(MB_SKIN_BUTTONFASTFORWARDHOVER), m_TransPanel, 
+		m_Config.getSkin(MB_SKIN_BUTTONFASTFORWARDOUT), m_TransPanel);
 
 	m_ButtonClear.SetBitmaps(
-		m_Config.getSkin(MB_SKIN_BUTTONCLEARIN), transclr, 
-		m_Config.getSkin(MB_SKIN_BUTTONCLEARHOVER), transclr, 
-		m_Config.getSkin(MB_SKIN_BUTTONCLEAROUT), transclr);
+		m_Config.getSkin(MB_SKIN_BUTTONCLEARIN), m_TransPanel, 
+		m_Config.getSkin(MB_SKIN_BUTTONCLEARHOVER), m_TransPanel, 
+		m_Config.getSkin(MB_SKIN_BUTTONCLEAROUT), m_TransPanel);
 
 //	m_OptionsButton.SetColor(CButtonST::BTNST_COLOR_FG_IN, m_Config.getColorTxPanel(), TRUE);
 //	m_OptionsButton.SetColor(CButtonST::BTNST_COLOR_FG_OUT, m_Config.getColorTxPanel(), TRUE);
@@ -706,15 +726,15 @@ CPlayerDlg::setColors() {
 
 	m_VolumeSlider.SetBitmaps(
 		m_Config.getSkin(MB_SKIN_BUTTONVOLUMEBACKGROUND),
-		transclr,
+		m_TransPanel,
 		m_Config.getSkin(MB_SKIN_BUTTONVOLUMEKNOB),
-		transclr
+		m_TransPanel
 		);
 	m_PositionSlider.SetBitmaps(
 		m_Config.getSkin(MB_SKIN_BUTTONPROGRESSBACKGROUND),
-		transclr,
+		m_TransPanel,
 		m_Config.getSkin(MB_SKIN_BUTTONPROGRESSKNOB),
-		transclr
+		m_TransPanel
 		);
 	m_PositionSlider.SetOrientation(CMySliderCtrl::HORIZONTAL);
 
@@ -729,7 +749,7 @@ CPlayerDlg::resetControls() {
 	regSD.ReadFile();
 
 #pragma hack
-//#ifdef _DEBUG	 get rid of this before shipping!
+#ifdef _DEBUG	 
 	if (firsttime) {
 		firsttime=FALSE;
 		int w = regSD.Read("StartWidth",0);
@@ -743,7 +763,7 @@ CPlayerDlg::resetControls() {
 			MoveWindow(rect, TRUE );
 		}
 	}
-//#endif
+#endif
 	
 	m_Controls.init(this);
 
@@ -757,6 +777,16 @@ CPlayerDlg::resetControls() {
 
 	int ControlBoxWidth = regSD.Read("ControlBoxWidth",0);
 	int ControlBoxHeight = regSD.Read("ControlBoxHeight",0);
+
+	int r,g,b;
+	r = regSD.Read("TransRedMain",254);
+	g = regSD.Read("TransGreenMain",0);
+	b = regSD.Read("TransBlueMain",0);
+	m_TransMain = RGB(r,g,b);
+	r = regSD.Read("TransRedPanel",253);
+	g = regSD.Read("TransGreenPanel",0);
+	b = regSD.Read("TransBluePanel",0);
+	m_TransPanel = RGB(r,g,b);
 
 	int border = m_Config.getDlgBorderWidth();
 	int panelborder = m_Config.getPanelWidth();
@@ -1067,6 +1097,10 @@ CPlayerDlg::resetControls() {
 	
 	logger.log("resizeControls 1");
 
+///////////////////////////////
+// Set all the CDialogSK bmps
+///////////////////////////////
+	
 	// dialog
 	CString bgmain = m_Config.getSkin(MB_SKIN_BACKGROUNDMAIN);
 	if (bgmain.GetLength()) {
@@ -1141,36 +1175,34 @@ CPlayerDlg::resetControls() {
 	// This sends a WM_NCPAINT to repaint the resize frame
 	RedrawWindow(NULL,NULL, RDW_FRAME|RDW_INVALIDATE);
 
-	COLORREF transclr = RGB(254,0,0);
-
 	m_InitDone = TRUE;
 
 	m_Genres.SetBitmaps(cdc, 
-		m_Config.getSkin(MB_SKIN_SCROLLUPARROW),transclr,
-		m_Config.getSkin(MB_SKIN_SCROLLDOWNARROW),transclr,
-		m_Config.getSkin(MB_SKIN_SCROLLBUTTON),transclr,
-		m_Config.getSkin(MB_SKIN_SCROLLBACKGROUND),transclr);
+		m_Config.getSkin(MB_SKIN_SCROLLUPARROW),m_TransPanel,
+		m_Config.getSkin(MB_SKIN_SCROLLDOWNARROW),m_TransPanel,
+		m_Config.getSkin(MB_SKIN_SCROLLBUTTON),m_TransPanel,
+		m_Config.getSkin(MB_SKIN_SCROLLBACKGROUND),m_TransPanel);
 	m_Artists.SetBitmaps(cdc,
-		m_Config.getSkin(MB_SKIN_SCROLLUPARROW),transclr,
-		m_Config.getSkin(MB_SKIN_SCROLLDOWNARROW),transclr,
-		m_Config.getSkin(MB_SKIN_SCROLLBUTTON),transclr,
-		m_Config.getSkin(MB_SKIN_SCROLLBACKGROUND),transclr);
+		m_Config.getSkin(MB_SKIN_SCROLLUPARROW),m_TransPanel,
+		m_Config.getSkin(MB_SKIN_SCROLLDOWNARROW),m_TransPanel,
+		m_Config.getSkin(MB_SKIN_SCROLLBUTTON),m_TransPanel,
+		m_Config.getSkin(MB_SKIN_SCROLLBACKGROUND),m_TransPanel);
 	m_Albums.SetBitmaps(cdc, 
-		m_Config.getSkin(MB_SKIN_SCROLLUPARROW),transclr,
-		m_Config.getSkin(MB_SKIN_SCROLLDOWNARROW),transclr,
-		m_Config.getSkin(MB_SKIN_SCROLLBUTTON),transclr,
-		m_Config.getSkin(MB_SKIN_SCROLLBACKGROUND),transclr);
+		m_Config.getSkin(MB_SKIN_SCROLLUPARROW),m_TransPanel,
+		m_Config.getSkin(MB_SKIN_SCROLLDOWNARROW),m_TransPanel,
+		m_Config.getSkin(MB_SKIN_SCROLLBUTTON),m_TransPanel,
+		m_Config.getSkin(MB_SKIN_SCROLLBACKGROUND),m_TransPanel);
 	m_Songs.SetBitmaps(cdc, 
-		m_Config.getSkin(MB_SKIN_SCROLLUPARROW),transclr,
-		m_Config.getSkin(MB_SKIN_SCROLLDOWNARROW),transclr,
-		m_Config.getSkin(MB_SKIN_SCROLLBUTTON),transclr,
-		m_Config.getSkin(MB_SKIN_SCROLLBACKGROUND),transclr);
+		m_Config.getSkin(MB_SKIN_SCROLLUPARROW),m_TransPanel,
+		m_Config.getSkin(MB_SKIN_SCROLLDOWNARROW),m_TransPanel,
+		m_Config.getSkin(MB_SKIN_SCROLLBUTTON),m_TransPanel,
+		m_Config.getSkin(MB_SKIN_SCROLLBACKGROUND),m_TransPanel);
 	m_Playlist.SetBitmaps(cdc, 
 		
-		m_Config.getSkin(MB_SKIN_SCROLLUPARROW),transclr,
-		m_Config.getSkin(MB_SKIN_SCROLLDOWNARROW),transclr,
-		m_Config.getSkin(MB_SKIN_SCROLLBUTTON),transclr,
-		m_Config.getSkin(MB_SKIN_SCROLLBACKGROUND),transclr);
+		m_Config.getSkin(MB_SKIN_SCROLLUPARROW),m_TransPanel,
+		m_Config.getSkin(MB_SKIN_SCROLLDOWNARROW),m_TransPanel,
+		m_Config.getSkin(MB_SKIN_SCROLLBUTTON),m_TransPanel,
+		m_Config.getSkin(MB_SKIN_SCROLLBACKGROUND),m_TransPanel);
 
 	m_PositionSlider.SizeToContent(this);
 	m_VolumeSlider.SizeToContent(this);

@@ -126,7 +126,7 @@ private:
 	CFont m_font;
 	CBrush m_brush;
 	UINT m_Count;
-//	SkinBmp m_BmpBg;
+
 	CDIBSectionLite m_BmpUp;
 	CDIBSectionLite m_BmpDown;
 	CDIBSectionLite m_BmpButton;

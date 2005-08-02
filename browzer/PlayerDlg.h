@@ -62,7 +62,8 @@ class CPlayerDlg : public CDialogClassImpl
 public:
     MusicPlayer *m_Player;
 
-	CPlayerDlg(CPlayerApp *, CTransparentDialogDlg *, CWnd* pParent = NULL);	// standard constructor
+//	CPlayerDlg(CPlayerApp *, CTransparentDialogDlg *, CWnd* pParent = NULL);	// standard constructor
+	CPlayerDlg(CPlayerApp *, CWnd* pParent = NULL);	// standard constructor
     ~CPlayerDlg();
     CPlayerApp * m_PlayerApp;
 	MusicLib m_mlib;
@@ -128,6 +129,8 @@ private:
 public:
     MBConfig m_Config;
 private:
+	COLORREF m_TransMain;
+	COLORREF m_TransPanel;
 	CStringList m_Skins;
     CString m_PlayerStatusSave;
     CTime m_PlayerStatusTime;

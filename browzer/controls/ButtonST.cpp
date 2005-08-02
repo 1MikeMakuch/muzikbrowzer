@@ -587,7 +587,9 @@ void CButtonST::PaintBk(CDC* pDC)
 
 	GetWindowRect(rect1);
 	GetParent()->ScreenToClient(rect1);
-
+//	m_dcBk.DeleteDC();
+//	m_dcBk.m_hDC = NULL;
+//	m_bmpBk.DeleteObject();
 	if (m_dcBk.m_hDC == NULL)
 	{
 		m_dcBk.CreateCompatibleDC(&clDC);
@@ -596,9 +598,8 @@ void CButtonST::PaintBk(CDC* pDC)
 		m_dcBk.BitBlt(0, 0, rect.Width(), rect.Height(), &clDC, 
 			rect1.left, rect1.top, SRCCOPY);
 //		if (logit) {
-//		static int counter = 0;
-//		CString bmpname = "c:\\mkm\\bmps\\LoadBk" + numToString(counter++) + ".bmp";
-//		FileUtil::BmpSave((HBITMAP)m_bmpBk, bmpname);
+//			FileUtil::BmpLog(m_dcBk.m_hDC,"CB-PBk",
+//				rect.Width(), rect.Height(),0,0);
 //		}
 	} // if
 
@@ -642,11 +643,9 @@ HBITMAP CButtonST::CreateBitmapMask(HBITMAP hSourceBitmap,
 
 	::DeleteDC(hdcSrc);
 	::DeleteDC(hdcDest);
-	static int counter = 0;
 	
 //	if (logit) {
-//		CString bmpname = "c:\\mkm\\bmps\\Loadmask" + numToString(counter++) + ".bmp";
-//		FileUtil::BmpSave(hMask, bmpname);
+//		FileUtil::BmpLog(hMask, "CB-Mask");
 //	}
 	return hMask;
 } // End of CreateBitmapMask
@@ -835,7 +834,12 @@ void CButtonST::DrawTheBitmap(CDC* pDC, BOOL bHasTitle, RECT* rpItem,
 		::BitBlt(pDC->m_hDC, rImage.left, rImage.top, m_csBitmaps[byIndex].dwWidth, m_csBitmaps[byIndex].dwHeight, hdcMem, 0, 0, SRCAND);
 //		if (logit) logbmp(pDC->m_hDC, m_csBitmaps[byIndex].dwWidth, m_csBitmaps[byIndex].dwHeight);
 		::BitBlt(pDC->m_hDC, rImage.left, rImage.top, m_csBitmaps[byIndex].dwWidth, m_csBitmaps[byIndex].dwHeight, hdcBmpMem, 0, 0, SRCPAINT);
-//		if (logit) logbmp(pDC->m_hDC, m_csBitmaps[byIndex].dwWidth, m_csBitmaps[byIndex].dwHeight);
+//		if (logit) 
+//			FileUtil::BmpLog(pDC->m_hDC, "CB-DTB", 
+//			m_csBitmaps[byIndex].dwWidth, m_csBitmaps[byIndex].dwHeight,
+//			rImage.left, rImage.top
+//			);
+
 	} // else
 
 	::SelectObject(hdcMem, hbmT);
@@ -1571,12 +1575,18 @@ DWORD CButtonST::SetBitmaps(HBITMAP hBitmapIn, COLORREF crTransColorIn,
 			m_csBitmaps[1].dwHeight = (DWORD)csBitmapSize.bmHeight;
 
 			// Create mask for bitmap Out
+//			if (logit) {
+//				FileUtil::BmpLog(hBitmapOut, "CB-BOi");
+//			}
 			m_csBitmaps[1].hMask = CreateBitmapMask(hBitmapOut, m_csBitmaps[1].dwWidth, m_csBitmaps[1].dwHeight, crTransColorOut);
 			if (m_csBitmaps[1].hMask == NULL)
 			{
 				FreeResources();
 				return BTNST_FAILEDMASK;
 			} // if
+//			if (logit) {
+//				FileUtil::BmpLog(hBitmapOut, "CB-BOj");
+//			}
 		} // if
 		if (hBitmapHover)
 		{

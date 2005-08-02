@@ -15,7 +15,7 @@
 
 class CTransparentDialogDlg : public CDialog
 {
-#define TRANSPARENTCOLOR RGB(255, 0, 0);
+#define TRANSPARENTCOLOR RGB(254, 0, 0);
 private:
 
 	BITMAP  m_Bitmap;		// Struct to hold info about the bitmap
@@ -23,7 +23,8 @@ private:
 
 // Construction
 public:
-	CTransparentDialogDlg(CWnd* pParent = NULL);	// standard constructor
+	CTransparentDialogDlg(CWnd* pParent = NULL, 
+		COLORREF xclr = 254);	// standard constructor
 	~CTransparentDialogDlg();
 	CTime m_start;
 // Dialog Data
@@ -41,6 +42,7 @@ public:
 // Implementation
 protected:
 	HICON m_hIcon;
+	COLORREF m_Xclr;
 
 	// Generated message map functions
 	//{{AFX_MSG(CTransparentDialogDlg)

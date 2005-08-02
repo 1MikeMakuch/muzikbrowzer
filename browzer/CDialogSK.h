@@ -85,6 +85,9 @@ public:
     DWORD SetBitmap(LPCTSTR lpszFileName, CRect & rect, LayOutStyle los
 		, CString & desc);
 
+	HBITMAP CreateBitmapMask(HBITMAP, DWORD dw, DWORD dh, DWORD sw, DWORD sh,
+		LayOutStyle los);
+
 	void make(CDC *);    
     //  =======================================================================
     //  desc    Set the bitmap layout style
@@ -116,7 +119,7 @@ public:
     //  arg2    TRUE will use the color, FALSE remove transparency
     //  ret     TRUE if successful
     //  =======================================================================
-    BOOL SetTransparentColor (COLORREF col, BOOL bTrans = TRUE);
+    BOOL SetTransparentColor (COLORREF main, COLORREF panel, BOOL bTrans = TRUE);
 
 // Dialog Data
 	//{{AFX_DATA(CDialogSK)
@@ -155,6 +158,7 @@ private:
 	BOOL m_bEasyMove;
 	CBitmap * m_bmBackground;
 	CBitmap * m_bmFrame;
+	COLORREF m_Panel;
 
 };
 
