@@ -33,12 +33,15 @@ const static TCHAR RegWindowMaximized[] = _T("Maximized");
 const static TCHAR RegWindowsFontTitles[] = _T("FontTitles");
 const static TCHAR RegWindowsFontPanel[] = _T("FontPanel");
 const static TCHAR RegWindowsFontColHdr[] = _T("FontColHdr");
+const static TCHAR RegWindowsFontCurPlay[] = _T("FontCurPlay");
 
 const static TCHAR RegWindowsColorBkPanel[] = _T("ColorBkPanel");
 const static TCHAR RegWindowsColorBkColHdr[] = _T("ColorBkColHdr");
 const static TCHAR RegWindowsColorBkNormal[] = _T("ColorBkNormal");
 const static TCHAR RegWindowsColorBkHigh[] = _T("ColorBkHigh");
 const static TCHAR RegWindowsColorBkSel[] = _T("ColorBkSel");
+const static TCHAR RegWindowsColorBkCurPlay[] = _T("ColorBkCurPlay");
+const static TCHAR RegWindowsColorTxCurPlay[] = _T("ColorTxCurPlay");
 const static TCHAR RegWindowsColorTxPanel[] = _T("ColorTxPanel");
 const static TCHAR RegWindowsColorTxColHdr[] = _T("ColorTxColHdr");
 const static TCHAR RegWindowsColorTxNormal[] = _T("ColorTxNormal");

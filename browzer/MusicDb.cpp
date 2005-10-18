@@ -373,10 +373,14 @@ MusicLib::getSongsInPlaylist(const CString & name, CExtendedListBox & box) {
             while ((p < buf.p + myFile.GetLength())
                 && (p[0] == '\r' || p[0] == '\n'))
                 p++;
-            CString desc = genre; desc += " / ";
-            desc += artist; desc += " / ";
-            desc += album; desc += " / ";
-            desc += song;
+//            CString desc = genre; desc += " / ";
+//            desc += artist; desc += " / ";
+//            desc += album; desc += " / ";
+//           desc += song;
+			CString desc = song;
+			desc += " by ";
+			desc += artist + " on ";
+			desc += album;
             int sel = box.AddString(desc);
 //            box.SetItemData(sel, (DWORD) 0);
         }

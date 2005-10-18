@@ -1,3 +1,4 @@
+
 // BitmapCutterDlg.cpp : implementation file
 //
 
@@ -26,7 +27,7 @@ CRectCtrl::~CRectCtrl() {}
 // CBitmapCutterDlg dialog
 
 CBitmapCutterDlg::CBitmapCutterDlg(CWnd* pParent /*=NULL*/)
-	: CDialog(CBitmapCutterDlg::IDD, pParent), m_PicIns(this)
+	: CDialog(CBitmapCutterDlg::IDD, pParent), m_PicOuts(this)
 {
 	//{{AFX_DATA_INIT(CBitmapCutterDlg)
 		// NOTE: the ClassWizard will add member initialization here
@@ -41,6 +42,14 @@ CBitmapCutterDlg::CBitmapCutterDlg(CWnd* pParent /*=NULL*/)
 	m_NeedButtonAssignment = FALSE;
 	m_Adjusting = FALSE;
 	m_AdjustingRect = NULL;
+
+	m_nTransRedMain = 254;
+	m_nTransGreenMain = 0;
+	m_nTransBlueMain = 0;
+
+	m_nTransRedPanel = 253;
+	m_nTransGreenPanel = 0;
+	m_nTransBluePanel = 0;
 
 
 
@@ -63,6 +72,10 @@ void CBitmapCutterDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON8, m_TClearButton);
 	DDX_Control(pDX, IDC_BUTTON9, m_TLoadButton);
 	DDX_Control(pDX, IDC_BUTTON10, m_TSaveButton);
+	DDX_Control(pDX, IDC_BUTTON11, m_TMenuButton);
+	DDX_Control(pDX, IDC_BUTTON12, m_TMusicButton);
+	DDX_Control(pDX, IDC_BUTTON13, m_TPicturesButton);
+	DDX_Control(pDX, IDC_BUTTON14, m_TVideoButton);
 	DDX_Control(pDX, IDC_BUTTON_FILE_OUTS, m_ChooseOuts);
 	DDX_Control(pDX, IDC_BUTTON_FILE_INS, m_ChooseIns);
 	DDX_Control(pDX, IDC_BUTTON_FILE_HOVERS, m_ChooseHovers);
@@ -76,7 +89,6 @@ void CBitmapCutterDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_INS, m_Ins);
 	DDX_Control(pDX, IDC_OTHER, m_Other);
 	DDX_Control(pDX, IDC_OUTS, m_Outs);
-	DDX_Control(pDX, IDC_BLUE, m_Blue);
 	DDX_Control(pDX, IDC_CLEAR_HEIGHT, m_ClearHeight);
 	DDX_Control(pDX, IDC_CLEAR_WIDTH, m_ClearWidth);
 	DDX_Control(pDX, IDC_CLEAR_X, m_ClearX);
@@ -85,7 +97,6 @@ void CBitmapCutterDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_FORWARD_WIDTH, m_ForwardWidth);
 	DDX_Control(pDX, IDC_FORWARD_X, m_ForwardX);
 	DDX_Control(pDX, IDC_FORWARD_Y, m_ForwardY);
-	DDX_Control(pDX, IDC_GREEN, m_Green);
 	DDX_Control(pDX, IDC_LINEWIDTH, m_LineWidth);
 	DDX_Control(pDX, IDC_LOAD_HEIGHT, m_LoadHeight);
 	DDX_Control(pDX, IDC_LOAD_WIDTH, m_LoadWidth);
@@ -107,7 +118,6 @@ void CBitmapCutterDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_RANDOM_WIDTH, m_RandomWidth);
 	DDX_Control(pDX, IDC_RANDOM_X, m_RandomX);
 	DDX_Control(pDX, IDC_RANDOM_Y, m_RandomY);
-	DDX_Control(pDX, IDC_RED, m_Red);
 	DDX_Control(pDX, IDC_REVERSE_HEIGHT, m_ReverseHeight);
 	DDX_Control(pDX, IDC_REVERSE_WIDTH, m_ReverseWidth);
 	DDX_Control(pDX, IDC_REVERSE_X, m_ReverseX);
@@ -128,6 +138,23 @@ void CBitmapCutterDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_VOLUME_WIDTH, m_VolumeWidth);
 	DDX_Control(pDX, IDC_VOLUME_X, m_VolumeX);
 	DDX_Control(pDX, IDC_VOLUME_Y, m_VolumeY);
+	DDX_Control(pDX, IDC_MENU_HEIGHT, m_MenuHeight);
+	DDX_Control(pDX, IDC_MENU_WIDTH, m_MenuWidth);
+	DDX_Control(pDX, IDC_MENU_X, m_MenuX);
+	DDX_Control(pDX, IDC_MENU_Y, m_MenuY);
+	DDX_Control(pDX, IDC_MUSIC_HEIGHT, m_MusicHeight);
+	DDX_Control(pDX, IDC_MUSIC_WIDTH, m_MusicWidth);
+	DDX_Control(pDX, IDC_MUSIC_X, m_MusicX);
+	DDX_Control(pDX, IDC_MUSIC_Y, m_MusicY);
+	DDX_Control(pDX, IDC_PICTURES_HEIGHT, m_PicturesHeight);
+	DDX_Control(pDX, IDC_PICTURES_WIDTH, m_PicturesWidth);
+	DDX_Control(pDX, IDC_PICTURES_X, m_PicturesX);
+	DDX_Control(pDX, IDC_PICTURES_Y, m_PicturesY);
+	DDX_Control(pDX, IDC_VIDEO_HEIGHT, m_VideoHeight);
+	DDX_Control(pDX, IDC_VIDEO_WIDTH, m_VideoWidth);
+	DDX_Control(pDX, IDC_VIDEO_X, m_VideoX);
+	DDX_Control(pDX, IDC_VIDEO_Y, m_VideoY);
+	
 	DDX_Control(pDX, IDC_BMPSIZE_HOVERS, m_BmpSizeHovers);
 	DDX_Control(pDX, IDC_BMPSIZE_INS, m_BmpSizeIns);
 	DDX_Control(pDX, IDC_BMPSIZE_OUTS, m_BmpSizeOuts);
@@ -147,6 +174,10 @@ void CBitmapCutterDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_STATIC_SHUFFLE, m_LabelShuffle);
 	DDX_Control(pDX, IDC_STATIC_STOP, m_LabelStop);
 	DDX_Control(pDX, IDC_STATIC_VOLUME, m_LabelVolume);
+	DDX_Control(pDX, IDC_STATIC_MENU, m_LabelMenu);
+	DDX_Control(pDX, IDC_STATIC_MUSIC, m_LabelMusic);
+	DDX_Control(pDX, IDC_STATIC_PICTURES, m_LabelPictures);
+	DDX_Control(pDX, IDC_STATIC_VIDEO, m_LabelVideo);
 	DDX_Control(pDX, IDC_PIC_HOVERS, m_PicHovers);
 	DDX_Control(pDX, IDC_PIC_INS, m_PicIns);
 	DDX_Control(pDX, IDC_PIC_OUTS, m_PicOuts);
@@ -155,6 +186,15 @@ void CBitmapCutterDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_TEST_LABEL, m_TestLabel);
 	DDX_Control(pDX, IDC_OUTS_LABEL, m_OutsLabel);
 	DDX_Control(pDX, IDC_HOVERS_LABEL, m_HoversLabel);
+	DDX_Control(pDX, IDC_RED, m_Red);
+	DDX_Control(pDX, IDC_RED2, m_TransRedMain);
+	DDX_Control(pDX, IDC_RED3, m_TransRedPanel);
+	DDX_Control(pDX, IDC_GREEN, m_Green);
+	DDX_Control(pDX, IDC_GREEN2, m_TransGreenMain);
+	DDX_Control(pDX, IDC_GREEN3, m_TransGreenPanel);
+	DDX_Control(pDX, IDC_BLUE, m_Blue);
+	DDX_Control(pDX, IDC_BLUE2, m_TransBlueMain);
+	DDX_Control(pDX, IDC_BLUE3, m_TransBluePanel);
 	//}}AFX_DATA_MAP
 }
 
@@ -196,7 +236,7 @@ BEGIN_MESSAGE_MAP(CBitmapCutterDlg, CDialog)
 	ON_EN_CHANGE(IDC_LINEWIDTH, OnUpdateXY)
 	ON_EN_CHANGE(IDC_GREEN, OnUpdateRGB)
 	ON_EN_CHANGE(IDC_BLUE, OnUpdateRGB)
-	ON_BN_CLICKED(IDC_ADJUST, OnAdjust)
+	//ON_BN_CLICKED(IDC_ADJUST, OnAdjust)
 	//}}AFX_MSG_MAP
 	ON_MESSAGE(MB_BITMAP_CUTTER_MSG, OnArrowKey)
 END_MESSAGE_MAP()
@@ -242,7 +282,15 @@ BOOL CBitmapCutterDlg::OnInitDialog()
 	if (m_sFileHovers != "") 
 		OnButtonFileHovers();
 	Init=FALSE;
-
+	
+	m_LabelMenu.GetWindowRect(MenuLabel);
+	ScreenToClient(MenuLabel);
+	m_LabelMusic.GetWindowRect(MusicLabel);
+	ScreenToClient(MusicLabel);
+	m_LabelPictures.GetWindowRect(PicturesLabel);
+	ScreenToClient(PicturesLabel);
+	m_LabelVideo.GetWindowRect(VideoLabel);
+	ScreenToClient(VideoLabel);
 	m_LabelStop.GetWindowRect(StopLabel);
 	ScreenToClient(StopLabel);
 	m_LabelPlay.GetWindowRect(PlayLabel);
@@ -269,6 +317,10 @@ BOOL CBitmapCutterDlg::OnInitDialog()
 	ScreenToClient(ProgressLabel);
 
 //	CreateTest();
+//	m_TMenuButton.ShowWindow(SW_HIDE);
+//	m_TMusicButton.ShowWindow(SW_HIDE);
+//	m_TPicturesButton.ShowWindow(SW_HIDE);
+//	m_TVideoButton.ShowWindow(SW_HIDE);
 	m_TStopButton.ShowWindow(SW_HIDE);
 	m_TPlayButton.ShowWindow(SW_HIDE);
 	m_TPauseButton.ShowWindow(SW_HIDE);
@@ -285,7 +337,7 @@ BOOL CBitmapCutterDlg::OnInitDialog()
 
 
 	CString skindef = m_sDest + "\\" + MB_SKIN_DEF;
-	if (FileUtil::IsReadable(skindef)) {
+	if ("" != m_sDest && FileUtil::IsReadable(skindef)) {
 		CreateTest();
 	}
 	m_Ins.SetCheck(TRUE);
@@ -293,6 +345,24 @@ BOOL CBitmapCutterDlg::OnInitDialog()
 	m_Hovers.SetCheck(TRUE);
 	OnDrawLines();
 	EnableDisable();
+
+    m_MenuHeight.EnableWindow(FALSE);
+    m_MenuWidth.EnableWindow(FALSE);
+    m_MenuX.EnableWindow(FALSE);
+    m_MenuY.EnableWindow(FALSE);
+    m_MusicHeight.EnableWindow(FALSE);
+    m_MusicWidth.EnableWindow(FALSE);
+    m_MusicX.EnableWindow(FALSE);
+    m_MusicY.EnableWindow(FALSE);
+    m_PicturesHeight.EnableWindow(FALSE);
+    m_PicturesWidth.EnableWindow(FALSE);
+    m_PicturesX.EnableWindow(FALSE);
+    m_PicturesY.EnableWindow(FALSE);
+    m_VideoHeight.EnableWindow(FALSE);
+    m_VideoWidth.EnableWindow(FALSE);
+    m_VideoX.EnableWindow(FALSE);
+    m_VideoY.EnableWindow(FALSE);
+ 
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -325,7 +395,8 @@ void CBitmapCutterDlg::OnPaint()
 		CPaintDC dc(this);
 		m_DrawSliderRects = TRUE;
 		m_DrawSliderChannel = TRUE;
-		drawIt(&dc);
+		if (m_sDest != "" && m_sFileIns != "") 
+			drawIt(&dc);
 	}
 }
 void CBitmapCutterDlg::drawIt(CDC * dc) {
@@ -383,90 +454,122 @@ void CBitmapCutterDlg::drawLines(CDC * dc, CRect crect, CRect wrect,
 
 	CRect client;
 
+	Menu.left = m_nMenuX;
+	Menu.top  = m_nMenuY;
+	Menu.bottom = m_nMenuY +m_nMenuHeight - 1;
+	Menu.right = m_nMenuX + m_nMenuWidth - 1;
+	m_rects[0].rect = &Menu;
+	m_rects[0].label = &m_LabelMenu;
+
+	Music.left = m_nMusicX;
+	Music.top  = m_nMusicY;
+	Music.bottom = m_nMusicY +m_nMusicHeight - 1;
+	Music.right = m_nMusicX + m_nMusicWidth - 1;
+	m_rects[1].rect = &Music;
+	m_rects[1].label = &m_LabelMusic;
+
+	Pictures.left = m_nPicturesX;
+	Pictures.top  = m_nPicturesY;
+	Pictures.bottom = m_nPicturesY +m_nPicturesHeight - 1;
+	Pictures.right = m_nPicturesX + m_nPicturesWidth - 1;
+	m_rects[2].rect = &Pictures;
+	m_rects[2].label = &m_LabelPictures;
+
+	Video.left = m_nVideoX;
+	Video.top  = m_nVideoY;
+	Video.bottom = m_nVideoY +m_nVideoHeight - 1;
+	Video.right = m_nVideoX + m_nVideoWidth - 1;
+	m_rects[3].rect = &Video;
+	m_rects[3].label = &m_LabelVideo;
+	
 	Stop.left = m_nStopX;
 	Stop.top  = m_nStopY;
 	Stop.bottom = m_nStopY +m_nStopHeight - 1;
 	Stop.right = m_nStopX + m_nStopWidth - 1;
-	m_rects[0].rect = &Stop;
-	m_rects[0].label = &m_LabelStop;
+	m_rects[4].rect = &Stop;
+	m_rects[4].label = &m_LabelStop;
 	Play.left = m_nPlayX;
 	Play.top  = m_nPlayY;
 	Play.bottom = m_nPlayY +m_nPlayHeight - 1;
 	Play.right = m_nPlayX + m_nPlayWidth - 1;
-	m_rects[1].rect = &Play;
-	m_rects[1].label = &m_LabelPlay;
+	m_rects[5].rect = &Play;
+	m_rects[5].label = &m_LabelPlay;
 	Pause.left = m_nPauseX;
 	Pause.top  = m_nPauseY;
 	Pause.bottom = m_nPauseY +m_nPauseHeight - 1;
 	Pause.right = m_nPauseX + m_nPauseWidth - 1;
-	m_rects[2].rect = &Pause;
-	m_rects[2].label = &m_LabelPause;
+	m_rects[6].rect = &Pause;
+	m_rects[6].label = &m_LabelPause;
 	Reverse.left = m_nReverseX;
 	Reverse.top  = m_nReverseY;
 	Reverse.bottom = m_nReverseY +m_nReverseHeight - 1;
 	Reverse.right = m_nReverseX + m_nReverseWidth - 1;
-	m_rects[3].rect = &Reverse;
-	m_rects[3].label = &m_LabelReverse;
+	m_rects[7].rect = &Reverse;
+	m_rects[7].label = &m_LabelReverse;
 	Forward.left = m_nForwardX;
 	Forward.top  = m_nForwardY;
 	Forward.bottom = m_nForwardY +m_nForwardHeight - 1;
 	Forward.right = m_nForwardX + m_nForwardWidth - 1;
-	m_rects[4].rect = &Forward;
-	m_rects[4].label = &m_LabelForward;
+	m_rects[8].rect = &Forward;
+	m_rects[8].label = &m_LabelForward;
 	Random.left = m_nRandomX;
 	Random.top  = m_nRandomY;
 	Random.bottom = m_nRandomY +m_nRandomHeight - 1;
 	Random.right = m_nRandomX + m_nRandomWidth - 1;
-	m_rects[5].rect = &Random;
-	m_rects[5].label = &m_LabelRandom;
+	m_rects[9].rect = &Random;
+	m_rects[9].label = &m_LabelRandom;
 	Shuffle.left = m_nShuffleX;
 	Shuffle.top  = m_nShuffleY;
 	Shuffle.bottom = m_nShuffleY +m_nShuffleHeight - 1;
 	Shuffle.right = m_nShuffleX + m_nShuffleWidth - 1;
-	m_rects[6].rect = &Shuffle;
-	m_rects[6].label = &m_LabelShuffle;
+	m_rects[10].rect = &Shuffle;
+	m_rects[10].label = &m_LabelShuffle;
 	Clear.left = m_nClearX;
 	Clear.top  = m_nClearY;
 	Clear.bottom = m_nClearY +m_nClearHeight - 1;
 	Clear.right = m_nClearX + m_nClearWidth - 1;
-	m_rects[7].rect = &Clear;
-	m_rects[7].label = &m_LabelClear;
+	m_rects[11].rect = &Clear;
+	m_rects[11].label = &m_LabelClear;
 	Load.left = m_nLoadX;
 	Load.top  = m_nLoadY;
 	Load.bottom = m_nLoadY +m_nLoadHeight - 1;
 	Load.right = m_nLoadX + m_nLoadWidth - 1;
-	m_rects[8].rect = &Load;
-	m_rects[8].label = &m_LabelLoad;
+	m_rects[12].rect = &Load;
+	m_rects[12].label = &m_LabelLoad;
 	Save.left = m_nSaveX;
 	Save.top  = m_nSaveY;
 	Save.bottom = m_nSaveY +m_nSaveHeight - 1;
 	Save.right = m_nSaveX + m_nSaveWidth - 1;
-	m_rects[9].rect = &Save;
-	m_rects[9].label = &m_LabelSave;
+	m_rects[13].rect = &Save;
+	m_rects[13].label = &m_LabelSave;
 	Volume.left = m_nVolumeX;
 	Volume.top  = m_nVolumeY;
 	Volume.bottom = m_nVolumeY +m_nVolumeHeight - 1;
 	Volume.right = m_nVolumeX + m_nVolumeWidth - 1;
-	m_rects[10].rect = &Volume;
-	m_rects[10].label = &m_LabelVolume;
+	m_rects[14].rect = &Volume;
+	m_rects[14].label = &m_LabelVolume;
 	Progress.left = m_nProgressX;
 	Progress.top  = m_nProgressY;
 	Progress.bottom = m_nProgressY +m_nProgressHeight - 1;
 	Progress.right = m_nProgressX + m_nProgressWidth - 1;
-	m_rects[11].rect = &Progress;
-	m_rects[11].label = &m_LabelProgress;
+	m_rects[15].rect = &Progress;
+	m_rects[15].label = &m_LabelProgress;
 
 	if (m_DrawLines) {
-		drawButton(0, dc, wrect, Stop, InOrOut);	
-		drawButton(1, dc, wrect, Play, InOrOut);
-		drawButton(2, dc, wrect, Pause, InOrOut);
-		drawButton(3, dc, wrect, Reverse, InOrOut);
-		drawButton(4, dc, wrect, Forward, InOrOut);
-		drawButton(5, dc, wrect, Random, InOrOut);
-		drawButton(6, dc, wrect, Shuffle, InOrOut);
-		drawButton(7, dc, wrect, Clear, InOrOut);
-		drawButton(8, dc, wrect, Load, InOrOut);
-		drawButton(9, dc, wrect, Save, InOrOut);
+		drawButton(0, dc, wrect, Menu, InOrOut);	
+		drawButton(1, dc, wrect, Music, InOrOut);	
+		drawButton(2, dc, wrect, Pictures, InOrOut);	
+		drawButton(3, dc, wrect, Video, InOrOut);	
+		drawButton(4, dc, wrect, Stop, InOrOut);	
+		drawButton(5, dc, wrect, Play, InOrOut);
+		drawButton(6, dc, wrect, Pause, InOrOut);
+		drawButton(7, dc, wrect, Reverse, InOrOut);
+		drawButton(8, dc, wrect, Forward, InOrOut);
+		drawButton(9, dc, wrect, Random, InOrOut);
+		drawButton(10, dc, wrect, Shuffle, InOrOut);
+		drawButton(11, dc, wrect, Clear, InOrOut);
+		drawButton(12, dc, wrect, Load, InOrOut);
+		drawButton(13, dc, wrect, Save, InOrOut);
 		//drawButton(dc, wrect, volume, InOrOut);
 
 		if (m_DrawSliderChannel) {
@@ -478,8 +581,8 @@ void CBitmapCutterDlg::drawLines(CDC * dc, CRect crect, CRect wrect,
 			chy = Progress.top + (Progress.Height() / 2);
 			line(dc, wrect, chx, chy, chx + Progress.Width(), chy );
 			if (m_DrawSliderRects) {
-				drawButton(10,dc,wrect,Volume,InOrOut);
-				drawButton(11,dc,wrect,Progress,InOrOut);
+				drawButton(14,dc,wrect,Volume,InOrOut);
+				drawButton(15,dc,wrect,Progress,InOrOut);
 			}
 		}
 	}
@@ -509,7 +612,7 @@ void CBitmapCutterDlg::drawButton(int buttoni, CDC * dc, CRect wrect, CRect butt
 		penBR = penUL;
 	}
 	int i,j;
-	for(j = 0 ; j < 12 ; j++) {
+	for(j = 0 ; j < NUM_CRECTS; j++) {
 		if (buttoni != j) {
 			CRect intersection, cand,jrect;
 			cand = *m_rects[buttoni].rect;
@@ -657,36 +760,20 @@ void CBitmapCutterDlg::OnButtonFile(CStatic & clabel, CString & label,
 //	hbitmap = (HBITMAP)cdib;
 	CRect LabelRect, SizeRect, PicRect;
 
-	m_PicIns.GetWindowRect(PicRect);
-	ScreenToClient(PicRect);
-	m_BmpSizeIns.GetWindowRect(SizeRect);
-	ScreenToClient(SizeRect);
-	m_InsLabel.GetWindowRect(LabelRect);
-	ScreenToClient(LabelRect);
-	int x0 = LabelRect.left;
-	int y0 = LabelRect.top;
-	m_BmpSizeIns.MoveWindow(LabelRect.right+5, LabelRect.top,
-		SizeRect.Width(),SizeRect.Height(),TRUE);
-	m_PicIns.MoveWindow(LabelRect.left, LabelRect.bottom+10,
-		cdib.GetWidth(), cdib.GetHeight(), TRUE);
-
-	int x1 = x0 + cdib.GetWidth() + 10;
-
 	m_PicOuts.GetWindowRect(PicRect);
 	ScreenToClient(PicRect);
 	m_BmpSizeOuts.GetWindowRect(SizeRect);
 	ScreenToClient(SizeRect);
 	m_OutsLabel.GetWindowRect(LabelRect);
 	ScreenToClient(LabelRect);
-	m_OutsLabel.MoveWindow(x1,y0,LabelRect.Width(),LabelRect.Height(),TRUE);
-	m_BmpSizeOuts.MoveWindow(x1+ LabelRect.Width()+5,y0,
+	int x0 = LabelRect.left;
+	int y0 = LabelRect.top;
+	m_BmpSizeOuts.MoveWindow(LabelRect.right+5, LabelRect.top,
 		SizeRect.Width(),SizeRect.Height(),TRUE);
-	m_PicOuts.MoveWindow(x1,LabelRect.bottom+10,
+	m_PicOuts.MoveWindow(LabelRect.left, LabelRect.bottom+10,
 		cdib.GetWidth(), cdib.GetHeight(), TRUE);
 
-	int y1 = LabelRect.bottom + 10 + cdib.GetHeight();
-
-	y1+=5;
+	int x1 = x0 + cdib.GetWidth() + 10;
 
 	m_PicHovers.GetWindowRect(PicRect);
 	ScreenToClient(PicRect);
@@ -694,11 +781,27 @@ void CBitmapCutterDlg::OnButtonFile(CStatic & clabel, CString & label,
 	ScreenToClient(SizeRect);
 	m_HoversLabel.GetWindowRect(LabelRect);
 	ScreenToClient(LabelRect);
-	m_HoversLabel.MoveWindow(x0,y1,LabelRect.Width(),LabelRect.Height(),TRUE);
-	m_BmpSizeHovers.MoveWindow(x0+ LabelRect.Width()+5,y1,
+	m_HoversLabel.MoveWindow(x1,y0,LabelRect.Width(),LabelRect.Height(),TRUE);
+	m_BmpSizeHovers.MoveWindow(x1+ LabelRect.Width()+5,y0,
+		SizeRect.Width(),SizeRect.Height(),TRUE);
+	m_PicHovers.MoveWindow(x1,LabelRect.bottom+10,
+		cdib.GetWidth(), cdib.GetHeight(), TRUE);
+
+	int y1 = LabelRect.bottom + 10 + cdib.GetHeight();
+
+	y1+=5;
+
+	m_PicIns.GetWindowRect(PicRect);
+	ScreenToClient(PicRect);
+	m_BmpSizeIns.GetWindowRect(SizeRect);
+	ScreenToClient(SizeRect);
+	m_InsLabel.GetWindowRect(LabelRect);
+	ScreenToClient(LabelRect);
+	m_InsLabel.MoveWindow(x0,y1,LabelRect.Width(),LabelRect.Height(),TRUE);
+	m_BmpSizeIns.MoveWindow(x0+ LabelRect.Width()+5,y1,
 		SizeRect.Width(),SizeRect.Height(),TRUE);
 	int hy = LabelRect.bottom+10;
-	m_PicHovers.MoveWindow(x0,hy,
+	m_PicIns.MoveWindow(x0,hy,
 		cdib.GetWidth(), cdib.GetHeight(), TRUE);
 
 	m_PicTest.GetWindowRect(PicRect);
@@ -768,6 +871,20 @@ void CBitmapCutterDlg::OnApply()
 	if (val != "") m_nGreen = atoi(val);
 	m_Blue.GetWindowText(val);
 	if (val != "") m_nBlue = atoi(val);
+
+	m_TransRedMain.GetWindowText(val);
+	if (val != "") m_nTransRedMain = atoi(val);
+	m_TransGreenMain.GetWindowText(val);
+	if (val != "") m_nTransGreenMain = atoi(val);
+	m_TransBlueMain.GetWindowText(val);
+	if (val != "") m_nTransBlueMain = atoi(val);
+
+	m_TransRedPanel.GetWindowText(val);
+	if (val != "") m_nTransRedPanel = atoi(val);
+	m_TransGreenPanel.GetWindowText(val);
+	if (val != "") m_nTransGreenPanel = atoi(val);
+	m_TransBluePanel.GetWindowText(val);
+	if (val != "") m_nTransBluePanel = atoi(val);
 
 	Invalidate(TRUE);
 	m_Applied = TRUE;
@@ -960,6 +1077,26 @@ void CBitmapCutterDlg::OnSave() {
 	::DeleteDC(hdcBmp);
 	ReleaseDC(cdc);	
 	
+	sIn = m_sDest + "\\" + MB_SKIN_BUTTONMENUIN;
+	sOut = m_sDest + "\\" + MB_SKIN_BUTTONMENUOUT;
+	sHover = m_sDest + "\\" + MB_SKIN_BUTTONMENUHOVER;
+//	SplitAndSave(Menu,sIn,sOut,sHover,msg);
+
+	sIn = m_sDest + "\\" + MB_SKIN_BUTTONMUSICIN;
+	sOut = m_sDest + "\\" + MB_SKIN_BUTTONMUSICOUT;
+	sHover = m_sDest + "\\" + MB_SKIN_BUTTONMUSICHOVER;
+	SplitAndSave(Music,sIn,sOut,sHover,msg);
+
+	sIn = m_sDest + "\\" + MB_SKIN_BUTTONPICTURESIN;
+	sOut = m_sDest + "\\" + MB_SKIN_BUTTONPICTURESOUT;
+	sHover = m_sDest + "\\" + MB_SKIN_BUTTONPICTURESHOVER;
+	SplitAndSave(Pictures,sIn,sOut,sHover,msg);
+
+	sIn = m_sDest + "\\" + MB_SKIN_BUTTONVIDEOIN;
+	sOut = m_sDest + "\\" + MB_SKIN_BUTTONVIDEOOUT;
+	sHover = m_sDest + "\\" + MB_SKIN_BUTTONVIDEOHOVER;
+	SplitAndSave(Video,sIn,sOut,sHover,msg);
+
 	// stop
 	sIn = m_sDest + "\\" + MB_SKIN_BUTTONSTOPIN;
 	sOut = m_sDest + "\\" + MB_SKIN_BUTTONSTOPOUT;
@@ -1118,6 +1255,9 @@ void CBitmapCutterDlg::SplitAndSave(CRect button,
 void CBitmapCutterDlg::ReadReg() {
 	char buf[1000];
 
+	if ("" == m_sDest) return;
+
+
 	// read the bmp names from the saveto dir
 	CString file = m_sDest + "\\SkinBmps.txt";
 	RegistryKey regBmps(file);
@@ -1158,6 +1298,46 @@ void CBitmapCutterDlg::ReadReg() {
 	} else {
 		m_Blue.SetWindowText(numToString(m_nBlue));
 	}
+
+	m_nTransRedMain = reg.Read("TransRedMain",254);
+	if (m_nTransRedMain == -1) {
+		m_TransRedMain.SetWindowText("");
+	} else {
+		m_TransRedMain.SetWindowText(numToString(m_nTransRedMain));
+	}
+	m_nTransGreenMain = reg.Read("TransGreenMain",-1);
+	if (m_nTransGreenMain == -1) {
+		m_TransGreenMain.SetWindowText("");
+	} else {
+		m_TransGreenMain.SetWindowText(numToString(m_nTransGreenMain));
+	}
+	m_nTransBlueMain = reg.Read("TransBlueMain",-1);
+	if (m_nTransBlueMain == -1) {
+		m_TransBlueMain.SetWindowText("");
+	} else {
+		m_TransBlueMain.SetWindowText(numToString(m_nTransBlueMain));
+	}
+
+	m_nTransRedPanel = reg.Read("TransRedPanel",253);
+	if (m_nTransRedPanel == -1) {
+		m_TransRedPanel.SetWindowText("");
+	} else {
+		m_TransRedPanel.SetWindowText(numToString(m_nTransRedPanel));
+	}
+	m_nTransGreenPanel = reg.Read("TransGreenPanel",-1);
+	if (m_nTransGreenPanel == -1) {
+		m_TransGreenPanel.SetWindowText("");
+	} else {
+		m_TransGreenPanel.SetWindowText(numToString(m_nTransGreenPanel));
+	}
+	m_nTransBluePanel = reg.Read("TransBluePanel",-1);
+	if (m_nTransBluePanel == -1) {
+		m_TransBluePanel.SetWindowText("");
+	} else {
+		m_TransBluePanel.SetWindowText(numToString(m_nTransBluePanel));
+	}
+
+
 	m_RGB = reg.Read("RGB", 0);
 	if (m_RGB == 0) {
 		m_BlackWhite.SetCheck(TRUE);
@@ -1169,6 +1349,26 @@ void CBitmapCutterDlg::ReadReg() {
 	m_nLineWidth = reg.Read("linewidth", 1);
 	if (m_nLineWidth < 1) m_nLineWidth = 1;
 	m_LineWidth.SetWindowText(numToString(m_nLineWidth));
+
+	m_nMenuX = reg.Read("MenuX", 0);
+	m_nMenuY = reg.Read("MenuY", 0);
+	m_nMenuWidth = reg.Read("MenuWidth",0);
+	m_nMenuHeight = reg.Read("MenuHeight",0);
+
+	m_nMusicX = reg.Read("MusicX", 0);
+	m_nMusicY = reg.Read("MusicY", 0);
+	m_nMusicWidth = reg.Read("MusicWidth",0);
+	m_nMusicHeight = reg.Read("MusicHeight",0);
+
+	m_nPicturesX = reg.Read("PicturesX", 0);
+	m_nPicturesY = reg.Read("PicturesY", 0);
+	m_nPicturesWidth = reg.Read("PicturesWidth",0);
+	m_nPicturesHeight = reg.Read("PicturesHeight",0);
+
+	m_nVideoX = reg.Read("VideoX", 0);
+	m_nVideoY = reg.Read("VideoY", 0);
+	m_nVideoWidth = reg.Read("VideoWidth",0);
+	m_nVideoHeight = reg.Read("VideoHeight",0);
 
 	m_nStopX = reg.Read("StopX", 0);
 	m_nStopY = reg.Read("StopY", 0);
@@ -1225,6 +1425,8 @@ void CBitmapCutterDlg::ReadReg() {
 
 }
 void CBitmapCutterDlg::StoreReg() {
+	if ("" == m_sDest) return;
+
 	CEditsToInts();
 
 	// first save the saveto dir to the real registry
@@ -1277,6 +1479,50 @@ void CBitmapCutterDlg::StoreReg() {
 	else
 		m_nBlue = atoi(msg);
 	reg.Write("Blue",m_nBlue);
+
+	m_TransRedMain.GetWindowText(msg);
+	if (msg == "")
+		m_nTransRedMain = -1;
+	else
+		m_nTransRedMain = atoi(msg);
+	reg.Write("TransRedMain",m_nTransRedMain);
+
+	m_TransGreenMain.GetWindowText(msg);
+	if (msg == "")
+		m_nTransGreenMain = -1;
+	else
+		m_nTransGreenMain = atoi(msg);
+	reg.Write("TransGreenMain",m_nTransGreenMain);
+
+	m_TransBlueMain.GetWindowText(msg);
+	if (msg == "")
+		m_nTransBlueMain = -1;
+	else
+		m_nTransBlueMain = atoi(msg);
+	reg.Write("TransBlueMain",m_nTransBlueMain);
+
+	m_TransRedPanel.GetWindowText(msg);
+	if (msg == "")
+		m_nTransRedPanel = -1;
+	else
+		m_nTransRedPanel = atoi(msg);
+	reg.Write("TransRedPanel",m_nTransRedPanel);
+
+	m_TransGreenPanel.GetWindowText(msg);
+	if (msg == "")
+		m_nTransGreenPanel = -1;
+	else
+		m_nTransGreenPanel = atoi(msg);
+	reg.Write("TransGreenPanel",m_nTransGreenPanel);
+
+	m_TransBluePanel.GetWindowText(msg);
+	if (msg == "")
+		m_nTransBluePanel = -1;
+	else
+		m_nTransBluePanel = atoi(msg);
+	reg.Write("TransBluePanel",m_nTransBluePanel);
+
+
 	
 	m_RGB = m_Other.GetCheck();
 	reg.Write("RGB", m_RGB);
@@ -1284,6 +1530,26 @@ void CBitmapCutterDlg::StoreReg() {
 	m_LineWidth.GetWindowText(msg);
 	m_nLineWidth = atoi(msg);
 	reg.Write("linewidth",m_nLineWidth);
+
+reg.Write("MenuX", m_nMenuX);
+reg.Write("MenuY", m_nMenuY);
+reg.Write("MenuWidth", m_nMenuWidth);
+reg.Write("MenuHeight", m_nMenuHeight);
+
+reg.Write("MusicX", m_nMusicX);
+reg.Write("MusicY", m_nMusicY);
+reg.Write("MusicWidth", m_nMusicWidth);
+reg.Write("MusicHeight", m_nMusicHeight);
+
+reg.Write("PicturesX", m_nPicturesX);
+reg.Write("PicturesY", m_nPicturesY);
+reg.Write("PicturesWidth", m_nPicturesWidth);
+reg.Write("PicturesHeight", m_nPicturesHeight);
+
+reg.Write("VideoX", m_nVideoX);
+reg.Write("VideoY", m_nVideoY);
+reg.Write("VideoWidth", m_nVideoWidth);
+reg.Write("VideoHeight", m_nVideoHeight);
 
 reg.Write("StopX", m_nStopX);
 reg.Write("StopY", m_nStopY);
@@ -1342,6 +1608,28 @@ reg.WriteFile();
 
 }
 void CBitmapCutterDlg::IntsToCEdits() {
+
+
+m_MenuX.SetWindowText(numToString(m_nMenuX));
+m_MenuY.SetWindowText(numToString(m_nMenuY));
+m_MenuWidth.SetWindowText(numToString(m_nMenuWidth));
+m_MenuHeight.SetWindowText(numToString(m_nMenuHeight));
+
+m_MusicX.SetWindowText(numToString(m_nMusicX));
+m_MusicY.SetWindowText(numToString(m_nMusicY));
+m_MusicWidth.SetWindowText(numToString(m_nMusicWidth));
+m_MusicHeight.SetWindowText(numToString(m_nMusicHeight));
+
+m_PicturesX.SetWindowText(numToString(m_nPicturesX));
+m_PicturesY.SetWindowText(numToString(m_nPicturesY));
+m_PicturesWidth.SetWindowText(numToString(m_nPicturesWidth));
+m_PicturesHeight.SetWindowText(numToString(m_nPicturesHeight));
+
+m_VideoX.SetWindowText(numToString(m_nVideoX));
+m_VideoY.SetWindowText(numToString(m_nVideoY));
+m_VideoWidth.SetWindowText(numToString(m_nVideoWidth));
+m_VideoHeight.SetWindowText(numToString(m_nVideoHeight));
+
 m_StopX.SetWindowText(numToString(m_nStopX));
 m_StopY.SetWindowText(numToString(m_nStopY));
 m_StopWidth.SetWindowText(numToString(m_nStopWidth));
@@ -1396,6 +1684,27 @@ m_StartHeight.SetWindowText(numToString(m_nStartHeight));
 }
 void CBitmapCutterDlg::CEditsToInts() {
 	CString msg;
+
+m_MenuX.GetWindowText(msg);m_nMenuX=atoi(msg);
+m_MenuY.GetWindowText(msg);m_nMenuY=atoi(msg);
+m_MenuWidth.GetWindowText(msg);m_nMenuWidth=atoi(msg);
+m_MenuHeight.GetWindowText(msg);m_nMenuHeight=atoi(msg);
+
+m_MusicX.GetWindowText(msg);m_nMusicX=atoi(msg);
+m_MusicY.GetWindowText(msg);m_nMusicY=atoi(msg);
+m_MusicWidth.GetWindowText(msg);m_nMusicWidth=atoi(msg);
+m_MusicHeight.GetWindowText(msg);m_nMusicHeight=atoi(msg);
+
+m_PicturesX.GetWindowText(msg);m_nPicturesX=atoi(msg);
+m_PicturesY.GetWindowText(msg);m_nPicturesY=atoi(msg);
+m_PicturesWidth.GetWindowText(msg);m_nPicturesWidth=atoi(msg);
+m_PicturesHeight.GetWindowText(msg);m_nPicturesHeight=atoi(msg);
+
+m_VideoX.GetWindowText(msg);m_nVideoX=atoi(msg);
+m_VideoY.GetWindowText(msg);m_nVideoY=atoi(msg);
+m_VideoWidth.GetWindowText(msg);m_nVideoWidth=atoi(msg);
+m_VideoHeight.GetWindowText(msg);m_nVideoHeight=atoi(msg);
+
 m_StopX.GetWindowText(msg);m_nStopX=atoi(msg);
 m_StopY.GetWindowText(msg);m_nStopY=atoi(msg);
 m_StopWidth.GetWindowText(msg);m_nStopWidth=atoi(msg);
@@ -1444,12 +1753,33 @@ m_ProgressX.GetWindowText(msg);m_nProgressX=atoi(msg);
 m_ProgressY.GetWindowText(msg);m_nProgressY=atoi(msg);
 m_ProgressWidth.GetWindowText(msg);m_nProgressWidth=atoi(msg);
 m_ProgressHeight.GetWindowText(msg);m_nProgressHeight=atoi(msg);
-m_StartWidth.GetWindowText(msg);m_nStartWidth=atoi(msg);
-m_StartHeight.GetWindowText(msg);m_nStartHeight=atoi(msg);
+//m_StartWidth.GetWindowText(msg);m_nStartWidth=atoi(msg);
+//m_StartHeight.GetWindowText(msg);m_nStartHeight=atoi(msg);
 
 
 }
 void CBitmapCutterDlg::RectToInts() {
+
+	m_nMenuX = Menu.left;
+	m_nMenuY = Menu.top;
+	m_nMenuWidth = Menu.Width()+1;
+	m_nMenuHeight = Menu.Height()+1;
+
+	m_nMusicX = Music.left;
+	m_nMusicY = Music.top;
+	m_nMusicWidth = Music.Width()+1;
+	m_nMusicHeight = Music.Height()+1;
+
+	m_nPicturesX = Pictures.left;
+	m_nPicturesY = Pictures.top;
+	m_nPicturesWidth = Pictures.Width()+1;
+	m_nPicturesHeight = Pictures.Height()+1;
+
+	m_nVideoX = Video.left;
+	m_nVideoY = Video.top;
+	m_nVideoWidth = Video.Width()+1;
+	m_nVideoHeight = Video.Height()+1;
+
 	m_nStopX = Stop.left;
 	m_nStopY = Stop.top;
 	m_nStopWidth = Stop.Width()+1;
@@ -1658,35 +1988,38 @@ void CBitmapCutterDlg::OnLButtonDown(UINT nFlags, CPoint point)
 	
 //	CDialog::OnLButtonDown(nFlags, point);
 	m_ButtonDrawn = FALSE;
-	if (m_PicInsDlgRect.PtInRect(point)) {
+
+//xxx ins 2 outs
+	if (m_PicOutsDlgRect.PtInRect(point)) {
 		m_StartPoint = point;
 		m_Dragging = TRUE;
 		m_NeedButtonAssignment = FALSE;
-		m_PicIns.SetFocus();
+		m_PicOuts.SetFocus();
 	}
 	CRect rect;
 	if (m_NeedButtonAssignment) {
-		m_StartPoint.x -= m_PicInsDlgRect.left;
-		m_StartPoint.y -= m_PicInsDlgRect.top;
-		m_EndPoint.x -= m_PicInsDlgRect.left;
-		m_EndPoint.y -= m_PicInsDlgRect.top;
+//xxx ins 2 outs
+		m_StartPoint.x -= m_PicOutsDlgRect.left;
+		m_StartPoint.y -= m_PicOutsDlgRect.top;
+		m_EndPoint.x -= m_PicOutsDlgRect.left;
+		m_EndPoint.y -= m_PicOutsDlgRect.top;
 		rect = CRect(m_StartPoint,m_EndPoint);
 		rect.NormalizeRect();
 	}
-	if (StopLabel.PtInRect(point)) {
-		Highlight(Stop);
-		if (FALSE == m_NeedButtonAssignment) 
-			return;
-		Stop = rect;
-		m_nStopX = Stop.left;
-		m_nStopY = Stop.top;
-		m_nStopWidth = Stop.Width();
-		m_nStopHeight = Stop.Height();
-	}
+
 	CPoint cpoint(point);
-	cpoint.x -= m_PicInsDlgRect.left;
-	cpoint.y -= m_PicInsDlgRect.top;
-	if (Stop.PtInRect(cpoint)) {
+//xxx ins 2 outs
+	cpoint.x -= m_PicOutsDlgRect.left;
+	cpoint.y -= m_PicOutsDlgRect.top;
+	if (Menu.PtInRect(cpoint)) {
+		m_AdjustingRect = &Menu;
+	} else if (Music.PtInRect(cpoint)) {
+		m_AdjustingRect = &Music;
+	} else if (Pictures.PtInRect(cpoint)) {
+		m_AdjustingRect = &Pictures;
+	} else if (Video.PtInRect(cpoint)) {
+		m_AdjustingRect = &Video;
+	} else if (Stop.PtInRect(cpoint)) {
 		m_AdjustingRect = &Stop;
 	} else if (Play.PtInRect(cpoint)) {
 		m_AdjustingRect = &Play;
@@ -1712,7 +2045,58 @@ void CBitmapCutterDlg::OnLButtonDown(UINT nFlags, CPoint point)
 		m_AdjustingRect = &Progress;
 	}
 
+	if (MenuLabel.PtInRect(point)) {
+		Highlight(Menu);
+		if (FALSE == m_NeedButtonAssignment) 
+			return;
+		Menu = rect;
+		m_nMenuX = Menu.left;
+		m_nMenuY = Menu.top;
+		m_nMenuWidth = Menu.Width();
+		m_nMenuHeight = Menu.Height();
+	}
+	if (MusicLabel.PtInRect(point)) {
+		Highlight(Music);
+		if (FALSE == m_NeedButtonAssignment) 
+			return;
+		Music = rect;
+		m_nMusicX = Music.left;
+		m_nMusicY = Music.top;
+		m_nMusicWidth = Music.Width();
+		m_nMusicHeight = Music.Height();
+	}
+	if (PicturesLabel.PtInRect(point)) {
+		Highlight(Pictures);
+		if (FALSE == m_NeedButtonAssignment) 
+			return;
+		Pictures = rect;
+		m_nPicturesX = Pictures.left;
+		m_nPicturesY = Pictures.top;
+		m_nPicturesWidth = Pictures.Width();
+		m_nPicturesHeight = Pictures.Height();
+	}
+	if (VideoLabel.PtInRect(point)) {
+		Highlight(Video);
+		if (FALSE == m_NeedButtonAssignment) 
+			return;
+		Video = rect;
+		m_nVideoX = Video.left;
+		m_nVideoY = Video.top;
+		m_nVideoWidth = Video.Width();
+		m_nVideoHeight = Video.Height();
+	}
 
+
+	if (StopLabel.PtInRect(point)) {
+		Highlight(Stop);
+		if (FALSE == m_NeedButtonAssignment) 
+			return;
+		Stop = rect;
+		m_nStopX = Stop.left;
+		m_nStopY = Stop.top;
+		m_nStopWidth = Stop.Width();
+		m_nStopHeight = Stop.Height();
+	}
 
 	if (PlayLabel.PtInRect(point)) {
 		Highlight(Play);if (FALSE == m_NeedButtonAssignment) return;
@@ -1813,7 +2197,8 @@ void CBitmapCutterDlg::Highlight(CRect rect) {
 	CBrush br;
 	br.CreateSolidBrush(RGB(255,255,255));
 	CRect wrect;
-	m_PicIns.GetWindowRect(wrect);
+//xxx ins 2 outs
+	m_PicOuts.GetWindowRect(wrect);
 	ScreenToClient(wrect);
 	CRect r;
 	r.left = wrect.left + rect.left;
@@ -1842,11 +2227,11 @@ void CBitmapCutterDlg::OnMouseMove(UINT nFlags, CPoint point)
 		CDialog::OnMouseMove(nFlags, point);
 		return;
 	}
-	if (!m_PicInsDlgRect.PtInRect(point)) {
-		point.x = __min(point.x,m_PicInsDlgRect.right);
-		point.x = __max(point.x,m_PicInsDlgRect.left);
-		point.y = __min(point.y,m_PicInsDlgRect.bottom);
-		point.y = __max(point.y,m_PicInsDlgRect.top);
+	if (!m_PicOutsDlgRect.PtInRect(point)) {
+		point.x = __min(point.x,m_PicOutsDlgRect.right);
+		point.x = __max(point.x,m_PicOutsDlgRect.left);
+		point.y = __min(point.y,m_PicOutsDlgRect.bottom);
+		point.y = __max(point.y,m_PicOutsDlgRect.top);
 	}
 
 	m_EndPoint = point;
@@ -1867,6 +2252,26 @@ void CBitmapCutterDlg::OnMouseMove(UINT nFlags, CPoint point)
 
 void CBitmapCutterDlg::OnZero() 
 {
+	m_nMenuX = 0;
+	m_nMenuY = 0;
+	m_nMenuWidth = 0;
+	m_nMenuHeight = 0;
+
+	m_nMusicX = 0;
+	m_nMusicY = 0;
+	m_nMusicWidth = 0;
+	m_nMusicHeight = 0;
+
+	m_nPicturesX = 0;
+	m_nPicturesY = 0;
+	m_nPicturesWidth = 0;
+	m_nPicturesHeight = 0;
+
+	m_nVideoX = 0;
+	m_nVideoY = 0;
+	m_nVideoWidth = 0;
+	m_nVideoHeight = 0;
+
 	m_nStopX = 0;
 	m_nStopY = 0;
 	m_nStopWidth = 0;
@@ -1927,6 +2332,7 @@ void CBitmapCutterDlg::OnRemoveDraw()
 	
 }
 void CBitmapCutterDlg::CreateTest() {
+
 	if (m_sFileIns == ""
 		|| m_sFileOuts == ""
 		|| m_sFileHovers == "") {
@@ -1936,6 +2342,27 @@ void CBitmapCutterDlg::CreateTest() {
 	
 
 	COLORREF transclr = RGB(255,0,0);
+
+	m_TMenuButton.SetBitmaps(
+		m_sDest + "\\" + MB_SKIN_BUTTONMENUIN,	transclr,	
+		m_sDest + "\\" + MB_SKIN_BUTTONMENUHOVER,	transclr,	
+		m_sDest + "\\" + MB_SKIN_BUTTONMENUOUT,		transclr);
+
+	m_TMusicButton.SetBitmaps(
+		m_sDest + "\\" + MB_SKIN_BUTTONMUSICIN,	transclr,	
+		m_sDest + "\\" + MB_SKIN_BUTTONMUSICHOVER,	transclr,	
+		m_sDest + "\\" + MB_SKIN_BUTTONMUSICOUT,		transclr);
+
+	m_TPicturesButton.SetBitmaps(
+		m_sDest + "\\" + MB_SKIN_BUTTONPICTURESIN,	transclr,	
+		m_sDest + "\\" + MB_SKIN_BUTTONPICTURESHOVER,	transclr,	
+		m_sDest + "\\" + MB_SKIN_BUTTONPICTURESOUT,		transclr);
+
+	m_TVideoButton.SetBitmaps(
+		m_sDest + "\\" + MB_SKIN_BUTTONVIDEOIN,	transclr,	
+		m_sDest + "\\" + MB_SKIN_BUTTONVIDEOHOVER,	transclr,	
+		m_sDest + "\\" + MB_SKIN_BUTTONVIDEOOUT,		transclr);
+
 	m_TStopButton.SetBitmaps(
 		m_sDest + "\\" + MB_SKIN_BUTTONSTOPIN,	transclr,	
 		m_sDest + "\\" + MB_SKIN_BUTTONSTOPHOVER,	transclr,	
@@ -1998,6 +2425,10 @@ void CBitmapCutterDlg::CreateTest() {
 		transclr
 		);
 	m_TProgress.SetOrientation(CMySliderCtrl::HORIZONTAL);
+	m_TMenuButton.ShowWindow(SW_NORMAL);
+	m_TMusicButton.ShowWindow(SW_NORMAL);
+	m_TPicturesButton.ShowWindow(SW_NORMAL);
+	m_TVideoButton.ShowWindow(SW_NORMAL);
 	m_TStopButton.ShowWindow(SW_NORMAL);
 	m_TPlayButton.ShowWindow(SW_NORMAL);
 	m_TPauseButton.ShowWindow(SW_NORMAL);
@@ -2021,6 +2452,30 @@ void CBitmapCutterDlg::CreateTest() {
 	int ControlBoxLeft = wrect.left;
 	int ControlBoxTop = wrect.top;
 	int x,y,width,height;
+
+	x = ControlBoxLeft + regSD.Read("MenuX",0);
+	y = ControlBoxTop + regSD.Read("MenuY", 0);
+	width = regSD.Read("MenuWidth",0);
+	height = regSD.Read("MenuHeight",0);
+	m_TMenuButton.MoveWindow(x, y, width, height, TRUE);
+
+	x = ControlBoxLeft + regSD.Read("MusicX",0);
+	y = ControlBoxTop + regSD.Read("MusicY", 0);
+	width = regSD.Read("MusicWidth",0);
+	height = regSD.Read("MusicHeight",0);
+	m_TMusicButton.MoveWindow(x, y, width, height, TRUE);
+
+	x = ControlBoxLeft + regSD.Read("PicturesX",0);
+	y = ControlBoxTop + regSD.Read("PicturesY", 0);
+	width = regSD.Read("PicturesWidth",0);
+	height = regSD.Read("PicturesHeight",0);
+	m_TPicturesButton.MoveWindow(x, y, width, height, TRUE);
+
+	x = ControlBoxLeft + regSD.Read("VideoX",0);
+	y = ControlBoxTop + regSD.Read("VideoY", 0);
+	width = regSD.Read("VideoWidth",0);
+	height = regSD.Read("VideoHeight",0);
+	m_TVideoButton.MoveWindow(x, y, width, height, TRUE);
 
 	x = ControlBoxLeft + regSD.Read("StopX",0);
 	y = ControlBoxTop + regSD.Read("StopY", 0);
@@ -2123,7 +2578,7 @@ void CBitmapCutterDlg::OnAdjust()
 		m_Adjusting = FALSE;
 	} else  {
 		m_Adjusting = TRUE;
-		m_PicIns.SetFocus();
+		m_PicOuts.SetFocus();
 	}
 	
 }

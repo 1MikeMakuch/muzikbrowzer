@@ -194,7 +194,7 @@ unsigned long RegistryKey::Read( const TCHAR* value, unsigned long deflt ) const
 		CString key(value);
 		CString val;
 		if (mKeyValPairs->Lookup(key, val) == 0) { // not found
-			val = deflt;
+			val = numToString(deflt);
 		} else {
 			val = val.Right(val.GetLength()-2);
 		}

@@ -130,7 +130,36 @@
 #define IDC_TPROGRESS                   1106
 #define IDC_START_WIDTH                 1107
 #define IDC_START_HEIGHT                1108
-#define IDC_ADJUST                      1109
+#define IDC_MENU_X                      1109
+#define IDC_RED2                        1110
+#define IDC_GREEN2                      1111
+#define IDC_BLUE2                       1112
+#define IDC_MENU_Y                      1113
+#define IDC_RED3                        1114
+#define IDC_GREEN3                      1115
+#define IDC_BLUE3                       1116
+#define IDC_MENU_WIDTH                  1117
+#define IDC_MENU_HEIGHT                 1118
+#define IDC_STATIC_MENU                 1119
+#define IDC_MUSIC_X                     1120
+#define IDC_MUSIC_Y                     1121
+#define IDC_MUSIC_WIDTH                 1122
+#define IDC_MUSIC_HEIGHT                1123
+#define IDC_STATIC_MUSIC                1124
+#define IDC_PICTURES_X                  1125
+#define IDC_PICTURES_Y                  1126
+#define IDC_PICTURES_WIDTH              1127
+#define IDC_PICTURES_HEIGHT             1128
+#define IDC_STATIC_PICTURES             1129
+#define IDC_VIDEO_X                     1130
+#define IDC_VIDEO_Y                     1131
+#define IDC_VIDEO_WIDTH                 1132
+#define IDC_VIDEO_HEIGHT                1133
+#define IDC_STATIC_VIDEO                1134
+#define IDC_BUTTON11                    1135
+#define IDC_BUTTON12                    1136
+#define IDC_BUTTON13                    1137
+#define IDC_BUTTON14                    1138
 
 // Next default values for new objects
 // 

@@ -233,6 +233,16 @@ BOOL CConfigDisplay::OnInitDialog()
 
     AutoBuf buf(5);
     int i;
+
+    m_SizeTitles.ResetContent();
+	m_SizePanel.ResetContent();
+	m_SizeColHdr.ResetContent();
+	m_SizeCurPlay.ResetContent();
+	m_BorderWidth.ResetContent();
+	m_PanelWidth.ResetContent();
+	m_BorderHorz.ResetContent();
+	m_BorderVert.ResetContent();
+
     for (i = 5 ; i < 40; ++i) {
         sprintf(buf.p, "%d", i);
         m_SizeTitles.AddString(buf.p);
@@ -1048,10 +1058,10 @@ BOOL CConfigDisplay::verifySkin(CString skin) {
 	CStringList bmps;
 	bmps.AddTail(MB_SKIN_DEF);
 	bmps.AddTail(MB_SKIN_ALBUMART);
-	bmps.AddTail(MB_SKIN_BACKGROUNDALBUMART);
-	bmps.AddTail(MB_SKIN_BACKGROUNDLIBRARY);
+//	bmps.AddTail(MB_SKIN_BACKGROUNDALBUMART);
+//	bmps.AddTail(MB_SKIN_BACKGROUNDLIBRARY);
 	bmps.AddTail(MB_SKIN_BACKGROUNDMAIN);
-	bmps.AddTail(MB_SKIN_BACKGROUNDPLAYLIST);
+//	bmps.AddTail(MB_SKIN_BACKGROUNDPLAYLIST);
 	bmps.AddTail(MB_SKIN_BUTTONAPPLABELOUT);
 	bmps.AddTail(MB_SKIN_BUTTONBACKGROUND);
 	bmps.AddTail(MB_SKIN_BUTTONCLEARHOVER);
@@ -1072,11 +1082,12 @@ BOOL CConfigDisplay::verifySkin(CString skin) {
 	bmps.AddTail(MB_SKIN_BUTTONMINIMIZEHOVER);
 	bmps.AddTail(MB_SKIN_BUTTONMINIMIZEIN);
 	bmps.AddTail(MB_SKIN_BUTTONMINIMIZEOUT);
-	bmps.AddTail(MB_SKIN_BUTTONOPTIONSHOVER);
-	bmps.AddTail(MB_SKIN_BUTTONOPTIONSIN);
-	bmps.AddTail(MB_SKIN_BUTTONOPTIONSOUT);
-	bmps.AddTail(MB_SKIN_BUTTONPAUSEHOVER);
-	bmps.AddTail(MB_SKIN_BUTTONPAUSEIN);
+//	bmps.AddTail(MB_SKIN_BUTTONOPTIONSHOVER);
+//	bmps.AddTail(MB_SKIN_BUTTONOPTIONSIN);
+//	bmps.AddTail(MB_SKIN_BUTTONOPTIONSOUT);
+bmps.AddTail(MB_SKIN_BUTTONMENUHOVER);
+bmps.AddTail(MB_SKIN_BUTTONMENUIN);
+bmps.AddTail(MB_SKIN_BUTTONMENUOUT);
 	bmps.AddTail(MB_SKIN_BUTTONPAUSEOUT);
 	bmps.AddTail(MB_SKIN_BUTTONPLAYHOVER);
 	bmps.AddTail(MB_SKIN_BUTTONPLAYIN);

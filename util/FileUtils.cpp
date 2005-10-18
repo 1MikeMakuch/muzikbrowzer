@@ -164,27 +164,62 @@ FileUtil::BmpSave(HBITMAP hbitmap, CString file) {
 }
 
 void
-FileUtil::BmpSave(HDC hdcsrc, CString name, int width, int height, int x, int y) {
-
-	static int counter = 0;
-	HBITMAP hbmp = ::CreateCompatibleBitmap(hdcsrc,width,height);
-	HDC hdc = ::CreateCompatibleDC(NULL);
+FileUtil::BmpLog(HDC hdcsrc, CString name, int width, int height, int x, int y) {
+	HBITMAP hbmp = (HBITMAP)::CreateCompatibleBitmap(hdcsrc,width,height);
+	HDC hdc = (HDC)::CreateCompatibleDC(NULL);
 	HBITMAP oldbmp = (HBITMAP)::SelectObject(hdc, (HBITMAP)hbmp);
 	::BitBlt(hdc,0,0,width,height,hdcsrc,x,y,SRCCOPY);
 	::SelectObject(hdc, oldbmp);
-	CString bmpname = "c:\\mkm\\bmps\\" + name + numToString(counter++) + ".bmp";
-	FileUtil::BmpSave(hbmp,bmpname);
+	FileUtil::BmpLog(hbmp,name);
 	::DeleteObject((HBITMAP)hbmp);
-	::DeleteObject((HDC)hdc);
-	::DeleteObject((HBITMAP)oldbmp);
+	::DeleteDC((HDC)hdc);
+//	::DeleteObject((HBITMAP)oldbmp);
 }
 void
 FileUtil::BmpLog(HBITMAP hbitmap, CString name) {
 #ifdef _DEBUG
+	static CMapStringToOb map;
+	CObjectInt * oint;
+//	oint.m_int = 0;
+	if (map.Lookup(name, (CObject*&)oint)) {
+		oint->m_int++;
+	} else {
+		oint = new CObjectInt(0);
+		map.SetAt(name,oint);
+	}
+
 	CDIBSectionLite dib;
 	dib.SetBitmap((HBITMAP) hbitmap);
-	static int counter =0;
-	CString file = "c:\\mkm\\bmps\\" + name + numToString(counter++) + ".bmp";
+
+	CString file = "c:\\mkm\\bmps\\" + name + numToString(oint->m_int) + ".bmp";
 	dib.Save(file);
 #endif
 }
+
+#ifdef dontdoit
+TEST(FileUtil, BmpLog)
+{
+	CDIBSectionLite dib;
+	dib.Load("..\\testdata\\red.bmp");
+	FileUtil::BmpLog((HBITMAP) dib, "key1");
+
+	HDC hdcS = ::CreateCompatibleDC(NULL);
+	HDC hdcD = ::CreateCompatibleDC(NULL);
+	
+	HBITMAP hOldSBmp = (HBITMAP)::SelectObject(hdcS, (HBITMAP) dib);
+	HBITMAP hNewBmp = ::CreateCompatibleBitmap(
+		hdcS,dib.GetWidth(),dib.GetHeight());
+
+	HBITMAP hOldDBmp = (HBITMAP)::SelectObject(hdcD, hNewBmp);
+
+	::BitBlt(hdcD,0,0,dib.GetWidth(),dib.GetHeight(),hdcS,0,0,SRCCOPY);
+
+	::SelectObject(hdcD, hOldDBmp);
+	::SelectObject(hdcS, hOldSBmp);
+
+	FileUtil::BmpLog(hNewBmp,"key2");
+	::DeleteObject(hNewBmp);
+	::DeleteDC(hdcS);
+	::DeleteDC(hdcD);
+}
+#endif

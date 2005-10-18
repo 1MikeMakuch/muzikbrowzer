@@ -241,8 +241,11 @@
 #define IDC_COLOR_BK_HIGH               1201
 #define IDC_BUTTON_RESTORE              1201
 #define IDC_COLOR_BK_SEL                1202
+#define IDC_MUSIC_BUTTON                1202
 #define IDC_COLOR_TX_NORMAL             1203
+#define IDC_PICTURES_BUTTON             1203
 #define IDC_COLOR_TX_HIGH               1204
+#define IDC_VIDEO_BUTTON                1204
 #define IDC_COLOR_TX_SEL                1205
 #define IDC_COLOR_BK_PANEL              1206
 #define IDC_COLOR_TX_PANEL              1207

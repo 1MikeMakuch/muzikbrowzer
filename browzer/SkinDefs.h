@@ -68,6 +68,23 @@ const static TCHAR MB_SKIN_BUTTONSHUFFLEOUT[] = _T("ButtonShuffleOut.bmp");
 const static TCHAR MB_SKIN_BUTTONSTOPHOVER[] = _T("ButtonStopHover.bmp");
 const static TCHAR MB_SKIN_BUTTONSTOPIN[] = _T("ButtonStopIn.bmp");
 const static TCHAR MB_SKIN_BUTTONSTOPOUT[] = _T("ButtonStopOut.bmp");
+
+const static TCHAR MB_SKIN_BUTTONMENUHOVER[] = _T("ButtonMenuHover.bmp");
+const static TCHAR MB_SKIN_BUTTONMENUIN[] = _T("ButtonMenuIn.bmp");
+const static TCHAR MB_SKIN_BUTTONMENUOUT[] = _T("ButtonMenuOut.bmp");
+
+const static TCHAR MB_SKIN_BUTTONMUSICHOVER[] = _T("ButtonMusicHover.bmp");
+const static TCHAR MB_SKIN_BUTTONMUSICIN[] = _T("ButtonMusicIn.bmp");
+const static TCHAR MB_SKIN_BUTTONMUSICOUT[] = _T("ButtonMusicOut.bmp");
+
+const static TCHAR MB_SKIN_BUTTONPICTURESHOVER[] = _T("ButtonPicturesHover.bmp");
+const static TCHAR MB_SKIN_BUTTONPICTURESIN[] = _T("ButtonPicturesIn.bmp");
+const static TCHAR MB_SKIN_BUTTONPICTURESOUT[] = _T("ButtonPicturesOut.bmp");
+
+const static TCHAR MB_SKIN_BUTTONVIDEOHOVER[] = _T("ButtonVideoHover.bmp");
+const static TCHAR MB_SKIN_BUTTONVIDEOIN[] = _T("ButtonVideoIn.bmp");
+const static TCHAR MB_SKIN_BUTTONVIDEOOUT[] = _T("ButtonVideoOut.bmp");
+
 const static TCHAR MB_SKIN_BUTTONVOLUMEBACKGROUND[] = _T("ButtonVolumeBackground.bmp");
 const static TCHAR MB_SKIN_BUTTONVOLUMEKNOB[] = _T("ButtonVolumeKnob.bmp");
 const static TCHAR MB_SKIN_SCROLLBACKGROUND[] = _T("ScrollBackground.bmp");

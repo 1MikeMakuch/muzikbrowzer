@@ -14,7 +14,7 @@
 #include "ColorStatic.h"
 #include "PictureCutter.h"
 
-
+#define NUM_CRECTS 16
 class ButtonStuff
 {
 public:
@@ -45,8 +45,7 @@ class CBitmapCutterDlg : public CDialog
 // Construction
 public:
 	CBitmapCutterDlg(CWnd* pParent = NULL);	// standard constructor
-	CRectCtrl m_rects[12];
-
+	CRectCtrl m_rects[NUM_CRECTS];
 
 // Dialog Data
 	//{{AFX_DATA(CBitmapCutterDlg)
@@ -55,6 +54,10 @@ public:
 	CEdit	m_StartWidth;
 	CMySliderCtrl m_TVolume;
 	CMySliderCtrl m_TProgress;
+	CButtonST	m_TMenuButton;
+	CButtonST	m_TMusicButton;
+	CButtonST	m_TPicturesButton;
+	CButtonST	m_TVideoButton;
 	CButtonST	m_TStopButton;
 	CButtonST	m_TPlayButton;
 	CButtonST	m_TPauseButton;
@@ -78,7 +81,15 @@ public:
     CButton m_Ins;
     CButton m_Other;
     CButton m_Outs;
-    CEdit   m_Blue;
+    CEdit   m_Red;
+	CEdit   m_TransRedMain;
+	CEdit   m_TransRedPanel;
+	CEdit   m_Green;
+	CEdit   m_TransGreenMain;
+	CEdit   m_TransGreenPanel;
+	CEdit   m_Blue;
+    CEdit   m_TransBlueMain;
+    CEdit   m_TransBluePanel;
     CEdit   m_ClearHeight;
     CEdit   m_ClearWidth;
     CEdit   m_ClearX;
@@ -87,7 +98,6 @@ public:
     CEdit   m_ForwardWidth;
     CEdit   m_ForwardX;
     CEdit   m_ForwardY;
-    CEdit   m_Green;
     CEdit   m_LineWidth;
     CEdit   m_LoadHeight;
     CEdit   m_LoadWidth;
@@ -109,7 +119,6 @@ public:
     CEdit   m_RandomWidth;
     CEdit   m_RandomX;
     CEdit   m_RandomY;
-    CEdit   m_Red;
     CEdit   m_ReverseHeight;
     CEdit   m_ReverseWidth;
     CEdit   m_ReverseX;
@@ -132,6 +141,22 @@ public:
     CEdit   m_VolumeWidth;
     CEdit   m_VolumeX;
     CEdit   m_VolumeY;
+    CEdit   m_MenuHeight;
+    CEdit   m_MenuWidth;
+    CEdit   m_MenuX;
+    CEdit   m_MenuY;
+    CEdit   m_MusicHeight;
+    CEdit   m_MusicWidth;
+    CEdit   m_MusicX;
+    CEdit   m_MusicY;
+    CEdit   m_PicturesHeight;
+    CEdit   m_PicturesWidth;
+    CEdit   m_PicturesX;
+    CEdit   m_PicturesY;
+    CEdit   m_VideoHeight;
+    CEdit   m_VideoWidth;
+    CEdit   m_VideoX;
+    CEdit   m_VideoY;
     CStatic m_BmpSizeHovers;
     CStatic m_BmpSizeIns;
     CStatic m_BmpSizeOuts;
@@ -150,10 +175,14 @@ public:
     CStatic m_LabelSave;
     CStatic m_LabelShuffle;
     CStatic m_LabelStop;
+	CStatic m_LabelMenu;
+	CStatic m_LabelMusic;
+	CStatic m_LabelPictures;
+	CStatic m_LabelVideo;
     CStatic m_LabelVolume;
     CStatic m_PicHovers;
-    CPictureCutter m_PicIns;
-    CStatic m_PicOuts;
+    CPictureCutter m_PicOuts;
+    CStatic m_PicIns;
 	CStatic m_PicTest;
 	CStatic	m_InsLabel;
 	CStatic	m_TestLabel;
@@ -242,16 +271,16 @@ protected:
 	CDIBSectionLite m_cdibOuts;
 	CDIBSectionLite m_cdibHovers;
 
-	int m_nRed,m_nGreen,m_nBlue;
+	int m_nRed,m_nTransRedMain,m_nTransRedPanel,
+		m_nGreen,m_nTransGreenMain,m_nTransGreenPanel,
+		m_nBlue,m_nTransBlueMain,m_nTransBluePanel;
+
 	int m_nLineWidth;
 
-	
 
-
-
-	CRect Stop,Play,Pause,Reverse,Forward,Random,Shuffle,Clear,
+	CRect Menu,Music,Pictures,Video,Stop,Play,Pause,Reverse,Forward,Random,Shuffle,Clear,
 		Load,Save,Volume,Progress;
-	CRect StopLabel,PlayLabel,PauseLabel,ReverseLabel,ForwardLabel,
+	CRect MenuLabel,MusicLabel,PicturesLabel,VideoLabel,StopLabel,PlayLabel,PauseLabel,ReverseLabel,ForwardLabel,
 		RandomLabel,ShuffleLabel,ClearLabel,LoadLabel,SaveLabel,
 		VolumeLabel,ProgressLabel;
 	CRect m_PicInsCRect,m_PicInsDlgRect;
@@ -267,6 +296,27 @@ protected:
 	BOOL m_ButtonDrawn;
 	BOOL Init;
 	BOOL m_Adjusting;
+
+	int	m_nMenuX;
+	int	m_nMenuY;
+	int	m_nMenuWidth;
+	int	m_nMenuHeight;
+
+	int	m_nMusicX;
+	int	m_nMusicY;
+	int	m_nMusicWidth;
+	int	m_nMusicHeight;
+
+	int	m_nPicturesX;
+	int	m_nPicturesY;
+	int	m_nPicturesWidth;
+	int	m_nPicturesHeight;
+
+	int	m_nVideoX;
+	int	m_nVideoY;
+	int	m_nVideoWidth;
+	int	m_nVideoHeight;
+
 	int	m_nStopX;
 	int	m_nStopY;
 	int	m_nStopWidth;

@@ -70,7 +70,7 @@ public:
 	CString _selectedGenre, _selectedArtist, _selectedAlbum,
         _selectedSong, _selectedPlaylistSong;
 
-	void updatePlaylist();
+	void updatePlaylist(const BOOL save=TRUE);
 	virtual BOOL PreTranslateMessage(MSG*);
 	Irman & irman() { return m_irman; }
     void PlayLoop();
@@ -185,8 +185,7 @@ private:
 	REFERENCE_TIME m_timerid;
 	REFERENCE_TIME m_StatusTimerId;
 	REFERENCE_TIME m_VolumeTimerId;
-	CFont m_HeaderFont;
-	CFont m_OptionsButtonFont;
+
 	CString m_HelpMsg;
 	BOOL m_InitDone;
 	enum ArtOwnedType {
@@ -217,6 +216,9 @@ private:
 	CExtendedListBox	m_Songs;	
 	CExtendedListBox	m_Playlist;    
 	CButtonST		m_OptionsButton;
+	CButtonST		m_MusicButton;
+	CButtonST		m_PicturesButton;
+	CButtonST		m_VideoButton;
 	CButtonST		m_ButtonMinimize;
 	CButtonST		m_ButtonMaximize;
 	CButtonST		m_ButtonExit;
@@ -282,6 +284,9 @@ public:
 	afx_msg void OnSelchangePlaylist();
 	afx_msg void OnMenuRandomizePlaylist();
 	afx_msg void OnButtonMenu();
+	afx_msg void OnMusicButton();
+	afx_msg void OnPicturesButton();
+	afx_msg void OnVideoButton();
 	afx_msg void OnButtonMinimize();
 	afx_msg void OnButtonMaximize();
 	afx_msg void OnCancel();

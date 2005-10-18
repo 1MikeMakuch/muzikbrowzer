@@ -179,7 +179,10 @@ int CMydiffDlg::pageHeight() {
 	return pagelen;
 }
 void CMydiffDlg::showDiffPos() {
-	if (!m_currentdiff) return;
+	if (!m_currentdiff) {
+		m_EditDiffPos.SetWindowText("");
+		return;
+	}
 	DiffOb* dob = (DiffOb*)m_DiffList.GetAt(m_currentdiff);
 	CString msg = numToString(dob->m_diffNum);
 	msg += "/";
@@ -202,11 +205,12 @@ void CMydiffDlg::OnButtonPrevFile()
 
 void CMydiffDlg::OnButtonNextDiff() 
 {
-	DiffOb * dob;
+	DiffOb * dob = NULL;
 
 	if (m_currentdiff == NULL) {
 		m_currentdiff = m_DiffList.GetTailPosition();
-		dob = (DiffOb*)m_DiffList.GetAt(m_currentdiff);
+		if (m_currentdiff)
+			dob = (DiffOb*)m_DiffList.GetAt(m_currentdiff);
 	} else if (m_currentdiff == m_diffTail) {
 		dob = (DiffOb*)m_DiffList.GetAt(m_currentdiff);
 	} else {
@@ -295,7 +299,8 @@ LRESULT CMydiffDlg::OnDiffDone(WPARAM wParam, LPARAM) {
 	POSITION pos;
 	for(pos = m_ComOutput.GetHeadPosition() ; pos != NULL;) {
 //		m_DiffBox.AddString(m_ComOutput.GetAt(pos));
-		m_Diff.AddTail(m_ComOutput.GetAt(pos));
+		CString tmp = m_ComOutput.GetAt(pos);
+		m_Diff.AddTail(tmp);
 		m_ComOutput.GetNext(pos);
 	}
 
@@ -592,7 +597,9 @@ void CMydiffDlg::processDiff() {
 				break;
 			}
 			default: {
-				if (line.Find("Binary file") < 0) {
+				if (line.Find("cvs diff: No newline at end of file")
+					>= 0) {
+				} else if (line.Find("Binary file") < 0) {
 					CString msg = "Unhandled op code from diff! ";
 					msg += line;
 					MessageBox(msg);
