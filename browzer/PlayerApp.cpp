@@ -92,19 +92,15 @@ BOOL CPlayerApp::InitInstance()
     msg += " initializing";
 	splashDlg->ShowWindow(SW_SHOWNORMAL /* CWinApp::m_nCmdShow */);
 	splashDlg->UpdateWindow();
-
-
-	
-
     m_PlayerDlg = new CPlayerDlg(this, splashDlg);
 #endif
-    m_PlayerDlg = new CPlayerDlg(this);
+
+	m_PlayerDlg = new CPlayerDlg(this);
 	m_pMainWnd = m_PlayerDlg;
 	int nResponse = m_PlayerDlg->DoModal();
-	
-//	delete splashDlg;
-    delete m_PlayerDlg;
+	delete m_PlayerDlg;
 
+//	delete splashDlg;
 	// Since the dialog has been closed, return FALSE so that we exit the
 	//  application, rather than start the application's message pump.
 	return FALSE;

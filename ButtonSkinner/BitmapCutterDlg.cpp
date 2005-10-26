@@ -1420,6 +1420,9 @@ void CBitmapCutterDlg::ReadReg() {
 	m_nProgressHeight = reg.Read("ProgressHeight",0);
 	m_nStartWidth = reg.Read("StartWidth",800);
 	m_nStartHeight = reg.Read("StartHeight",600);
+
+	m_nBorderHorz = reg.Read("BorderHorz", 5);
+	m_nBorderVert = reg.Read("BorderVert", 5);
 	IntsToCEdits();
 	OnApply();
 
@@ -1603,6 +1606,8 @@ reg.Write("ControlBoxWidth", m_PicInsCRect.Width());
 reg.Write("ControlBoxHeight", m_PicInsCRect.Height());
 reg.Write("StartWidth", m_nStartWidth);
 reg.Write("StartHeight",m_nStartHeight);
+reg.Write("BorderHorz",m_nBorderHorz);
+reg.Write("BorderVert",m_nBorderVert);
 
 reg.WriteFile();
 

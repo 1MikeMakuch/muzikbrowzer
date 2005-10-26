@@ -23,6 +23,7 @@ public:
 	CRect rectctrl;
 	CRect rectlabel;
 	CRect rectall;
+	int x,y;
 };
 class Controls {
 public:

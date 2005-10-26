@@ -126,9 +126,24 @@ private:
 	CTransparentDialogDlg *_initdialog;
 	Irman m_irman;
 	CString m_AlbumArt;
+	UINT m_AdjustLibrary;
+	BOOL m_LibraryDragging;
 public:
     MBConfig m_Config;
 private:
+	CRect m_GenresRect,m_GenresLabelRect,
+		m_ArtistsRect,m_ArtistsLabelRect,
+		m_AlbumsRect,m_AlbumsLabelRect,
+		m_SongsRect,m_SongsLabelRect,
+		m_GenreArtistAdjust,
+		m_ArtistAlbumAdjust,
+		m_AlbumSongAdjust,
+		m_GenresLabelInt,
+		m_ArtistsLabelInt,
+		m_AlbumsLabelInt,
+		m_SongsLabelInt,
+		m_ColHdrsRect;
+	CString m_CurrentTitleDesc;
 	COLORREF m_TransMain;
 	COLORREF m_TransPanel;
 	CStringList m_Skins;
@@ -146,6 +161,7 @@ private:
 	int m_trialCounter;
 
     void resetControls();
+	void AdjustLibraryWidths(CPoint & point);
     void SaveWindowPos();
     void ReadWindowPos(int &, CRect &);
 
@@ -176,7 +192,8 @@ private:
 
     BOOL m_LButtonDown;
     CPoint m_deltaPoint;
-    CBrush m_brush;
+    CBrush m_brush,m_HatchBrush;
+
 
     CMapStringToString m_GenreArtist;
     CMapStringToString m_ArtistAlbum;
@@ -291,6 +308,10 @@ public:
 	afx_msg void OnButtonMaximize();
 	afx_msg void OnCancel();
 	afx_msg void OnButtonResize();
+	afx_msg BOOL OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message);
+	afx_msg void OnNcMouseMove(UINT nFlags, CPoint point);
+	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
+	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	//}}AFX_MSG
 	afx_msg void OnCaptureChanged(CWnd *pWnd);
 	afx_msg LRESULT OnGraphNotify(UINT wParam, LONG lParam);
@@ -298,16 +319,25 @@ public:
 	afx_msg LRESULT OnVolume(UINT wParam, LONG lParam);
 	afx_msg LRESULT OnProgress(UINT wParam, LONG lParam);
     afx_msg LRESULT OnPostMyIdle(UINT wParam, LONG lParam);
-	afx_msg LRESULT OnSkinPic(UINT wParam, LONG lParam);
-	afx_msg LRESULT OnMusicAdd(UINT wParam, LONG lParam);
-	afx_msg LRESULT OnMusicScan(UINT wParam, LONG lParam);
-	afx_msg LRESULT OnMusicScanNew(UINT wParam, LONG lParam);
+
+//	afx_msg LRESULT OnSkinPic(UINT wParam, LONG lParam);
+//	afx_msg LRESULT OnMusicAdd(UINT wParam, LONG lParam);
+//	afx_msg LRESULT OnMusicScan(UINT wParam, LONG lParam);
+//	afx_msg LRESULT OnMusicScanNew(UINT wParam, LONG lParam);
+
+	afx_msg void OnSkinPic(UINT wParam);
+	afx_msg void OnMusicAdd(UINT wParam);
+	afx_msg void OnMusicScan(UINT wParam);
+	afx_msg void OnMusicScanNew(UINT wParam);
+
 	afx_msg void OnGenresFocus();
 	afx_msg void OnArtistsFocus();
 	afx_msg void OnAlbumsFocus();
 	afx_msg void OnSongsFocus();
 	afx_msg void OnPlaylistFocus();
     afx_msg UINT OnNcHitTest( CPoint point );
+	afx_msg void OnNcLButtonDown(UINT, CPoint);
+	afx_msg void OnNcLButtonUp(UINT, CPoint);
     afx_msg HBRUSH OnCtlColor( CDC* pDC, CWnd* pWnd, UINT nCtlColor );
     afx_msg void OnDrawItem( int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruct );
     afx_msg void OnTestMenu();

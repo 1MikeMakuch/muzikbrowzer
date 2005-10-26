@@ -16,7 +16,7 @@
 #define MBREGKEYLAST "Software\\muzikbrowzer\\PreviousValues"
 
 #define MBUNABLETOOPEN "Unable to open database location. Set in config options, then run Scan."
-#define PLAYER_STATUS_DELAY 10
+#define PLAYER_STATUS_DELAY 2
 #define MBPLAYLIST "_Playlist_"
 #define MBPLAYLISTEXT ".mbp"
 #define MBTHEMEEXT ".mbtheme"

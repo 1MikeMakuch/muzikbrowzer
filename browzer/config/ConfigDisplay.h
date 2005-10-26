@@ -35,10 +35,10 @@ public:
 	CColorBtn	m_TxCurPlay;
 	CColorBtn	m_BkCurPlay;
 	CButton	m_BoldCurPlay;
-	CComboBox	m_BorderVert;
-	CComboBox	m_BorderHorz;
+//	CComboBox	m_BorderVert;
+//	CComboBox	m_BorderHorz;
 	CSpinButtonCtrl	m_GenreSpin;
-	CComboBox		m_PanelWidth;
+//	CComboBox		m_PanelWidth;
 	CComboBox		m_SkinList;
 	CComboBox		m_BorderWidth;
 	CButton         m_BoldColHdr;
@@ -189,13 +189,15 @@ public:
 	COLORREF getTxCurPlay() { return m_vTxCurPlay; }
 
 	int getBorderWidth() { return m_vBorderWidth; }
-	int getPanelWidth() { return m_vPanelWidth; }
+//  no longer used
+//	int getPanelWidth() { return m_vPanelWidth; }
 	int getBorderHorz() { return m_vBorderHorz; }
 	int getBorderVert() { return m_vBorderVert; }
 //	double getPlaylistHeightPct();
 	double getGenreWidthPct();
 	const CString getSkin(const CString key);
 	const CString getSkin(const CString skiname, const CString key);
+	void ReadTheme();
 	void getSkins(CStringList &);
 	const CString getCurrentSkin() { return m_sSkinName; }
 	BOOL verifySkin(CString skin);

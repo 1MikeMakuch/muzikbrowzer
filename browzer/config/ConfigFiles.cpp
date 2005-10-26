@@ -370,9 +370,11 @@ void CConfigFiles::StoreReg() {
     const TCHAR * location = (LPCTSTR) Location;
 
 	StoreReg2();
+    RegistryKey reg( HKEY_LOCAL_MACHINE, RegKey );
+    reg.Write(RegDbLocation, location);
 #ifdef asdf
     unsigned long num = m_MP3DirList.GetCount();
-    reg.Write(RegDbLocation, location);
+
     reg.Write(RegNumDirs, num);
 
     m_origMP3DirList.RemoveAll();
@@ -387,7 +389,7 @@ void CConfigFiles::StoreReg() {
         reg.Write(buf.p, dir);
     }
 #endif
-    RegistryKey reg( HKEY_LOCAL_MACHINE, RegKey );
+
 #ifdef asdf
     m_origMp3Extensions.RemoveAll();
     unsigned long num = m_Mp3Extensions.GetCount();

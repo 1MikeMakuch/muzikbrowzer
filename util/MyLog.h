@@ -48,4 +48,6 @@ MyLog logger;
 extern MyLog logger;
 #endif
 
+#define ODS(x) OutputDebugString(x);
+
 #endif

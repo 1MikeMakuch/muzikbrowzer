@@ -122,6 +122,7 @@ public:
 	CString mbdir();
 	const CString getSkin(const CString key);
 	const CString getCurrentSkin();
+	void ReadTheme() ;
 	void getSkins(CStringList &);
 	BOOL ChooseSkin(CString);
 	int getPanelWidth() ;

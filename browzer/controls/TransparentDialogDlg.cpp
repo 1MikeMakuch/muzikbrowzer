@@ -182,7 +182,7 @@ void CTransparentDialogDlg::OnSize(UINT nType, int cx, int cy)
 #pragma hack 
 	// this is temp just for dev pusposes. Final splash
 	//should be compiled in.
-	CString splash = "splash.bmp";
+	CString splash = "MBSplash.bmp";
 	if (FileUtil::IsReadable(splash)) {
 		m_hBitmap = (HBITMAP) LoadImage (NULL,
 		splash, IMAGE_BITMAP, 0, 0, LR_DEFAULTCOLOR

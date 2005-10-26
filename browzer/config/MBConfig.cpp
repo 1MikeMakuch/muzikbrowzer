@@ -162,10 +162,10 @@ COLORREF
 MBConfig::getColorBkCurPlay() {
     return m_Display->getBkCurPlay();
 }
-int
-MBConfig::getPanelWidth() {
-    return m_Display->getPanelWidth();
-}
+//int
+//MBConfig::getPanelWidth() {
+//    return m_Display->getPanelWidth();
+//}
 
 int
 MBConfig::getDlgBorderWidth() {
@@ -175,6 +175,11 @@ int
 MBConfig::getDlgBorderHorz() {
 	return m_Display->getBorderHorz();
 }
+void
+MBConfig::ReadTheme() {
+	m_Display->ReadTheme();
+}
+
 int
 MBConfig::getDlgBorderVert() {
 	return m_Display->getBorderVert();

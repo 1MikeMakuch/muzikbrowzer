@@ -9,7 +9,7 @@ Control::Control(const int irow, const int icol, const CString & desc,
 	ctrl(cwdctrl), label(cwndlabel),
 	height(0), width(0),
 	widthpct(0), heightpct(0),
-	labelwidth(0), labelheight(0), m_desc(desc), enabled(1)
+	labelwidth(0), labelheight(0), m_desc(desc), enabled(1),x(0),y(0)
 {
 	if (ctrl) {
 		ctrl->GetWindowRect(rectctrl);
@@ -123,6 +123,8 @@ void Controls::move(Control * cp, const int x, const int y,
 					const int row, const int col) {
 	int cx = x;
 	int cy = y;
+	cp->x = x;
+	cp->y = y;
 	if (cp->label) {
 		cp->label->MoveWindow(cx,cy,cp->width,cp->labelheight,TRUE);
 		//::DeferWindowPos(m_HDWPHandle, cp->label->m_hWnd, NULL,

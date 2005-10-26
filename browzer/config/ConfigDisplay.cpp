@@ -85,10 +85,10 @@ void CConfigDisplay::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_COLOR_TX_CURPLY, m_TxCurPlay);
 	DDX_Control(pDX, IDC_COLOR_BK_CURPLY, m_BkCurPlay);
 	DDX_Control(pDX, IDC_BOLD_CURPLY, m_BoldCurPlay);
-	DDX_Control(pDX, IDC_BORDER_VERT, m_BorderVert);
-	DDX_Control(pDX, IDC_BORDER_HORZ, m_BorderHorz);
+//	DDX_Control(pDX, IDC_BORDER_VERT, m_BorderVert);
+//	DDX_Control(pDX, IDC_BORDER_HORZ, m_BorderHorz);
      DDX_Control(pDX, IDC_SPIN_GENRE,			m_GenreSpin);
-     DDX_Control(pDX, IDC_BORDER_PANEL,         m_PanelWidth);
+//     DDX_Control(pDX, IDC_BORDER_PANEL,         m_PanelWidth);
      DDX_Control(pDX, IDC_SKIN_LIST,            m_SkinList);
      DDX_Control(pDX, IDC_BORDER_WIDTH,         m_BorderWidth);
      DDX_Control(pDX, IDC_BOLD_COLHDR,          m_BoldColHdr);
@@ -239,9 +239,9 @@ BOOL CConfigDisplay::OnInitDialog()
 	m_SizeColHdr.ResetContent();
 	m_SizeCurPlay.ResetContent();
 	m_BorderWidth.ResetContent();
-	m_PanelWidth.ResetContent();
-	m_BorderHorz.ResetContent();
-	m_BorderVert.ResetContent();
+//	m_PanelWidth.ResetContent();
+//	m_BorderHorz.ResetContent();
+//	m_BorderVert.ResetContent();
 
     for (i = 5 ; i < 40; ++i) {
         sprintf(buf.p, "%d", i);
@@ -254,13 +254,13 @@ BOOL CConfigDisplay::OnInitDialog()
     for (i = 0 ; i < 40; ++i) {
         sprintf(buf.p, "%d", i);
         m_BorderWidth.AddString(buf.p);
-		m_PanelWidth.AddString(buf.p);
+//		m_PanelWidth.AddString(buf.p);
     }
-    for (i = 0 ; i < 40; ++i) {
-        sprintf(buf.p, "%d", i);
-        m_BorderHorz.AddString(buf.p);
-		m_BorderVert.AddString(buf.p);
-    }
+//    for (i = 0 ; i < 40; ++i) {
+//        sprintf(buf.p, "%d", i);
+//        m_BorderHorz.AddString(buf.p);
+//		m_BorderVert.AddString(buf.p);
+//    }
 
 //	readThemes();
 	readSkins();
@@ -277,13 +277,13 @@ BOOL CConfigDisplay::OnInitDialog()
 	sel = m_BorderWidth.SelectString(-1, numToString(m_vBorderWidth));
 	m_BorderWidth.SetCurSel(sel);
 
-	sel = m_PanelWidth.SelectString(-1, numToString(m_vPanelWidth));
-	m_PanelWidth.SetCurSel(sel);
+//	sel = m_PanelWidth.SelectString(-1, numToString(m_vPanelWidth));
+//	m_PanelWidth.SetCurSel(sel);
 
-	sel = m_BorderHorz.SelectString(-1, numToString(m_vBorderHorz));
-	m_BorderHorz.SetCurSel(sel);
-	sel = m_BorderVert.SelectString(-1, numToString(m_vBorderVert));
-	m_BorderVert.SetCurSel(sel);
+//	sel = m_BorderHorz.SelectString(-1, numToString(m_vBorderHorz));
+//	m_BorderHorz.SetCurSel(sel);
+//	sel = m_BorderVert.SelectString(-1, numToString(m_vBorderVert));
+//	m_BorderVert.SetCurSel(sel);
 
     showSample();
 
@@ -323,7 +323,7 @@ CConfigDisplay::setDefaults() {
     v2m();
 	m_sSkinName = MUZIKBROWZER;
 	m_vBorderWidth = 5;
-	m_vPanelWidth = 5;
+//	m_vPanelWidth = 5;
 	m_vBorderHorz = 5;
 	m_vBorderVert = 5;
 //	m_vPlaylistHeightPct = 30;
@@ -402,7 +402,7 @@ CConfigDisplay::ReadReg(RegistryKey & reg) {
     v2m();
 
 	m_vBorderWidth = reg.Read(RegWindowsBorderWidth, m_vBorderWidth);
-	m_vPanelWidth = reg.Read(RegWindowsPanelWidth, m_vPanelWidth);
+//	m_vPanelWidth = reg.Read(RegWindowsPanelWidth, m_vPanelWidth);
 //	m_vPlaylistHeightPct = reg.Read(RegWindowsPlaylistHeightPct, m_vPlaylistHeightPct);
 	m_vGenreWidthPct = reg.Read(RegWindowsGenreWidthPct, m_vGenreWidthPct);
 	m_vBorderHorz = reg.Read(RegWindowsBorderHorz, m_vBorderHorz);
@@ -414,19 +414,19 @@ CConfigDisplay::ReadReg(RegistryKey & reg) {
 		m_BorderWidth.SetCurSel(sel);
 	}
 
-	if (IsWindow(m_PanelWidth.m_hWnd)) {
-		sel = m_PanelWidth.SelectString(-1, numToString(m_vPanelWidth));
-		m_PanelWidth.SetCurSel(sel);
-	}
+//	if (IsWindow(m_PanelWidth.m_hWnd)) {
+//		sel = m_PanelWidth.SelectString(-1, numToString(m_vPanelWidth));
+//		m_PanelWidth.SetCurSel(sel);
+//	}
 
-	if (IsWindow(m_BorderHorz.m_hWnd)) {
-		sel = m_BorderHorz.SelectString(-1, numToString(m_vBorderHorz));
-		m_BorderHorz.SetCurSel(sel);
-	}
-	if (IsWindow(m_BorderVert.m_hWnd)) {
-		sel = m_BorderVert.SelectString(-1, numToString(m_vBorderVert));
-		m_BorderVert.SetCurSel(sel);
-	}
+//	if (IsWindow(m_BorderHorz.m_hWnd)) {
+//		sel = m_BorderHorz.SelectString(-1, numToString(m_vBorderHorz));
+//		m_BorderHorz.SetCurSel(sel);
+//	}
+//	if (IsWindow(m_BorderVert.m_hWnd)) {
+//		sel = m_BorderVert.SelectString(-1, numToString(m_vBorderVert));
+//		m_BorderVert.SetCurSel(sel);
+//	}
 
 
 //	if (MB_PLAYLIST_HEIGHT_PCT_MIN <= m_vPlaylistHeightPct
@@ -619,41 +619,41 @@ CConfigDisplay::StoreReg(RegistryKey & reg) {
 	}
 	reg.Write(RegWindowsBorderWidth, m_vBorderWidth);
 
-	sel = m_BorderHorz.GetCurSel();
-	if (sel > -1) {
-		CString tmp;
-		m_BorderHorz.GetLBText(sel, tmp);
-		m_vBorderHorz = atoi(tmp);
-	} else {
-		CString tmp;
-		m_BorderHorz.GetWindowText(tmp);
-		m_vBorderHorz = atoi(tmp);
-	}
+//	sel = m_BorderHorz.GetCurSel();
+//	if (sel > -1) {
+//		CString tmp;
+//		m_BorderHorz.GetLBText(sel, tmp);
+//		m_vBorderHorz = atoi(tmp);
+//	} else {
+//		CString tmp;
+//		m_BorderHorz.GetWindowText(tmp);
+//		m_vBorderHorz = atoi(tmp);
+//	}
 	reg.Write(RegWindowsBorderHorz, m_vBorderHorz);
-
-	sel = m_BorderVert.GetCurSel();
-	if (sel > -1) {
-		CString tmp;
-		m_BorderVert.GetLBText(sel, tmp);
-		m_vBorderVert = atoi(tmp);
-	} else {
-		CString tmp;
-		m_BorderVert.GetWindowText(tmp);
-		m_vBorderVert = atoi(tmp);
-	}
+//
+//	sel = m_BorderVert.GetCurSel();
+//	if (sel > -1) {
+//		CString tmp;
+//		m_BorderVert.GetLBText(sel, tmp);
+//		m_vBorderVert = atoi(tmp);
+//	} else {
+//		CString tmp;
+//		m_BorderVert.GetWindowText(tmp);
+//		m_vBorderVert = atoi(tmp);
+//	}
 	reg.Write(RegWindowsBorderVert, m_vBorderVert);
-
-	sel = m_PanelWidth.GetCurSel();
-	if (sel > -1) {
-		CString tmp;
-		m_PanelWidth.GetLBText(sel, tmp);
-		m_vPanelWidth = atoi(tmp);
-	} else {
-		CString tmp;
-		m_PanelWidth.GetWindowText(tmp);
-		m_vPanelWidth = atoi(tmp);
-	}
-	reg.Write(RegWindowsPanelWidth, m_vPanelWidth);
+//
+//	sel = m_PanelWidth.GetCurSel();
+//	if (sel > -1) {
+//		CString tmp;
+//		m_PanelWidth.GetLBText(sel, tmp);
+//		m_vPanelWidth = atoi(tmp);
+//	} else {
+//		CString tmp;
+//		m_PanelWidth.GetWindowText(tmp);
+//		m_vPanelWidth = atoi(tmp);
+//	}
+//	reg.Write(RegWindowsPanelWidth, m_vPanelWidth);
 
 //	m_vPlaylistHeightPct = m_PlaylistSpin.GetPos();
 //	reg.Write(RegWindowsPlaylistHeightPct, m_vPlaylistHeightPct);
@@ -997,25 +997,25 @@ void CConfigDisplay::OnOK()
 		m_vBorderWidth = atoi(tmp);
 	}
 
-	sel = m_PanelWidth.GetCurSel();
-	if (sel > -1) {
-		CString tmp;
-		m_PanelWidth.GetLBText(sel, tmp);
-		m_vPanelWidth = atoi(tmp);
-	}
-
-	sel = m_BorderHorz.GetCurSel();
-	if (sel > -1) {
-		CString tmp;
-		m_BorderHorz.GetLBText(sel, tmp);
-		m_vBorderHorz = atoi(tmp);
-	}
-	sel = m_BorderVert.GetCurSel();
-	if (sel > -1) {
-		CString tmp;
-		m_BorderVert.GetLBText(sel, tmp);
-		m_vBorderVert = atoi(tmp);
-	}
+//	sel = m_PanelWidth.GetCurSel();
+//	if (sel > -1) {
+//		CString tmp;
+//		m_PanelWidth.GetLBText(sel, tmp);
+//		m_vPanelWidth = atoi(tmp);
+//	}
+//
+//	sel = m_BorderHorz.GetCurSel();
+//	if (sel > -1) {
+//		CString tmp;
+//		m_BorderHorz.GetLBText(sel, tmp);
+//		m_vBorderHorz = atoi(tmp);
+//	}
+//	sel = m_BorderVert.GetCurSel();
+//	if (sel > -1) {
+//		CString tmp;
+//		m_BorderVert.GetLBText(sel, tmp);
+//		m_vBorderVert = atoi(tmp);
+//	}
 
 //	m_vPlaylistHeightPct = m_PlaylistSpin.GetPos();
 //	m_vGenreWidthPct = m_GenreSpin.GetPos();
@@ -1213,7 +1213,8 @@ BOOL CConfigDisplay::OnSkinChoose(CString skin)
 
 }
 #ifdef asdf
-void CConfigDisplay::OnThemeCreate() 
+void CConfigDisplay::OnThe
+meCreate() 
 {
 	CString sTheme(m_ThemeDir);
 	sTheme += "\\";
@@ -1280,6 +1281,25 @@ void CConfigDisplay::readSkins() {
 		}
     }
 	finder.Close();
+}
+void CConfigDisplay::ReadTheme() {
+    ReadReg(RegistryKey( HKEY_LOCAL_MACHINE, RegKey ));
+
+	CString skindef = getSkin(MB_SKIN_DEF);
+	RegistryKey regSD(skindef);
+	regSD.ReadFile();
+	ReadReg(regSD);
+
+	CString tmp = m_SkinDir;
+	tmp += "\\";
+	tmp += m_sSkinName;
+	tmp += "\\SkinDef";
+	tmp += MBTHEMEEXT;
+	CString save = m_sSkinName;
+	RegistryKey theme(tmp);
+	theme.ReadFile();
+	ReadReg(theme);
+	m_sSkinName = save;
 }
 const CString CConfigDisplay::getSkin(const CString skinname, 
 									  const CString key) {

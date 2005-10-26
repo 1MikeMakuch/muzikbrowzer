@@ -368,6 +368,9 @@ protected:
 	int m_nStartWidth;
 	int m_nStartHeight;
 
+	int m_nBorderHorz;
+	int m_nBorderVert;
+
 };
 
 //{{AFX_INSERT_LOCATION}}

@@ -184,6 +184,7 @@ MusicLib::init() {
 	m_mp3Extensions.RemoveAll();
 	m_mp3Extensions.AddTail("mp3");
 	m_mp3Extensions.AddTail("wma");
+	m_mp3Extensions.AddTail("ogg");
 
 	readDbLocation();
 	Genre_init();

@@ -98,7 +98,9 @@ CPlayerDlg::CPlayerDlg(CPlayerApp * theApp,
 	m_Albums(TRUE,"albums"),
 	m_Songs(TRUE,"songs"),
 	m_Playlist(TRUE, "playlist"),
-	m_Maximized(FALSE)
+	m_Maximized(FALSE),
+	m_AdjustLibrary(0),
+	m_LibraryDragging(FALSE)
 
 {
 	//{{AFX_DATA_INIT(CPlayerDlg)
@@ -120,11 +122,13 @@ CPlayerDlg::CPlayerDlg(CPlayerApp * theApp,
 
 	irman().init(RegKeyIrman, IR_MESSAGE_NUMBER_OF, this);
 //	m_brush.CreateSolidBrush(RGB( 255, 0, 0));
+	m_HatchBrush.CreateHatchBrush(HS_CROSS,RGB(255,0,0));
 	m_Resizing = FALSE;
 }
 CPlayerDlg::~CPlayerDlg() {
     //delete m_Config;
-    //m_brush.DeleteObject();
+    m_brush.DeleteObject();
+	m_HatchBrush.DeleteObject();
 	delete m_Control;
 	delete m_Dialog;
 	delete m_Player;
@@ -217,8 +221,11 @@ BEGIN_MESSAGE_MAP(CPlayerDlg, CDialogClassImpl)
 	ON_BN_CLICKED(IDC_VIDEO_BUTTON, OnVideoButton)
 	ON_BN_CLICKED(IDC_BUTTON_MINIMIZE, OnButtonMinimize)
 	ON_BN_CLICKED(IDC_BUTTON_MAXIMIZE, OnButtonMaximize)
-	ON_BN_CLICKED(IDC_BUTTON_RESTORE, OnButtonMaximize)
 	ON_BN_CLICKED(IDC_BUTTON_RESIZE, OnButtonResize)
+	ON_WM_SETCURSOR()
+	ON_WM_NCMOUSEMOVE()
+	ON_WM_LBUTTONUP()
+	ON_BN_CLICKED(IDC_BUTTON_RESTORE, OnButtonMaximize)
 	ON_BN_CLICKED(IDC_BUTTON_EXIT, OnCancel)
 	ON_BN_CLICKED(IDC_BUTTON_FASTFORWARD, OnNextSong)
 	ON_BN_CLICKED(IDC_BUTTON_REVERSE, OnPreviousSong)
@@ -241,6 +248,7 @@ BEGIN_MESSAGE_MAP(CPlayerDlg, CDialogClassImpl)
 	ON_WM_COMPAREITEM()
 	ON_WM_RBUTTONDOWN()
 	ON_WM_RBUTTONUP()
+	ON_WM_MOUSEMOVE()
 	//}}AFX_MSG_MAP
 
 	ON_MESSAGE(WM_GRAPHNOTIFY, OnGraphNotify)
@@ -254,6 +262,8 @@ BEGIN_MESSAGE_MAP(CPlayerDlg, CDialogClassImpl)
 	ON_LBN_SETFOCUS(IDC_SONGS, OnSongsFocus)
 	ON_LBN_SETFOCUS(IDC_PLAYLIST, OnPlaylistFocus)
     ON_WM_NCHITTEST()
+	ON_WM_NCLBUTTONDOWN()
+	ON_WM_NCLBUTTONUP()
 	ON_WM_CAPTURECHANGED()
 	ON_WM_NCPAINT()
     ON_WM_CTLCOLOR()
@@ -366,6 +376,8 @@ BOOL CPlayerDlg::OnInitDialog()
 	m_MusicButton.ShowWindow(SW_HIDE);
 	m_VideoButton.ShowWindow(SW_HIDE);
 	m_PicturesButton.ShowWindow(SW_HIDE);
+	m_PositionLabel.ShowWindow(SW_HIDE);
+	m_CurrentTitle.ShowWindow(SW_HIDE);
 
 // For CDialogSK
 	EnableEasyMove();  // enable moving of the dialog 
@@ -737,8 +749,11 @@ CPlayerDlg::resetControls() {
 	RegistryKey regSD(skindef);
 	regSD.ReadFile();
 
+	m_Config.ReadTheme();
+
+
+
 #pragma hack
-#ifdef _DEBUG	 
 	if (firsttime) {
 		firsttime=FALSE;
 		int w = regSD.Read("StartWidth",0);
@@ -752,7 +767,6 @@ CPlayerDlg::resetControls() {
 			MoveWindow(rect, TRUE );
 		}
 	}
-#endif
 	
 	m_Controls.init(this);
 
@@ -771,11 +785,16 @@ CPlayerDlg::resetControls() {
 	r = regSD.Read("TransRedMain",254);
 	g = regSD.Read("TransGreenMain",0);
 	b = regSD.Read("TransBlueMain",0);
-	m_TransMain = RGB(r,g,b);
+	COLORREF tm = RGB(r,g,b);
 	r = regSD.Read("TransRedPanel",253);
 	g = regSD.Read("TransGreenPanel",0);
 	b = regSD.Read("TransBluePanel",0);
 	m_TransPanel = RGB(r,g,b);
+
+	if (tm != m_TransMain) {
+		SetTransparentColor(tm, m_TransPanel); // set red as the 
+	}
+	m_TransMain = tm;
 
 	int border = m_Config.getDlgBorderWidth();
 //	int panelborder = m_Config.getPanelWidth();
@@ -808,9 +827,8 @@ CPlayerDlg::resetControls() {
 	m_Controls.add(4,0, "clear",		IDC_BUTTON_CLEAR);
 	m_Controls.add(5,0, "load",			IDC_BUTTON_LOAD);
 	m_Controls.add(6,0, "save",			IDC_BUTTON_SAVE);
-	m_Controls.add(7,0, "pos label",		IDC_POSITION_LABEL);
-
-	m_Controls.add(7,1, "title",			IDC_CURRENT_TITLE);
+//	m_Controls.add(7,0, "pos label",		IDC_POSITION_LABEL);
+//	m_Controls.add(7,1, "title",			IDC_CURRENT_TITLE);
 	m_Controls.add(8,0, "genre",			IDC_GENRES, IDC_GENRESLABEL);
 	m_Controls.add(8,1, "artist",			IDC_ARTISTS, IDC_ARTISTSLABEL);
 	m_Controls.add(8,2, "album",			IDC_ALBUMS, IDC_ALBUMSLABEL);
@@ -823,10 +841,28 @@ CPlayerDlg::resetControls() {
 	int textheight=0;
 	int curplayheight = 0;
 	int statusheight = 0;
+	int i;
 
-//	double PlaylistHeightPct = m_Config.getPlaylistHeightPct();
-	double GenreWidthPct = m_Config.getGenreWidthPct();
-	double LibraryWidthPct = (1 - GenreWidthPct) / 3;
+	double GenresWidthPct;
+	double ArtistsWidthPct ;
+	double AlbumsWidthPct;
+	m_Config.getRegistry("LibGenresWidth", i, 0);
+
+	GenresWidthPct = (double)i / (double)100;		
+	if (GenresWidthPct < .1 || .60 < GenresWidthPct) {
+		GenresWidthPct = 0.15;
+	}
+	m_Config.getRegistry("LibArtistsWidth", i, 0);
+	ArtistsWidthPct = (double)i / (double)100;
+	if (ArtistsWidthPct < .1 || .60 < ArtistsWidthPct) {
+		ArtistsWidthPct = (double)(1 - GenresWidthPct) / (double)3;
+	}
+	m_Config.getRegistry("LibAlbumsWidth", i, 0);
+	AlbumsWidthPct = (double)i / (double)100;
+	if (AlbumsWidthPct < .1 || .60 < AlbumsWidthPct) {
+		AlbumsWidthPct = (double)(1 - (GenresWidthPct + ArtistsWidthPct)) / (double)2;
+	}
+
 	int fixedy = bordervert * 3;
 	int y = border;
 	int x = border;
@@ -1030,7 +1066,8 @@ CPlayerDlg::resetControls() {
 //	p->height = plmaxy - (labelheight + textheight + bordervert
 //		+ stopy);
 //	p->height = ControlBoxHeight - (labelheight + curplayheight + bordervert);
-	p->height = pheight - (labelheight + curplayheight + bordervert);
+//	p->height = pheight - (labelheight + curplayheight + bordervert);
+	p->height = pheight - (labelheight );
 	p->labelheight = labelheight;
 	x = plmaxx;
 	p->width = (picleft - (( /*( 2 * panelborder) +*/ borderhorz))) - x;
@@ -1045,25 +1082,25 @@ CPlayerDlg::resetControls() {
 	int posy = __max(ControlBoxBottom,volbottom);
 	posy = __max(posy, playlistbottom) + bordervert;
 					 
-	p = m_Controls.getObj(IDC_POSITION_LABEL);
-
-	CSize s = m_PositionLabel.GetSize("00:00/00:00");
-	p->width = s.cx;
-	p->height = curplayheight;
-	x = border /*+ panelborder*/; 
-	x = playlistleft;
-//	y = posy;
-	int poslabely = y;
-	m_Controls.move(p, x, y, p->row, p->col);	
-
-	x = x + p->width + borderhorz;
-	p = m_Controls.getObj(IDC_CURRENT_TITLE);
-	p->height = curplayheight;
-	p->width = playlistright - x;
-	m_Controls.move(p,x,y,p->row,p->col);
-	int titlebottom = y + p->height;
+//	p = m_Controls.getObj(IDC_POSITION_LABEL);
+//
+//	CSize s = m_PositionLabel.GetSize("00:00/00:00");
+//	p->width = s.cx;
+//	p->height = curplayheight;
+//	x = border /*+ panelborder*/; 
+//	x = playlistleft;
+////	y = posy;
+//	int poslabely = y;
+//	m_Controls.move(p, x, y, p->row, p->col);	
+//
+//	x = x + p->width + borderhorz;
+//	p = m_Controls.getObj(IDC_CURRENT_TITLE);
+//	p->height = curplayheight;
+//	p->width = playlistright - x;
+//	m_Controls.move(p,x,y,p->row,p->col);
+//	int titlebottom = y + p->height;
 	
-	y += p->height + bordervert;
+//	y += p->height + bordervert;
 	int genrey = y /*+ (panelborder * 2)*/;
 
 	p = m_Controls.getObj(IDC_PLAYER_STATUS);
@@ -1079,7 +1116,7 @@ CPlayerDlg::resetControls() {
 
 	p = m_Controls.getObj(IDC_GENRES);		
 	p->width = (m_Controls.dialogrect.Width()
-		- (2 * (/*panelborder*/ + border))) * GenreWidthPct;
+		- (2 * (/*panelborder*/ + border))) * GenresWidthPct;
 	p->labelheight = labelheight;
 	p->height = (y - bordervert) - (genrey + labelheight);
 	y = genrey;
@@ -1092,7 +1129,7 @@ CPlayerDlg::resetControls() {
 
 	p = m_Controls.getObj(IDC_ARTISTS);
 	p->width = (m_Controls.dialogrect.Width()
-		- (2 * (/*panelborder +*/ border))) * LibraryWidthPct;
+		- (2 * (/*panelborder +*/ border))) * ArtistsWidthPct;
 	p->labelheight = labelheight;
 	p->height = pheight;
 //	p->setRects();
@@ -1102,7 +1139,8 @@ CPlayerDlg::resetControls() {
 	x += p->width + borderhorz;
 	
 	p = m_Controls.getObj(IDC_ALBUMS);
-	p->width = pwidth;
+	p->width = (m_Controls.dialogrect.Width()
+		- (2 * (/*panelborder +*/ border))) * AlbumsWidthPct;
 	p->labelheight = labelheight;
 	p->height = pheight;
 //	p->setRects();
@@ -1148,6 +1186,7 @@ CPlayerDlg::resetControls() {
 	CRect aplrect(x,y,x+bmpaplabel.GetWidth(),y+bmpaplabel.GetHeight());
 	SetBitmap(m_Config.getSkin(MB_SKIN_BUTTONAPPLABELOUT), aplrect, LO_DEFAULT,
 		CS("applabel"));
+	//ClientToScreen(AppLabelRect);
 	CString bgpanel ;
 #ifdef asdfNoMoreExtraPanels
 	// l,t,r,b
@@ -1246,7 +1285,42 @@ CPlayerDlg::resetControls() {
 	msg += numToString(counter) + "\r\n";
 	OutputDebugString(msg);
 
+	m_Genres.GetWindowRect(m_GenresRect);
+	m_GenresLabel.GetWindowRect(m_GenresLabelRect);
+	m_Artists.GetWindowRect(m_ArtistsRect);
+	m_ArtistsLabel.GetWindowRect(m_ArtistsLabelRect);
+	m_Albums.GetWindowRect(m_AlbumsRect);
+	m_AlbumsLabel.GetWindowRect(m_AlbumsLabelRect);
+	m_Songs.GetWindowRect(m_SongsRect);
+	m_SongsLabel.GetWindowRect(m_SongsLabelRect);
+	m_GenreArtistAdjust = CRect(crtopright(m_GenresLabelRect),crbottomleft(m_ArtistsLabelRect));
+	m_ArtistAlbumAdjust = CRect(crtopright(m_ArtistsLabelRect),crbottomleft(m_AlbumsLabelRect));
+	m_AlbumSongAdjust = CRect(crtopright(m_AlbumsLabelRect),crbottomleft(m_SongsLabelRect));
+	ScreenToClient(m_GenreArtistAdjust);
+	ScreenToClient(m_ArtistAlbumAdjust);
+	ScreenToClient(m_AlbumSongAdjust);
+	m_GenreArtistAdjust.InflateRect(2,0);
+	m_ArtistAlbumAdjust.InflateRect(2,0);
+	m_AlbumSongAdjust.InflateRect(2,0);
+
+	m_GenresLabelInt.UnionRect(m_GenresRect,m_GenresLabelRect);
+	m_ArtistsLabelInt.UnionRect(m_ArtistsRect,m_ArtistsLabelRect);
+	m_AlbumsLabelInt.UnionRect(m_AlbumsRect,m_AlbumsLabelRect);
+	m_SongsLabelInt.UnionRect(m_SongsRect,m_SongsLabelRect);
+	ScreenToClient(m_GenresLabelInt);
+	ScreenToClient(m_ArtistsLabelInt);
+	ScreenToClient(m_AlbumsLabelInt);
+	ScreenToClient(m_SongsLabelInt);
+
+	m_GenresLabelInt.DeflateRect(1,1,1,1);
+	m_ArtistsLabelInt.DeflateRect(1,1,1,1);
+	m_AlbumsLabelInt.DeflateRect(1,1,1,1);
+	m_SongsLabelInt.DeflateRect(1,1,1,1);
+	m_ColHdrsRect.UnionRect(m_GenresLabelRect,m_SongsLabelRect);
+
+
 }
+
 
 void
 CPlayerDlg::init() {
@@ -2680,7 +2754,9 @@ CPlayerDlg::CurrentTitleSet(LPCTSTR lpmsg) {
 }
 void
 CPlayerDlg::CurrentTitleSet(CString & msg) {
-	m_CurrentTitle.setText(msg);
+	//m_CurrentTitle.setText(msg);
+	m_CurrentTitleDesc = msg;
+
 }
 void
 CPlayerDlg::PlayerStatusSet(LPCTSTR lpmsg) {
@@ -2690,7 +2766,9 @@ CPlayerDlg::PlayerStatusSet(LPCTSTR lpmsg) {
 
 void
 CPlayerDlg::PlayerStatusSet(CString & msg) {
-    m_PlayerStatus.setText(msg);
+	if (m_StatusTimerId == 0) {
+		m_PlayerStatus.setText(msg);
+	}
     m_PlayerStatusSave = msg;
 }
 void
@@ -2745,39 +2823,283 @@ CPlayerDlg::movePlaylistDown(int sel) {
     }
 }
 
-
 UINT
 CPlayerDlg::OnNcHitTest( CPoint point ) {
+
     CRect r;//,applabelr; //,positionr,volumer;
 	GetClientRect(&r);
 	CRect br = r;
 	br.TopLeft() = CPoint(br.BottomRight().x-20, br.BottomRight().y-20);
+	CPoint cpoint(point);
+	ScreenToClient(&cpoint);
 	
 	ClientToScreen(&r);
 	ClientToScreen(&br);
 
 	UINT rv = CDialogClassImpl::OnNcHitTest(point);
-
+	
     if(br.PtInRect(point)) {
 		return HTBOTTOMRIGHT;
-//	} else if (volumer.PtInRect(point)) {
-//		m_VolumeSlider.SetCapture();
-//		msg += "Vol\r\n";OutputDebugString(msg);
-//		return HTCLIENT;
-//	} else if (positionr.PtInRect(point)) {
-//		m_PositionSlider.SetCapture();
-//		msg += "Progress\r\n";OutputDebugString(msg);
-//		return HTCLIENT;
-//	} else if (applabelr.PtInRect(point)) {
-//		msg += "AppLabel\r\n";OutputDebugString(msg);
-//		return HTCAPTION;
+	} else if (m_GenreArtistAdjust.PtInRect(cpoint)) {
+		return HTSIZE;
+	} else if (m_ArtistAlbumAdjust.PtInRect(cpoint)) {
+		return HTSIZE;
+	} else if (m_AlbumSongAdjust.PtInRect(cpoint)) {
+		return HTSIZE;
     } else if (r.PtInRect(point)) {
-//		msg += "Dlg\r\n";OutputDebugString(msg);
 		return HTCAPTION;
-    }
+    } 
 
 	return rv;
 }
+BOOL CPlayerDlg::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message) 
+{
+	if (nHitTest == HTSIZE) {
+		::SetCursor(AfxGetApp()->LoadStandardCursor(IDC_SIZEWE));
+	} else {
+		::SetCursor(AfxGetApp()->LoadStandardCursor(IDC_ARROW));
+		return CDialogClassImpl::OnSetCursor(pWnd, nHitTest, message);
+	}
+	return TRUE;
+}
+void CPlayerDlg::OnNcLButtonDown(UINT nHitTest, CPoint point) 
+{
+	CPoint cpoint(point);
+	ScreenToClient(&cpoint);
+	m_AdjustLibrary = 0;
+	m_LibraryDragging = FALSE;
+	if (m_GenreArtistAdjust.PtInRect(cpoint)) {
+		m_AdjustLibrary = 1;
+	} else if (m_ArtistAlbumAdjust.PtInRect(cpoint)) {
+		m_AdjustLibrary = 2;
+	} else if (m_AlbumSongAdjust.PtInRect(cpoint)) {
+		m_AdjustLibrary = 3;
+	}
+	if (m_AdjustLibrary) {
+		m_LibraryDragging = TRUE;
+		SetCapture();
+	} else {
+		CDialogClassImpl::OnNcLButtonDown(nHitTest, point);
+	}
+}
+void CPlayerDlg::OnLButtonUp(UINT nFlags, CPoint point) 
+{
+	ClientToScreen(&point);
+	OnNcLButtonUp(nFlags,point);
+}
+
+void CPlayerDlg::OnNcLButtonUp(UINT nHitTest, CPoint point) 
+{
+	if (m_LibraryDragging) {
+		ReleaseCapture();
+		m_LibraryDragging = FALSE;
+		AdjustLibraryWidths(point);
+	} else {
+		CDialogClassImpl::OnNcLButtonUp(nHitTest, point);
+	}
+	m_AdjustLibrary = 0;
+	
+}
+void CPlayerDlg::OnMouseMove(UINT nFlags, CPoint point) 
+{
+	ClientToScreen(&point);
+	OnNcMouseMove(nFlags,point);
+}
+
+void CPlayerDlg::OnNcMouseMove(UINT nHitTest, CPoint point) 
+{
+	
+	if (m_LibraryDragging) {
+		CString msg = " mAL=" + numToString(m_AdjustLibrary);
+		msg += "\r\n";
+		CPoint cpoint(point);
+		ScreenToClient(&cpoint);
+		CRect rect;
+//		Invalidate();
+		RedrawWindow();
+#ifdef asdf
+		m_Genres.Invalidate();
+		m_GenresLabel.Invalidate();
+		m_Genres.RedrawWindow();
+		m_GenresLabel.RedrawWindow();
+
+		m_Artists.Invalidate();
+		m_ArtistsLabel.Invalidate();
+		m_Artists.RedrawWindow();
+		m_ArtistsLabel.RedrawWindow();
+
+		m_Albums.Invalidate();
+		m_AlbumsLabel.Invalidate();
+		m_Albums.RedrawWindow();
+		m_AlbumsLabel.RedrawWindow();
+
+		m_Songs.Invalidate();
+		m_SongsLabel.Invalidate();
+		m_Songs.RedrawWindow();
+		m_SongsLabel.RedrawWindow();
+#endif
+		BOOL doit = TRUE;
+		switch(m_AdjustLibrary) {
+		case 1: {
+				rect = m_GenresLabelInt;
+				rect.right = cpoint.x;
+				if (rect.right == m_GenresLabelInt.right)
+					rect.right--;
+				} break;
+		case 2: {
+				rect = m_ArtistsLabelInt;
+				rect.right = cpoint.x;
+				if (rect.right == m_ArtistsLabelInt.right)
+					rect.right--;
+				} break;
+		case 3: {
+				rect = m_AlbumsLabelInt;
+				rect.right = cpoint.x;
+				if (rect.right == m_AlbumsLabelInt.right)
+					rect.right--;
+				} break;
+		default: {
+				doit = FALSE;
+				 }break;
+		}
+		if (doit) {
+			CDC * cdc = GetDC();
+			cdc->FrameRect(rect, &m_HatchBrush);
+			ReleaseDC(cdc);
+		}
+	} else {
+		CDialogClassImpl::OnNcMouseMove(nHitTest, point);
+	}
+}
+
+
+void
+CPlayerDlg::AdjustLibraryWidths(CPoint &apoint) {
+	Control * p ;
+	CPoint point(apoint);
+	ScreenToClient(&point);
+	int sw,dx;
+
+	int dw = m_Controls.dialogrect.Width() 
+		- (m_Config.getDlgBorderWidth()* 2);
+	int pct;
+
+	switch(m_AdjustLibrary) {
+		case 1: 
+			p = m_Controls.getObj(IDC_GENRES);
+			sw = p->width;
+			p->width = point.x - p->x;
+			if (p->width < 50) p->width = 50;
+			dx = sw - p->width;
+			m_Controls.move(p,p->x,p->y,p->row,p->col);
+
+			pct = int((double)100 * ((double)p->width / (double)dw));
+			m_Config.setRegistry("LibGenresWidth", pct);
+
+			p = m_Controls.getObj(IDC_ARTISTS);
+			p->width += dx;
+			p->x -= dx;
+			m_Controls.move(p,p->x,p->y,p->row,p->col);
+			
+			pct = int((double)100 * ((double)p->width / (double)dw));
+			m_Config.setRegistry("LibArtistsWidth", pct);
+			break;
+		case 2:
+			p = m_Controls.getObj(IDC_ARTISTS);
+			sw = p->width;
+			p->width = point.x - p->x;
+			if (p->width < 50) p->width = 50;
+			dx = sw - p->width;
+			m_Controls.move(p,p->x,p->y,p->row,p->col);
+			pct = int((double)100 * ((double)p->width / (double)dw));
+			m_Config.setRegistry("LibArtistsWidth", pct);
+
+			p = m_Controls.getObj(IDC_ALBUMS);
+			p->width += dx;
+			p->x -= dx;
+			m_Controls.move(p,p->x,p->y,p->row,p->col);
+			pct = int((double)100 * ((double)p->width / (double)dw));
+			m_Config.setRegistry("LibAlbumsWidth", pct);
+			break;
+		case 3:
+			p = m_Controls.getObj(IDC_ALBUMS);
+			sw = p->width;
+			p->width = point.x - p->x;
+			if (p->width < 50) p->width = 50;
+			dx = sw - p->width;
+			m_Controls.move(p,p->x,p->y,p->row,p->col);
+			pct = int((double)100 * ((double)p->width / (double)dw));
+			m_Config.setRegistry("LibAlbumsWidth", pct);
+
+			p = m_Controls.getObj(IDC_SONGS);
+			p->width += dx;
+			p->x -= dx;
+			m_Controls.move(p,p->x,p->y,p->row,p->col);
+			break;
+		default:
+			break;
+	}
+
+	OnNcPaint();
+	Invalidate();
+	RedrawWindow();
+#ifdef asdf
+	m_Genres.Invalidate();
+	m_GenresLabel.Invalidate();
+	m_Genres.RedrawWindow();
+	m_GenresLabel.RedrawWindow();
+
+	m_Artists.Invalidate();
+	m_ArtistsLabel.Invalidate();
+	m_Artists.RedrawWindow();
+	m_ArtistsLabel.RedrawWindow();
+
+	m_Albums.Invalidate();
+	m_AlbumsLabel.Invalidate();
+	m_Albums.RedrawWindow();
+	m_AlbumsLabel.RedrawWindow();
+
+	m_Songs.Invalidate();
+	m_SongsLabel.Invalidate();
+	m_Songs.RedrawWindow();
+	m_SongsLabel.RedrawWindow();
+#endif
+
+	m_Genres.GetWindowRect(m_GenresRect);
+	m_GenresLabel.GetWindowRect(m_GenresLabelRect);
+	m_Artists.GetWindowRect(m_ArtistsRect);
+	m_ArtistsLabel.GetWindowRect(m_ArtistsLabelRect);
+	m_Albums.GetWindowRect(m_AlbumsRect);
+	m_AlbumsLabel.GetWindowRect(m_AlbumsLabelRect);
+	m_Songs.GetWindowRect(m_SongsRect);
+	m_SongsLabel.GetWindowRect(m_SongsLabelRect);
+	m_GenreArtistAdjust = CRect(crtopright(m_GenresLabelRect),crbottomleft(m_ArtistsLabelRect));
+	m_ArtistAlbumAdjust = CRect(crtopright(m_ArtistsLabelRect),crbottomleft(m_AlbumsLabelRect));
+	m_AlbumSongAdjust = CRect(crtopright(m_AlbumsLabelRect),crbottomleft(m_SongsLabelRect));
+	ScreenToClient(m_GenreArtistAdjust);
+	ScreenToClient(m_ArtistAlbumAdjust);
+	ScreenToClient(m_AlbumSongAdjust);
+	m_GenreArtistAdjust.InflateRect(2,0);
+	m_ArtistAlbumAdjust.InflateRect(2,0);
+	m_AlbumSongAdjust.InflateRect(2,0);
+
+	m_GenresLabelInt.UnionRect(m_GenresRect,m_GenresLabelRect);
+	m_ArtistsLabelInt.UnionRect(m_ArtistsRect,m_ArtistsLabelRect);
+	m_AlbumsLabelInt.UnionRect(m_AlbumsRect,m_AlbumsLabelRect);
+	m_SongsLabelInt.UnionRect(m_SongsRect,m_SongsLabelRect);
+	ScreenToClient(m_GenresLabelInt);
+	ScreenToClient(m_ArtistsLabelInt);
+	ScreenToClient(m_AlbumsLabelInt);
+	ScreenToClient(m_SongsLabelInt);
+
+	m_GenresLabelInt.DeflateRect(1,1,1,1);
+	m_ArtistsLabelInt.DeflateRect(1,1,1,1);
+	m_AlbumsLabelInt.DeflateRect(1,1,1,1);
+	m_SongsLabelInt.DeflateRect(1,1,1,1);
+
+}
+
+
 
 void CPlayerDlg::OnButtonMenu() 
 {
@@ -2818,8 +3140,8 @@ void CPlayerDlg::OnButtonMenu()
 			AfxGetMainWnd());
     }
 }
-LRESULT
-CPlayerDlg::OnSkinPic(UINT wParam, LONG lParam) {
+void
+CPlayerDlg::OnSkinPic(UINT wParam) {
 	int skinp = wParam - MB_SKINPICS_MSGS_BEGIN;
 	CString skin;
 	POSITION pos = m_Skins.GetHeadPosition();
@@ -2835,28 +3157,30 @@ CPlayerDlg::OnSkinPic(UINT wParam, LONG lParam) {
 		i++;
 		m_Skins.GetNext(pos);
 	}
+	
 	if (skin != "") {
-		if (m_Config.ChooseSkin(skin))
+		if (m_Config.ChooseSkin(skin)) {
 			redraw();
+		}
 	}
 
-	return 0;
+//	return 0;
 }
-LRESULT
-CPlayerDlg::OnMusicAdd(UINT wParam, LONG lParam) {
+void
+CPlayerDlg::OnMusicAdd(UINT wParam) {
 	CStringList mp3list;
 	m_Config.AddMusic(mp3list);
-	return 0;
+//	return 0;
 }
-LRESULT
-CPlayerDlg::OnMusicScan(UINT wParam, LONG lParam) {
+void 
+CPlayerDlg::OnMusicScan(UINT wParam) {
 	m_Config.Scan();
-	return 0;
+//	return 0;
 }
-LRESULT
-CPlayerDlg::OnMusicScanNew(UINT wParam, LONG lParam) {
+void
+CPlayerDlg::OnMusicScanNew(UINT wParam) {
 	m_Config.Scan(TRUE);
-	return 0;
+//	return 0;
 }
 void CPlayerDlg::OnButtonMinimize() 
 {
@@ -3117,7 +3441,13 @@ void CPlayerDlg::updatePositionLabel()
 	dmins = dur_secs / 60;
 	dsecs = dur_secs % 60;
 	sprintf(buf, "%d:%02d / %d:%02d", mins, secs, dmins, dsecs);
-	m_PositionLabel.setText ( buf );
+	//m_PositionLabel.setText ( buf );
+	CString msg;//("Now playing ");
+	msg += buf;
+	msg += " ";
+	msg += m_CurrentTitleDesc;
+	PlayerStatusSet(msg);
+
 }
 void CPlayerDlg::adjustPosition() {
 	m_Player->Seek(m_PositionSlider.GetPos(), TRUE);
@@ -3235,3 +3565,8 @@ void CPlayerDlg::OnPicturesButton() {
 }
 void CPlayerDlg::OnVideoButton() {
 }
+
+
+
+
+
