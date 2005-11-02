@@ -4,6 +4,11 @@
 
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING .ISS SCRIPT FILES!
 
+[InstallDelete]
+Type: files; Name: "{commonprograms}\muzikbrowzer.lnk";
+Type: files; Name: "{commonprograms}\BitmapCutter.lnk";
+
+
 [Setup]
 AppName=muzikbrowzer
 AppVerName=muzikbrowzer 1.5.1
@@ -26,12 +31,13 @@ Source: "..\..\ButtonSkinner\Release\BitmapCutter.exe"; DestDir: "{app}"; CopyMo
 ;Source: "..\Help\KeyHH.exe"; DestDir: "{app}"; CopyMode: alwaysoverwrite
 
 [Icons]
-Name: "{commonprograms}\muzikbrowzer"; Filename: "{app}\muzikbrowzer.exe"; WorkingDir: "{app}"
-Name: "{commonprograms}\BitmapCutter"; Filename: "{app}\BitmapCutter.exe"; WorkingDir: "{app}"
+Name: "{commonprograms}\Muzikbrowzer\muzikbrowzer"; Filename: "{app}\muzikbrowzer.exe"; WorkingDir: "{app}"
+Name: "{commonprograms}\Muzikbrowzer\BitmapCutter"; Filename: "{app}\BitmapCutter.exe"; WorkingDir: "{app}"
+Name: "{commonprograms}\Muzikbrowzer\muzikbrowzer Help"; Filename: "{app}\muzikbrowzer.chm"; WorkingDir: "{app}"
 Name: "{userdesktop}\muzikbrowzer"; Filename: "{app}\muzikbrowzer.exe"; WorkingDir: "{app}"
 Name: "{userdesktop}\BitmapCutter"; Filename: "{app}\BitmapCutter.exe"; WorkingDir: "{app}"
 
 [Registry]
-Root: HKLM; Subkey: "Software\muzikbrowzer";
-Root: HKLM; Subkey: "Software\muzikbrowzer"; ValueType: string; ValueName: "DbLocation"; ValueData: "{app}"
+Root: HKLM; Subkey: "Software\muzikbrowzer"; Flags: createvalueifdoesntexist uninsdeletekey
+Root: HKLM; Subkey: "Software\muzikbrowzer"; ValueType: string; ValueName: "DbLocation"; ValueData: "{app}"  ; Flags: createvalueifdoesntexist uninsdeletekey
 

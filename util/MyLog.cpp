@@ -87,6 +87,20 @@ MyLog::log(const CString &m1, const CString &m2,
 	_file.Write(mx,mx.GetLength());
     _file.Flush();
 }
+void
+MyLog::ods(char *  m0) {
+	CString m1(m0);
+	ods(m1);
+}
+void
+MyLog::ods(CString &  m0) {
+    CString mx;
+    CTime t = CTime::GetCurrentTime();
+    mx = t.Format("%Y%m%d:%H%M%S ");
+    mx += m0 ; 
+	mx += "\r\n";
+	OutputDebugString(mx);
+}
 
 void
 MyLog::log(char * m1, char * m2,char*m3,char*m4,char*m5,char*m6) {

@@ -7,9 +7,9 @@
 
 // ColorStaticST.h : header file
 //
-#include "SkinBmp.h"
+//#include "SkinBmp.h"
 
-class CColorStatic : public CStatic, public SkinBmp
+class CColorStatic : public CStatic //, public SkinBmp
 {
 // Construction
 public:
@@ -33,7 +33,8 @@ public:
 public:
 	virtual ~CColorStatic();
 	void SizeToContent();
-	virtual DWORD SetBitmaps(CDC * cdc, LPCTSTR nBitmap, COLORREF crTransColor);
+	void setDesc(CString desc) { m_desc = desc; }
+//	virtual DWORD SetBitmaps(CDC * cdc, LPCTSTR nBitmap, COLORREF crTransColor);
 
 	void SetTextColor(COLORREF crTextColor = 0xffffffff);
 	COLORREF GetTextColor();
@@ -63,7 +64,7 @@ public:
 	static const short GetVersionI();
 	static const char* GetVersionC();
 
-    void setText(CString);
+    void setText(CString text, const BOOL center=FALSE);
     void getText(CString &);
 	void changeFont(LPLOGFONT lplf);
 	void changeFont(CFont * f);
@@ -72,14 +73,17 @@ public:
 	int GetItemHeight() { return m_height; }
 	int GetItemWidth() { return m_width; }
 	CSize GetSize(CString);
+	void SetTicking(BOOL ticking) { m_TickerIt = ticking; }
+	void StartTicker();
 	// Generated message map functions
 protected:
 	//{{AFX_MSG(CColorStatic)
+	afx_msg void OnPaint();
 	afx_msg HBRUSH CtlColor(CDC* pDC, UINT nCtlColor);
 	afx_msg void OnTimer(UINT nIDEvent);
 	afx_msg void OnDestroy();
 	//}}AFX_MSG
-    afx_msg void OnPaint( );
+//    afx_msg void OnPaint( );
 	DECLARE_MESSAGE_MAP()
 	void SetItemHeight(int height) { m_height=height; }
 	void SetItemWidth();
@@ -104,17 +108,28 @@ private:
 
 	CBrush m_brBkgnd;
 	CBrush m_brBlinkBkgnd[2];
+	CBrush m_brFg;
+	CBrush m_brush;
 
 	CWnd* m_pParent;
 	UINT m_nMsg;
 
-    CString m_text;
+    CString m_text,m_text2;
 	BOOL m_border;
 	int m_height;
 	int m_width;
 	CFont m_font;
+	CRect m_Rect;
 
 	int first;
+
+	CString tmp;
+	CString m_desc ;
+	BOOL m_center;
+	int m_TickerX, m_TickerY, m_TickerXStep, m_TickerTime;
+	time_t m_TickerDelay;
+	BOOL m_TickerIt,m_NeedTicker, m_Ticking;
+	CTime m_TickerStart, m_TimeTmp;
 
 public:
 	int m_HCenter;
@@ -124,5 +139,7 @@ public:
 
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Developer Studio will insert additional declarations immediately before the previous line.
+
+
 
 #endif 

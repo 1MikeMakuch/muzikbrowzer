@@ -7,6 +7,8 @@
 #include "MyString.h"
 #include "MyLog.h"
 #include "FileUtils.h"
+#include "MyDC.h"
+#include "MyString.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -20,7 +22,7 @@ static char THIS_FILE[] = __FILE__;
 CColorStatic::CColorStatic()
 {
 	first = 1;
-	m_UseSkin = FALSE;
+//	m_UseSkin = FALSE;
 	// Set default parent window and notification message
 	m_pParent = NULL;
 	m_nMsg = WM_USER;
@@ -48,6 +50,7 @@ CColorStatic::CColorStatic()
 
 	// Set default background brush
 	m_brBkgnd.CreateSolidBrush(m_crBkColor);
+	m_brFg.CreateSolidBrush(m_crTextColor);
 
 	// Set default background brush (when blinking)
 	m_brBlinkBkgnd[0].CreateSolidBrush(m_crBkColor);
@@ -62,6 +65,15 @@ CColorStatic::CColorStatic()
 	m_ClrShadowDark = RGB(0,0,0);
 	m_ClrShadowLight = RGB(255,255,255);
 
+#define TICKERLEFTBORDER 4
+	m_TickerX = TICKERLEFTBORDER;
+	m_TickerY = 0;
+	m_TickerXStep = 3;
+	m_TickerTime = 100;
+	m_NeedTicker = FALSE;
+	m_TickerIt = FALSE;
+	m_Ticking = FALSE;
+	m_TickerDelay = 3;
 
 } // End of CColorStatic
 
@@ -88,29 +100,17 @@ END_MESSAGE_MAP()
 
 HBRUSH CColorStatic::CtlColor(CDC* pDC, UINT nCtlColor) 
 {
-	// Set foreground color
-	// If control is blinking (text)
-	if (m_bTextBlink == TRUE)
-	{
-		pDC->SetTextColor(m_crBlinkTextColors[m_nTextBlinkStep]);
-	}
-	else
-	{
-		pDC->SetTextColor(m_crTextColor);
-	}
 
-	// Set background color & brush
-	// If control is blinking (background)
-	if (m_bBkBlink == TRUE)
-	{
-		pDC->SetBkColor(m_crBlinkBkColors[m_nBkBlinkStep]);
-		return (HBRUSH)m_brBlinkBkgnd[m_nBkBlinkStep];
-	}
-	// If control is not blinking (background)
+	//CFont *oldfont = pDC->SelectObject(&m_font);
+
+	pDC->SetTextColor(m_crTextColor);
 	pDC->SetBkColor(m_crBkColor);
 
-	// Return a non-NULL brush if the parent's handler should not be called
-    return (HBRUSH)m_brBkgnd;
+	m_brush.DeleteObject();
+    m_brush.CreateSolidBrush(m_crBkColor);
+	return (HBRUSH) m_brush;
+
+
 } // End of CtlColor
 
 
@@ -140,6 +140,9 @@ void CColorStatic::SetTextColor(COLORREF crTextColor)
 		m_crTextColor = ::GetSysColor(COLOR_BTNTEXT);
 	}
 
+    m_brFg.DeleteObject();
+    m_brFg.CreateSolidBrush(m_crTextColor);
+
 	// Repaint control
 	//Invalidate();
 } // End of SetTextColor
@@ -164,7 +167,7 @@ void CColorStatic::SetBkColor(COLORREF crBkColor)
 	}
 
     m_brBkgnd.DeleteObject();
-    m_brBkgnd.CreateSolidBrush(m_crBkColor);
+    m_brBkgnd.CreateSolidBrush(crBkColor);
 
 	// Repaint control
 	//Invalidate();
@@ -313,9 +316,20 @@ void CColorStatic::OnTimer(UINT nIDEvent)
 			if (m_pParent != NULL && (m_nBkBlinkStep == 1 || m_nTextBlinkStep == 1)) 
 				m_pParent->PostMessage(m_nMsg, GetDlgCtrlID(), 0);
 		}
+	} else 	if (nIDEvent == MB_TICKER_TIMER_ID) {
+		if (m_TickerStart.GetTime()) {
+			m_TimeTmp = CTime::GetCurrentTime();
+			if (m_TimeTmp.GetTime() > (m_TickerStart.GetTime() + m_TickerDelay)) {
+				m_TickerX -= m_TickerXStep ;
+				Invalidate ();
+			}
+		} else {
+			m_TickerX -= m_TickerXStep ;
+			Invalidate ();
+		}
+	} else {
+		CStatic::OnTimer(nIDEvent);
 	}
-	else
-	CStatic::OnTimer(nIDEvent);
 } // End of OnTimer
 
 class CUseDialogFont {
@@ -325,66 +339,102 @@ public:
 	CUseDialogFont(CDC* _pDC) {
 		pDC=_pDC; 
 		OldFont=pDC->SelectStockObject(ANSI_VAR_FONT);
+
 	}
 	~CUseDialogFont() {
 		pDC->SelectObject(OldFont);
 	}
 };
 
-
+#define TICKSPACES "                              "
 void CColorStatic::OnPaint() {
-//	OutputDebugString("CColorStatic::OnPaint\r\n");
+	GetClientRect(m_Rect);
+	CPaintDC pDC(this);
+    CMemDC memdc(&pDC, &m_Rect);
 
-    CPaintDC paintdc(this);
+	memdc.FillSolidRect(&m_Rect, m_crBkColor  );
+//	memdc.DrawEdge(m_Rect, EDGE_BUMP, BF_RECT);
 
-    CRect rect;
-    GetClientRect(rect);
+    if (m_text.GetLength()) {
+		CFont * oldfont = memdc.SelectObject(&m_font);
+		CSize cs = memdc.GetTextExtent(m_text);
 
-    if (!m_UseSkin) { 
-		paintdc.FillSolidRect(&rect, m_crBkColor  );
-//		OutputDebugString("CS " + numToString(m_crBkColor) + "\r\n");
-	}
- 
-	if (m_border) {
-		CBrush br;
-		br.CreateSolidBrush(m_crTextColor);
-	//    rect.InflateRect(1,1,1,1);
-		CBrush * oldbrush = paintdc.SelectObject(&br);
-		paintdc.FrameRect(&rect, &br);
-		paintdc.SelectObject(oldbrush);
-	}
-
-	if (m_UseSkin) {
-		PaintBk(&paintdc);
-		DrawTheBitmap(&paintdc);
-	}
-
-    CString S;
-    getText(S);
-    if (S.GetLength()) {
-		int centerFlag = 0;
-		if (m_HCenter) {
-			centerFlag = DT_CENTER;
+		if (cs.cx > m_Rect.Width()) {
+			m_NeedTicker = TRUE;
+		} else {
+			m_NeedTicker = FALSE;
 		}
-		CFont * oldfont = paintdc.SelectObject(&m_font);
-        paintdc.SetTextColor(m_crTextColor);
-        rect.DeflateRect(2,0);
-		paintdc.SetBkMode(TRANSPARENT);
-        paintdc.DrawText(S, rect, 
-			DT_VCENTER
-			|DT_NOPREFIX
-			|centerFlag
-			|DT_LEFT
-			|DT_SINGLELINE /* |DT_NOCLIP */);
-		paintdc.SelectObject(oldfont);
-		paintdc.SetBkMode(OPAQUE);
 
+		if (m_Ticking) {
+			if (m_NeedTicker) {
+				if (m_TickerX <= - cs.cx ){
+					CSize cs2 = memdc.GetTextExtent(TICKSPACES);
+					m_TickerX = cs2.cx;
+				}
+			} else {
+				m_Ticking = FALSE;
+				m_TickerX = TICKERLEFTBORDER;
+				KillTimer (MB_TICKER_TIMER_ID);
+			}
+		} else {
+			if (m_NeedTicker && m_TickerIt) {
+				StartTicker();
+			}
+		}
+		memdc.SetTextColor(m_crTextColor);
+		memdc.SetBkMode(TRANSPARENT);
+		if (m_Ticking) {
+			m_text2 = m_text + TICKSPACES + m_text;
+		} else {
+			m_text2 = m_text;
+			if (m_center && !m_NeedTicker) {
+				m_TickerX = (m_Rect.Width() - cs.cx) / 2;
+			}
+		}
+		memdc.TextOut (m_TickerX,m_TickerY,m_text2);
+		memdc.SelectObject(oldfont);
+	} else {
+		if (m_Ticking) {
+			m_Ticking = FALSE;
+			KillTimer(MB_TICKER_TIMER_ID);
+		}
 	}
-
-
 }
 void
+CColorStatic::setText(CString text, const BOOL center) {
+	m_center = center;
+    m_text = text;
+	//SetItemWidth();
+	// Don't do this cause it allows the control to somehow
+	// paint the text occaisionally outside of OnPaint
+	// which causes confusion over centered vs non-centered
+	//SetWindowText(m_text);
+//    OnPaint();
+
+	if (m_TickerIt && !m_Ticking) {
+		StartTicker();
+	}
+	RedrawWindow();
+}
+void
+CColorStatic::StartTicker() {
+	m_TickerX = TICKERLEFTBORDER;
+	KillTimer (MB_TICKER_TIMER_ID);
+	SetTimer(MB_TICKER_TIMER_ID,m_TickerTime,NULL);
+	m_Ticking = TRUE;
+	m_TickerStart = CTime::GetCurrentTime();
+}
+//		memdc.DrawText(m_text, m_Rect, 
+//			DT_VCENTER
+//			|DT_NOPREFIX
+//			|centerFlag
+//			|DT_LEFT
+//			|DT_SINGLELINE /* |DT_NOCLIP */);
+
+void
 CColorStatic::SetItemWidth() {
+	return;
+
 	int length = m_text.GetLength();
 	if (length == 0)
 		return;
@@ -395,14 +445,7 @@ CColorStatic::SetItemWidth() {
 	font->GetLogFont(&lf);
 	m_width = (lf.lfWidth + 2) * length;
 }
-void
-CColorStatic::setText(CString text) {
-    m_text = text;
-	SetItemWidth();
-	SetWindowText(m_text);
-//    OnPaint();
-	RedrawWindow();
-}
+
 void
 CColorStatic::getText(CString & text) {
     text = m_text;
@@ -425,6 +468,7 @@ void CColorStatic::changeFont(LPLOGFONT lplf) {
 
     SetItemHeight(abs(lplf->lfHeight)+3);
 	SetItemWidth();
+	SetFont(&m_font);
 }
 void CColorStatic::initFont() {
 // Create a new font so we can change it later
@@ -450,6 +494,7 @@ void CColorStatic::border(BOOL flag) {
 }
 
 CSize CColorStatic::GetSize(CString string) {
+
 	CDC * cdc = GetDC();
 	CFont * oldfont = cdc->SelectObject(&m_font);
 	CSize s = cdc->GetTextExtent(string);
@@ -461,10 +506,32 @@ CSize CColorStatic::GetSize(CString string) {
 
 void CColorStatic::SizeToContent()
 {
-	GetClientRect(m_ClientRect);
+//	GetClientRect(m_ClientRect);
 
 } // End of SizeToContent
-DWORD CColorStatic::SetBitmaps(CDC * cdc, LPCTSTR nBitmap, 
-							   COLORREF crTransColor) {
-	return SkinBmp::SetBitmaps(this,cdc,nBitmap,crTransColor);
+//DWORD CColorStatic::SetBitmaps(CDC * cdc, LPCTSTR nBitmap, 
+//							   COLORREF crTransColor) {
+//	return SkinBmp::SetBitmaps(this,cdc,nBitmap,crTransColor);
+//}
+
+#ifdef asdf
+BOOL CColorStatic::OnEraseBkgnd(CDC* pDC) 
+{
+//	GetClientRect(m_Rect);
+//	pDC->FillSolidRect(m_Rect, m_crBkColor);
+//	CRect rect(m_Rect);
+//	rect.DeflateRect(2,2);
+//	pDC->FrameRect(rect, &m_brBkgnd);
+
+	pDC->SetTextColor(m_crTextColor);
+	pDC->SetBkColor(m_crBkColor);
+
+	
+//	return CStatic::OnEraseBkgnd(pDC);
+	return TRUE;
+
 }
+
+#endif
+
+

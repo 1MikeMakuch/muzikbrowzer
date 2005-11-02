@@ -111,18 +111,6 @@ Package=<4>
 
 ###############################################################################
 
-Project: "TreeTest"=..\..\treectrlex\TreeTest.dsp - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
 Project: "WmaTagg"=..\WMAEDIT\WmaTagg.dsp - Package Owner=<4>
 
 Package=<5>
@@ -379,18 +367,6 @@ Package=<4>
 ###############################################################################
 
 Project: "regset"=.\regset\regset.dsp - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
-Project: "testtfileview"=..\..\ctreefilectrl\testtfileview.dsp - Package Owner=<4>
 
 Package=<5>
 {{{

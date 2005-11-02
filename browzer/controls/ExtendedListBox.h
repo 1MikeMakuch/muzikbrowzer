@@ -82,10 +82,9 @@ protected:
     void DrawScrollButton();
 
 	//{{AFX_MSG(CExtendedListBox)
-	public:
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
-	protected:
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
+	afx_msg void OnSysKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 	//}}AFX_MSG
     DECLARE_MESSAGE_MAP();
 private:

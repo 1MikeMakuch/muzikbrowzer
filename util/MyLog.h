@@ -28,6 +28,8 @@ class MyLog {
 			char * msg5=NULL,
 			char * msg6=NULL);
         CString location() { return _pathfile; }
+		void ods(CString &);
+		void ods(char * msg);
 	private:
 		BOOL m_ready;
 		CFile _file;
@@ -48,6 +50,11 @@ MyLog logger;
 extern MyLog logger;
 #endif
 
-#define ODS(x) OutputDebugString(x);
+#define ODS(x) {\
+	CString msg(x);\
+	msg += "\r\n";\
+	OutputDebugString(x);
+
+
 
 #endif

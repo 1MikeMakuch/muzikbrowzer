@@ -29,7 +29,8 @@ static COLORREF crtextHigh = GetSysColor(COLOR_HIGHLIGHTTEXT);
 BEGIN_MESSAGE_MAP(CExtendedListBox, CListBox)
 	//{{AFX_MSG_MAP(CExtendedListBox)
 	ON_WM_ERASEBKGND()
-//	ON_WM_CTLCOLOR()
+	ON_WM_CTLCOLOR()
+	ON_WM_SYSKEYDOWN()
 	//}}AFX_MSG_MAP
     ON_WM_KEYDOWN()
     ON_WM_NCCALCSIZE()
@@ -243,44 +244,63 @@ CExtendedListBox::OnKeyDown( UINT nChar, UINT nRepCnt, UINT nFlags ) {
 
 #pragma hack
 	thePlayer->Need2Erase(FALSE);
-
+	
     if (nChar == VK_LEFT) {
 		Invalidate();
 		thePlayer->PrevDlgCtrl();
     } else if (nChar == VK_RIGHT) {
 		Invalidate();
 		thePlayer->NextDlgCtrl();
-    } else if (m_reorder && (nChar == 85 || nChar == 117
-					|| nChar == 68 || nChar == 100)) {
-        move(nChar);
 	} else {
 		CListBox::OnKeyDown(nChar, nRepCnt, nFlags);
 	}
 }
 
+void CExtendedListBox::OnSysKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) 
+{
+// Note: relying on the fact that CPlayerDlg::m_Playlist.m_reorder
+// is the only CExtendedListBox setting to TRUE!!!!!!!!!!!!!!!!!!!!
+// since it calls movePlaylist[Up|Down] in move below!!!!!!!!!!!!!!
+
+#pragma hack
+	int context ;
+	CString msg("ELB:OSKD context:");
+	if (m_reorder) {
+		context = nFlags & 0x02000;
+		if (context == 8192 && (nChar == VK_UP || nChar == VK_DOWN)) {
+			move(nChar);
+			return;
+		}
+	}
+
+	CListBox::OnSysKeyDown(nChar, nRepCnt, nFlags);
+}
+
 void
 CExtendedListBox::move(UINT nChar) {
+
     int sel = GetCurSel();
     if (sel < 0) return;
 
     CString name;
     GetText(sel, name);
 
-    if (nChar == 85 || nChar == 117) { // u or U
+    if (nChar == 38) { // uparrow
         if (sel < 1) return;
         DeleteString(sel);
         InsertString(sel-1, (LPCTSTR)name);
 		sel -= 1;
 		if (sel < 0) sel = 0;
         SetCurSel(sel);
-        thePlayer->movePlaylistUp(sel);
-    } else if (nChar == 68 || nChar == 100) { // d or D
+        thePlayer->movePlaylistUp(sel+1);
+    } else if (nChar == 40) { // down arrow
         if (sel > GetCount()-2) return;
         DeleteString(sel);
         InsertString(sel+1, (LPCTSTR)name);
+        thePlayer->movePlaylistDown(sel);
 		sel += 1;
         SetCurSel(sel);
-        thePlayer->movePlaylistDown(sel);
+
     }
 }
 
@@ -766,3 +786,6 @@ CExtendedListBox::invalidate() {
 	// Trying calling DrawScroll directly instead of calling
 	// SetWindowPos to get scroll bars drawn.
 }
+
+
+

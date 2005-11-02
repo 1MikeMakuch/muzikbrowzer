@@ -51,6 +51,7 @@
 #define MB_FONTCOMBO_TIMER_ID	5
 #define MB_FRAC_TIMER_ID		6
 #define MB_VOLUME_TIMER_ID		7
+#define MB_TICKER_TIMER_ID		8
 
 #define MB_TRIAL_DAYS 60
 

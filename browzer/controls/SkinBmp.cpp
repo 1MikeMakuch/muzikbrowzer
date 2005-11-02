@@ -58,6 +58,7 @@ void SkinBmp::PaintBk(CDC* pDC)
 		m_First = FALSE;
 //		return;
 	}
+#pragma hack
 	m_dcBk.DeleteDC();
 	m_dcBk.m_hDC = NULL;
 	if (m_dcBk.m_hDC == NULL)

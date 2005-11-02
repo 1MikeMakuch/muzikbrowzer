@@ -31,6 +31,8 @@
 #define CDialogClassImpl CDialogSK
 
 #include "CDialogSK.h"
+#include "ColorControl.h"
+#include "ColorStaticST.h"
 
 class VirtualControl;
 class VirtualDialog;
@@ -100,6 +102,7 @@ public:
 	void setColors();
     MBConfig & config() { return m_Config; }
     void PlayerStatusSet(CString &);
+	void PlayerStatusClear();
 	void PlayerStatusSet(LPCTSTR);
 	void CurrentTitleSet(CString &);
 	void CurrentTitleSet(LPCTSTR);
@@ -151,6 +154,7 @@ private:
     CTime m_PlayerStatusTime;
     CMenuDialog * m_MenuDlg;
     BOOL m_StopFlag;
+	BOOL m_PauseFlag;
     int m_PlaylistCurrent;
 	CString m_LastThingQueuedUp;
 	BOOL m_Resizing;
@@ -208,6 +212,7 @@ private:
 	enum ArtOwnedType {
 		AOTPlaylist, AOTLibrary} m_ArtOwnedBy;
 	BOOL m_Maximized;
+	CString m_LastAlbumArtFile;
 // Dialog Data
 	//{{AFX_DATA(CPlayerDlg)
 	enum { IDD = IDD_PLAYER_DIALOG };
