@@ -1865,6 +1865,7 @@ CPlayerDlg::OnDelete() {
         }
 		calcDuration();
 		m_LastThingQueuedUp = "";
+		OnSelchangePlaylist() ;
     }
 }
 
@@ -2364,7 +2365,9 @@ void CPlayerDlg::OnPreviousSong() {
 }
 BOOL CPlayerDlg::Play() {
 	StartSeekTimer();
-	return m_Player->Play();
+	adjustVolume() ;
+	BOOL r = m_Player->Play();
+	return r;
 
 }
 void CPlayerDlg::Stop() {
@@ -2381,6 +2384,7 @@ void CPlayerDlg::Pause() {
 		m_PauseFlag = FALSE;
 		StartSeekTimer();
 	}
+	adjustVolume() ;
 	m_Player->Pause();
 	m_StopFlag = FALSE;
 }
