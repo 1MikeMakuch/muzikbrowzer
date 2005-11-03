@@ -1969,11 +1969,11 @@ MusicLib::apic(const CString & file, uchar *& rawdata, size_t & nDataSize) {
 				rawdata = new BYTE [ nDataSize ];
 				memcpy(rawdata, frame->GetField(ID3FN_DATA)->GetRawBinary(),
 					nDataSize);
-				delete iter;
-
 	//			m_picCache.write(file, rawdata, nDataSize);
-
-				return TRUE;
+				if (nDataSize) {
+					delete iter;
+					return TRUE;
+				}
 
 
 			}
