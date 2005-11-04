@@ -305,7 +305,7 @@ LRESULT CMydiffDlg::OnDiffDone(WPARAM wParam, LPARAM) {
 	}
 
 	showStatus("diff done");
-	CString command ;
+	CString command;
 	if (m_currentStatus == "Locally Modified") {
 		command = "cvs update -p ";
 		command += m_currentfile;
@@ -376,12 +376,14 @@ LRESULT CMydiffDlg::OnFinished(WPARAM wParam, LPARAM)
 {
 	m_Running = FALSE;
 	CString msg;
+	OutputDebugString("OnFinished\r\n");
 	if(wParam != 0)
 	{ /* has error */
 		msg = cvError((DWORD)wParam);
 		m_ComOutput.AddTail(msg);
+		OutputDebugString(msg);
 	} /* has error */
-	OutputDebugString("OnFinished\r\n");
+
 	
 	PostMessage(m_msg2post);
 	
@@ -405,6 +407,16 @@ void CMydiffDlg::dodiff() {
 	CString file = String::field(entry,"|",1);
 	m_currentStatus = String::field(entry,"|",2);
 	m_currentfile = String::field(entry,"|",3);
+
+
+	CString cwd;
+	file = String::replace(m_currentfile,"","/home2/cvsroot/",1);
+	cwd = String::replace(m_cwd,"","C:\\mkm\\",1);
+	cwd += "\\";
+	cwd = String::replace(cwd,"/","\\");
+	file = String::replace(file,"",cwd,1);
+
+	m_currentfile = file;
 
 	m_Data1.ResetContent();
 	m_Data2.ResetContent();
