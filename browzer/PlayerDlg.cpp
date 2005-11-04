@@ -330,7 +330,57 @@ BOOL CPlayerDlg::OnInitDialog()
     logger.open(lpath);
 	logger.log(CS("muzikbrowzer version: ") + CS(MUZIKBROWZER_VERSION));
 
+// App mutex
+	CString amemsg,ammsg;
+#define MUZIKBROWZERAPPMUTEX "MuzikbrowzerAppMutex"
+#define MUZIKBROWZERAPPMUTEXGLOBAL "Global\\MuzikbrowzerAppMutex"
 
+	PSECURITY_DESCRIPTOR psd = malloc(sizeof(SECURITY_DESCRIPTOR));
+	SECURITY_ATTRIBUTES sa ;
+
+	BOOL isdresult = InitializeSecurityDescriptor(psd, 
+		SECURITY_DESCRIPTOR_REVISION);
+	DWORD e = ::GetLastError();
+	if (isdresult == 0) {
+		amemsg += "InitializeSecurityDescriptor error: ";
+		amemsg += MBFormatError(e);
+		logger.log(amemsg);
+	}
+
+	sa.nLength = sizeof(SECURITY_ATTRIBUTES);
+	sa.lpSecurityDescriptor = psd;
+	sa.bInheritHandle = FALSE;
+
+	HANDLE h = CreateMutex(&sa,FALSE, MUZIKBROWZERAPPMUTEXGLOBAL);
+	e = GetLastError();
+	if (NULL == h || ERROR_ALREADY_EXISTS == e) {
+		amemsg = "CreateMutex " + CString(MUZIKBROWZERAPPMUTEXGLOBAL);
+		amemsg += "\r\n";
+		amemsg += MBFormatError(e);
+		amemsg += "\r\n";
+		h = CreateMutex(&sa,FALSE, MUZIKBROWZERAPPMUTEX);
+		e = GetLastError();
+		logger.log(amemsg);
+	}
+
+	if (NULL == h || ERROR_ALREADY_EXISTS == e) {
+		ammsg = ("It looks like ");
+		ammsg += MUZIKBROWZER;
+		ammsg += " is already running.\r\nYou should only run one instance at a time.\r\nContinue at your own risk.\r\n";
+		amemsg = "CreateMutex " + CString(MUZIKBROWZERAPPMUTEX);
+		amemsg += "\r\n";
+		amemsg += MBFormatError(e);
+		amemsg += "\r\n";
+		int r = MBMessageBox(MUZIKBROWZER, ammsg, TRUE, TRUE);
+		if (0 == r) {
+			amemsg += "user aborted";
+			logger.log(amemsg);
+			_exit(0);
+		} else {
+			amemsg += "user continued";
+		}
+		logger.log(amemsg);
+	}
 
 	OSVERSIONINFO osvi;
 	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);

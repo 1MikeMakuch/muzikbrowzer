@@ -10,6 +10,7 @@ Type: files; Name: "{commonprograms}\BitmapCutter.lnk";
 
 
 [Setup]
+AppMutex=MuzikbrowzerAppMutex,Global\MuzikbrowzerAppMutex,MuzikbrowzerBitMapCutterAppMutex,Global\MuzikbrowzerBitMapCutterAppMutex
 AppName=muzikbrowzer
 AppVerName=muzikbrowzer 1.5.1
 AppCopyright=Copyright (C) 2001 Pecan Ventures, LLC
