@@ -271,7 +271,7 @@ class MSongLib {
 
 		int validate();
 	public:
-		void dump();
+		void dump(CString name="");
 };
 
 

@@ -603,6 +603,7 @@ MusicPlayerDS::Seek(long pos, BOOL endpos) {
 //The volume value is in 1/100ths of decibels and ranges from -10000 to 0.
 HRESULT
 MusicPlayerDS::SetVolume(long level) {
+	return pBA->put_Volume(level);
 	if (isPlaying()) {
 		return pBA->put_Volume(level);
 	} else {

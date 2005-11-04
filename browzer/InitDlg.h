@@ -7,7 +7,8 @@
 // InitDlg.h : header file
 //
 #include "stdafx.h"
-#include "PlayerApp.h"
+#include "Resource.h"
+//#include "PlayerApp.h"
 /////////////////////////////////////////////////////////////////////////////
 // InitDlg dialog
 

@@ -4,7 +4,7 @@
 #include "stdafx.h"
 //#include "MfcPlayer.h"
 #include "InitDlg.h"
-#include "IRCodes.h"
+//#include "IRCodes.h"
 #include "MBGlobals.h"
 #ifdef _DEBUG
 #define new DEBUG_NEW

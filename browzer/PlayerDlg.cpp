@@ -1,6 +1,7 @@
 
 
 
+
 // PlayerDlg.cpp : implementation file
 
 #include "stdafx.h"
@@ -49,6 +50,13 @@
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
 #endif
+
+// This DBLOCKED global used to prevent access to the _selected*'s vars
+// while the db is being updated and before the _selected*'s
+// get updated. Introduced when On*Focus routines began calling
+// OnSelectchange*'s routines. This to update the album art
+// upon focus change between playlist and library.
+BOOL DBLOCKED = FALSE;
 
 void Redraw() {
 	thePlayer->redraw();
@@ -1545,6 +1553,7 @@ rememberSelections(CMapStringToString & map, CString sel,
 void CPlayerDlg::OnSelchangeGenres() 
 {
 	static int lastsel = -1;
+	if (DBLOCKED) return;
 	UpdateWindow();
 
 	int sel = m_Genres.GetCurSel();
@@ -1569,6 +1578,7 @@ void CPlayerDlg::OnSelchangeGenres()
 void CPlayerDlg::OnSelchangeArtists() 
 {
 	static int lastsel = -1;
+	if (DBLOCKED) return;
 	int sel = m_Artists.GetCurSel();
     if (sel < 0) return;
 	if (lastsel != sel) {
@@ -1589,6 +1599,7 @@ void CPlayerDlg::OnSelchangeArtists()
 void CPlayerDlg::OnSelchangeAlbums() 
 {
 	static int lastsel = -1;
+	if (DBLOCKED) return;
 	int sel = m_Albums.GetCurSel();
     if (sel < 0) return;
 	if (lastsel != sel) {
@@ -1612,6 +1623,7 @@ void CPlayerDlg::OnSelchangeAlbums()
 void CPlayerDlg::OnSelchangeSongs() 
 {
 	static int lastsel = -1;
+	if (DBLOCKED) return;
 	static CString lastalbum;
 	int sel = m_Songs.GetCurSel();
     if (sel < 0) return;
@@ -1622,15 +1634,12 @@ void CPlayerDlg::OnSelchangeSongs()
 	m_Songs.GetText(sel,_selectedSong);
     m_AlbumSong.SetAt(_selectedAlbum, _selectedSong);
 
-//    OnSelchangePlaylist();
-//    PlayerStatusTempSet(_selectedSong);	
     m_Songs.invalidate();
 
 //	if (lastalbum != _selectedAlbum) {
 		Song song = m_mlib.getSong(_selectedGenre, _selectedArtist,
 			_selectedAlbum, _selectedSong);
 		CString file = song->getId3("FILE");
-//		m_ArtOwnedBy = AOTLibrary;
 		displayAlbumArt(file);
 //	}
 	lastalbum = _selectedAlbum;
@@ -1638,6 +1647,7 @@ void CPlayerDlg::OnSelchangeSongs()
 
 void CPlayerDlg::OnSelchangePlaylist() 
 {
+	if (DBLOCKED) return;
 	int sel = m_Playlist.GetCurSel();
 	if (sel > -1) {
 		m_Playlist.GetText(sel,_selectedPlaylistSong);
@@ -1648,7 +1658,6 @@ void CPlayerDlg::OnSelchangePlaylist()
     m_Playlist.invalidate();
 
 	CString file = m_mlib._playlist[sel]->getId3("FILE");
-//	m_ArtOwnedBy = AOTPlaylist;
 	displayAlbumArt(file);
 }
 
@@ -1831,8 +1840,6 @@ CPlayerDlg::OnPlaylistFocus() {
 	}
     PlayerStatusTempSet(_selectedPlaylistSong);
 	OnSelchangePlaylist() ;
-
-//	m_ArtOwnedBy = AOTPlaylist;
 }
 void
 CPlayerDlg::OnDelete() {
@@ -2123,7 +2130,7 @@ void CPlayerDlg::OnMenuOptions() {
 	m_Config.DoModal();
 	m_AlbumArt = m_Config.getSkin(MB_SKIN_ALBUMART);
 
-    PlayerStatusTempSet(m_mlib.getLibraryCounts());
+//  PlayerStatusTempSet(m_mlib.getLibraryCounts());
 //	resizeControls();
     redraw();
 	//    IRReaderStart();
@@ -2141,7 +2148,7 @@ void CPlayerDlg::OnMenuOptions() {
 	} else if (m_Config.trialMode() == 2) {
 		m_HelpMsg = " Trial Expired.";
 	}
-	PlayerStatusSet(m_HelpMsg);
+//	PlayerStatusSet(m_HelpMsg);
 }
 void
 CPlayerDlg::redraw() {
@@ -2622,8 +2629,11 @@ void CPlayerDlg::OnContextMenu(CWnd* pWnd, CPoint ScreenPnt)
     } else if (songRect.PtInRect(point)) {
         m_Songs.SetFocus();
         int sel = m_Songs.GetSelectedItemFromPoint(point);
-        if (sel >= 0) m_Songs.SetCurSel(sel);
-        mWindowFlag = 4;
+        if (sel >= 0) {
+			m_Songs.SetCurSel(sel);
+			OnSelchangeSongs();
+	        mWindowFlag = 4;
+		}
     } else if (playlistRect.PtInRect(point)) {
         m_Playlist.SetFocus();
         int sel = m_Playlist.GetSelectedItemFromPoint(point);
@@ -2707,10 +2717,15 @@ void CPlayerDlg::OnUserEditSong()
 	int ret;
 	ret = dialog->DoModal();
 	if (ret == IDOK) {
+		DBLOCKED = TRUE;
         m_mlib.modifyID3(song, dialog->m_newSong);
         initDb();
+		DBLOCKED = FALSE;
+
+		OnSelchangeGenres();
 	}
 	delete dialog;    	
+
 }
 
 

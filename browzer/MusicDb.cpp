@@ -647,7 +647,7 @@ MusicLib::getSongs(const CString & genrename,
         box.AddString(((NameNum*)namenums[i])->m_name);
         box.SetItemData(i, ((NameNum*)namenums[i])->m_p);
         delete (NameNum*) namenums[i];
-    }
+	}
 
 	return 0;
 }
@@ -1032,6 +1032,7 @@ Song
 MusicLib::createSongFromFile(const CString & mp3file) {
 	CString er;
 	int t1, t2, tf;
+	t1 = t2 = tf = 0;
 	return createSongFromFile(mp3file, er, t1, t2, tf);
 }
 Song
@@ -1628,6 +1629,7 @@ MusicLib::modifyID3(Song oldSong, Song newSong) {
 		msg += "\r\n";
         songs.GetNext(pos);
 	}
+	dialog->EndDialog(0);
 	delete dialog;
 	int r = MBMessageBox("Notice", msg, TRUE, TRUE);
 	if (r == 0) {
@@ -1700,9 +1702,9 @@ MusicLib::modifyID3(Song oldSong, Song newSong) {
 	m_SongLib.m_garbagecollector++;
     garbageCollect(dialog);
 	writeDb();
-    delete dialog;
+	dialog->EndDialog(0);
+	delete dialog;
 	modifyPlaylists(oldSong, newSong);
-
     return;
 }
 void
@@ -3305,11 +3307,15 @@ MusicLib::getSongVal(const CString & key, const CString & genrename,
 }
 
 void 
-MSongLib::dump() {
+MSongLib::dump(CString name) {
     int i;
     AutoBuf buf(1000);
 
     CString dbfilename = m_mem.DbFile();
+
+	if (name != "") {
+		dbfilename += name;
+	}
     dbfilename += ".txt";
 
     const char * pszFileName = (LPCTSTR) dbfilename;

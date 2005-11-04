@@ -2,6 +2,7 @@
 #define AFX_CONFIGPASSWORD_H__449E928A_3B06_11D6_8695_002078049F22__INCLUDED_
 
 #include "Resource.h"
+
 #include <afxdlgs.h>
 
 #if _MSC_VER > 1000
