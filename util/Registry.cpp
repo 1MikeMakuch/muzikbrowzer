@@ -45,6 +45,19 @@ RegistryKey::~RegistryKey()
 	if (mKeyValPairs)
 		delete mKeyValPairs;
 }
+BOOL RegistryKey::Copy(const RegistryKey & src) {
+    POSITION pos;
+    CString key;
+    CString val;
+	CString data;
+	AutoBuf buf(1000);	
+	CStringList slist;
+    for( pos = src.mKeyValPairs->GetStartPosition(); pos != NULL; ) {
+        src.mKeyValPairs->GetNextAssoc(pos, key, val);
+		mKeyValPairs->SetAt(key, val);
+	}
+	return TRUE;
+}
 BOOL RegistryKey::WriteFile()
 {
 	if (mFileName == "") return FALSE;
@@ -54,13 +67,31 @@ BOOL RegistryKey::WriteFile()
     CString val;
 	CString data;
 	AutoBuf buf(1000);	
+	CStringList slist;
     for( pos = mKeyValPairs->GetStartPosition(); pos != NULL; ) {
         mKeyValPairs->GetNextAssoc(pos, key, val);
-        if (key.GetLength() && val.GetLength()) {
-            sprintf(buf.p, "%s: %s\r\n", key, val);
-			data += buf.p;
-        }
-    }
+		String::insertSort(slist, key);
+	}
+
+    for (pos = slist.GetHeadPosition(); pos != NULL; ) {
+        CString key = slist.GetAt(pos);
+		if (mKeyValPairs->Lookup(key, val)) {
+			if (key.GetLength() && val.GetLength()) {
+				sprintf(buf.p, "%s: %s\r\n", key, val);
+				data += buf.p;
+			}
+		}
+		slist.GetNext(pos);
+	}
+
+
+//    for( pos = mKeyValPairs->GetStartPosition(); pos != NULL; ) {
+//        mKeyValPairs->GetNextAssoc(pos, key, val);
+//        if (key.GetLength() && val.GetLength()) {
+//            sprintf(buf.p, "%s: %s\r\n", key, val);
+//			data += buf.p;
+//        }
+//    }
 	if (data == "") return FALSE;
 
 	CFile cfile;
@@ -143,6 +174,17 @@ void RegistryKey::Read( const TCHAR* value, TCHAR* data,
 	}
 	data[ maxSize - 1 ] = 0;
 }
+CString RegistryKey::ReadCString(const CString & key, const CString & dflt) {
+	AutoBuf buf(1000);
+	Read(
+		(const TCHAR*) key,
+		buf.p,
+		999,
+		(const TCHAR*) dflt);
+
+	CString v = buf.p;
+	return v;
+}
 
 void RegistryKey::Write( const TCHAR* value, const TCHAR* data ) const
 {
@@ -162,6 +204,12 @@ TEST(Registry, FileWrite)
 	RegistryKey rk("..\\testdata\\registry.dat");
 	rk.Write("key1","val1");
 	rk.Write("key2", 100);
+	rk.Write("key9", 900);
+	rk.Write("key8", 800);
+	rk.Write("key7", 700);
+	rk.Write("key3", 300);
+	rk.Write("key4", 400);
+	rk.Write("key5", 500);
 	BOOL r = rk.WriteFile();
 	CHECK(r == TRUE);
 
@@ -171,7 +219,7 @@ TEST(Registry, FileWrite)
 
 	TCHAR data[100];
 	rk2.Read("key1", (TCHAR*) &data, (unsigned long) 100, (const TCHAR*)"default");
-	unsigned long val2 = rk2.Read("key2", 999);
+	unsigned long val2 = rk2.Read((const TCHAR*)"key2", (unsigned long)999);
 	CString val(data);
 	CHECK(val == "val1");
 	CHECK(val2 == 100);

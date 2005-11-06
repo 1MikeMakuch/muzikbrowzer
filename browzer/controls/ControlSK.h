@@ -35,11 +35,12 @@ typedef BOOL (WINAPI *lpfnSetLayeredWindowAttributes)
 //  ===========================================================================
 enum LayOutStyle
 {
-    LO_DEFAULT,
-    LO_TILE,    // Tile the background picture
-    LO_CENTER,  // Center the background picture
-    LO_STRETCH, // Stretch the background picture to the dialog window size
-    LO_RESIZE   // Resize the dialog so that it just fits the background 
+	LO_STRETCHED=0, // Stretch the background picture to the dialog window size
+	LO_TILED=1,    // Tile the background picture
+    LO_FIXED=2,   // Resize the dialog so that it just fits the background 
+
+    LO_CENTER=3,  // Center the background picture
+	LO_TILED0=4
 };
 
 //  ===========================================================================
@@ -48,6 +49,7 @@ enum LayOutStyle
 //          To use this class create Dialog and then make the dialog class
 //          derive from CControlSK instead of CDialog
 //  ===========================================================================
+#ifdef notused
 class AFX_EXT_CLASS CControlSK 
 {
 public:
@@ -149,5 +151,5 @@ private:
 	DWORD		m_dwHeight;			// Height of bitmap
     LayOutStyle m_loStyle;          // LayOutStyle style
 };
-
+#endif
 #endif // _ABHI_CDIALOG_H_

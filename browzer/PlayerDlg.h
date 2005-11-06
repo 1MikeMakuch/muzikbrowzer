@@ -31,8 +31,7 @@
 #define CDialogClassImpl CDialogSK
 
 #include "CDialogSK.h"
-#include "ColorControl.h"
-#include "ColorStaticST.h"
+
 
 class VirtualControl;
 class VirtualDialog;
@@ -69,8 +68,13 @@ public:
     ~CPlayerDlg();
     CPlayerApp * m_PlayerApp;
 	MusicLib m_mlib;
-	CString _selectedGenre, _selectedArtist, _selectedAlbum,
-        _selectedSong, _selectedPlaylistSong;
+	CString _selectedGenre, 
+		_lastSelectedGenre,
+		_selectedArtist,
+		_lastSelectedArtist,
+		_selectedAlbum,
+        _selectedSong, 
+		_selectedPlaylistSong;
 
 	void updatePlaylist(const BOOL save=TRUE);
 	virtual BOOL PreTranslateMessage(MSG*);
@@ -209,10 +213,12 @@ private:
 
 	CString m_HelpMsg;
 	BOOL m_InitDone;
-	enum ArtOwnedType {
-		AOTPlaylist, AOTLibrary} m_ArtOwnedBy;
+
 	BOOL m_Maximized;
 	CString m_LastAlbumArtFile;
+	CSize m_InitialSize;
+	BOOL m_FixedSize;
+	CRect m_WindowRect;
 // Dialog Data
 	//{{AFX_DATA(CPlayerDlg)
 	enum { IDD = IDD_PLAYER_DIALOG };
@@ -349,6 +355,7 @@ public:
     afx_msg BOOL OnHelpInfo(HELPINFO* pHelpInfo);
 	afx_msg LRESULT OnSerialMsg (WPARAM wParam, LPARAM lParam);
 	afx_msg void OnNcPaint( );
+	afx_msg void OnGetMinMaxInfo( MINMAXINFO FAR* lpMMI );
 
 	DECLARE_MESSAGE_MAP()
 

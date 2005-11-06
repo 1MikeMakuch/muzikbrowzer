@@ -112,9 +112,10 @@ private:
     COLORREF m_vTxSel;
 	COLORREF m_vTxColHdr;
 	COLORREF m_vBkColHdr;
-
-    void ReadReg(RegistryKey & key);
-    void StoreReg(RegistryKey & key);
+public:
+    void ReadReg(RegistryKey & key,BOOL readskin=FALSE);
+private:
+    void StoreReg(RegistryKey & key, BOOL storeskin=FALSE);
     void setDefaults();
     void v2m();
     void m2v();
@@ -149,7 +150,6 @@ private:
 	CFont m_FontSampleHigh;
 	CFont m_FontSampleCurPlay;
 
-//	CString m_sThemeName;
 	CString m_sSkinName;
 	int m_vBorderWidth;
 	int m_vPanelWidth;
@@ -157,14 +157,13 @@ private:
 	int m_vGenreWidthPct;
 	int m_vBorderHorz;
 	int m_vBorderVert;
+	BOOL m_Modified;
 
     void init();
 	void initFontSels();
     void showSample();
     void copy2lf(LOGFONT &, LOGFONT &, LOGFONT &, LOGFONT &);
-//	CString m_ThemeDir;
 	CString m_SkinDir;
-//	void readThemes();
 	void readSkins();
 	
 public:
@@ -195,12 +194,12 @@ public:
 	int getBorderVert() { return m_vBorderVert; }
 //	double getPlaylistHeightPct();
 	double getGenreWidthPct();
-	const CString getSkin(const CString key);
+	const CString getSkin(const CString key, BOOL readcheck=TRUE);
 	const CString getSkin(const CString skiname, const CString key);
-	void ReadTheme();
 	void getSkins(CStringList &);
 	const CString getCurrentSkin() { return m_sSkinName; }
 	BOOL verifySkin(CString skin);
+
 };
 
 //{{AFX_INSERT_LOCATION}}

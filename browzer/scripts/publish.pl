@@ -2,6 +2,9 @@
 
 $f=$ARGV[0];
 
+#print "ok test!\n";
+#exit(0);
+
 open(F,"<$f");
 read(F,$buf,(-s $f));
 close(F);
@@ -59,11 +62,11 @@ This is an automated message.\n\n";
 print F "version $major.$minor.$patch built $ds $dt\n";
 print F "http://mbdev.makuch.org\n
 
-Here is the ChangeLog\n\n";
+Here is the first 100 lines of the ChangeLog, the rest can be found at the link above.\n\n";
 close(F);
 
 system("(cd /cygdrive/c/mkm/src/muzik ; cvs2cl.pl --summary --hide-filenames -f /tmp/mbpublish.txt2)");
-system("cat /tmp/mbpublish.txt2 >> /tmp/mbpublish.txt");
+system("head -100 /tmp/mbpublish.txt2 >> /tmp/mbpublish.txt");
 
 system("/usr/sbin/ssmtp $to < /tmp/mbpublish.txt");
 system("/usr/bin/rsync /tmp/mbpublish.txt2 pecan:/var/www/virtuals/mbdev/httpdocs/ChangeLog.txt");

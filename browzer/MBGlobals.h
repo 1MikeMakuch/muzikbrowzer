@@ -19,7 +19,6 @@
 #define PLAYER_STATUS_DELAY 2
 #define MBPLAYLIST "_Playlist_"
 #define MBPLAYLISTEXT ".mbp"
-#define MBTHEMEEXT ".mbtheme"
 
 #define IR_MESSAGE				(WM_APP + 1)
 #define WM_GRAPHNOTIFY			(WM_APP + 2)

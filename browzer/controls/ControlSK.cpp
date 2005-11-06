@@ -201,7 +201,7 @@ BOOL CControlSK::OnEraseBkgnd(CRect & rect, CDC* pDC)
     {
         pDC->BitBlt(0, 0, rect.Width(), rect.Height(), &dc, 0, 0, SRCCOPY);
     }
-    else if (m_loStyle == LO_TILE)
+    else if (m_loStyle == LO_TILED)
     {
         int ixOrg, iyOrg;
 
@@ -220,7 +220,7 @@ BOOL CControlSK::OnEraseBkgnd(CRect & rect, CDC* pDC)
         
         pDC->BitBlt(ixOrg, iyOrg, rect.Width(), rect.Height(), &dc, 0, 0, SRCCOPY);
     }
-    else if ( m_loStyle == LO_STRETCH)
+    else if ( m_loStyle == LO_STRETCHED)
     {
         pDC->StretchBlt(0, 0, rect.Width(), rect.Height(), &dc, 0, 0, m_dwWidth, m_dwHeight, SRCCOPY);
     }

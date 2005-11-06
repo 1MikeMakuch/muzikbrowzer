@@ -411,9 +411,10 @@ CColorStatic::setText(CString text, const BOOL center) {
 	//SetWindowText(m_text);
 //    OnPaint();
 
-	if (m_TickerIt && !m_Ticking) {
+	if (m_TickerIt ) {
 		StartTicker();
 	}
+
 	RedrawWindow();
 }
 void

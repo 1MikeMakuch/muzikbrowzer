@@ -176,8 +176,8 @@ MBConfig::getDlgBorderHorz() {
 	return m_Display->getBorderHorz();
 }
 void
-MBConfig::ReadTheme() {
-	m_Display->ReadTheme();
+MBConfig::ReadReg(RegistryKey & key) {
+	m_Display->ReadReg(key);
 }
 
 int
@@ -195,6 +195,7 @@ void MBConfig::getSkins(CStringList & l) {
 BOOL MBConfig::ChooseSkin(CString s) {
 	return m_Display->OnSkinChoose(s);
 }
+
 const CString MBConfig::getCurrentSkin() {
 	return m_Display->getCurrentSkin();
 }
@@ -213,10 +214,7 @@ void MBConfig::Scan(BOOL fornew) {
 	m_Files->Scan(fornew);
 }
 
-BOOL
-MBConfig::UseGenre() {
-	return m_Files->UseGenre();
-}
+
 BOOL
 MBConfig::AlbumSortAlpha() {
 	return m_Files->AlbumSortAlpha();

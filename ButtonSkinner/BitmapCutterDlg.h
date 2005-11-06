@@ -50,8 +50,11 @@ public:
 // Dialog Data
 	//{{AFX_DATA(CBitmapCutterDlg)
 	enum { IDD = IDD_BITMAPCUTTER_DIALOG };
-	CEdit	m_StartHeight;
-	CEdit	m_StartWidth;
+	CButton		m_BgTypeStretched;
+	CButton		m_BgTypeTiled;
+	CButton		m_BgTypeFixed;
+	CStatic	m_FileSettings;
+	CButton	m_ChooseSettings;
 	CMySliderCtrl m_TVolume;
 	CMySliderCtrl m_TProgress;
 	CButtonST	m_TMenuButton;
@@ -188,6 +191,7 @@ public:
 	CStatic	m_TestLabel;
 	CStatic	m_OutsLabel;
 	CStatic	m_HoversLabel;
+
 	//}}AFX_DATA
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CBitmapCutterDlg)
@@ -203,6 +207,7 @@ protected:
 	CString m_sFileOuts;
 	CString m_sFileHovers;
 	CString m_sDest;
+	CString m_sFileSettings;
 	BOOL m_UpdateXY;
 	BOOL m_Saved;
 	BOOL m_Applied;
@@ -210,6 +215,7 @@ protected:
 	BOOL m_DrawLines;
 	BOOL m_DrawSliderRects;
 	BOOL m_DrawSliderChannel;
+	enum { BGSTRETCHED=0, BGTILED=1, BGFIXED=2 } m_BgType;
 
 	void ReadReg();
 	void StoreReg();
@@ -258,6 +264,10 @@ protected:
 	afx_msg void OnRemoveDraw();
 	afx_msg void OnPicIns();
 	afx_msg void OnAdjust();
+	afx_msg void OnButtonFileSettings();
+	afx_msg void OnBgtypeStretched();
+	afx_msg void OnBgtypeFixed();
+	afx_msg void OnBgtypeTiled();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 	afx_msg void OnArrowKey(UINT wParam, LONG lParam);
@@ -365,9 +375,6 @@ protected:
 	int	m_nProgressY;
 	int	m_nProgressWidth;
 	int	m_nProgressHeight;
-	int m_nStartWidth;
-	int m_nStartHeight;
-
 	int m_nBorderHorz;
 	int m_nBorderVert;
 

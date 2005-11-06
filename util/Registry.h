@@ -84,6 +84,7 @@ public:
   // Read and write character strings
   void Read( const TCHAR* value, TCHAR* data, unsigned long maxSize,
       const TCHAR* deflt  ) const;
+  CString ReadCString(const CString & key, const CString & dflt);
   void Write( const TCHAR* value, const TCHAR* data ) const;
 
   // Read and write long integers
@@ -96,6 +97,7 @@ public:
   void Write( const TCHAR* value, const void* data, unsigned long size ) const;
   BOOL WriteFile();
   BOOL ReadFile();
+  BOOL Copy(const RegistryKey & src);
 
 private:
   HKEY key;

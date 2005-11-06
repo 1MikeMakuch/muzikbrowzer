@@ -53,6 +53,7 @@ class String {
 	static CString downcase(const CString string);
 	static CString upcase(const CString string);
 	static int last(const CString & string, const char ch);
+	static void insertSort(CStringList &list, const CString &string);
 
 
 };

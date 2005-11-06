@@ -66,7 +66,7 @@ CString MBDir() {
 	return thePlayer->m_Config.mbdir();
 }
 void initDb() {
-	thePlayer->initDb();
+	thePlayer->init();
 }
 CString GetLibraryCounts() {
 	return thePlayer->m_mlib.getLibraryCounts();
@@ -99,7 +99,6 @@ CPlayerDlg::CPlayerDlg(CPlayerApp * theApp,
 	m_PlaylistDuration(0), m_timerid(0), m_StatusTimerId(0),
 	m_Control(new VirtualControl), m_Dialog(new VirtualDialog),
 	m_trialCounter(0), //m_AppLabel(FALSE),
-//	m_ArtOwnedBy(AOTLibrary),
 	m_InitDone(FALSE),
 	m_Genres(TRUE,"genres"),
 	m_Artists(TRUE,"artists"),
@@ -108,7 +107,9 @@ CPlayerDlg::CPlayerDlg(CPlayerApp * theApp,
 	m_Playlist(TRUE, "playlist"),
 	m_Maximized(FALSE),
 	m_AdjustLibrary(0),
-	m_LibraryDragging(FALSE)
+	m_LibraryDragging(FALSE),
+	m_Resizing(FALSE),
+	m_FixedSize(FALSE)
 
 {
 	//{{AFX_DATA_INIT(CPlayerDlg)
@@ -131,7 +132,7 @@ CPlayerDlg::CPlayerDlg(CPlayerApp * theApp,
 	irman().init(RegKeyIrman, IR_MESSAGE_NUMBER_OF, this);
 //	m_brush.CreateSolidBrush(RGB( 255, 0, 0));
 	m_HatchBrush.CreateHatchBrush(HS_CROSS,RGB(255,0,0));
-	m_Resizing = FALSE;
+
 }
 CPlayerDlg::~CPlayerDlg() {
     //delete m_Config;
@@ -279,7 +280,7 @@ BEGIN_MESSAGE_MAP(CPlayerDlg, CDialogClassImpl)
     ON_WM_HELPINFO()
 	ON_WM_TIMER()
 	ON_MESSAGE(MB_SERIAL_MESSAGE, OnSerialMsg)
-
+	ON_WM_GETMINMAXINFO()
 	ON_COMMAND_RANGE(MB_SKINPICS_MSGS_BEGIN,MB_SKINPICS_MSGS_END, OnSkinPic)
 	ON_COMMAND(ID_MENU_ADD, OnMusicAdd)
 	ON_COMMAND(ID_MENU_SCAN, OnMusicScan)
@@ -293,13 +294,38 @@ void initFont(CWnd *);
 void changeFont(CWnd *, CFont &);
 BOOL CPlayerDlg::OnInitDialog()
 {
+    *m_Dialog = this;
+	m_mlib.readDbLocation();
+    CString lpath = m_mlib.getDbLocation();
+    logger.open(lpath);
+	logger.log(CS("muzikbrowzer version: ") + CS(MUZIKBROWZER_VERSION));
+
+	logger.ods("Begin InitDialog");
 	CDialogClassImpl::OnInitDialog();
 	CWaitCursor c;
+
+	CString cl = ::GetCommandLine();
+	m_InitialSize.cx=0;m_InitialSize.cy=0;
+
+	if (cl.Find("-size=") >= 0) { // -size=800x600
+		CString tmp = String::extract(cl,"-size=","");
+		CString val = String::extract(tmp,"","x");
+		if (val.GetLength()) m_InitialSize.cx = atoi(val);
+		val = String::extract(tmp,"x","");
+		if (tmp.GetLength()) m_InitialSize.cy= atoi(val);
+	}
 
 	m_Config.createit(this, &m_callbacks);
 	CString skindef = m_Config.getSkin(MB_SKIN_DEF);
 	RegistryKey regSD(skindef);
 	regSD.ReadFile();
+
+	CString skincustom = m_Config.getSkin(MB_SKIN_DEF_CUSTOM);
+	RegistryKey regSDCustom(skincustom);
+	regSDCustom.ReadFile();
+	regSD.Copy(regSDCustom);
+
+
 	int r,g,b;
 	r = regSD.Read("TransRedMain",254);
 	g = regSD.Read("TransGreenMain",0);
@@ -324,14 +350,13 @@ BOOL CPlayerDlg::OnInitDialog()
 	m_Songs.m_id = "songs";
 	m_Playlist.m_id = "playlist";
 
-    *m_Dialog = this;
-	m_mlib.readDbLocation();
-    CString lpath = m_mlib.getDbLocation();
-    logger.open(lpath);
-	logger.log(CS("muzikbrowzer version: ") + CS(MUZIKBROWZER_VERSION));
-
 // App mutex
+	logger.ods("AppMutext begin");
 	CString amemsg,ammsg;
+	
+	// These mutex keys must match those in Inno/Release.iss
+	// One user session and one global, from an Inno tip
+
 #define MUZIKBROWZERAPPMUTEX "MuzikbrowzerAppMutex"
 #define MUZIKBROWZERAPPMUTEXGLOBAL "Global\\MuzikbrowzerAppMutex"
 
@@ -381,6 +406,8 @@ BOOL CPlayerDlg::OnInitDialog()
 		}
 		logger.log(amemsg);
 	}
+	logger.ods("AppMutext end");
+// end of AppMutex
 
 	OSVERSIONINFO osvi;
 	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
@@ -473,13 +500,11 @@ BOOL CPlayerDlg::OnInitDialog()
 	m_Genres.RedrawWindow(FALSE);
 	m_Artists.RedrawWindow(FALSE);
 
-//	create themes dir, playlists dir here
-	CString tmp = m_Config.mbdir();
-//	tmp += "\\themes";
+	// Create dir for playlists
+//	CString tmp = m_Config.mbdir();
+//	tmp = m_Config.mbdir();
+//	tmp += "\\playlists";
 //	FileUtil::mkdirp(tmp);
-	tmp = m_Config.mbdir();
-	tmp += "\\playlists";
-	FileUtil::mkdirp(tmp);
 
 	readConfig();
 
@@ -492,6 +517,7 @@ BOOL CPlayerDlg::OnInitDialog()
 		}
 		_initdialog->DestroyWindow();
 	}
+	logger.ods("End of InitDialog");
 
 	return FALSE;  // return TRUE  unless you set the focus to a control
 }
@@ -805,30 +831,68 @@ CPlayerDlg::setColors() {
 void
 CPlayerDlg::resetControls() {
 	static BOOL firsttime = TRUE;
-	  CWaitCursor c;
+	CWaitCursor c;
 
+	// read skin def
 	CString skindef = m_Config.getSkin(MB_SKIN_DEF);
 	RegistryKey regSD(skindef);
 	regSD.ReadFile();
 
-	m_Config.ReadTheme();
+	// read SkinDefCustom
+	CString skindefcustom = m_Config.getSkin(MB_SKIN_DEF_CUSTOM);
+	RegistryKey regSDCustom(skindefcustom);
+	regSDCustom.ReadFile();
+
+	// custom overlays standard
+	regSD.Copy(regSDCustom);
+
+	// Now read into m_Config memory
+	// Necessary cause I'm getting config info from 2 places
+	// 1) via regSd and 2) m_Config.
+	m_Config.ReadReg(regSD);
 
 
+	int los = regSD.Read("BackgroundType",0);
+	LayOutStyle bgtype;
+	m_FixedSize = FALSE;
+	switch (los) {
+	case 1:
+		bgtype = LO_TILED;
+		break;
+	case 2:
+		bgtype = LO_FIXED;
+		break;
+	case 0:
+	default:
+		bgtype = LO_STRETCHED;
+		break;
+	}
+	int w = 0;
+	int h = 0;
 
-#pragma hack
 	if (firsttime) {
 		firsttime=FALSE;
-		int w = regSD.Read("StartWidth",0);
-		int h = regSD.Read("StartHeight",0);
-		if (w && h) {
-			CRect rect;
-			int max;
-			ReadWindowPos(max, rect);
-			rect.right = rect.left + w;
-			rect.bottom = rect.top + h;
-			MoveWindow(rect, TRUE );
-		}
+		w = m_InitialSize.cx;
+		h = m_InitialSize.cy;
 	}
+	if (LO_FIXED == bgtype) {
+		CDIBSectionLite bmpBgMain;
+		bmpBgMain.Load(m_Config.getSkin(MB_SKIN_BACKGROUNDMAIN));
+		w = bmpBgMain.GetWidth();
+		h = bmpBgMain.GetHeight();
+	}
+	if (w && h) {
+		CRect rect;
+		int max;
+		ReadWindowPos(max, rect);
+		rect.right = rect.left + w;
+		rect.bottom = rect.top + h;
+		MoveWindow(rect, TRUE );
+	}
+	if (LO_FIXED == bgtype) {
+		m_FixedSize = TRUE;
+	}
+
 	
 	m_Controls.init(this);
 
@@ -1239,7 +1303,7 @@ CPlayerDlg::resetControls() {
 #pragma hack		
 		// hack alert: rect0 needs 2 b Window instead of client
 		// for the resizing border
-		SetBitmap(bgmain, rect0, LO_STRETCH, CS("frame"));
+		SetBitmap(bgmain, rect0, bgtype, CS("frame"));
 
 	}
 
@@ -1247,7 +1311,7 @@ CPlayerDlg::resetControls() {
 	x = (m_Controls.dialogrect.Width() / 2) - (bmpaplabel.GetWidth() / 2);
 	y = border;
 	CRect aplrect(x,y,x+bmpaplabel.GetWidth(),y+bmpaplabel.GetHeight());
-	SetBitmap(m_Config.getSkin(MB_SKIN_BUTTONAPPLABELOUT), aplrect, LO_DEFAULT,
+	SetBitmap(m_Config.getSkin(MB_SKIN_BUTTONAPPLABELOUT), aplrect, LO_FIXED,
 		CS("applabel"));
 	//ClientToScreen(AppLabelRect);
 	CString bgpanel ;
@@ -1260,7 +1324,7 @@ CPlayerDlg::resetControls() {
 		titlebottom + panelborder);
 	bgpanel = m_Config.getSkin(MB_SKIN_BACKGROUNDPLAYLIST);
 	if (bgpanel.GetLength()) {
-		SetBitmap(bgpanel, plrect, LO_STRETCH, CS("play panel"));
+		SetBitmap(bgpanel, plrect, LO_STRETCHED, CS("play panel"));
 	}
 
 	// lib panel
@@ -1270,7 +1334,7 @@ CPlayerDlg::resetControls() {
 	librect.right = m_Controls.dialogrect.right - border;
 	bgpanel = m_Config.getSkin(MB_SKIN_BACKGROUNDLIBRARY);
 	if (bgpanel.GetLength()) {
-		SetBitmap(bgpanel, librect, LO_STRETCH, CS("lib panel"));
+		SetBitmap(bgpanel, librect, LO_STRETCHED, CS("lib panel"));
 	}
 
 	// album panel
@@ -1279,7 +1343,7 @@ CPlayerDlg::resetControls() {
 	alrect.right = librect.right;
 	bgpanel = m_Config.getSkin(MB_SKIN_BACKGROUNDALBUMART);
 	if (bgpanel.GetLength()) {
-		SetBitmap(bgpanel, alrect, LO_STRETCH, CS("album"));
+		SetBitmap(bgpanel, alrect, LO_STRETCHED, CS("album"));
 	}
 #endif
 
@@ -1291,7 +1355,7 @@ CPlayerDlg::resetControls() {
 	buttonrect.bottom = ControlBoxTop + ControlBoxHeight;
 	bgpanel = m_Config.getSkin(MB_SKIN_BUTTONBACKGROUND);
 	if (bgpanel.GetLength()) {
-		SetBitmap(bgpanel, buttonrect, LO_DEFAULT, CS("controlbox"));
+		SetBitmap(bgpanel, buttonrect, LO_FIXED, CS("controlbox"));
 	}
 
 	make(cdc); // the background
@@ -1382,17 +1446,26 @@ CPlayerDlg::resetControls() {
 	m_ColHdrsRect.UnionRect(m_GenresLabelRect,m_SongsLabelRect);
 
 	//m_GenresLabel.RedrawWindow();
+	GetWindowRect(m_WindowRect);
 }
 
 
 void
 CPlayerDlg::init() {
+	// Not to be called by CPlayerDlg::InitDialog
+	m_mlib.readDbLocation();
+    CString lpath = m_mlib.getDbLocation();
+	logger.close();
+    logger.open(lpath);
+	logger.log(CS("muzikbrowzer version: ") + CS(MUZIKBROWZER_VERSION));
 
     if (m_mlib.init()) {
 		MBMessageBox("Error", "Database corrupted. Rebuild it by performing a\r\nScan in Options/Configuration");
 		PlayerStatusSet(CString(
 			"Database corrupted. Do a scan in Configuration."));
 	}
+	_selectedGenre = "";
+	_selectedArtist = "";
     initDb();
 }
 
@@ -1440,6 +1513,7 @@ void CPlayerDlg::OnSysCommand(UINT nID, LPARAM lParam)
 
 void CPlayerDlg::OnPaint() 
 {
+	if (m_Resizing) return;
 //	CString msg="CPlayerDlg OnPaint\r\n"; OutputDebugString(msg);
 	CPaintDC dc(this); // device context for painting
 
@@ -1612,9 +1686,18 @@ void CPlayerDlg::OnSelchangeGenres()
 		m_LastThingQueuedUp = "";
 	}
 	lastsel = sel;
+	_lastSelectedGenre = _selectedGenre;
 	m_Genres.GetText(sel, _selectedGenre);
-	m_Artists.ResetContent();	
-	m_mlib.getArtists(_selectedGenre, m_Artists);
+	if (_lastSelectedGenre != _selectedGenre) {
+		if (_selectedGenre == MBALL ) {
+			CWaitCursor c;
+			m_Artists.ResetContent();	
+			m_mlib.getArtists(_selectedGenre, m_Artists);
+		} else {
+			m_Artists.ResetContent();	
+			m_mlib.getArtists(_selectedGenre, m_Artists);
+		}
+	}
 //	m_Artists.SetCurSel(0);	
     rememberSelections(m_GenreArtist, _selectedGenre, m_Artists);
 	OnSelchangeArtists();
@@ -1635,12 +1718,21 @@ void CPlayerDlg::OnSelchangeArtists()
 		m_LastThingQueuedUp = "";
 	}
 	lastsel = sel;
+	_lastSelectedArtist = _selectedArtist;
 	m_Artists.GetText(sel,_selectedArtist);
 	m_GenreArtist.SetAt(_selectedGenre, _selectedArtist);
-
-	m_Albums.ResetContent();	
-	m_mlib.getAlbums(_selectedGenre,
-		_selectedArtist, m_Albums, m_Config.AlbumSortAlpha());
+	if (_lastSelectedArtist != _selectedArtist) {
+		if (_selectedArtist == MBALL ) {
+			CWaitCursor c;
+			m_Albums.ResetContent();	
+			m_mlib.getAlbums(_selectedGenre,
+				_selectedArtist, m_Albums, m_Config.AlbumSortAlpha());
+		} else {
+			m_Albums.ResetContent();	
+			m_mlib.getAlbums(_selectedGenre,
+				_selectedArtist, m_Albums, m_Config.AlbumSortAlpha());
+		}
+	}
     rememberSelections(m_ArtistAlbum, _selectedArtist, m_Albums);
 	OnSelchangeAlbums();
     m_Artists.invalidate();
@@ -2182,7 +2274,7 @@ void CPlayerDlg::OnMenuOptions() {
 
 //  PlayerStatusTempSet(m_mlib.getLibraryCounts());
 //	resizeControls();
-    redraw();
+//    redraw();
 	//    IRReaderStart();
 	irman().Close();
 	irman().init(RegKeyIrman, IR_MESSAGE_NUMBER_OF, this);
@@ -2495,6 +2587,7 @@ void CPlayerDlg::PlayLoop() {
             if (first) {
                 first = 0;
             } else {
+				CurrentTitleSet("");
 				recordTLEN();
 				resetPosition();
 				InputClose();
@@ -2529,7 +2622,6 @@ void CPlayerDlg::PlayLoop() {
 //				Play();
 				adjustVolume();
 				good = 1;
-//				m_ArtOwnedBy = AOTPlaylist;
 				displayAlbumArt(file);
 			} else {
 				good = 0;
@@ -2778,16 +2870,22 @@ void CPlayerDlg::OnUserEditSong()
 
 }
 
-
+void CPlayerDlg::OnGetMinMaxInfo( MINMAXINFO FAR* lpMMI ) {
+   RECT r;
+   GetWindowRect(&r);
+   if ((r.right - r.left) > 0 && TRUE == m_FixedSize )
+   {
+      lpMMI->ptMaxTrackSize.x = r.right - r.left;
+      lpMMI->ptMinTrackSize.x = r.right - r.left;
+      lpMMI->ptMaxTrackSize.y = r.bottom - r.top;
+      lpMMI->ptMinTrackSize.y = r.bottom - r.top;
+   }
+   else
+      CDialog::OnGetMinMaxInfo(lpMMI); 
+}
 
 void CPlayerDlg::OnSizing(UINT fwSide, LPRECT pRect) 
 {
-	static int counter = 0;
-	counter++;
-//	CString msg("OnSizing ");
-//	msg += numToString(counter) + "\r\n";
-//	OutputDebugString(msg);
-
 	int left,right,top,bottom;
 	left = pRect->left;
 	right = pRect->right;
@@ -2814,6 +2912,7 @@ void CPlayerDlg::OnSizing(UINT fwSide, LPRECT pRect)
 	pRect->right = right;
 	pRect->top = top;
 	pRect->bottom = bottom;
+
 	if (FALSE == m_Resizing) {
 		CDialogClassImpl::OnSizing(fwSide, pRect);
 	}
@@ -2821,12 +2920,18 @@ void CPlayerDlg::OnSizing(UINT fwSide, LPRECT pRect)
 }
 void CPlayerDlg::OnCaptureChanged(CWnd *pWnd) {
 	// This forces rubber band style resizing
-	static int counter = 0;
-	counter++;
 	if (m_Resizing)
 	{
 		m_Resizing = FALSE;
-		resetControls();
+
+		if (FALSE == m_FixedSize ) {
+			CRect wr;
+			GetWindowRect(wr);
+			if (wr.Size() != m_WindowRect.Size())
+				resetControls();
+		} else {
+			PlayerStatusTempSet("This skin is not resizeable");
+		}
 	}
 	
 	CDialog::OnCaptureChanged(pWnd);
@@ -2840,7 +2945,14 @@ void CPlayerDlg::OnSize(UINT nType, int cx, int cy)
     }
 	if (!m_Resizing) {
 		CDialogClassImpl::OnSize(nType, cx, cy);
-		resetControls();
+		if (FALSE == m_FixedSize) {
+			CRect wr;
+			GetWindowRect(wr);
+			if (wr.Size() != m_WindowRect.Size())
+				resetControls();
+		} else {
+				PlayerStatusTempSet("This skin is not resizeable");
+		}
 	}
 }
 void
@@ -2879,7 +2991,7 @@ CPlayerDlg::PlayerStatusTempSet(LPCTSTR lpmsg) {
 }
 void
 CPlayerDlg::PlayerStatusTempSet(CString & msg) {
-	m_PlayerStatus.setText(msg,TRUE);
+	m_PlayerStatus.setText(msg/*,TRUE*/);
     m_PlayerStatusTime = CTime::GetCurrentTime();
 	StartStatusTimer();
 	m_PositionLabel.setText ( "" );
@@ -3263,6 +3375,10 @@ CPlayerDlg::OnSkinPic(UINT wParam) {
 	if (skin != "") {
 		if (m_Config.ChooseSkin(skin)) {
 			redraw();
+		} else {
+			CString tmp = "Bad skin. See " + m_Config.mbdir();
+			tmp += "/muzikbrowzer.log";
+			PlayerStatusTempSet(tmp);
 		}
 	}
 
@@ -3602,8 +3718,8 @@ void CPlayerDlg::adjustVolume() {
 	if (m_Player->SetVolume(m_VolumeSlider.GetPos())) {
 //		updateVolumeLabel();
 	} else {
-		logger.log("Unable to set volume");
-		PlayerStatusTempSet("Unable to set volume");
+//		logger.log("Unable to set volume");
+//		PlayerStatusTempSet("Unable to set volume");
 	}
 }
 void CPlayerDlg::adjustVolume(int level) {

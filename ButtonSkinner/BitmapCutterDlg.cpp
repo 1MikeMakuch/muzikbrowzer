@@ -52,17 +52,21 @@ CBitmapCutterDlg::CBitmapCutterDlg(CWnd* pParent /*=NULL*/)
 	m_nTransGreenPanel = 0;
 	m_nTransBluePanel = 0;
 
-
+	m_BgType = BGSTRETCHED;
 
 }
 void CBitmapCutterDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CBitmapCutterDlg)
-	DDX_Control(pDX, IDC_START_HEIGHT, m_StartHeight);
-	DDX_Control(pDX, IDC_START_WIDTH, m_StartWidth);
+	DDX_Control(pDX, IDC_FILE_SETTINGS, m_FileSettings);
+	DDX_Control(pDX, IDC_BUTTON_FILE_SETTINGS, m_ChooseSettings);
 	DDX_Control(pDX, IDC_TVOLUME, m_TVolume);
 	DDX_Control(pDX, IDC_TPROGRESS, m_TProgress);
+	DDX_Control(pDX, IDC_BUTTON11, m_TMenuButton);
+	DDX_Control(pDX, IDC_BUTTON12, m_TMusicButton);
+	DDX_Control(pDX, IDC_BUTTON13, m_TPicturesButton);
+	DDX_Control(pDX, IDC_BUTTON14, m_TVideoButton);
 	DDX_Control(pDX, IDC_BUTTON1, m_TStopButton);
 	DDX_Control(pDX, IDC_BUTTON2, m_TPlayButton);
 	DDX_Control(pDX, IDC_BUTTON3, m_TPauseButton);
@@ -73,10 +77,6 @@ void CBitmapCutterDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON8, m_TClearButton);
 	DDX_Control(pDX, IDC_BUTTON9, m_TLoadButton);
 	DDX_Control(pDX, IDC_BUTTON10, m_TSaveButton);
-	DDX_Control(pDX, IDC_BUTTON11, m_TMenuButton);
-	DDX_Control(pDX, IDC_BUTTON12, m_TMusicButton);
-	DDX_Control(pDX, IDC_BUTTON13, m_TPicturesButton);
-	DDX_Control(pDX, IDC_BUTTON14, m_TVideoButton);
 	DDX_Control(pDX, IDC_BUTTON_FILE_OUTS, m_ChooseOuts);
 	DDX_Control(pDX, IDC_BUTTON_FILE_INS, m_ChooseIns);
 	DDX_Control(pDX, IDC_BUTTON_FILE_HOVERS, m_ChooseHovers);
@@ -90,6 +90,15 @@ void CBitmapCutterDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_INS, m_Ins);
 	DDX_Control(pDX, IDC_OTHER, m_Other);
 	DDX_Control(pDX, IDC_OUTS, m_Outs);
+	DDX_Control(pDX, IDC_RED, m_Red);
+	DDX_Control(pDX, IDC_RED2, m_TransRedMain);
+	DDX_Control(pDX, IDC_RED3, m_TransRedPanel);
+	DDX_Control(pDX, IDC_GREEN, m_Green);
+	DDX_Control(pDX, IDC_GREEN2, m_TransGreenMain);
+	DDX_Control(pDX, IDC_GREEN3, m_TransGreenPanel);
+	DDX_Control(pDX, IDC_BLUE, m_Blue);
+	DDX_Control(pDX, IDC_BLUE2, m_TransBlueMain);
+	DDX_Control(pDX, IDC_BLUE3, m_TransBluePanel);
 	DDX_Control(pDX, IDC_CLEAR_HEIGHT, m_ClearHeight);
 	DDX_Control(pDX, IDC_CLEAR_WIDTH, m_ClearWidth);
 	DDX_Control(pDX, IDC_CLEAR_X, m_ClearX);
@@ -155,7 +164,6 @@ void CBitmapCutterDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_VIDEO_WIDTH, m_VideoWidth);
 	DDX_Control(pDX, IDC_VIDEO_X, m_VideoX);
 	DDX_Control(pDX, IDC_VIDEO_Y, m_VideoY);
-	
 	DDX_Control(pDX, IDC_BMPSIZE_HOVERS, m_BmpSizeHovers);
 	DDX_Control(pDX, IDC_BMPSIZE_INS, m_BmpSizeIns);
 	DDX_Control(pDX, IDC_BMPSIZE_OUTS, m_BmpSizeOuts);
@@ -174,28 +182,22 @@ void CBitmapCutterDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_STATIC_SAVE, m_LabelSave);
 	DDX_Control(pDX, IDC_STATIC_SHUFFLE, m_LabelShuffle);
 	DDX_Control(pDX, IDC_STATIC_STOP, m_LabelStop);
-	DDX_Control(pDX, IDC_STATIC_VOLUME, m_LabelVolume);
 	DDX_Control(pDX, IDC_STATIC_MENU, m_LabelMenu);
 	DDX_Control(pDX, IDC_STATIC_MUSIC, m_LabelMusic);
 	DDX_Control(pDX, IDC_STATIC_PICTURES, m_LabelPictures);
 	DDX_Control(pDX, IDC_STATIC_VIDEO, m_LabelVideo);
+	DDX_Control(pDX, IDC_STATIC_VOLUME, m_LabelVolume);
 	DDX_Control(pDX, IDC_PIC_HOVERS, m_PicHovers);
-	DDX_Control(pDX, IDC_PIC_INS, m_PicIns);
 	DDX_Control(pDX, IDC_PIC_OUTS, m_PicOuts);
+	DDX_Control(pDX, IDC_PIC_INS, m_PicIns);
 	DDX_Control(pDX, IDC_PIC_TEST, m_PicTest);
 	DDX_Control(pDX, IDC_INS_LABEL, m_InsLabel);
 	DDX_Control(pDX, IDC_TEST_LABEL, m_TestLabel);
 	DDX_Control(pDX, IDC_OUTS_LABEL, m_OutsLabel);
 	DDX_Control(pDX, IDC_HOVERS_LABEL, m_HoversLabel);
-	DDX_Control(pDX, IDC_RED, m_Red);
-	DDX_Control(pDX, IDC_RED2, m_TransRedMain);
-	DDX_Control(pDX, IDC_RED3, m_TransRedPanel);
-	DDX_Control(pDX, IDC_GREEN, m_Green);
-	DDX_Control(pDX, IDC_GREEN2, m_TransGreenMain);
-	DDX_Control(pDX, IDC_GREEN3, m_TransGreenPanel);
-	DDX_Control(pDX, IDC_BLUE, m_Blue);
-	DDX_Control(pDX, IDC_BLUE2, m_TransBlueMain);
-	DDX_Control(pDX, IDC_BLUE3, m_TransBluePanel);
+	DDX_Control(pDX, IDC_BGTYPE_STRETCHED, m_BgTypeStretched);
+	DDX_Control(pDX, IDC_BGTYPE_TILED, m_BgTypeTiled);
+	DDX_Control(pDX, IDC_BGTYPE_FIXED, m_BgTypeFixed);
 	//}}AFX_DATA_MAP
 }
 
@@ -222,6 +224,7 @@ BEGIN_MESSAGE_MAP(CBitmapCutterDlg, CDialog)
 	ON_BN_CLICKED(IDC_ZERO, OnZero)
 	ON_BN_CLICKED(IDC_REMOVE_DRAW, OnRemoveDraw)
 	ON_BN_CLICKED(IDC_PIC_INS, OnPicIns)
+	ON_BN_CLICKED(IDC_BUTTON_FILE_SETTINGS, OnButtonFileSettings)
 	ON_BN_CLICKED(IDC_OUTS, OnUpdateInOut)
 	ON_BN_CLICKED(IDC_HOVER, OnUpdateInOut)
 	ON_BN_CLICKED(IDC_CANCEL, OnCancel)
@@ -237,7 +240,9 @@ BEGIN_MESSAGE_MAP(CBitmapCutterDlg, CDialog)
 	ON_EN_CHANGE(IDC_LINEWIDTH, OnUpdateXY)
 	ON_EN_CHANGE(IDC_GREEN, OnUpdateRGB)
 	ON_EN_CHANGE(IDC_BLUE, OnUpdateRGB)
-	//ON_BN_CLICKED(IDC_ADJUST, OnAdjust)
+	ON_BN_CLICKED(IDC_BGTYPE_STRETCHED, OnBgtypeStretched)
+	ON_BN_CLICKED(IDC_BGTYPE_FIXED, OnBgtypeFixed)
+	ON_BN_CLICKED(IDC_BGTYPE_TILED, OnBgtypeTiled)
 	//}}AFX_MSG_MAP
 	ON_MESSAGE(MB_BITMAP_CUTTER_MSG, OnArrowKey)
 END_MESSAGE_MAP()
@@ -348,6 +353,9 @@ BOOL CBitmapCutterDlg::OnInitDialog()
 		OnButtonFileOuts();
 	if (m_sFileHovers != "") 
 		OnButtonFileHovers();
+//	if (m_sFileSettings != "")
+//		OnButtonFileSettings();
+
 	Init=FALSE;
 	
 	m_LabelMenu.GetWindowRect(MenuLabel);
@@ -429,6 +437,7 @@ BOOL CBitmapCutterDlg::OnInitDialog()
     m_VideoWidth.EnableWindow(FALSE);
     m_VideoX.EnableWindow(FALSE);
     m_VideoY.EnableWindow(FALSE);
+	RedrawWindow();
  
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
@@ -778,7 +787,23 @@ void CBitmapCutterDlg::OnButtonFileHovers() {
 		m_PicHovers, m_PicHoversCRect, m_PicHoversDlgRect, m_BmpSizeHovers);
 		m_FileHovers.SetWindowText(m_sFileHovers);
 }
+void CBitmapCutterDlg::OnButtonFileSettings() 
+{
+	m_FileSettings.GetWindowText(m_sFileSettings);
+	CFileDialog dialog(TRUE, "mbsd", m_sFileSettings,
+		OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
+		"mbsd's  {*.mbsd}|*.mbsd|All Files {*.*}|*.*||");
+	int ret = 0;
+	ret = dialog.DoModal();
+	if (ret == IDOK) {
+	  // a file was selected
+		m_sFileSettings = dialog.GetPathName();
+		m_FileSettings.SetWindowText(m_sFileSettings);
 
+		UpdateData(FALSE);
+	}
+	
+}
 void CBitmapCutterDlg::OnButtonFile(CStatic & clabel, CString & label,
 					HBITMAP & hbitmap, CDIBSectionLite & cdib, CStatic & cpic,
 					CRect & picrect, CRect & picdlgrect, CStatic & csizelabel) 
@@ -989,6 +1014,8 @@ void CBitmapCutterDlg::OnButtonDest()
 		OnButtonFileOuts();
 	if (m_sFileHovers != "") 
 		OnButtonFileHovers();
+	if (m_sFileSettings != "")
+		OnButtonFileSettings();
 	
 	CreateTest();
 	if (m_sFileHovers != "") 
@@ -1033,6 +1060,22 @@ void CBitmapCutterDlg::EnableDisable() {
 	m_Ins.EnableWindow(m_sFileIns != "");
 	m_Outs.EnableWindow(m_sFileOuts != "");
 	m_Hovers.EnableWindow(m_sFileHovers != "");
+
+	if (m_BgType == BGTILED) {
+		m_BgTypeStretched.SetCheck(FALSE);
+		m_BgTypeTiled.SetCheck(TRUE);
+		m_BgTypeFixed.SetCheck(FALSE);
+	} else if (m_BgType == BGFIXED) {
+		m_BgTypeStretched.SetCheck(FALSE);
+		m_BgTypeTiled.SetCheck(FALSE);
+		m_BgTypeFixed.SetCheck(TRUE);
+	} else {
+		m_BgTypeStretched.SetCheck(TRUE);
+		m_BgTypeTiled.SetCheck(FALSE);
+		m_BgTypeFixed.SetCheck(FALSE);
+	}
+
+	Invalidate();
 
 
 
@@ -1333,12 +1376,19 @@ void CBitmapCutterDlg::ReadReg() {
 	regBmps.Read("Insbmp", buf, 999, "");
     m_FileIns.SetWindowText(buf);
 	m_sFileIns = buf;
+	
 	regBmps.Read("Outsbmp", buf, 999, "");
     m_FileOuts.SetWindowText(buf);
 	m_sFileOuts = buf;
+	
 	regBmps.Read("Hoversbmp", buf, 999, "");
     m_FileHovers.SetWindowText(buf);
 	m_sFileHovers = buf;
+	
+	regBmps.Read("Settings", buf, 999, "");
+	m_FileSettings.SetWindowText(buf);
+	m_sFileSettings = buf;
+
 
 	// now read the config for this destdir/bmp
 	
@@ -1485,11 +1535,18 @@ void CBitmapCutterDlg::ReadReg() {
 	m_nProgressY = reg.Read("ProgressY", 0);
 	m_nProgressWidth = reg.Read("ProgressWidth",0);
 	m_nProgressHeight = reg.Read("ProgressHeight",0);
-	m_nStartWidth = reg.Read("StartWidth",800);
-	m_nStartHeight = reg.Read("StartHeight",600);
 
 	m_nBorderHorz = reg.Read("BorderHorz", 5);
 	m_nBorderVert = reg.Read("BorderVert", 5);
+
+	unsigned long e = reg.Read("BackgroundType", BGSTRETCHED);
+	if (0 == e) {
+		m_BgType = BGSTRETCHED;
+	} else if (1 == e) {
+		m_BgType = BGTILED;
+	} else if (2 == e) {
+		m_BgType = BGFIXED;
+	}
 	IntsToCEdits();
 	OnApply();
 
@@ -1514,17 +1571,31 @@ void CBitmapCutterDlg::StoreReg() {
 	regBmp.Write("Outsbmp", msg);
 	m_FileHovers.GetWindowText(msg);
 	regBmp.Write("Hoversbmp", msg);
+	m_FileSettings.GetWindowText(msg);
+	regBmp.Write("Settings", msg);
 	regBmp.WriteFile();
 
 
-	// finally store config into dest dir bmp.MBSkinDef
+	// finally store config into dest dir SkinDef.mbsd
+	// but first read custom settins from m_FileSettings
+	// then allow custom settings to be overriden by 
+	// stuff below, just in case.
 	
-	file = m_sDest + "\\" + MB_SKIN_DEF;
-//	file += "\\" + FileUtil::basename(m_sFile);
-//	FExtension ext2(file);
-//	file = ext2.filename() + ".MBSkinDef";
+	RegistryKey regCustom(m_sFileSettings);
+	if (m_sFileSettings != "") {
+		regCustom.ReadFile();
+	}
 
-	RegistryKey reg(file);
+	file = m_sDest + "\\" + MB_SKIN_DEF;
+	RegistryKey reg(file);	
+		
+	if (m_sFileSettings != "") {
+
+		reg.Copy(regCustom);
+	}
+
+	
+
 
 	m_DestDir.GetWindowText(msg);
 	reg.Write("dest",msg);
@@ -1671,10 +1742,10 @@ reg.Write("ProgressWidth", m_nProgressWidth);
 reg.Write("ProgressHeight", m_nProgressHeight);
 reg.Write("ControlBoxWidth", m_PicInsCRect.Width());
 reg.Write("ControlBoxHeight", m_PicInsCRect.Height());
-reg.Write("StartWidth", m_nStartWidth);
-reg.Write("StartHeight",m_nStartHeight);
 reg.Write("BorderHorz",m_nBorderHorz);
 reg.Write("BorderVert",m_nBorderVert);
+reg.Write("BackgroundType", m_BgType);
+reg.Write("BackgroundTypes:","0=Stretched, 1=Tiled, 2=Fixed");
 
 reg.WriteFile();
 
@@ -1750,8 +1821,7 @@ m_ProgressX.SetWindowText(numToString(m_nProgressX));
 m_ProgressY.SetWindowText(numToString(m_nProgressY));
 m_ProgressWidth.SetWindowText(numToString(m_nProgressWidth));
 m_ProgressHeight.SetWindowText(numToString(m_nProgressHeight));
-m_StartWidth.SetWindowText(numToString(m_nStartWidth));
-m_StartHeight.SetWindowText(numToString(m_nStartHeight));
+
 
 }
 void CBitmapCutterDlg::CEditsToInts() {
@@ -1825,8 +1895,7 @@ m_ProgressX.GetWindowText(msg);m_nProgressX=atoi(msg);
 m_ProgressY.GetWindowText(msg);m_nProgressY=atoi(msg);
 m_ProgressWidth.GetWindowText(msg);m_nProgressWidth=atoi(msg);
 m_ProgressHeight.GetWindowText(msg);m_nProgressHeight=atoi(msg);
-//m_StartWidth.GetWindowText(msg);m_nStartWidth=atoi(msg);
-//m_StartHeight.GetWindowText(msg);m_nStartHeight=atoi(msg);
+
 
 
 }
@@ -2704,3 +2773,25 @@ void CBitmapCutterDlg::OnArrowKey(UINT shifted, LONG lParam)  {
 
 
 
+
+
+
+void CBitmapCutterDlg::OnBgtypeStretched() 
+{
+	m_BgType = BGSTRETCHED;
+	EnableDisable();
+	
+}
+
+void CBitmapCutterDlg::OnBgtypeFixed() 
+{
+	m_BgType = BGFIXED;
+	EnableDisable();
+}
+
+void CBitmapCutterDlg::OnBgtypeTiled() 
+{
+	m_BgType = BGTILED;
+	EnableDisable();
+	
+}

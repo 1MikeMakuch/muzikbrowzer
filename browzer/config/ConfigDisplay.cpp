@@ -8,6 +8,7 @@
 #include "MBGlobals.h"
 #include "SkinDefs.h"
 #include "MBMessageBox.h"
+#include "MyLog.h"
 
 #include "FileUtils.h"
 
@@ -37,7 +38,8 @@ IMPLEMENT_DYNCREATE(CConfigDisplay, CPropertyPage)
 
 CConfigDisplay::CConfigDisplay(CWnd * p, PlayerCallbacks * pcb) 
 		: CPropertyPage(CConfigDisplay::IDD),
-    m_lplfTitles(0), m_lplfPanel(0), m_lplfColHdr(0), m_playercallbacks(pcb)
+    m_lplfTitles(0), m_lplfPanel(0), m_lplfColHdr(0), m_playercallbacks(pcb),
+	m_Modified(FALSE)
 {
 	//{{AFX_DATA_INIT(CConfigDisplay)
 	//}}AFX_DATA_INIT
@@ -46,23 +48,24 @@ CConfigDisplay::CConfigDisplay(CWnd * p, PlayerCallbacks * pcb)
 	memset(&m_lfColHdr, 0, sizeof(LOGFONT));
 	memset(&m_lfCurPlay,0,sizeof(LOGFONT));
     init();
-    ReadReg(RegistryKey( HKEY_LOCAL_MACHINE, RegKey ));
+    ReadReg(RegistryKey( HKEY_LOCAL_MACHINE, RegKey ),TRUE);
 
+	// Read skin def
 	CString skindef = getSkin(MB_SKIN_DEF);
 	RegistryKey regSD(skindef);
 	regSD.ReadFile();
-	ReadReg(regSD);
 
-	CString tmp = m_SkinDir;
-	tmp += "\\";
-	tmp += m_sSkinName;
-	tmp += "\\SkinDef";
-	tmp += MBTHEMEEXT;
+	// read skin def custom
 	CString save = m_sSkinName;
-	RegistryKey theme(tmp);
-	theme.ReadFile();
-	ReadReg(theme);
+	CString skindefcustom = getSkin(MB_SKIN_DEF_CUSTOM);
+	RegistryKey regSDCustom(skindefcustom);
+	regSDCustom.ReadFile();
+
+	// custom overlays standard
+	regSD.Copy(regSDCustom);
+	ReadReg(regSD);
 	m_sSkinName = save;
+
 }
 
 CConfigDisplay::~CConfigDisplay()
@@ -123,10 +126,7 @@ BEGIN_MESSAGE_MAP(CConfigDisplay, CPropertyPage)
 	//{{AFX_MSG_MAP(CConfigDisplay)
     ON_WM_PAINT()	
     ON_CBN_EDITCHANGE(IDC_FONT_COLHDR,              OnSelchangeFont)
-//    ON_BN_CLICKED(IDC_THEME_DELETE,                 OnThemeDelete)
-//    ON_CBN_EDITCHANGE(IDC_THEME_LIST,               OnThemeChoose)
     ON_BN_CLICKED(IDC_SKIN_DELETE,                  OnSkinDelete)
-//    ON_CBN_EDITCHANGE(IDC_SKIN_LIST,                OnSkinChoose)
     ON_BN_CLICKED(IDC_BOLD_COLHDR,                  onbold)
     ON_BN_CLICKED(IDC_BOLD_PANEL,                   onbold)
     ON_BN_CLICKED(IDC_BOLD_TITLES,                  onbold)
@@ -151,8 +151,6 @@ BEGIN_MESSAGE_MAP(CConfigDisplay, CPropertyPage)
     ON_CBN_EDITUPDATE(IDC_FONTSIZE_COLHDR,			OnSelchangeFont)
     ON_CBN_EDITUPDATE(IDC_FONTSIZE,                 OnSelchangeFont)
     ON_CBN_EDITUPDATE(IDC_FONTSIZE_PANEL,			OnSelchangeFont)
-//    ON_CBN_EDITUPDATE(IDC_SKIN_LIST,                OnSkinChoose)
-//    ON_CBN_EDITUPDATE(IDC_THEME_LIST,               OnThemeChoose)
     ON_CBN_SELCHANGE(IDC_BORDER_PANEL,              OnUpdateWidth)
     ON_CBN_SELCHANGE(IDC_BORDER_WIDTH,              OnUpdateWidth)
 	ON_CBN_SELCHANGE(IDC_BORDER_HORZ,              OnUpdateWidth)
@@ -164,8 +162,6 @@ BEGIN_MESSAGE_MAP(CConfigDisplay, CPropertyPage)
 	ON_CBN_SELCHANGE(IDC_FONTSIZE_CURPLY,			OnSelchangeFont)
     ON_CBN_SELCHANGE(IDC_FONTSIZE,                  OnSelchangeFont)
     ON_CBN_SELCHANGE(IDC_FONTSIZE_PANEL,			OnSelchangeFont)
-//    ON_CBN_SELCHANGE(IDC_SKIN_LIST,                 OnSkinChoose)
-//    ON_CBN_SELCHANGE(IDC_THEME_LIST,                OnThemeChoose)
     ON_CBN_SELENDOK(IDC_BORDER_PANEL,               OnUpdateWidth)
     ON_CBN_SELENDOK(IDC_BORDER_WIDTH,               OnUpdateWidth)
 	ON_CBN_SELENDOK(IDC_BORDER_HORZ,               OnUpdateWidth)
@@ -177,9 +173,7 @@ BEGIN_MESSAGE_MAP(CConfigDisplay, CPropertyPage)
     ON_CBN_SELENDOK(IDC_FONTSIZE,                   OnSelchangeFont)
     ON_CBN_SELENDOK(IDC_FONTSIZE_PANEL,             OnSelchangeFont)
     ON_CBN_SELENDOK(IDC_SKIN_LIST,                  OnSkinChoose)
-//    ON_CBN_SELENDOK(IDC_THEME_LIST,                 OnThemeChoose)
     ON_EN_CHANGE(IDC_GENRE_WIDTH,                   OnUpdateWidth)
-//    ON_EN_CHANGE(IDC_PLAYLIST_HEIGHT,               OnUpdateWidth)
 	ON_CBN_SELENDOK(IDC_COLOR_BK_COLHDR,			OnColorButton)
 	ON_BN_CLICKED(IDC_COLOR_BK_COLHDR,              OnColorButton)
 	ON_BN_CLICKED(IDC_COLOR_BK_CURPLY,              OnColorButton)
@@ -202,6 +196,7 @@ END_MESSAGE_MAP()
 // CConfigDisplay message handlers
 BOOL CConfigDisplay::OnInitDialog() 
 {
+	AutoLog alog("CCD::OnInitDialog");
 	CPropertyPage::OnInitDialog();	
     
 //	m_FontTitles.SubclassDlgItem(IDC_FONT, (CWnd*)m_PlayerDlg);
@@ -239,9 +234,6 @@ BOOL CConfigDisplay::OnInitDialog()
 	m_SizeColHdr.ResetContent();
 	m_SizeCurPlay.ResetContent();
 	m_BorderWidth.ResetContent();
-//	m_PanelWidth.ResetContent();
-//	m_BorderHorz.ResetContent();
-//	m_BorderVert.ResetContent();
 
     for (i = 5 ; i < 40; ++i) {
         sprintf(buf.p, "%d", i);
@@ -254,21 +246,10 @@ BOOL CConfigDisplay::OnInitDialog()
     for (i = 0 ; i < 40; ++i) {
         sprintf(buf.p, "%d", i);
         m_BorderWidth.AddString(buf.p);
-//		m_PanelWidth.AddString(buf.p);
     }
-//    for (i = 0 ; i < 40; ++i) {
-//        sprintf(buf.p, "%d", i);
-//        m_BorderHorz.AddString(buf.p);
-//		m_BorderVert.AddString(buf.p);
-//    }
 
-//	readThemes();
 	readSkins();
 	initFontSels();
-
-//	int sel = m_ThemeList.SelectString(-1, m_sThemeName);
-//	m_ThemeList.SetCurSel(sel);
-//	OnThemeChoose();
 
 	int sel = m_SkinList.SelectString(-1, m_sSkinName);
 	m_SkinList.SetCurSel(sel);
@@ -277,24 +258,14 @@ BOOL CConfigDisplay::OnInitDialog()
 	sel = m_BorderWidth.SelectString(-1, numToString(m_vBorderWidth));
 	m_BorderWidth.SetCurSel(sel);
 
-//	sel = m_PanelWidth.SelectString(-1, numToString(m_vPanelWidth));
-//	m_PanelWidth.SetCurSel(sel);
-
-//	sel = m_BorderHorz.SelectString(-1, numToString(m_vBorderHorz));
-//	m_BorderHorz.SetCurSel(sel);
-//	sel = m_BorderVert.SelectString(-1, numToString(m_vBorderVert));
-//	m_BorderVert.SetCurSel(sel);
-
     showSample();
-
-//	m_PlaylistSpin.SetRange(MB_PLAYLIST_HEIGHT_PCT_MIN,MB_PLAYLIST_HEIGHT_PCT_MAX);
-//	m_PlaylistSpin.SetPos(m_vPlaylistHeightPct);
 
 	m_GenreSpin.SetRange(MB_GENRE_WIDTH_PCT_MIN,MB_GENRE_WIDTH_PCT_MAX);
 	m_GenreSpin.SetPos(m_vGenreWidthPct);
 
-	StoreReg(RegistryKey( HKEY_LOCAL_MACHINE, RegKeyPrevVals ));
-	
+	StoreReg(RegistryKey( HKEY_LOCAL_MACHINE, RegKeyPrevVals ),TRUE);
+
+	m_Modified = FALSE;
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
 }
@@ -305,6 +276,14 @@ CConfigDisplay::init() {
     setDefaults();
 	m_SkinDir = dir;
 	m_SkinDir += "\\skins";
+
+    RegistryKey reg( HKEY_LOCAL_MACHINE, RegKey );
+	AutoBuf buf(1000);
+	reg.Read("SkinsDir", buf.p,999,m_SkinDir);
+	CString tmp = buf.p;
+	if (tmp.GetLength()) {
+		m_SkinDir = tmp;
+	}
 }
 void
 CConfigDisplay::setDefaults() {
@@ -323,10 +302,8 @@ CConfigDisplay::setDefaults() {
     v2m();
 	m_sSkinName = MUZIKBROWZER;
 	m_vBorderWidth = 5;
-//	m_vPanelWidth = 5;
 	m_vBorderHorz = 5;
 	m_vBorderVert = 5;
-//	m_vPlaylistHeightPct = 30;
 	m_vGenreWidthPct = 15;
 
     sscanf(deffont, CCFONTFMT, &m_lfTitles.lfHeight, &m_lfTitles.lfWidth, 
@@ -385,7 +362,8 @@ CConfigDisplay::setDefaults() {
 
 }
 void
-CConfigDisplay::ReadReg(RegistryKey & reg) {
+CConfigDisplay::ReadReg(RegistryKey & reg, BOOL readskin) {
+	AutoLog alog("CCD::ReadReg");
 
     m_vBkPanel = reg.Read(RegWindowsColorBkPanel, m_vBkPanel);
     m_vBkNormal = reg.Read(RegWindowsColorBkNormal, m_vBkNormal);
@@ -402,8 +380,6 @@ CConfigDisplay::ReadReg(RegistryKey & reg) {
     v2m();
 
 	m_vBorderWidth = reg.Read(RegWindowsBorderWidth, m_vBorderWidth);
-//	m_vPanelWidth = reg.Read(RegWindowsPanelWidth, m_vPanelWidth);
-//	m_vPlaylistHeightPct = reg.Read(RegWindowsPlaylistHeightPct, m_vPlaylistHeightPct);
 	m_vGenreWidthPct = reg.Read(RegWindowsGenreWidthPct, m_vGenreWidthPct);
 	m_vBorderHorz = reg.Read(RegWindowsBorderHorz, m_vBorderHorz);
 	m_vBorderVert = reg.Read(RegWindowsBorderVert, m_vBorderVert);
@@ -414,30 +390,6 @@ CConfigDisplay::ReadReg(RegistryKey & reg) {
 		m_BorderWidth.SetCurSel(sel);
 	}
 
-//	if (IsWindow(m_PanelWidth.m_hWnd)) {
-//		sel = m_PanelWidth.SelectString(-1, numToString(m_vPanelWidth));
-//		m_PanelWidth.SetCurSel(sel);
-//	}
-
-//	if (IsWindow(m_BorderHorz.m_hWnd)) {
-//		sel = m_BorderHorz.SelectString(-1, numToString(m_vBorderHorz));
-//		m_BorderHorz.SetCurSel(sel);
-//	}
-//	if (IsWindow(m_BorderVert.m_hWnd)) {
-//		sel = m_BorderVert.SelectString(-1, numToString(m_vBorderVert));
-//		m_BorderVert.SetCurSel(sel);
-//	}
-
-
-//	if (MB_PLAYLIST_HEIGHT_PCT_MIN <= m_vPlaylistHeightPct
-//		&& m_vPlaylistHeightPct <= MB_PLAYLIST_HEIGHT_PCT_MAX) {
-//		if (IsWindow(m_PlaylistSpin.m_hWnd))
-//			m_PlaylistSpin.SetPos(m_vPlaylistHeightPct);
-//	} else {
-//		if (IsWindow(m_PlaylistSpin.m_hWnd))
-//			m_PlaylistSpin.SetPos(MB_PLAYLIST_HEIGHT_PCT_DFLT);
-//		m_vPlaylistHeightPct = MB_PLAYLIST_HEIGHT_PCT_DFLT;
-//	}
 	if (MB_GENRE_WIDTH_PCT_MIN <= m_vGenreWidthPct
 		&& m_vGenreWidthPct <= MB_GENRE_WIDTH_PCT_MAX) {
 		if (IsWindow(m_GenreSpin.m_hWnd))
@@ -450,30 +402,18 @@ CConfigDisplay::ReadReg(RegistryKey & reg) {
 
     AutoBuf buf(1000);
 	
-//	reg.Read(RegWindowsThemeName, buf.p, 999,m_sThemeName.GetBuffer(0));
-//	m_sThemeName = buf.p;
+	if (readskin) {
+		reg.Read(RegWindowsSkinName, buf.p, 999,m_sSkinName.GetBuffer(0));
+		m_sSkinName = buf.p;
 
-//	if (IsWindow(m_ThemeList.m_hWnd)) {
-//		int sel = m_ThemeList.SelectString(-1, m_sThemeName);
-//		if (sel > -1) {
-//			m_ThemeList.SetCurSel(sel);
-////			OnThemeChoose();
-//		}
-//	}
-
-
-	reg.Read(RegWindowsSkinName, buf.p, 999,m_sSkinName.GetBuffer(0));
-	m_sSkinName = buf.p;
-
-	if (IsWindow(m_SkinList.m_hWnd)) {
-		int sel = m_SkinList.SelectString(-1, m_sSkinName);
-		if (sel > -1) {
-			m_SkinList.SetCurSel(sel);
-//			OnSkinChoose();
+		if (IsWindow(m_SkinList.m_hWnd)) {
+			int sel = m_SkinList.SelectString(-1, m_sSkinName);
+			if (sel > -1) {
+				m_SkinList.SetCurSel(sel);
+			}
 		}
 	}
 
-//    RegistryKey reg( HKEY_LOCAL_MACHINE, RegKey );
     reg.Read(RegWindowsFontTitles, buf.p, 999, "");
     if (strlen(buf.p) > CCFONTFACEPOS) {
         sscanf(buf.p, CCFONTFMT, 
@@ -575,8 +515,8 @@ CConfigDisplay::ReadReg(RegistryKey & reg) {
     }
 }
 void
-CConfigDisplay::StoreReg(RegistryKey & reg) {
-
+CConfigDisplay::StoreReg(RegistryKey & reg, BOOL storeskin) {
+	AutoLog alog("CCD::StoreREg");
 
     reg.Write(RegWindowsColorBkPanel, m_vBkPanel);
     reg.Write(RegWindowsColorBkNormal, m_vBkNormal);
@@ -591,21 +531,15 @@ CConfigDisplay::StoreReg(RegistryKey & reg) {
     reg.Write(RegWindowsColorBkCurPlay, m_vBkCurPlay);
     reg.Write(RegWindowsColorTxCurPlay, m_vTxCurPlay);
 
-//	int sel = m_ThemeList.GetCurSel();
-//	if (sel > -1) {
-//		m_ThemeList.GetLBText(sel, m_sThemeName);
-//	} else {
-//		m_ThemeList.GetWindowText(m_sThemeName);
-//	}
-//	reg.Write(RegWindowsThemeName, m_sThemeName);
-
 	int sel = m_SkinList.GetCurSel();
 	if (sel > -1) {
 		m_SkinList.GetLBText(sel, m_sSkinName);
 	} else {
 		m_SkinList.GetWindowText(m_sSkinName);
 	}
-	reg.Write(RegWindowsSkinName, m_sSkinName);
+	if (storeskin) {
+		reg.Write(RegWindowsSkinName, m_sSkinName);
+	}
 	
 	sel = m_BorderWidth.GetCurSel();
 	if (sel > -1) {
@@ -618,51 +552,13 @@ CConfigDisplay::StoreReg(RegistryKey & reg) {
 		m_vBorderWidth = atoi(tmp);
 	}
 	reg.Write(RegWindowsBorderWidth, m_vBorderWidth);
-
-//	sel = m_BorderHorz.GetCurSel();
-//	if (sel > -1) {
-//		CString tmp;
-//		m_BorderHorz.GetLBText(sel, tmp);
-//		m_vBorderHorz = atoi(tmp);
-//	} else {
-//		CString tmp;
-//		m_BorderHorz.GetWindowText(tmp);
-//		m_vBorderHorz = atoi(tmp);
-//	}
 	reg.Write(RegWindowsBorderHorz, m_vBorderHorz);
-//
-//	sel = m_BorderVert.GetCurSel();
-//	if (sel > -1) {
-//		CString tmp;
-//		m_BorderVert.GetLBText(sel, tmp);
-//		m_vBorderVert = atoi(tmp);
-//	} else {
-//		CString tmp;
-//		m_BorderVert.GetWindowText(tmp);
-//		m_vBorderVert = atoi(tmp);
-//	}
 	reg.Write(RegWindowsBorderVert, m_vBorderVert);
-//
-//	sel = m_PanelWidth.GetCurSel();
-//	if (sel > -1) {
-//		CString tmp;
-//		m_PanelWidth.GetLBText(sel, tmp);
-//		m_vPanelWidth = atoi(tmp);
-//	} else {
-//		CString tmp;
-//		m_PanelWidth.GetWindowText(tmp);
-//		m_vPanelWidth = atoi(tmp);
-//	}
-//	reg.Write(RegWindowsPanelWidth, m_vPanelWidth);
-
-//	m_vPlaylistHeightPct = m_PlaylistSpin.GetPos();
-//	reg.Write(RegWindowsPlaylistHeightPct, m_vPlaylistHeightPct);
-	
 	m_vGenreWidthPct = m_GenreSpin.GetPos();
 	reg.Write(RegWindowsGenreWidthPct, m_vGenreWidthPct);
 
     AutoBuf buf(1000);
-//    RegistryKey reg( HKEY_LOCAL_MACHINE, RegKey );
+
     sprintf(buf.p, CCFONTFMT,
         m_lfTitles.lfHeight, m_lfTitles.lfWidth, m_lfTitles.lfEscapement, m_lfTitles.lfOrientation,
         m_lfTitles.lfWeight, m_lfTitles.lfItalic, m_lfTitles.lfUnderline, m_lfTitles.lfStrikeOut,
@@ -772,11 +668,12 @@ void CConfigDisplay::initFontSels() {
 
 void CConfigDisplay::OnSetDefault() 
 {
+	AutoLog alog("CCD::OnSetDefault");
     setDefaults();	
     UpdateData(FALSE);
 	initFontSels();
 	showSample();
-	modified(TRUE);
+	//modified(TRUE);
     RedrawWindow();
 }
 
@@ -975,14 +872,6 @@ void CConfigDisplay::OnOK()
     m2v();
     copy2lf(m_lfTitles, m_lfPanel, m_lfColHdr,m_lfCurPlay);
 
-//	OnThemeCreate();
-//	int sel = m_ThemeList.GetCurSel();
-//	if (sel > -1) {
-//		m_ThemeList.GetLBText(sel, m_sThemeName);
-//	} else {
-//		m_ThemeList.GetWindowText(m_sThemeName);
-//	}
-
 	int sel = m_SkinList.GetCurSel();
 	if (sel > -1) {
 		m_SkinList.GetLBText(sel, m_sSkinName);
@@ -997,43 +886,18 @@ void CConfigDisplay::OnOK()
 		m_vBorderWidth = atoi(tmp);
 	}
 
-//	sel = m_PanelWidth.GetCurSel();
-//	if (sel > -1) {
-//		CString tmp;
-//		m_PanelWidth.GetLBText(sel, tmp);
-//		m_vPanelWidth = atoi(tmp);
-//	}
-//
-//	sel = m_BorderHorz.GetCurSel();
-//	if (sel > -1) {
-//		CString tmp;
-//		m_BorderHorz.GetLBText(sel, tmp);
-//		m_vBorderHorz = atoi(tmp);
-//	}
-//	sel = m_BorderVert.GetCurSel();
-//	if (sel > -1) {
-//		CString tmp;
-//		m_BorderVert.GetLBText(sel, tmp);
-//		m_vBorderVert = atoi(tmp);
-//	}
+	StoreReg(RegistryKey( HKEY_LOCAL_MACHINE, RegKey ),TRUE);
 
-//	m_vPlaylistHeightPct = m_PlaylistSpin.GetPos();
-//	m_vGenreWidthPct = m_GenreSpin.GetPos();
+	CString skindefcustom = getSkin(MB_SKIN_DEF_CUSTOM, FALSE);
+	RegistryKey regSDCustom(skindefcustom);
+	StoreReg(regSDCustom);
+	regSDCustom.WriteFile();
 
-	StoreReg(RegistryKey( HKEY_LOCAL_MACHINE, RegKey ));
-
-	CString tmp = m_SkinDir;
-	tmp += "\\";
-	tmp += m_sSkinName;
-	tmp += "\\SkinDef";
-	tmp += MBTHEMEEXT;
-	RegistryKey theme(tmp);
-	StoreReg(theme);
-	theme.WriteFile();
-
-
+	if (m_Modified) {
+		(*m_playercallbacks->redraw)();
+	}
+	m_Modified = FALSE;
 	modified(FALSE);
-	(*m_playercallbacks->redraw)();
 
 	CPropertyPage::OnOK();
 }
@@ -1044,24 +908,20 @@ BOOL CConfigDisplay::OnApply()
 }
 void CConfigDisplay::OnCancel() 
 {
-//	v2m();
-
-	ReadReg(RegistryKey( HKEY_LOCAL_MACHINE, RegKeyPrevVals ));
-//	OnThemeCreate();
-//	OnThemeChoose();
-	OnSkinChoose();
-	OnOK();
+	if (m_Modified) {
+		ReadReg(RegistryKey( HKEY_LOCAL_MACHINE, RegKeyPrevVals ),TRUE);
+		OnSkinChoose();
+		OnOK();
+	}
 	
 	CPropertyPage::OnCancel();
 }
 BOOL CConfigDisplay::verifySkin(CString skin) {
+	AutoLog alog("CCD::verifySkin");
 	CStringList bmps;
 	bmps.AddTail(MB_SKIN_DEF);
 	bmps.AddTail(MB_SKIN_ALBUMART);
-//	bmps.AddTail(MB_SKIN_BACKGROUNDALBUMART);
-//	bmps.AddTail(MB_SKIN_BACKGROUNDLIBRARY);
 	bmps.AddTail(MB_SKIN_BACKGROUNDMAIN);
-//	bmps.AddTail(MB_SKIN_BACKGROUNDPLAYLIST);
 	bmps.AddTail(MB_SKIN_BUTTONAPPLABELOUT);
 	bmps.AddTail(MB_SKIN_BUTTONBACKGROUND);
 	bmps.AddTail(MB_SKIN_BUTTONCLEARHOVER);
@@ -1082,12 +942,9 @@ BOOL CConfigDisplay::verifySkin(CString skin) {
 	bmps.AddTail(MB_SKIN_BUTTONMINIMIZEHOVER);
 	bmps.AddTail(MB_SKIN_BUTTONMINIMIZEIN);
 	bmps.AddTail(MB_SKIN_BUTTONMINIMIZEOUT);
-//	bmps.AddTail(MB_SKIN_BUTTONOPTIONSHOVER);
-//	bmps.AddTail(MB_SKIN_BUTTONOPTIONSIN);
-//	bmps.AddTail(MB_SKIN_BUTTONOPTIONSOUT);
-bmps.AddTail(MB_SKIN_BUTTONMENUHOVER);
-bmps.AddTail(MB_SKIN_BUTTONMENUIN);
-bmps.AddTail(MB_SKIN_BUTTONMENUOUT);
+	bmps.AddTail(MB_SKIN_BUTTONMENUHOVER);
+	bmps.AddTail(MB_SKIN_BUTTONMENUIN);
+	bmps.AddTail(MB_SKIN_BUTTONMENUOUT);
 	bmps.AddTail(MB_SKIN_BUTTONPAUSEOUT);
 	bmps.AddTail(MB_SKIN_BUTTONPLAYHOVER);
 	bmps.AddTail(MB_SKIN_BUTTONPLAYIN);
@@ -1138,7 +995,8 @@ bmps.AddTail(MB_SKIN_BUTTONMENUOUT);
 		tmp += skin;
 		tmp += " skin.\r\n\r\n";
 		tmp += msg;
-		MBMessageBox("Corrupted Skin", tmp, TRUE, FALSE);
+		//MBMessageBox("Corrupted Skin", tmp, TRUE, FALSE);
+		logger.log(tmp);
 		return FALSE;
 	}
 
@@ -1153,39 +1011,19 @@ void CConfigDisplay::OnSkinChoose()
 	if (sel > -1) {
 		m_SkinList.GetLBText(sel, tmp);
 	}
-
-	if (verifySkin(tmp)) {
-		m_sSkinName = tmp;
-	} else {
-		m_SkinList.SelectString(-1,m_sSkinName);
-		return;
-	}
-
-	tmp = m_SkinDir;
-	tmp += "\\";
-	tmp += m_sSkinName;
-	tmp += "\\SkinDef";
-	tmp += MBTHEMEEXT;
-	RegistryKey theme(tmp);
-	theme.ReadFile();
-	tmp = m_sSkinName;
-	ReadReg(theme);
-	m_sSkinName = tmp;
-
-	if (IsWindow(m_SkinList.m_hWnd)) {
-		int sel = m_SkinList.SelectString(-1, m_sSkinName);
-		if (sel > -1) {
-			m_SkinList.SetCurSel(sel);
-//			OnSkinChoose();
+	if (OnSkinChoose(tmp)) {
+		if (IsWindow(m_SkinList.m_hWnd)) {
+			int sel = m_SkinList.SelectString(-1, m_sSkinName);
+			if (sel > -1) {
+				m_SkinList.SetCurSel(sel);
+			}
 		}
+		UpdateData(FALSE);
+		initFontSels();
+		showSample();
+		modified(TRUE);
+		RedrawWindow();
 	}
-
-
-    UpdateData(FALSE);
-	initFontSels();
-	showSample();
-	modified(TRUE);
-    RedrawWindow();
 }
 BOOL CConfigDisplay::OnSkinChoose(CString skin) 
 {
@@ -1195,16 +1033,23 @@ BOOL CConfigDisplay::OnSkinChoose(CString skin)
 		return FALSE;
 
 	m_sSkinName = skin;
-	CString tmp = m_SkinDir;
-	tmp += "\\";
-	tmp += skin;
-	tmp += "\\SkinDef";
-	tmp += MBTHEMEEXT;
-	RegistryKey theme(tmp);
-	theme.ReadFile();
-	tmp = m_sSkinName;
-	ReadReg(theme);
-	m_sSkinName = tmp;
+
+		// Read skin def
+	CString skindef = getSkin(MB_SKIN_DEF);
+	RegistryKey regSD(skindef);
+	regSD.ReadFile();
+
+	// read skin def custom
+	CString save = m_sSkinName;
+	CString skindefcustom = getSkin(MB_SKIN_DEF_CUSTOM);
+	RegistryKey regSDCustom(skindefcustom);
+	regSDCustom.ReadFile();
+
+	// overwrite custom on skin def
+	regSD.Copy(regSDCustom);
+	ReadReg(regSD);
+	m_sSkinName = save;
+
 	RegistryKey reg( HKEY_LOCAL_MACHINE, RegKey );
 	reg.Write(RegWindowsSkinName, m_sSkinName);
 	return TRUE;
@@ -1212,57 +1057,85 @@ BOOL CConfigDisplay::OnSkinChoose(CString skin)
 //	initFontSels();
 
 }
-#ifdef asdf
-void CConfigDisplay::OnThe
-meCreate() 
-{
-	CString sTheme(m_ThemeDir);
-	sTheme += "\\";
-	CString tmp;
-	int sel = m_ThemeList.GetCurSel();
-	if (sel > -1) {
-		m_ThemeList.GetLBText(sel, tmp);
-	} else {
-		m_ThemeList.GetWindowText(tmp);
-	}
 
-	if (tmp.GetLength() > 0) {
-		sTheme += tmp;
-		sTheme += MBTHEMEEXT;
-		RegistryKey theme(sTheme);
-		StoreReg(theme);
-		theme.WriteFile();
+
+
+
+const CString CConfigDisplay::getSkin(const CString skinname, 
+									  const CString key) {
+	CString saveit = m_sSkinName;
+	m_sSkinName = skinname;
+	CString skin = getSkin(key);
+	m_sSkinName = saveit;
+	return skin;
+}
+const CString CConfigDisplay::getSkin(const CString key, BOOL readcheck) {
+	CString glob(m_SkinDir);
+	glob += "\\";
+	glob += m_sSkinName;
+	glob += "\\";
+	glob += key;
+
+	if (!readcheck || FileUtil::IsReadable(glob)) {
+		return glob;
 	}
-	readThemes();
-	sel = m_ThemeList.SelectString(-1, tmp);
-	if (sel > -1) {
-		m_ThemeList.SetCurSel(sel);
-	}
-	OnThemeChoose();
-	modified(TRUE);
+//	// See issue 299
+//	if (MB_SKIN_ALBUMART == key) {
+//		CString skey(key);
+//		if (FileUtil::IsReadable(skey)) {
+//			return key;
+//		}
+//	}
+	return CString ("");
 }
 
-void CConfigDisplay::readThemes() {
-	m_ThemeList.ResetContent();
-	//m_ThemeList.AddString(MUZIKBROWZER);
-    CString glob(m_ThemeDir);
+void CConfigDisplay::OnSkinDelete()				{modified(TRUE);}
+void CConfigDisplay::OnEditchangeSkinList()		{modified(TRUE);}
+void CConfigDisplay::OnUpdateWidth()			{modified(TRUE);}
+void CConfigDisplay::OnSelendokSkinList()		{modified(TRUE);}
+void CConfigDisplay::OnColorButton()			{
+	showSample();
+	modified(TRUE);
+}
+void CConfigDisplay::OnSelchangeFont() {	showSample();	modified(TRUE);}
+
+
+double CConfigDisplay::getGenreWidthPct() {
+	int nTmp = m_vGenreWidthPct;
+	nTmp = __min(nTmp, MB_GENRE_WIDTH_PCT_MAX);
+	nTmp = __max(nTmp, MB_GENRE_WIDTH_PCT_MIN);
+	double phpct = (double) nTmp / 100;
+	return phpct;
+}
+
+void CConfigDisplay::modified(BOOL b) {
+	SetModified(b);
+	m_Modified = b;
+	logger.ods(CString("cd modded ") + numToString(b));
+}
+void CConfigDisplay::getSkins(CStringList & skinlist) {
+	AutoLog alog("CCD::getSkins");
+    CString glob(m_SkinDir);
     glob += "\\";
     glob += "*";
-	glob += MBTHEMEEXT;
     CFileFind finder;
     BOOL bWorking = finder.FindFile(glob);
     while (bWorking)
     {
         bWorking = finder.FindNextFile();
         CString fname = finder.GetFileName();
-		CString theme = String::extract(fname, "", MBTHEMEEXT);
-		if (theme != MUZIKBROWZER)
-			int sel = m_ThemeList.AddString(theme);
+		CString skin = fname;
+		if (skin != MUZIKBROWZER && skin != "." && skin != "..") {
+			// verifying here delays the menu from popping up
+			if (1 /* verifySkin(skin)*/)
+				skinlist.AddTail(skin);
+		}
     }
 	finder.Close();
 }
-#endif
+
 void CConfigDisplay::readSkins() {
+	AutoLog alog("CCD::readSkins");
 	m_SkinList.ResetContent();
 	//m_SkinList.AddString(MUZIKBROWZER);
     CString glob(m_SkinDir);
@@ -1276,139 +1149,9 @@ void CConfigDisplay::readSkins() {
         CString fname = finder.GetFileName();
 		CString skin = fname;
 		if (skin != MUZIKBROWZER && skin != "." && skin != "..") {
-			if (/*validSkin?*/ 1)
+			// verifying here delays the menu from popping up
+			if (1 /*verifySkin(skin)*/)
 				m_SkinList.AddString(skin);
-		}
-    }
-	finder.Close();
-}
-void CConfigDisplay::ReadTheme() {
-    ReadReg(RegistryKey( HKEY_LOCAL_MACHINE, RegKey ));
-
-	CString skindef = getSkin(MB_SKIN_DEF);
-	RegistryKey regSD(skindef);
-	regSD.ReadFile();
-	ReadReg(regSD);
-
-	CString tmp = m_SkinDir;
-	tmp += "\\";
-	tmp += m_sSkinName;
-	tmp += "\\SkinDef";
-	tmp += MBTHEMEEXT;
-	CString save = m_sSkinName;
-	RegistryKey theme(tmp);
-	theme.ReadFile();
-	ReadReg(theme);
-	m_sSkinName = save;
-}
-const CString CConfigDisplay::getSkin(const CString skinname, 
-									  const CString key) {
-	CString saveit = m_sSkinName;
-	m_sSkinName = skinname;
-	CString skin = getSkin(key);
-	m_sSkinName = saveit;
-	return skin;
-}
-const CString CConfigDisplay::getSkin(const CString key) {
-	CString glob(m_SkinDir);
-	glob += "\\";
-	glob += m_sSkinName;
-	glob += "\\";
-	glob += key;
-	if (FileUtil::IsReadable(glob)) {
-		return glob;
-	}
-	if (MB_SKIN_ALBUMART == key) {
-		CString skey(key);
-		if (FileUtil::IsReadable(skey)) {
-			return key;
-		}
-	}
-	return CString ("");
-}
-#ifdef asdf
-void CConfigDisplay::OnThemeDelete() 
-{
-    int sel = m_ThemeList.GetCurSel();
-    if (sel == LB_ERR) return;
-    CString name;
-    m_ThemeList.GetLBText(sel, name);
-	if (name != MUZIKBROWZER) {
-		m_ThemeList.DeleteString(sel);
-		if (sel > m_ThemeList.GetCount()-1) {
-			sel = m_ThemeList.GetCount()-1;
-		}
-	
-		CString sTheme(m_ThemeDir);
-		sTheme += "\\";
-
-		if (name.GetLength() > 0) {
-			sTheme += name;
-			sTheme += MBTHEMEEXT;
-			CFile::Remove(sTheme);
-		}    
-		m_ThemeList.SetCurSel(sel);
-		readThemes();
-		UpdateWindow();	
-		modified(TRUE);
-	}
-}
-#endif
-
-
-
-
-//void CConfigDisplay::OnSelchangeThemeList() 
-//{
-//	OnThemeChoose() ;
-//	modified(TRUE);
-//}
-//void CConfigDisplay::OnUpdateThemeName()		{modified(TRUE);}
-void CConfigDisplay::OnSkinDelete()				{modified(TRUE);}
-//void CConfigDisplay::OnDblclkThemeList()		{modified(TRUE);}
-//void CConfigDisplay::OnEditchangeThemeList()	{modified(TRUE);}
-void CConfigDisplay::OnEditchangeSkinList()		{modified(TRUE);}
-//void CConfigDisplay::OnEditupdateThemeList()	{modified(TRUE);}
-void CConfigDisplay::OnUpdateWidth()			{modified(TRUE);}
-void CConfigDisplay::OnSelendokSkinList()		{modified(TRUE);}
-void CConfigDisplay::OnColorButton()			{
-	showSample();
-	modified(TRUE);
-}
-void CConfigDisplay::OnSelchangeFont() {	showSample();	modified(TRUE);}
-
-//double CConfigDisplay::getPlaylistHeightPct() {
-//	int nTmp = m_vPlaylistHeightPct;
-//	nTmp = __min(nTmp, MB_PLAYLIST_HEIGHT_PCT_MAX);
-//	nTmp = __max(nTmp, MB_PLAYLIST_HEIGHT_PCT_MIN);
-//	double phpct = (double) nTmp / 100;
-//	return phpct;
-//}
-double CConfigDisplay::getGenreWidthPct() {
-	int nTmp = m_vGenreWidthPct;
-	nTmp = __min(nTmp, MB_GENRE_WIDTH_PCT_MAX);
-	nTmp = __max(nTmp, MB_GENRE_WIDTH_PCT_MIN);
-	double phpct = (double) nTmp / 100;
-	return phpct;
-}
-
-void CConfigDisplay::modified(BOOL b) {
-	SetModified(b);
-}
-void CConfigDisplay::getSkins(CStringList & skinlist) {
-    CString glob(m_SkinDir);
-    glob += "\\";
-    glob += "*";
-    CFileFind finder;
-    BOOL bWorking = finder.FindFile(glob);
-    while (bWorking)
-    {
-        bWorking = finder.FindNextFile();
-        CString fname = finder.GetFileName();
-		CString skin = fname;
-		if (skin != MUZIKBROWZER && skin != "." && skin != "..") {
-			if (/*validSkin?*/ 1)
-				skinlist.AddTail(skin);
 		}
     }
 	finder.Close();

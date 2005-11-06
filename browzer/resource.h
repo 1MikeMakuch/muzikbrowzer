@@ -206,7 +206,6 @@
 #define IDC_GAAS                        1183
 #define IDC_BUTTON2                     1186
 #define IDC_OPTIONS_BUTTON              1186
-#define IDC_THEME_DELETE                1186
 #define IDC_BUTTON_MINIMIZE             1187
 #define IDC_SKIN_DELETE                 1187
 #define IDC_BUTTON_MAXIMIZE             1188
@@ -349,14 +348,11 @@
 #define IDC_CP_TRIAL_LABEL              2013
 #define IDC_PICTURE                     2014
 #define IDC_PICTURE_CTRL                2016
-#define IDC_USEGENRE                    2018
 #define IDC_ALBUMSORT_DATE              2019
 #define IDC_ALBUMSORT_ALPHA             2020
 #define IDC_BOLD_PANEL                  2020
 #define IDC_BOLD_COLHDR                 2021
 #define IDC_BOLD_CURPLY                 2022
-#define IDC_THEME_CREATE                2024
-#define IDC_THEME_LIST                  2026
 #define IDC_ROUND_CORNERS               2027
 #define IDC_SKIN_LIST                   2028
 #define IDC_PLAYLIST_HEIGHT             2031

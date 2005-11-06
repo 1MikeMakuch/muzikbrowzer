@@ -36,7 +36,7 @@
 //    LO_DEFAULT,
 //    LO_TILE,    // Tile the background picture
 //    LO_CENTER,  // Center the background picture
-//    LO_STRETCH, // Stretch the background picture to the dialog window size
+//    LO_STRETCHED, // Stretch the background picture to the dialog window size
 //    LO_RESIZE   // Resize the dialog so that it just fits the background 
 //};
 

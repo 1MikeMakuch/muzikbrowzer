@@ -11,6 +11,9 @@
 //static char THIS_FILE[] = __FILE__;
 #endif
 
+MyLog::~MyLog() {
+	close();
+}
 void
 MyLog::open(CString path) {
 
@@ -47,6 +50,11 @@ MyLog::open(CString path) {
 	m_ready = TRUE;
     log("started");
 }
+void
+MyLog::close() {
+	_file.Close();
+}
+
 void
 MyLog::logd(const CString &m1, const CString &m2, 
 		   const CString &m3, const CString &m4,

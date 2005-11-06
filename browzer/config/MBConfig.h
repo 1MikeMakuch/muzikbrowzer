@@ -7,6 +7,7 @@
 
 #include "StdAfx.h"
 #include "PlayerCallbacks.h"
+#include "Registry.h"
 
 // MBConfig.h : header file
 //
@@ -112,7 +113,6 @@ public:
 	int getDlgBorderHorz() ;
 	int getDlgBorderVert() ;
 		
-	BOOL UseGenre();
 	BOOL AlbumSortAlpha();
 	void getRegistry(const CString & key, int & value, const int dflt);
 	void setRegistry(const CString & key, const int value);
@@ -122,10 +122,10 @@ public:
 	CString mbdir();
 	const CString getSkin(const CString key);
 	const CString getCurrentSkin();
-	void ReadTheme() ;
 	void getSkins(CStringList &);
 	BOOL ChooseSkin(CString);
 	int getPanelWidth() ;
+	void ReadReg(RegistryKey &);
 
 	void AddMusic(CStringList &);
 	void Scan(BOOL fornew=FALSE);

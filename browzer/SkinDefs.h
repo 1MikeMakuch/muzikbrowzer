@@ -11,6 +11,7 @@
 #define MB_PLAYLIST_HEIGHT_PCT_MIN 10
 
 const static TCHAR MB_SKIN_DEF[] = _T("SkinDef.mbsd"); 
+const static TCHAR MB_SKIN_DEF_CUSTOM[] = _T("SkinDefCustom.mbsd"); 
 const static TCHAR MB_SKIN_ALBUMART[] = _T("AlbumArtDefault.bmp");
 const static TCHAR MB_SKIN_BACKGROUNDALBUMART[] = _T("BackgroundAlbumArt.bmp");
 const static TCHAR MB_SKIN_BACKGROUNDLIBRARY[] = _T("BackgroundLibrary.bmp");

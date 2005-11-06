@@ -419,7 +419,7 @@ void MusicPlayerDS::DisplayECEvent(long lEventCode, long lParam1, long lParam2)
 
 #define HANDLE_EC(c)                              \
     case c:                                       \
-        wsprintf(szMsg, TEXT("%s\0"), TEXT(#c));  \
+        wsprintf(szMsg, TEXT("%s\0"), TEXT(#c)); \
         break;
 
     switch (lEventCode)

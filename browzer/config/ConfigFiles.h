@@ -26,12 +26,9 @@ public:
 // Dialog Data
 	//{{AFX_DATA(CConfigFiles)
 	enum { IDD = IDD_CONFIG_FILES };
-	CButton	m_RunAtStartup;
-	CListBox	m_Mp3Extensions;
-	CEdit	m_Mp3Extension;
-	CStatic	m_MdbLocation;
+	CButton		m_RunAtStartup;
+	CStatic		m_MdbLocation;
 	CListBox	m_MP3DirList;
-	CButton m_UseGenre;
 	//}}AFX_DATA
 
 
@@ -56,12 +53,9 @@ protected:
 	afx_msg void OnDirscan();
 	afx_msg void OnLocationButton();
 	virtual BOOL OnInitDialog();
-	afx_msg void OnMp3Add();
-	afx_msg void OnMp3Remove();
 	afx_msg void OnDirscanNew();
 	afx_msg void OnAlbumsortDate();
 	afx_msg void OnAlbumsortAlpha();
-	afx_msg void OnUsegenre();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 private:
@@ -75,9 +69,9 @@ private:
     CStringList m_origMP3DirList;
 	CStringList m_slMP3DirList;
     unsigned long m_RunAtStartupUL;
-	unsigned long m_UseGenreUL;
 	BOOL m_AlbumSortAlpha;
 	BOOL m_AlbumSortDate;
+	BOOL m_LocDirModified;
 
     int m_ScanThread_continue;
 
@@ -93,7 +87,6 @@ public:
 	BOOL m_scanNew;
 	BOOL m_bAdd;
     void setDefaults();
-	BOOL UseGenre();
 	BOOL AlbumSortAlpha();
 	CString mbdir() { return m_path; };
 	void AddMusic(CStringList & list);

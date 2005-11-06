@@ -664,3 +664,51 @@ void
 MyUtil::seed() {
 	srand( (unsigned)time( NULL ) );
 }
+
+void
+String::insertSort(CStringList &list, const CString &string) {
+    POSITION pos = list.GetHeadPosition();
+    if (pos == NULL) {
+        list.AddTail(string);
+        return;
+    }
+    bool inserted = false;
+    for (pos = list.GetHeadPosition(); pos != NULL; ) {
+        CString lstring = list.GetAt(pos);
+
+        // If string > lstring ...
+        if (string.CompareNoCase(lstring) == -1) {
+            list.InsertBefore(pos, string);
+            inserted = true;
+            break;
+        }
+        list.GetNext(pos);
+    }
+    if (!inserted)
+        list.AddTail(string);
+}
+
+TEST(StringinsertSortTest, StringinsertSort)
+{
+	CStringList list;
+	String::insertSort(list, CString("abc"));
+	String::insertSort(list, CString("1bc"));
+	String::insertSort(list, CString("xbc"));
+	String::insertSort(list, CString("zbc"));
+	String::insertSort(list, CString("rbc"));
+	String::insertSort(list, CString("dbc"));
+    POSITION pos = list.GetHeadPosition();
+	CString lastone,string;
+	int first = 1;
+    for (pos = list.GetHeadPosition(); pos != NULL; ) {
+		lastone = string;
+        string = list.GetAt(pos);
+        list.GetNext(pos);
+		if (first) {
+			first = 0;
+		} else {
+			CHECK(lastone < string);
+		}
+    }
+	CHECK(lastone < string);
+}

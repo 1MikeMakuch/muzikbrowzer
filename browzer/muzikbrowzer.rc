@@ -97,7 +97,7 @@ END
 IDD_PLAYER_DIALOG DIALOGEX 0, 0, 401, 282
 STYLE WS_POPUP | WS_THICKFRAME
 EXSTYLE WS_EX_APPWINDOW
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     LISTBOX         IDC_PLAYLIST,111,41,172,87,LBS_OWNERDRAWFIXED | 
                     LBS_HASSTRINGS | LBS_NOINTEGRALHEIGHT | 
@@ -276,37 +276,35 @@ BEGIN
     DEFPUSHBUTTON   "Cancel",IDC_MESSAGEBOX_CANCEL,75,157,50,14
 END
 
-IDD_CONFIG_FILES DIALOGEX 0, 0, 287, 175
+IDD_CONFIG_FILES DIALOGEX 0, 0, 301, 210
 STYLE WS_CHILD | WS_DISABLED | WS_CAPTION | WS_SYSMENU
 CAPTION "General"
 FONT 8, "MS Sans Serif"
 BEGIN
-    LISTBOX         IDC_DIRLIST,10,15,165,55,LBS_SORT | WS_VSCROLL | 
+    LISTBOX         IDC_DIRLIST,10,15,273,55,LBS_SORT | WS_VSCROLL | 
                     WS_HSCROLL
-    PUSHBUTTON      "Add",IDC_DIRADD,40,70,36,11
-    PUSHBUTTON      "Remove",IDC_DIRREMOVE,95,70,36,11
-    PUSHBUTTON      "Scan",IDC_DIRSCAN,11,150,36,13
+    PUSHBUTTON      "Add",IDC_DIRADD,96,69,36,11
+    PUSHBUTTON      "Remove",IDC_DIRREMOVE,137,68,36,11
+    PUSHBUTTON      "Scan",IDC_DIRSCAN,11,145,36,13
     PUSHBUTTON      "Edit",IDC_LOCATION_BUTTON,235,105,33,13
     LTEXT           "",IDC_MDB_LOCATION,10,105,218,14,NOT WS_GROUP,
                     WS_EX_CLIENTEDGE
-    GROUPBOX        "Directories to scan for audio files",IDC_STATIC,5,5,178,
+    GROUPBOX        "Directories to scan for audio files",IDC_STATIC,5,5,285,
                     80
     GROUPBOX        "Location of muzikbrowzer database, playlists, etc.",
-                    IDC_STATIC,5,90,275,35
+                    IDC_STATIC,5,90,285,35
     CONTROL         "Yes",IDC_RUNATSTARTUP,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,195,154,40,8
+                    WS_TABSTOP,179,146,40,8
     GROUPBOX        "Add audio files to muzikbrowzer database",IDC_STATIC,5,
-                    135,145,35
-    PUSHBUTTON      "Scan for New",IDC_DIRSCAN_NEW,55,150,60,13
-    GROUPBOX        "Run muzikbrowzer at Start up?",IDC_STATIC,170,140,110,
+                    129,145,35
+    PUSHBUTTON      "Scan for New",IDC_DIRSCAN_NEW,55,145,60,13
+    GROUPBOX        "Run muzikbrowzer at Start up?",IDC_STATIC,153,132,110,
                     30
-    CONTROL         "Use Genres?",IDC_USEGENRE,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,198,52,53,10
     CONTROL         "Date",IDC_ALBUMSORT_DATE,"Button",BS_AUTORADIOBUTTON | 
-                    WS_GROUP,196,78,28,10
+                    WS_GROUP,49,169,28,10
     CONTROL         "Alpha",IDC_ALBUMSORT_ALPHA,"Button",BS_AUTORADIOBUTTON | 
-                    WS_GROUP,231,78,30,10
-    LTEXT           "Album sort",IDC_STATIC,202,67,37,9
+                    WS_GROUP,85,169,30,10
+    LTEXT           "Album sort",IDC_STATIC,8,170,37,9
 END
 
 IDD_CONFIG_IRMAN DIALOG DISCARDABLE  0, 0, 342, 201
@@ -686,9 +684,9 @@ BEGIN
     IDD_CONFIG_FILES, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 280
+        RIGHTMARGIN, 294
         TOPMARGIN, 7
-        BOTTOMMARGIN, 168
+        BOTTOMMARGIN, 203
     END
 
     IDD_CONFIG_IRMAN, DIALOG

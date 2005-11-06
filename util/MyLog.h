@@ -5,8 +5,9 @@
 class MyLog {
 	public:
 		MyLog():m_ready(FALSE){};
-		~MyLog(){};
+		~MyLog();
 		void open(CString);
+		void close();
 		void log(
 			const CString &msg1,
 			const CString &msg2=CString(""),

@@ -19,7 +19,6 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-static unsigned long useGenreUL;
 
 /////////////////////////////////////////////////////////////////////////////
 // CConfigFiles property page
@@ -27,7 +26,7 @@ static unsigned long useGenreUL;
 IMPLEMENT_DYNCREATE(CConfigFiles, CPropertyPage)
 
 CConfigFiles::CConfigFiles(CWnd *p, PlayerCallbacks * pcb) : CPropertyPage(CConfigFiles::IDD),
-    /*m_PlayerDlg(p),*/ m_RunAtStartupUL(0), m_scanNew(FALSE), m_UseGenreUL(0),
+    /*m_PlayerDlg(p),*/ m_RunAtStartupUL(0), m_scanNew(FALSE),
 	m_AlbumSortAlpha(TRUE), m_AlbumSortDate(FALSE),
 	m_playercallbacks(pcb), m_bAdd(FALSE)
 
@@ -50,12 +49,9 @@ void CConfigFiles::DoDataExchange(CDataExchange* pDX)
 {
 	CPropertyPage::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CConfigFiles)
-	DDX_Control(pDX, IDC_RUNATSTARTUP, m_RunAtStartup);
-//	DDX_Control(pDX, IDC_MP3_EXTENSION, m_Mp3Extensions);
-//	DDX_Control(pDX, IDC_MP3_ADD_EXT, m_Mp3Extension);
-	DDX_Control(pDX, IDC_MDB_LOCATION, m_MdbLocation);
-	DDX_Control(pDX, IDC_DIRLIST, m_MP3DirList);
-	DDX_Control(pDX, IDC_USEGENRE, m_UseGenre);
+	DDX_Control(pDX, IDC_RUNATSTARTUP,	m_RunAtStartup);
+	DDX_Control(pDX, IDC_MDB_LOCATION,	m_MdbLocation);
+	DDX_Control(pDX, IDC_DIRLIST,		m_MP3DirList);
 	//}}AFX_DATA_MAP
 }
 
@@ -67,12 +63,9 @@ BEGIN_MESSAGE_MAP(CConfigFiles, CPropertyPage)
 	ON_BN_CLICKED(IDC_DIRREMOVE, OnDirremove)
 	ON_BN_CLICKED(IDC_DIRSCAN, OnDirscan)
 	ON_BN_CLICKED(IDC_LOCATION_BUTTON, OnLocationButton)
-	ON_BN_CLICKED(IDC_MP3_ADD, OnMp3Add)
-	ON_BN_CLICKED(IDC_MP3_REMOVE, OnMp3Remove)
 	ON_BN_CLICKED(IDC_DIRSCAN_NEW, OnDirscanNew)
 	ON_BN_CLICKED(IDC_ALBUMSORT_DATE, OnAlbumsortDate)
 	ON_BN_CLICKED(IDC_ALBUMSORT_ALPHA, OnAlbumsortAlpha)
-	ON_BN_CLICKED(IDC_USEGENRE, OnUsegenre)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -262,6 +255,7 @@ void CConfigFiles::OnLocationButton()
 		(*m_playercallbacks->setDbLocation)(path);
         m_path = path;
 		SetModified(TRUE);
+		m_LocDirModified = TRUE;
 	}	
 }
 
@@ -271,7 +265,6 @@ void CConfigFiles::ReadReg() {
 
     CString Location;
     m_origMP3DirList.RemoveAll();
-//    m_origMp3Extensions.RemoveAll();
 	m_slMP3DirList.RemoveAll();
 
     AutoBuf buf(1000);
@@ -311,22 +304,8 @@ void CConfigFiles::ReadReg() {
         m_origMP3DirList.AddTail(dir);
 		m_slMP3DirList.AddTail(dir);
     }
-#ifdef asdf
-    numExtensions = reg.Read(RegNumMp3Extensions, 0);
-    if (numExtensions == 0) {
-        m_origMp3Extensions.AddTail("mp3");
-    } else {
-        for (i = 0 ; i < numExtensions ; ++i) {
-            sprintf(buf.p, "%s%02d", RegMp3ExtensionsKey, i);
-            TCHAR extension[100];
-            reg.Read(buf.p, extension, 9, "");
-            m_origMp3Extensions.AddTail(extension);
-        }
-    }
-#endif
+
     m_RunAtStartupUL = reg.Read(RegRunAtStartup, 0);
-	m_UseGenreUL = reg.Read(RegUseGenre, 0);
-	useGenreUL = m_UseGenreUL;
 	unsigned long x = reg.Read(RegAlbumSort, 0);
 	if (x == 0) {
 		m_AlbumSortAlpha = 0;
@@ -336,6 +315,8 @@ void CConfigFiles::ReadReg() {
 		m_AlbumSortAlpha = 1;
 		m_AlbumSortDate = 0;
 	}
+
+
 
 }
 void CConfigFiles::StoreReg2() {
@@ -372,37 +353,7 @@ void CConfigFiles::StoreReg() {
 	StoreReg2();
     RegistryKey reg( HKEY_LOCAL_MACHINE, RegKey );
     reg.Write(RegDbLocation, location);
-#ifdef asdf
-    unsigned long num = m_MP3DirList.GetCount();
 
-    reg.Write(RegNumDirs, num);
-
-    m_origMP3DirList.RemoveAll();
-    unsigned long i;
-    for (i = 0 ; i < num ; ++i) {
-        sprintf(buf.p, "%s%02d", RegDirKey, i);
-        CString Dir;
-        m_MP3DirList.GetText(i, Dir);
-        const TCHAR * dir = (LPCTSTR)Dir;
-        m_origMP3DirList.AddTail(dir);
-
-        reg.Write(buf.p, dir);
-    }
-#endif
-
-#ifdef asdf
-    m_origMp3Extensions.RemoveAll();
-    unsigned long num = m_Mp3Extensions.GetCount();
-    reg.Write(RegNumMp3Extensions, num);
-    for (unsigned long i = 0 ; i < num ; ++i) {
-        sprintf(buf.p, "%s%02d", RegMp3ExtensionsKey, i);
-        CString extension;
-        m_Mp3Extensions.GetText(i, extension);
-        const TCHAR * exten = (LPCTSTR)extension;
-        reg.Write(buf.p, exten);
-        m_origMp3Extensions.AddTail(exten);
-    }
-#endif
     if (m_RunAtStartup.GetCheck() == 0) {
         m_RunAtStartupUL = 0;
         reg.Write(RegRunAtStartup, (unsigned long) 0);
@@ -410,21 +361,10 @@ void CConfigFiles::StoreReg() {
         m_RunAtStartupUL = 1;
         reg.Write(RegRunAtStartup, (unsigned long) 1);
     }
-    if (m_UseGenre.GetCheck() == 0) {
-        m_UseGenreUL = 0;
-        reg.Write(RegUseGenre, (unsigned long) 0);
-    } else {
-        m_UseGenreUL = 1;
-        reg.Write(RegUseGenre, (unsigned long) 1);
-    }
+
     setRunAtStartup();
 	reg.Write(RegAlbumSort, (unsigned long)m_AlbumSortAlpha);
-//	if (useGenreUL != m_UseGenreUL) {
-//		MBMessageBox("Notice", "muzikbrowzer must be restarted.\r\nClick OK then restart.", FALSE);
-//		m_PlayerDlg->OnCancel();
-//		exit(0);
-//	}
-    //m_PlayerDlg->init();
+
 
 }
 void
@@ -533,20 +473,6 @@ BOOL CConfigFiles::OnInitDialog()
 {
 	CPropertyPage::OnInitDialog();
 
-#ifdef asdf
-    CWnd * button = GetDlgItem(IDC_DIRREMOVE);
-    button->EnableWindow(FALSE);
-
-	m_Mp3Extensions.ResetContent();
-
-
-    POSITION pos;
-    for (pos = m_origMp3Extensions.GetHeadPosition(); pos != NULL; ) {
-        CString extension = m_origMp3Extensions.GetAt(pos);
-        m_Mp3Extensions.AddString(extension);
-	    m_origMp3Extensions.GetNext(pos);
-    }
-#endif
 	POSITION pos;
     m_MP3DirList.ResetContent();
     for (pos = m_origMP3DirList.GetHeadPosition(); pos != NULL; ) {
@@ -563,11 +489,7 @@ BOOL CConfigFiles::OnInitDialog()
     } else {
         m_RunAtStartup.SetCheck(0);
     }
-	if (m_UseGenreUL) {
-		m_UseGenre.SetCheck(1);
-	} else {
-		m_UseGenre.SetCheck(0);
-	}
+
 
 	if (m_AlbumSortAlpha) {
 		CheckRadioButton(IDC_ALBUMSORT_DATE,IDC_ALBUMSORT_ALPHA,
@@ -582,6 +504,7 @@ BOOL CConfigFiles::OnInitDialog()
     UpdateData(FALSE);
 
     EnableDisableButtons(); 
+	m_LocDirModified = FALSE;
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
@@ -597,30 +520,6 @@ void CConfigFiles::EnableDisableButtons() {
         scan->EnableWindow(TRUE);
     }
 
-}
-
-void CConfigFiles::OnMp3Add() 
-{
-	CString extension;
-    m_Mp3Extension.GetWindowText(extension);
-    m_Mp3Extensions.AddString(extension);
-    UpdateData(FALSE);
-	SetModified(TRUE);
-//    StoreReg();
-	
-}
-
-void CConfigFiles::OnMp3Remove() 
-{
-    m_Mp3Extensions.DeleteString(m_Mp3Extensions.GetCurSel());
-    UpdateData(FALSE);
-	SetModified(TRUE);
-//    StoreReg();
-}
-
-BOOL CConfigFiles::UseGenre() {
-	return (m_UseGenreUL == 1);
-	return TRUE;
 }
 
 void CConfigFiles::OnAlbumsortDate() 
@@ -657,20 +556,18 @@ void CConfigFiles::OnOK()
 	CPropertyPage::OnOK();
     StoreReg();
 	SetModified(FALSE);
+	if (m_LocDirModified) {
+		(*m_playercallbacks->initDb)();
+	}
 
 }
 void CConfigFiles::OnCancel() 
 {
-//	m_Mp3Extensions.ResetContent();
     m_MP3DirList.ResetContent();
 	m_slMP3DirList.RemoveAll();
 
     POSITION pos;
-//    for (pos = m_origMp3Extensions.GetHeadPosition(); pos != NULL; ) {
-//        CString extension = m_origMp3Extensions.GetAt(pos);
-//        m_Mp3Extensions.AddString(extension);
-//	    m_origMp3Extensions.GetNext(pos);
-//    }
+
     for (pos = m_origMP3DirList.GetHeadPosition(); pos != NULL; ) {
         CString dir = m_origMP3DirList.GetAt(pos);
         m_MP3DirList.AddString(dir);
@@ -683,17 +580,7 @@ void CConfigFiles::OnCancel()
 	CPropertyPage::OnCancel();
 }
 
-void CConfigFiles::OnUsegenre() 
-{
-	SetModified(TRUE);
-}
-//CFileDialog( 
-//	BOOL bOpenFileDialog, 
-//	LPCTSTR lpszDefExt = NULL, 
-//	LPCTSTR lpszFileName = NULL, 
-//	DWORD dwFlags = OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
-//	LPCTSTR lpszFilter = NULL, 
-//	CWnd* pParentWnd = NULL );
+
 
 void CConfigFiles::AddMusic(CStringList & mp3list) {
 

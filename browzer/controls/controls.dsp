@@ -207,6 +207,10 @@ SOURCE=.\Controls.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\ControlSK.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\ExtendedListBox.h
 # End Source File
 # Begin Source File
