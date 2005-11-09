@@ -14,6 +14,10 @@
 #include "MyString.h"
 #include "MyLog.h"
 #include "TestHarness/TestHarness.h"
+#include <stack>
+using namespace std;
+#include "ConfigFileLexer.h"
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -117,6 +121,20 @@ BOOL RegistryKey::ReadFile()
 {
 	if (mFileName == "") return FALSE;
 
+	stack<KVPair> kvstack;
+	ConfigFileParser(mFileName, &kvstack);
+	char * pkey,*pval;
+
+	while(!kvstack.empty()) {
+		pkey = kvstack.top().key();
+		pval = kvstack.top().val();
+		mKeyValPairs->SetAt(pkey,pval);
+		kvstack.pop();
+	}
+	return TRUE;
+
+
+#ifdef asdf
 	CFile cfile;
 	CFileException e;
 	if (cfile.Open(mFileName, 
@@ -133,21 +151,58 @@ BOOL RegistryKey::ReadFile()
 	buf.p[r] = 0;
 
 	cfile.Close();
-	CString data ( buf.p);
 
     CString key;
     CString val;
-	long lines = String::delCount(data, CString("\r\n"));
-	long i;
-	for(i = 1 ; i <= lines ; i++) {
-		CString line = String::field(data, "\r\n", i);
-		if (line != "") {
-			key = String::field(line, ": ", 1);
-			val = String::field(line, ": ", 2);
-			mKeyValPairs->SetAt(key, val);
-		}
-	}
+//	long lines = String::delCount(data, CString("\r\n"));
+//	long i;
+//	for(i = 1 ; i <= lines ; i++) {
+//		CString line = String::field(data, "\r\n", i);
+//		if (line != "") {
+//			key = String::field(line, ": ", 1);
+//			val = String::field(line, ": ", 2);
+//			mKeyValPairs->SetAt(key, val);
+//			logger.ods(key + " " + val);
+//
+//		}
+//	}
 
+	long bytes = strlen(buf.p);
+	char * pkey, * pval;
+	char * pch = buf.p;
+	while (pch != 0 && (pch - buf.p) < bytes) {
+		
+		// ignore comment lines
+		if (*pch == '#') {
+			while ((*pch != '\r' && *pch != '\n') && (pch - buf.p) < bytes)
+				pch++;
+		}
+
+		// everything up to first ':' is the key
+		pkey = pch++;
+		while (*pch != ':' && (pch - buf.p) < bytes)
+			pch++;
+		*pch = 0;
+		pch++;
+
+		// eat whitespace
+		while ((*pch == ' ' || *pch == '\t') && (pch - buf.p) < bytes)
+			pch++;
+
+		// val begins here up to '\r'
+		pval = pch;
+		while ((*pch != '\r' && *pch != '\n') && (pch - buf.p) < bytes)
+			pch++;
+		*pch = 0;
+		pch++;
+
+		// eat blanks
+		while ((*pch == '\r' || *pch == '\n') && (pch - buf.p) < bytes)
+			pch++;
+
+		mKeyValPairs->SetAt(pkey,pval);
+	}
+#endif
 	return TRUE;
 }
 ///////////////////////////////////////////////////////////////////////
@@ -199,6 +254,7 @@ void RegistryKey::Write( const TCHAR* value, const TCHAR* data ) const
 	}
 
 }
+
 TEST(Registry, FileWrite)
 {
 	RegistryKey rk("..\\testdata\\registry.dat");
@@ -224,6 +280,7 @@ TEST(Registry, FileWrite)
 	CHECK(val == "val1");
 	CHECK(val2 == 100);
 }
+
 ///////////////////////////////////////////////////////////////////////
 // long ints
 ///////////////////////////////////////////////////////////////////////

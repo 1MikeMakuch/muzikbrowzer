@@ -252,73 +252,68 @@ END_MESSAGE_MAP()
 
 BOOL CBitmapCutterDlg::OnInitDialog()
 {
+//	logger.open("bitmapcutter.log");
+//	AutoLog al("OnInitDialog",FALSE);
 	CDialog::OnInitDialog();
 
+	{
+//			AutoLog am("AppMutex",FALSE);
+		// App mutex
+		CString amemsg,ammsg;
+		#define MUZIKBROWZERAPPMUTEX "MuzikbrowzerBitMapCutterAppMutex"
+		#define MUZIKBROWZERAPPMUTEXGLOBAL "Global\\MuzikbrowzerBitMapCutterAppMutex"
 
+		PSECURITY_DESCRIPTOR psd = malloc(sizeof(SECURITY_DESCRIPTOR));
+		SECURITY_ATTRIBUTES sa ;
 
-
-// App mutex
-	CString amemsg,ammsg;
-#define MUZIKBROWZERAPPMUTEX "MuzikbrowzerBitMapCutterAppMutex"
-#define MUZIKBROWZERAPPMUTEXGLOBAL "Global\\MuzikbrowzerBitMapCutterAppMutex"
-
-	PSECURITY_DESCRIPTOR psd = malloc(sizeof(SECURITY_DESCRIPTOR));
-	SECURITY_ATTRIBUTES sa ;
-
-	BOOL isdresult = InitializeSecurityDescriptor(psd, 
-		SECURITY_DESCRIPTOR_REVISION);
-	DWORD e = ::GetLastError();
-	if (isdresult == 0) {
-		amemsg += "InitializeSecurityDescriptor error: ";
-		amemsg += MBFormatError(e);
-		logger.log(amemsg);
-	}
-
-	sa.nLength = sizeof(SECURITY_ATTRIBUTES);
-	sa.lpSecurityDescriptor = psd;
-	sa.bInheritHandle = FALSE;
-
-	HANDLE h = CreateMutex(&sa,FALSE, MUZIKBROWZERAPPMUTEXGLOBAL);
-	e = GetLastError();
-	if (NULL == h || ERROR_ALREADY_EXISTS == e) {
-		amemsg = "CreateMutex " + CString(MUZIKBROWZERAPPMUTEXGLOBAL);
-		amemsg += "\r\n";
-		amemsg += MBFormatError(e);
-		amemsg += "\r\n";
-		h = CreateMutex(&sa,FALSE, MUZIKBROWZERAPPMUTEX);
-		e = GetLastError();
-		logger.log(amemsg);
-	}
-
-	if (NULL == h || ERROR_ALREADY_EXISTS == e) {
-		ammsg = ("It looks like ");
-		ammsg += MUZIKBROWZER;
-		ammsg += " is already running.\r\nYou should only run one instance at a time.\r\nContinue at your own risk.\r\n";
-		amemsg = "CreateMutex " + CString(MUZIKBROWZERAPPMUTEX);
-		amemsg += "\r\n";
-		amemsg += MBFormatError(e);
-		amemsg += "\r\n";
-		int r = MessageBox(ammsg, MUZIKBROWZER, MB_ICONSTOP);
-		if (0 == r) {
-			amemsg += "user aborted";
-			logger.log(amemsg);
-			_exit(0);
-		} else {
-			amemsg += "user continued";
+		BOOL isdresult = InitializeSecurityDescriptor(psd, 
+			SECURITY_DESCRIPTOR_REVISION);
+		DWORD e = ::GetLastError();
+		if (isdresult == 0) {
+			amemsg += "InitializeSecurityDescriptor error: ";
+			amemsg += MBFormatError(e);
+//			logger.log(amemsg);
 		}
-		logger.log(amemsg);
+
+		sa.nLength = sizeof(SECURITY_ATTRIBUTES);
+		sa.lpSecurityDescriptor = psd;
+		sa.bInheritHandle = FALSE;
+
+		HANDLE h = CreateMutex(&sa,FALSE, MUZIKBROWZERAPPMUTEXGLOBAL);
+		e = GetLastError();
+		if (NULL == h || ERROR_ALREADY_EXISTS == e) {
+			amemsg = "CreateMutex " + CString(MUZIKBROWZERAPPMUTEXGLOBAL);
+			amemsg += "\r\n";
+			amemsg += MBFormatError(e);
+			amemsg += "\r\n";
+			h = CreateMutex(&sa,FALSE, MUZIKBROWZERAPPMUTEX);
+			e = GetLastError();
+//			logger.log(amemsg);
+		}
+
+		if (NULL == h || ERROR_ALREADY_EXISTS == e) {
+			ammsg = ("It looks like ");
+			ammsg += MUZIKBROWZER;
+			ammsg += " is already running.\r\nYou should only run one instance at a time.\r\nContinue at your own risk.\r\n";
+			amemsg = "CreateMutex " + CString(MUZIKBROWZERAPPMUTEX);
+			amemsg += "\r\n";
+			amemsg += MBFormatError(e);
+			amemsg += "\r\n";
+			int r = MessageBox(ammsg, MUZIKBROWZER, MB_ICONSTOP);
+			if (0 == r) {
+				amemsg += "user aborted";
+//				logger.log(amemsg);
+				_exit(0);
+			} else {
+				amemsg += "user continued";
+			}
+//			logger.log(amemsg);
+		}
+		free (psd);
 	}
 
-
-
-
-
-
-
-
-
-
-
+	{
+//		AutoLog al("Rest of InitDialog",FALSE);
 
 	// Set the icon for this dialog.  The framework does this automatically
 	//  when the application's main window is not a dialog
@@ -355,7 +350,7 @@ BOOL CBitmapCutterDlg::OnInitDialog()
 		OnButtonFileHovers();
 //	if (m_sFileSettings != "")
 //		OnButtonFileSettings();
-
+	
 	Init=FALSE;
 	
 	m_LabelMenu.GetWindowRect(MenuLabel);
@@ -410,7 +405,6 @@ BOOL CBitmapCutterDlg::OnInitDialog()
 	m_TProgress.ShowWindow(SW_HIDE);
 
 
-
 	CString skindef = m_sDest + "\\" + MB_SKIN_DEF;
 	if ("" != m_sDest && FileUtil::IsReadable(skindef)) {
 		CreateTest();
@@ -439,6 +433,7 @@ BOOL CBitmapCutterDlg::OnInitDialog()
     m_VideoY.EnableWindow(FALSE);
 	RedrawWindow();
  
+	}
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -513,7 +508,6 @@ void CBitmapCutterDlg::drawIt(CDC * dc) {
 }
 void CBitmapCutterDlg::drawLines(CDC * dc, CRect crect, CRect wrect, 
 								 int InOrOut, CDIBSectionLite & cdib) {
-	
 	CEditsToInts();
 
 	CRect prect;
@@ -705,10 +699,10 @@ void CBitmapCutterDlg::drawButton(int buttoni, CDC * dc, CRect wrect, CRect butt
 			}
 		}
 	}
-	if (10 == buttoni || 11 == buttoni) {
-		penUL = &penRGB;
-		penBR = &penRGB;
-	}
+//	if (10 == buttoni || 11 == buttoni) {
+//		penUL = &penRGB;
+//		penBR = &penRGB;
+//	}
 	oldpen = dc->SelectObject(penUL);
 
 	for(i = 0 ; i < m_nLineWidth; i++) {
@@ -1373,6 +1367,7 @@ void CBitmapCutterDlg::ReadReg() {
 	RegistryKey regBmps(file);
 	regBmps.ReadFile();
 
+
 	regBmps.Read("Insbmp", buf, 999, "");
     m_FileIns.SetWindowText(buf);
 	m_sFileIns = buf;
@@ -1396,6 +1391,7 @@ void CBitmapCutterDlg::ReadReg() {
 
 	RegistryKey reg(file);
 	reg.ReadFile();
+
 
 	m_nRed = reg.Read("Red",-1);
 	if (m_nRed == -1) {
@@ -1453,7 +1449,7 @@ void CBitmapCutterDlg::ReadReg() {
 	} else {
 		m_TransBluePanel.SetWindowText(numToString(m_nTransBluePanel));
 	}
-
+	
 
 	m_RGB = reg.Read("RGB", 0);
 	if (m_RGB == 0) {
@@ -1538,6 +1534,7 @@ void CBitmapCutterDlg::ReadReg() {
 
 	m_nBorderHorz = reg.Read("BorderHorz", 5);
 	m_nBorderVert = reg.Read("BorderVert", 5);
+	m_nBorderPanel = reg.Read("BorderPanel", 5);
 
 	unsigned long e = reg.Read("BackgroundType", BGSTRETCHED);
 	if (0 == e) {
@@ -1552,6 +1549,7 @@ void CBitmapCutterDlg::ReadReg() {
 
 }
 void CBitmapCutterDlg::StoreReg() {
+
 	if ("" == m_sDest) return;
 
 	CEditsToInts();
@@ -1744,14 +1742,13 @@ reg.Write("ControlBoxWidth", m_PicInsCRect.Width());
 reg.Write("ControlBoxHeight", m_PicInsCRect.Height());
 reg.Write("BorderHorz",m_nBorderHorz);
 reg.Write("BorderVert",m_nBorderVert);
+reg.Write("BorderPanel",m_nBorderPanel);
 reg.Write("BackgroundType", m_BgType);
 reg.Write("BackgroundTypes:","0=Stretched, 1=Tiled, 2=Fixed");
-
 reg.WriteFile();
 
 }
 void CBitmapCutterDlg::IntsToCEdits() {
-
 
 m_MenuX.SetWindowText(numToString(m_nMenuX));
 m_MenuY.SetWindowText(numToString(m_nMenuY));
@@ -1900,7 +1897,6 @@ m_ProgressHeight.GetWindowText(msg);m_nProgressHeight=atoi(msg);
 
 }
 void CBitmapCutterDlg::RectToInts() {
-
 	m_nMenuX = Menu.left;
 	m_nMenuY = Menu.top;
 	m_nMenuWidth = Menu.Width()+1;

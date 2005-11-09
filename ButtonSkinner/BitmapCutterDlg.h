@@ -377,6 +377,7 @@ protected:
 	int	m_nProgressHeight;
 	int m_nBorderHorz;
 	int m_nBorderVert;
+	int m_nBorderPanel;
 
 };
 

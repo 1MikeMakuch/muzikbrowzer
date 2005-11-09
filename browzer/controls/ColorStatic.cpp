@@ -353,7 +353,13 @@ void CColorStatic::OnPaint() {
     CMemDC memdc(&pDC, &m_Rect);
 
 	memdc.FillSolidRect(&m_Rect, m_crBkColor  );
-//	memdc.DrawEdge(m_Rect, EDGE_BUMP, BF_RECT);
+//	int nEdge=0;
+//	if (m_text == "Genres") nEdge = EDGE_BUMP;
+//	else if (m_text == "Artists") nEdge = EDGE_ETCHED;
+//	else if (m_text == "Albums") nEdge = EDGE_RAISED;
+//	else if (m_text == "Songs") nEdge = EDGE_SUNKEN;
+//	if (nEdge)
+//		memdc.DrawEdge(m_Rect, nEdge, BF_TOPLEFT);
 
     if (m_text.GetLength()) {
 		CFont * oldfont = memdc.SelectObject(&m_font);

@@ -12,7 +12,8 @@
 #endif
 
 MyLog::~MyLog() {
-	close();
+	if (m_ready)
+		close();
 }
 void
 MyLog::open(CString path) {
@@ -32,12 +33,12 @@ MyLog::open(CString path) {
 				}
 			}
 			path = szBuff;
+			path += "\\";
+			path += MUZIKBROWZER;
+			path += ".log";
 		}
 	}
 	file = path;
-	file += "\\";
-	file += MUZIKBROWZER;
-    file += ".log";
     _pathfile = file;
     BOOL r = _file.Open(_pathfile, 
         CFile::modeCreate
@@ -116,12 +117,18 @@ MyLog::log(char * m1, char * m2,char*m3,char*m4,char*m5,char*m6) {
 	log(M1,M2,M3,M4,M5,M6);
 }
 
-AutoLog::AutoLog(CString desc) : m_desc(desc)
+AutoLog::AutoLog(CString desc, BOOL todisk) : m_desc(desc), m_ToDisk(todisk)
 {
-	logger.logd(m_desc + " begin");
+	if (m_ToDisk) 
+		logger.logd(m_desc + " begin");
+	else
+		logger.ods(m_desc + " begin");
 
 }
 AutoLog::~AutoLog() 
 	{
-		logger.logd(m_desc + " end");
+		if (m_ToDisk)
+			logger.logd(m_desc + " end");
+		else 
+			logger.ods(m_desc + " end");
 	}

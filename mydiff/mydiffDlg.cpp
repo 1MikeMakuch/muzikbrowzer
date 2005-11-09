@@ -112,7 +112,7 @@ BOOL CMydiffDlg::OnInitDialog()
 	
 	
 	CString command = "/cygdrive/c/mkm/src/muzik/mydiff/cstat";
-	logger.open("");
+	logger.open("mydiff.log");
 	logger.log("mydiff started");
 
 	mysystem(command, UPM_CSTAT_DONE);

@@ -476,70 +476,74 @@ BOOL CDialogSK::applyOneBg(CDC* pDC, BitmapToCRect * bmcr, int offset)
 		int thirdheight = bmcr->m_height / 3;
 
 		x_src = y_src = x_dst = y_dst = 0;
+		x_dst = x;
+		y_dst = y;
 		width = thirdwidth;
 		height = thirdheight;
 
 		// middle
 		x_src = thirdwidth;
 		y_src = thirdheight;
-		for (x_dst = width; x_dst < bmcr->m_rect.Width() - width ; x_dst += width) {
-			for (y_dst = height ; y_dst < bmcr->m_rect.Height() - height; y_dst += height) {
+		for (x_dst = width+x; x_dst < (bmcr->m_rect.Width() - width)+x ; x_dst += width) {
+			for (y_dst = height+y ; y_dst < (bmcr->m_rect.Height() - height)+y; y_dst += height) {
 				pDC->BitBlt(x_dst,y_dst, width, height, &dc, x_src, y_src, SRCCOPY);
 			}
 		}
 		// top edge
 		x_src = thirdwidth;
 		y_src = 0;
-		y_dst = 0;
-		for (x_dst = width; x_dst < bmcr->m_rect.Width() - width ; x_dst += width) {
+		y_dst = y;
+		for (x_dst = width+x; x_dst < (bmcr->m_rect.Width() - width)+x ; x_dst += width) {
 			pDC->BitBlt(x_dst,y_dst, width, height, &dc, x_src, y_src, SRCCOPY);
 		}
 
 		// right edge
 		x_src = bmcr->m_width - thirdwidth;
 		y_src = thirdheight;
-		x_dst = bmcr->m_rect.Width() - width;
-		for (y_dst = height ; y_dst < bmcr->m_rect.Height() - height; y_dst += height) {
+		x_dst = (bmcr->m_rect.Width() - width)+x;
+		for (y_dst = height+y ; y_dst < (bmcr->m_rect.Height() - height)+y; y_dst += height) {
 			pDC->BitBlt(x_dst,y_dst, width, height, &dc, x_src, y_src, SRCCOPY);
 		}
 		// bottom edge
 		x_src = width;
 		y_src = bmcr->m_height - thirdheight;
-		y_dst = bmcr->m_rect.Height() - thirdheight;
-		for (x_dst = width; x_dst < bmcr->m_rect.Width() - width ; x_dst += width) {
+		y_dst = (bmcr->m_rect.Height() - thirdheight)+y;
+		for (x_dst = width+x; x_dst < (bmcr->m_rect.Width() - width)+x ; x_dst += width) {
 			pDC->BitBlt(x_dst,y_dst, width, height, &dc, x_src, y_src, SRCCOPY);
 		}
 		// left edge
 		x_src = 0;
 		y_src = thirdheight;
-		x_dst = 0;
-		for (y_dst = height ; y_dst < bmcr->m_rect.Height() - height; y_dst += height) {
+		x_dst = x;
+		for (y_dst = height+y ; y_dst < (bmcr->m_rect.Height() - height)+y; y_dst += height) {
 			pDC->BitBlt(x_dst,y_dst, width, height, &dc, x_src, y_src, SRCCOPY);
 		}
 
 
 		// upper left
 		x_src = y_src = x_dst = y_dst = 0;
+		x_dst = x;
+		y_dst = y;
 		width = width = thirdwidth;
 		height = height = thirdheight;
 		pDC->BitBlt(x_dst,y_dst, width, height, &dc, x_src, y_src, SRCCOPY);
 
 		// upper right
 		x_src = bmcr->m_width - thirdwidth;
-		x_dst = bmcr->m_rect.Width() - thirdwidth;
+		x_dst = (bmcr->m_rect.Width() - thirdwidth)+x;
 		pDC->BitBlt(x_dst,y_dst, width, height, &dc, x_src, y_src, SRCCOPY);
 
 		// lower left
 		x_src = 0;
 		y_src = bmcr->m_height - thirdheight;
-		x_dst = 0;
-		y_dst = bmcr->m_rect.Height() - thirdheight;
+		x_dst = x;
+		y_dst = (bmcr->m_rect.Height() - thirdheight)+y;
 		pDC->BitBlt(x_dst,y_dst, width, height, &dc, x_src, y_src, SRCCOPY);
 
 		// lower right
 		x_src = bmcr->m_width - thirdwidth;
-		x_dst = bmcr->m_rect.Width() - thirdwidth;
-		y_dst = bmcr->m_rect.Height() - thirdheight;
+		x_dst = (bmcr->m_rect.Width() - thirdwidth)+x;
+		y_dst = (bmcr->m_rect.Height() - thirdheight)+y;
 		pDC->BitBlt(x_dst,y_dst, width, height, &dc, x_src, y_src, SRCCOPY);
 
 

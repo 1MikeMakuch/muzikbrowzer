@@ -39,10 +39,11 @@ class MyLog {
 
 class AutoLog {
 public:
-	AutoLog(CString desc);
+	AutoLog(CString desc, BOOL todisk=FALSE);
 	~AutoLog();
 private:
 	CString m_desc;
+	BOOL m_ToDisk;
 };
 
 #ifdef LOGOWNER
