@@ -51,13 +51,13 @@ void PictureStatic::OnPaint()
 	if (m_ploaded)
 		m_Picture->Draw(cdc);
 
-    CRgn Region;
-    Region.CreateRectRgn(rect.left, rect.top, rect.right, rect.bottom);
-    cdc->SelectClipRgn(&Region);
+//    CRgn Region;
+//    Region.CreateRectRgn(rect.left, rect.top, rect.right, rect.bottom);
+//    cdc->SelectClipRgn(&Region);
 
-    Region.DeleteObject();
-    cdc->SelectClipRgn(NULL);
-    ReleaseDC(cdc);
+//    Region.DeleteObject();
+//    cdc->SelectClipRgn(NULL);
+//    ReleaseDC(cdc);
 	
 	// Do not call CStatic::OnPaint() for painting messages
 }

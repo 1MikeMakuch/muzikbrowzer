@@ -469,7 +469,7 @@ BOOL CPlayerDlg::OnInitDialog()
 	m_Genres.SetFocus();
     OnGenresFocus();
 
-	m_AlbumArt = m_Config.getSkin(MB_SKIN_ALBUMART);
+
 	initDb();
 
 	SetIcon(m_hIcon, TRUE);			// Set big icon
@@ -849,6 +849,7 @@ CPlayerDlg::resetControls() {
 	// 1) via regSd and 2) m_Config.
 	m_Config.ReadReg(regSD);
 
+	m_AlbumArt = m_Config.getSkin(MB_SKIN_ALBUMART);
 
 	int los = regSD.Read("BackgroundMainType",-1);
 	if (-1 == los) 
@@ -1359,9 +1360,10 @@ CPlayerDlg::resetControls() {
 
 	OnNcPaint() ;
 	OnEraseBkgnd(cdc); // force CDialogSK to paint background
-
+	displayAlbumArt(""); // paint the AlbumArtDefault.bmp
 	// This sends a WM_NCPAINT to repaint the resize frame
 	RedrawWindow(NULL,NULL, RDW_FRAME|RDW_INVALIDATE);
+
 
 	m_InitDone = TRUE;
 
@@ -3739,6 +3741,12 @@ void CPlayerDlg::killAlbumArt() {
 	m_Picture.unload();
 }
 void CPlayerDlg::displayAlbumArt(const CString & file) {
+
+	if (""== file) {
+		killAlbumArt();
+		m_Picture.load(m_AlbumArt);
+		return;
+	}
 
 	if (file == m_LastAlbumArtFile) return;
 
