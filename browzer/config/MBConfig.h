@@ -92,7 +92,7 @@ public:
     LPLOGFONT getTitlesFont();
     LPLOGFONT getStatusFont();
 	LPLOGFONT getColHdrFont();
-	LPLOGFONT getCurPlayFont();
+//	LPLOGFONT getCurPlayFont();
 
     COLORREF getColorBkPanel();
     COLORREF getColorBkNormal();
@@ -105,11 +105,11 @@ public:
 	COLORREF getColorTxColHdr();
 	COLORREF getColorBkColHdr();
 	COLORREF getColorBkPanel2();
-	COLORREF getColorBkCurPlay();
-	COLORREF getColorTxCurPlay();
+//	COLORREF getColorBkCurPlay();
+//	COLORREF getColorTxCurPlay();
 	int getDlgBorderWidth();
 //	double getPlaylistHeightPct();
-	double getGenreWidthPct();
+//	double getGenreWidthPct();
 	int getDlgBorderHorz() ;
 	int getDlgBorderVert() ;
 		

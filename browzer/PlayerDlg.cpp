@@ -163,7 +163,7 @@ void CPlayerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_PLAYLISTLABEL,             m_PlaylistLabel);
 	DDX_Control(pDX, IDC_POSITION_LABEL,            m_PositionLabel);
 	DDX_Control(pDX, IDC_PLAYER_STATUS,             m_PlayerStatus);
-	DDX_Control(pDX, IDC_CURRENT_TITLE,             m_CurrentTitle);
+//	DDX_Control(pDX, IDC_CURRENT_TITLE,             m_CurrentTitle);
 	DDX_Control(pDX, IDC_GENRES,                    m_Genres);
 	DDX_Control(pDX, IDC_ARTISTS,                   m_Artists);
 	DDX_Control(pDX, IDC_ALBUMS,                    m_Albums);
@@ -458,7 +458,7 @@ BOOL CPlayerDlg::OnInitDialog()
 	m_VideoButton.ShowWindow(SW_HIDE);
 	m_PicturesButton.ShowWindow(SW_HIDE);
 //	m_PositionLabel.ShowWindow(SW_HIDE);
-	m_CurrentTitle.ShowWindow(SW_HIDE);
+//	m_CurrentTitle.ShowWindow(SW_HIDE);
 
 // For CDialogSK
 	EnableEasyMove();  // enable moving of the dialog 
@@ -596,8 +596,8 @@ void CPlayerDlg::setFont() {
 		m_PlaylistLabel.initFont();
 		m_PlayerStatus.initFont();
 		m_PositionLabel.initFont();
-		m_CurrentTitle.initFont();
-		m_CurrentTitle.m_HCenter = 0;
+//		m_CurrentTitle.initFont();
+//		m_CurrentTitle.m_HCenter = 0;
 		m_PlayerStatus.m_HCenter = 1;
     }
     LPLOGFONT lplf = m_Config.getTitlesFont();
@@ -630,7 +630,7 @@ CPlayerDlg::setColors() {
 	m_PlaylistLabel.SetTextColor(m_Config.getColorTxColHdr());
 //	m_VolumeLabel.SetTextColor(m_Config.getColorTxPanel());
 	m_PositionLabel.SetTextColor(m_Config.getColorTxPanel());
-	m_CurrentTitle.SetTextColor(m_Config.getColorTxCurPlay());
+//	m_CurrentTitle.SetTextColor(m_Config.getColorTxCurPlay());
 	m_PlayerStatus.SetTextColor(m_Config.getColorTxPanel());
 	m_PlayerStatus.SetTicking(TRUE);
 
@@ -641,7 +641,7 @@ CPlayerDlg::setColors() {
 	m_PlaylistLabel.setDesc("playl ");
 	m_PlayerStatus.setDesc ("status");
 	m_PositionLabel.setDesc("poslbl");
-	m_CurrentTitle.setDesc ("curtit");
+//	m_CurrentTitle.setDesc ("curtit");
 
 	m_GenresLabel.SetBkColor(m_Config.getColorBkColHdr());
 	m_ArtistsLabel.SetBkColor(m_Config.getColorBkColHdr());
@@ -650,7 +650,7 @@ CPlayerDlg::setColors() {
 	m_PlaylistLabel.SetBkColor(m_Config.getColorBkColHdr());
 //	m_VolumeLabel.SetBkColor(m_Config.getColorBkPanel());
 	m_PositionLabel.SetBkColor(m_Config.getColorBkPanel());
-	m_CurrentTitle.SetBkColor(m_Config.getColorBkCurPlay());
+//	m_CurrentTitle.SetBkColor(m_Config.getColorBkCurPlay());
 	m_PlayerStatus.SetBkColor(m_Config.getColorBkPanel());
 
 	m_Genres.SetColors(m_Config.getColorBkNormal(),

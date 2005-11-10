@@ -237,7 +237,7 @@ private:
 	CColorStatic	m_PlaylistLabel;
 	CColorStatic	m_PositionLabel;
 	CColorStatic	m_PlayerStatus;
-	CColorStatic	m_CurrentTitle;
+//	CColorStatic	m_CurrentTitle;
 	CExtendedListBox    m_Genres;
 	CExtendedListBox	m_Artists;
 	CExtendedListBox	m_Albums;

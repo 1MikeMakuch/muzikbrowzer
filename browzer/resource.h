@@ -267,6 +267,8 @@
 #define IDC_COLOR_TX_CTRLS              1216
 #define IDC_FONTSIZE_CURPLY             1216
 #define IDC_BORDER_PANEL                1217
+#define IDC_RESTORE_SKIN_DEFAULTS       1217
+#define IDC_SWAP_SETTINGS_BUTTON        1217
 #define IDC_BORDER_HORZ                 1218
 #define IDC_BORDER_VERT                 1219
 #define IDC_FONT_CURPLY                 1220
@@ -292,6 +294,7 @@
 #define IDC_IRREVERSE                   1518
 #define IDC_IRALPHAUP                   1519
 #define IDC_IRALPHADOWN                 1520
+#define IDC_IRRAMDOM                    1521
 #define IDC_IRUP_DESC                   1600
 #define IDC_IRDOWN_DESC                 1601
 #define IDC_IRLEFT_DESC                 1602
@@ -357,11 +360,11 @@
 #define IDC_SKIN_LIST                   2028
 #define IDC_PLAYLIST_HEIGHT             2031
 #define IDC_SPIN_PLAYLIST               2032
-#define IDC_GENRE_WIDTH                 2033
 #define IDC_SPIN_GENRE                  2034
 #define IDC_EASTEREGG                   2036
 #define IDC_TREE                        2039
 #define IDC_MSG                         2040
+#define IDC_SWAP_SETTINGS_LABEL         2042
 #define ID_XXX                          32775
 #define ID__EXIT                        32785
 #define ID_PMENU_EXIT                   32785
@@ -404,7 +407,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        256
 #define _APS_NEXT_COMMAND_VALUE         32824
-#define _APS_NEXT_CONTROL_VALUE         2042
+#define _APS_NEXT_CONTROL_VALUE         2043
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

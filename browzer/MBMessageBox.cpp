@@ -106,7 +106,7 @@ int MBMessageBox(CString title, CString msg, BOOL log, BOOL enableCancel)
 	if (thePlayer)
 		*thePlayer->m_Dialog = mb;
 
-    int r = mb->DoModal();
+    int r = mb->DoModal(); // 1 for OK, 0 for Cancel
 	if (thePlayer)
 		*thePlayer->m_Dialog = thePlayer;
     delete mb;

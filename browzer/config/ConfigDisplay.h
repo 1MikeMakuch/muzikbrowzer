@@ -30,15 +30,14 @@ public:
 // Dialog Data
 	//{{AFX_DATA(CConfigDisplay)
 	enum { IDD = IDD_CONFIG_DISPLAY };
-	CColorStatic	m_SampleCurPlay;
-	CComboBox	m_SizeCurPlay;
-	CColorBtn	m_TxCurPlay;
-	CColorBtn	m_BkCurPlay;
-	CButton	m_BoldCurPlay;
-//	CComboBox	m_BorderVert;
-//	CComboBox	m_BorderHorz;
+	CStatic	m_SwapSettingsLabel;
+	CButton	m_SwapSettingsButton;
+//	CColorStatic	m_SampleCurPlay;
+//	CComboBox	m_SizeCurPlay;
+//	CColorBtn	m_TxCurPlay;
+//	CColorBtn	m_BkCurPlay;
+//	CButton	m_BoldCurPlay;
 	CSpinButtonCtrl	m_GenreSpin;
-//	CComboBox		m_PanelWidth;
 	CComboBox		m_SkinList;
 	CComboBox		m_BorderWidth;
 	CButton         m_BoldColHdr;
@@ -65,7 +64,7 @@ public:
 	CFontCombo      m_FontColHdr;
 	CFontCombo      m_FontPanel;
 	CFontCombo      m_FontTitles;
-	CFontCombo	m_FontCurPlay;
+//	CFontCombo	m_FontCurPlay;
 	//}}AFX_DATA
 
 
@@ -93,6 +92,7 @@ protected:
 	afx_msg void OnEditchangeSkinList();
 	afx_msg void OnSelendokSkinList();
 	afx_msg void OnColorButton();
+	afx_msg void OnSwapSettingsButton();
 	//}}AFX_MSG
 	afx_msg void OnCButtonMessage(WPARAM w, LPARAM l)  ;
 	afx_msg void onbold();
@@ -100,8 +100,8 @@ protected:
 	DECLARE_MESSAGE_MAP()
 private:
     PlayerCallbacks * m_playercallbacks;
-	COLORREF m_vTxCurPlay;
-	COLORREF m_vBkCurPlay;
+//	COLORREF m_vTxCurPlay;
+//	COLORREF m_vBkCurPlay;
     COLORREF m_vBkPanel;
     COLORREF m_vBkNormal;
     COLORREF m_vBkHigh;
@@ -124,37 +124,37 @@ private:
 	LPLOGFONT m_lplfTitles;
 	LPLOGFONT m_lplfPanel;
 	LPLOGFONT m_lplfColHdr;
-	LPLOGFONT m_lplfCurPlay;
+//	LPLOGFONT m_lplfCurPlay;
     LOGFONT m_lfTitles;
 	LOGFONT m_lfPanel;
 	LOGFONT m_lfColHdr;
-	LOGFONT m_lfCurPlay;
+//	LOGFONT m_lfCurPlay;
     LOGFONT m_samplelfTitles;
 	LOGFONT m_samplelfPanel;
 	LOGFONT m_samplelfColHdr;
-	LOGFONT m_samplelfCurPlay;
+//	LOGFONT m_samplelfCurPlay;
 //	LOGFONT m_samplelfSel;
 //	LOGFONT m_samplelfHigh;
     int m_SizeSelTitles;
 	int m_SizeSelPanel;
 	int m_SizeSelColHdr;
-	int m_SizeSelCurPlay;
+//	int m_SizeSelCurPlay;
     int m_FontSelTitles;
 	int m_FontSelPanel;
 	int m_FontSelColHdr;
-	int m_FontSelCurPlay;
+//	int m_FontSelCurPlay;
 	CFont m_FontSampleTitles;
 	CFont m_FontSamplePanel;
 	CFont m_FontSampleColHdr;
 	CFont m_FontSampleSel;
 	CFont m_FontSampleHigh;
-	CFont m_FontSampleCurPlay;
+//	CFont m_FontSampleCurPlay;
 
 	CString m_sSkinName;
 	int m_vBorderWidth;
 	int m_vPanelWidth;
 //	int m_vPlaylistHeightPct;
-	int m_vGenreWidthPct;
+//	int m_vGenreWidthPct;
 	int m_vBorderHorz;
 	int m_vBorderVert;
 	BOOL m_Modified;
@@ -162,7 +162,7 @@ private:
     void init();
 	void initFontSels();
     void showSample();
-    void copy2lf(LOGFONT &, LOGFONT &, LOGFONT &, LOGFONT &);
+    void copy2lf(LOGFONT &, LOGFONT &, LOGFONT &/*, LOGFONT &*/);
 	CString m_SkinDir;
 	void readSkins();
 	
@@ -170,7 +170,7 @@ public:
     LPLOGFONT getTitlesFont() { return m_lplfTitles; }
 	LPLOGFONT getStatusFont() { return m_lplfPanel; }
 	LPLOGFONT getColHdrFont() { return m_lplfColHdr; }
-	LPLOGFONT getCurPlayFont() { return m_lplfCurPlay; }
+//	LPLOGFONT getCurPlayFont() { return m_lplfCurPlay; }
 
 public:
 	BOOL OnSkinChoose(CString skin);
@@ -184,8 +184,8 @@ public:
     COLORREF getTxSel() { return m_vTxSel; }
 	COLORREF getBkColHdr() { return m_vBkColHdr; }
 	COLORREF getTxColHdr() { return m_vTxColHdr; }
-	COLORREF getBkCurPlay() { return m_vBkCurPlay; }
-	COLORREF getTxCurPlay() { return m_vTxCurPlay; }
+//	COLORREF getBkCurPlay() { return m_vBkCurPlay; }
+//	COLORREF getTxCurPlay() { return m_vTxCurPlay; }
 
 	int getBorderWidth() { return m_vBorderWidth; }
 //  no longer used
@@ -193,7 +193,7 @@ public:
 	int getBorderHorz() { return m_vBorderHorz; }
 	int getBorderVert() { return m_vBorderVert; }
 //	double getPlaylistHeightPct();
-	double getGenreWidthPct();
+//	double getGenreWidthPct();
 	const CString getSkin(const CString key, BOOL readcheck=TRUE);
 	const CString getSkin(const CString skiname, const CString key);
 	void getSkins(CStringList &);
