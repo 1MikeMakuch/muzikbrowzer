@@ -294,7 +294,6 @@
 #define IDC_IRREVERSE                   1518
 #define IDC_IRALPHAUP                   1519
 #define IDC_IRALPHADOWN                 1520
-#define IDC_IRRAMDOM                    1521
 #define IDC_IRUP_DESC                   1600
 #define IDC_IRDOWN_DESC                 1601
 #define IDC_IRLEFT_DESC                 1602
@@ -365,6 +364,7 @@
 #define IDC_TREE                        2039
 #define IDC_MSG                         2040
 #define IDC_SWAP_SETTINGS_LABEL         2042
+#define IDC_BUTTON_LOGO                 12052
 #define ID_XXX                          32775
 #define ID__EXIT                        32785
 #define ID_PMENU_EXIT                   32785

@@ -921,7 +921,9 @@ BOOL CConfigDisplay::verifySkin(CString skin) {
 	bmps.AddTail(MB_SKIN_DEF);
 	bmps.AddTail(MB_SKIN_ALBUMART);
 	bmps.AddTail(MB_SKIN_BACKGROUNDMAIN);
-	bmps.AddTail(MB_SKIN_BUTTONAPPLABELOUT);
+	bmps.AddTail(MB_SKIN_BUTTONLOGOOUT);
+	bmps.AddTail(MB_SKIN_BUTTONLOGOHOVER);
+	bmps.AddTail(MB_SKIN_BUTTONLOGOIN);
 	bmps.AddTail(MB_SKIN_BUTTONBACKGROUND);
 	bmps.AddTail(MB_SKIN_BUTTONCLEARHOVER);
 	bmps.AddTail(MB_SKIN_BUTTONCLEARIN);

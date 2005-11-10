@@ -39,6 +39,7 @@
 #define MB_PROGRESS_MSG			(WM_APP + 16)
 #define MB_BITMAP_CUTTER_MSG	(WM_APP + 17)
 #define MB_TV_MSG				(WM_APP + 18)
+#define MB_GOWWW_MSG			(WM_APP + 19)
 
 #define MB_SKINPICS_MSGS_BEGIN	(WM_APP + 1000)
 #define MB_SKINPICS_MSGS_END    (WM_APP + 1999)

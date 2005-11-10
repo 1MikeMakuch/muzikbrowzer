@@ -98,7 +98,7 @@ CPlayerDlg::CPlayerDlg(CPlayerApp * theApp,
     m_Config("Configuration"), m_SavePlaylistFlag(TRUE),
 	m_PlaylistDuration(0), m_timerid(0), m_StatusTimerId(0),
 	m_Control(new VirtualControl), m_Dialog(new VirtualDialog),
-	m_trialCounter(0), //m_AppLabel(FALSE),
+	m_trialCounter(0),
 	m_InitDone(FALSE),
 	m_Genres(TRUE,"Genres"),
 	m_Artists(TRUE,"Artists"),
@@ -148,6 +148,7 @@ void CPlayerDlg::DoDataExchange(CDataExchange* pDX)
 	CDialogClassImpl::DoDataExchange(pDX);
 
 	//{{AFX_DATA_MAP(CPlayerDlg)
+	DDX_Control(pDX, IDC_BUTTON_LOGO, m_LogoButton);
 	DDX_Control(pDX, IDC_BUTTON_RESIZE, m_ButtonResize);
 	DDX_Control(pDX, IDC_BUTTON_SHUFFLE, m_ButtonShuffle);
 	DDX_Control(pDX, IDC_BUTTON_SAVE, m_ButtonSave);
@@ -163,7 +164,6 @@ void CPlayerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_PLAYLISTLABEL,             m_PlaylistLabel);
 	DDX_Control(pDX, IDC_POSITION_LABEL,            m_PositionLabel);
 	DDX_Control(pDX, IDC_PLAYER_STATUS,             m_PlayerStatus);
-//	DDX_Control(pDX, IDC_CURRENT_TITLE,             m_CurrentTitle);
 	DDX_Control(pDX, IDC_GENRES,                    m_Genres);
 	DDX_Control(pDX, IDC_ARTISTS,                   m_Artists);
 	DDX_Control(pDX, IDC_ALBUMS,                    m_Albums);
@@ -175,8 +175,8 @@ void CPlayerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_VIDEO_BUTTON,				m_VideoButton);
 	DDX_Control(pDX, IDC_BUTTON_MINIMIZE,           m_ButtonMinimize);
 	DDX_Control(pDX, IDC_BUTTON_MAXIMIZE,           m_ButtonMaximize);
-	DDX_Control(pDX, IDC_BUTTON_RESTORE,            m_ButtonRestore);
 	DDX_Control(pDX, IDC_BUTTON_EXIT,               m_ButtonExit);
+	DDX_Control(pDX, IDC_BUTTON_RESTORE,            m_ButtonRestore);
 	DDX_Control(pDX, IDC_BUTTON_STOP,               m_ButtonStop);
 	DDX_Control(pDX, IDC_BUTTON_PLAY,               m_ButtonPlay);
 	DDX_Control(pDX, IDC_BUTTON_PAUSE,              m_ButtonPause);
@@ -234,6 +234,7 @@ BEGIN_MESSAGE_MAP(CPlayerDlg, CDialogClassImpl)
 	ON_WM_SETCURSOR()
 	ON_WM_NCMOUSEMOVE()
 	ON_WM_LBUTTONUP()
+	ON_WM_MOUSEMOVE()
 	ON_BN_CLICKED(IDC_BUTTON_RESTORE, OnButtonMaximize)
 	ON_BN_CLICKED(IDC_BUTTON_EXIT, OnCancel)
 	ON_BN_CLICKED(IDC_BUTTON_FASTFORWARD, OnNextSong)
@@ -257,7 +258,7 @@ BEGIN_MESSAGE_MAP(CPlayerDlg, CDialogClassImpl)
 	ON_WM_COMPAREITEM()
 	ON_WM_RBUTTONDOWN()
 	ON_WM_RBUTTONUP()
-	ON_WM_MOUSEMOVE()
+	ON_BN_CLICKED(IDC_BUTTON_LOGO, OnLogoButton)
 	//}}AFX_MSG_MAP
 
 	ON_MESSAGE(WM_GRAPHNOTIFY, OnGraphNotify)
@@ -265,6 +266,7 @@ BEGIN_MESSAGE_MAP(CPlayerDlg, CDialogClassImpl)
 	ON_MESSAGE(MB_VOLUME_MSG, OnVolume)
 	ON_MESSAGE(MB_PROGRESS_MSG, OnProgress)
     ON_MESSAGE(MB_POST_MYIDLE_MESSAGE, OnPostMyIdle)
+	ON_MESSAGE(MB_GOWWW_MSG, OnGoWWWMsg)
 	ON_LBN_SETFOCUS(IDC_GENRES, OnGenresFocus)
 	ON_LBN_SETFOCUS(IDC_ARTISTS, OnArtistsFocus)
 	ON_LBN_SETFOCUS(IDC_ALBUMS, OnAlbumsFocus)
@@ -307,7 +309,8 @@ BOOL CPlayerDlg::OnInitDialog()
 	logger.ods("Begin InitDialog");
 	CDialogClassImpl::OnInitDialog();
 	CWaitCursor c;
-
+	
+	
 	CString cl = ::GetCommandLine();
 	m_InitialSize.cx=0;m_InitialSize.cy=0;
 
@@ -689,6 +692,13 @@ CPlayerDlg::setColors() {
 		m_Config.getSkin(MB_SKIN_BUTTONMENUHOVER),	m_TransPanel,
 		m_Config.getSkin(MB_SKIN_BUTTONMENUOUT),	m_TransPanel
 		);
+
+	m_LogoButton.SetBitmaps(
+		m_Config.getSkin(MB_SKIN_BUTTONLOGOIN),	m_TransPanel,
+		m_Config.getSkin(MB_SKIN_BUTTONLOGOHOVER),	m_TransPanel,
+		m_Config.getSkin(MB_SKIN_BUTTONLOGOOUT),	m_TransPanel
+		);
+
 	m_ButtonResize.SetBitmaps(
 		m_Config.getSkin(MB_SKIN_BUTTONRESIZEIN),	m_TransPanel,	
 		m_Config.getSkin(MB_SKIN_BUTTONRESIZEHOVER),	m_TransPanel,	
@@ -794,6 +804,8 @@ CPlayerDlg::setColors() {
 	m_ButtonPause.SetAlign(CButtonST::ST_ALIGN_OVERLAP,TRUE);
 
 	m_OptionsButton.DrawTransparent(TRUE);
+	m_LogoButton.DrawTransparent(TRUE);
+	m_LogoButton.SetHoverMsg(this, MB_GOWWW_MSG);
 	m_ButtonMinimize.DrawTransparent(TRUE);
 	m_ButtonResize.DrawTransparent(TRUE);
 	m_ButtonMaximize.DrawTransparent(TRUE);
@@ -936,7 +948,7 @@ CPlayerDlg::resetControls() {
 	m_Controls.FreeEm();
 
 	m_Controls.add(0,0, "options button", IDC_OPTIONS_BUTTON);
-	m_Controls.add(0,1, "app label",		IDC_APP_LABEL);
+	m_Controls.add(0,1, "app label",		IDC_BUTTON_LOGO); // logobutton
 	m_Controls.add(0,2, "button min",		IDC_BUTTON_MINIMIZE);
 	m_Controls.add(0,3, "button max",		IDC_BUTTON_MAXIMIZE);
 	m_Controls.add(0,3, "button restore",	IDC_BUTTON_RESTORE);
@@ -1011,9 +1023,13 @@ CPlayerDlg::resetControls() {
 	m_Controls.move(p, x, y, p->row, p->col);
 
 	CDIBSectionLite bmpaplabel;
-	bmpaplabel.Load(m_Config.getSkin(MB_SKIN_BUTTONAPPLABELOUT));
+	bmpaplabel.Load(m_Config.getSkin(MB_SKIN_BUTTONLOGOOUT));
+	p = m_Controls.getObj(IDC_BUTTON_LOGO);
+	x = (m_Controls.dialogrect.Width() / 2) - (bmpaplabel.GetWidth() / 2);
+	y = border;
 	rowMaxY = __max(rowMaxY, y + bmpaplabel.GetHeight());
-	
+	m_Controls.move(p, x, y, p->row, p->col);
+
 	p = m_Controls.getObj(IDC_BUTTON_EXIT);
 	x = m_Controls.dialogrect.Width()
 		- (border + p->width);
@@ -1021,7 +1037,7 @@ CPlayerDlg::resetControls() {
 	m_Controls.move(p, x, y, p->row, p->col);
 
 	p = m_Controls.getObj(IDC_BUTTON_MAXIMIZE);
-	x -= (borderhorz + p->width);
+	x -= (5+ p->width);
 	rowMaxY = __max(rowMaxY, y + p->height);
 	m_Controls.move(p, x, y, p->row, p->col);
 
@@ -1029,13 +1045,13 @@ CPlayerDlg::resetControls() {
 	m_Controls.move(p, x, y, p->row, p->col);
 
 	p = m_Controls.getObj(IDC_BUTTON_MINIMIZE);
-	x -= (borderhorz + p->width);
+	x -= (5+ p->width);
 	rowMaxY = __max(rowMaxY, y + p->height);
 	m_Controls.move(p, x, y, p->row, p->col);	
 	int playpaneltop = rowMaxY;
 
 	p = m_Controls.getObj(IDC_BUTTON_RESIZE);
-	x -= (borderhorz + p->width);
+	x -= (5+ p->width);
 	rowMaxY = __max(rowMaxY, y + p->height);
 	m_Controls.move(p, x, y, p->row, p->col);	
 	playpaneltop = rowMaxY;
@@ -1300,11 +1316,11 @@ CPlayerDlg::resetControls() {
 	}
 
 	// applabel
-	x = (m_Controls.dialogrect.Width() / 2) - (bmpaplabel.GetWidth() / 2);
-	y = border;
-	CRect aplrect(x,y,x+bmpaplabel.GetWidth(),y+bmpaplabel.GetHeight());
-	SetBitmap(m_Config.getSkin(MB_SKIN_BUTTONAPPLABELOUT), aplrect, LO_FIXED,
-		CS("applabel"));
+//	x = (m_Controls.dialogrect.Width() / 2) - (bmpaplabel.GetWidth() / 2);
+//	y = border;
+//	CRect aplrect(x,y,x+bmpaplabel.GetWidth(),y+bmpaplabel.GetHeight());
+//	SetBitmap(m_Config.getSkin(MB_SKIN_BUTTONAPPLABELOUT), aplrect, LO_FIXED,
+//		CS("applabel"));
 	//ClientToScreen(AppLabelRect);
 	CString bgpanel ;
 
@@ -3805,8 +3821,59 @@ void CPlayerDlg::OnPicturesButton() {
 }
 void CPlayerDlg::OnVideoButton() {
 }
+LONG myGetRegKey(HKEY key, LPCTSTR subkey, LPTSTR retdata)
+{
+    HKEY hkey;
+    LONG retval = RegOpenKeyEx(key, subkey, 0, KEY_QUERY_VALUE, &hkey);
+
+    if (retval == ERROR_SUCCESS) {
+        long datasize = MAX_PATH;
+        TCHAR data[MAX_PATH];
+        RegQueryValue(hkey, NULL, data, &datasize);
+        lstrcpy(retdata,data);
+        RegCloseKey(hkey);
+    }
+
+    return retval;
+}
+void CPlayerDlg::OnLogoButton() 
+{
+    TCHAR key[MAX_PATH + MAX_PATH];
+	const char * url = MBURL;
 
 
+    // First try ShellExecute()
+    HINSTANCE result = ShellExecute(NULL, _T("open"), url, NULL,NULL, SW_SHOW);
+//HKEY_CLASSES_ROOT\mailto\shell\open\command
+    // If it failed, get the .htm regkey and lookup the program
+    if ((UINT)result <= HINSTANCE_ERROR) {
 
+        if (myGetRegKey(HKEY_CLASSES_ROOT, _T(".htm"), key) == ERROR_SUCCESS) {
+            lstrcat(key, _T("\\shell\\open\\command"));
 
+            if (myGetRegKey(HKEY_CLASSES_ROOT,key,key) == ERROR_SUCCESS) {
+                TCHAR *pos;
+                pos = _tcsstr(key, _T("\"%1\""));
+                if (pos == NULL) {                     // No quotes found
+                    pos = strstr(key, _T("%1"));       // Check for %1, without quotes 
+                    if (pos == NULL)                   // No parameter at all...
+                        pos = key+lstrlen(key)-1;
+                    else
+                        *pos = '\0';                   // Remove the parameter
+                }
+                else
+                    *pos = '\0';                       // Remove the parameter
 
+                lstrcat(pos, _T(" "));
+                lstrcat(pos, url);
+                result = (HINSTANCE) WinExec(key,SW_SHOW);
+            }
+        }
+    }
+
+}
+LRESULT
+CPlayerDlg::OnGoWWWMsg(UINT wParam, LONG lParam) {
+	PlayerStatusTempSet(MBURL);
+	return 0;
+}

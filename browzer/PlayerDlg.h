@@ -222,6 +222,7 @@ private:
 // Dialog Data
 	//{{AFX_DATA(CPlayerDlg)
 	enum { IDD = IDD_PLAYER_DIALOG };
+	CButtonST	m_LogoButton;
 	CButtonST	m_ButtonResize;
 	CButtonST	m_ButtonShuffle;
 	CButtonST	m_ButtonSave;
@@ -237,7 +238,6 @@ private:
 	CColorStatic	m_PlaylistLabel;
 	CColorStatic	m_PositionLabel;
 	CColorStatic	m_PlayerStatus;
-//	CColorStatic	m_CurrentTitle;
 	CExtendedListBox    m_Genres;
 	CExtendedListBox	m_Artists;
 	CExtendedListBox	m_Albums;
@@ -323,12 +323,14 @@ public:
 	afx_msg void OnNcMouseMove(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+	afx_msg void OnLogoButton();
 	//}}AFX_MSG
 	afx_msg void OnCaptureChanged(CWnd *pWnd);
 	afx_msg LRESULT OnGraphNotify(UINT wParam, LONG lParam);
 	afx_msg LRESULT OnPlayloop(UINT wParam, LONG lParam);
 	afx_msg LRESULT OnVolume(UINT wParam, LONG lParam);
 	afx_msg LRESULT OnProgress(UINT wParam, LONG lParam);
+	afx_msg LRESULT OnGoWWWMsg(UINT wParam, LONG lParam);
     afx_msg LRESULT OnPostMyIdle(UINT wParam, LONG lParam);
 
 //	afx_msg LRESULT OnSkinPic(UINT wParam, LONG lParam);

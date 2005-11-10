@@ -118,6 +118,8 @@ public:
 	//}}AFX_VIRTUAL
 
 public:
+	void SetHoverMsg(CWnd * c, UINT msg);
+	VOID SendHoverMsg();
 	DWORD SetDefaultColors(BOOL bRepaint = TRUE);
 	DWORD SetColor(BYTE byColorIndex, COLORREF crColor, BOOL bRepaint = TRUE);
 	DWORD GetColor(BYTE byColorIndex, COLORREF* crpColor);
@@ -247,6 +249,9 @@ private:
 	void PaintBk(CDC* pDC);
 
 	void InitToolTip();
+
+	UINT m_HoverMsg;
+	CWnd * m_HoverCWnd;
 
 	HCURSOR		m_hCursor;			// Handle to cursor
 	CToolTipCtrl m_ToolTip;			// Tooltip

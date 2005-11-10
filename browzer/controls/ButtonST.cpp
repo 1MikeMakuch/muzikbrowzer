@@ -2,6 +2,7 @@
 #include "ButtonST.h"
 #include "FileUtils.h"
 #include "MyString.h"
+#include "MBGLobals.h"
 
 #ifdef	BTNST_USE_SOUND
 #pragma comment(lib, "winmm.lib")
@@ -109,6 +110,8 @@ CButtonST::CButtonST(BOOL isbutton)
 	// No defined sounds
 	::ZeroMemory(&m_csSounds, sizeof(m_csSounds));
 #endif
+	m_HoverMsg = 0;
+	m_HoverCWnd = NULL;
 } // End of CButtonST
 
 CButtonST::~CButtonST()
@@ -777,9 +780,10 @@ void CButtonST::DrawTheBitmap(CDC* pDC, BOOL bHasTitle, RECT* rpItem,
 //		byIndex = (m_csBitmaps[1].hBitmap == NULL ? 0 : 1);
 	if (bIsPressed)
 		byIndex = 0;
-	else if (m_bMouseOnButton)
+	else if (m_bMouseOnButton) {
 		byIndex = 2;
-	else
+		SendHoverMsg();
+	} else
 		byIndex =1;
 
 	CRect	rImage;
@@ -2592,3 +2596,19 @@ void CButtonST::OnLButtonDown(UINT nFlags, CPoint point)
 //	}
 	CButton::OnLButtonDown(nFlags, point);
 }
+void CButtonST::SetHoverMsg(CWnd * c, UINT msg) {
+
+	m_HoverCWnd = c;
+	m_HoverMsg = msg;
+}
+void CButtonST::SendHoverMsg() {
+	if (m_HoverCWnd && ::IsWindow(m_HoverCWnd->m_hWnd)) {
+		m_HoverCWnd->PostMessage(m_HoverMsg,
+			0, (LPARAM)NULL);
+	}
+}
+
+
+
+
+
