@@ -193,6 +193,7 @@ void CMydiffDlg::showDiffPos() {
 
 void CMydiffDlg::OnButtonNextFile() 
 {
+	showStatus("OnButtonNextFile");
 	incrementFile();
 	dodiff();
 }

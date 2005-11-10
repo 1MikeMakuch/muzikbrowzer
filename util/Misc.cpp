@@ -84,6 +84,8 @@ CPoint crbottomleft(CRect & rect) {
 //	CHECK(kvstack.empty() == TRUE);
 //}
 
+const char * val10 = "0	 !\"$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+
 TEST(ConfigFileParser2, ParseTest2)
 {
 	stack<KVPair> kvstack;
@@ -98,7 +100,13 @@ TEST(ConfigFileParser2, ParseTest2)
 	AutoBuf valb(1000);
 	AutoBuf lbuf(1000);
 	int result;
-	for (i = 10 ; i > 0 ; i--) {
+	const char * k = kvstack.top().key();
+	const char * v = kvstack.top().val();
+	CHECK(strcmp(k,"key10") == 0);
+	result = strcmp(v,val10) == 0;
+	CHECK(result == 0);
+	kvstack.pop();
+	for (i = 9 ; i > 0 ; i--) {
 		CHECK(kvstack.empty() == FALSE);
 		sprintf(keyb.p,"key%d",i);
 		sprintf(valb.p,"val%d",i);

@@ -18,6 +18,7 @@
 #include "FExtension.h"
 #include "ButtonST.h"
 #include "Misc.h"
+#include "muzikbrowzerVersion.h"
 
 CRectCtrl::CRectCtrl() {}
 CRectCtrl::~CRectCtrl() {}
@@ -255,6 +256,10 @@ BOOL CBitmapCutterDlg::OnInitDialog()
 //	logger.open("bitmapcutter.log");
 //	AutoLog al("OnInitDialog",FALSE);
 	CDialog::OnInitDialog();
+
+	CString v = "BitmapCutter   ";
+	v += MUZIKBROWZER_VERSION;
+	SetWindowText(v);
 
 	{
 //			AutoLog am("AppMutex",FALSE);

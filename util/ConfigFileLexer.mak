@@ -1,2 +1,2 @@
 all:
-	flex -L -oConfigFileLexer.cpp ConfigFileLexer.l 
+	flex -L -+ -oConfigFileLexer.cpp ConfigFileLexer.l 

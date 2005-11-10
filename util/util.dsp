@@ -179,6 +179,10 @@ SOURCE=.\FileUtils.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\FlexLexer.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\Misc.h
 # End Source File
 # Begin Source File

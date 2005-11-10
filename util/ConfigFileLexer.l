@@ -18,6 +18,7 @@
 
 
 
+%option c++
 %option nounput noyywrap
 
 %x keyac
@@ -27,15 +28,13 @@
 
 COMMENT			#.*
 ALNUM			[0-9a-zA-Z]
-VALDATA			[ 0-9a-zA-Z]
+VALDATA			[!"$-~]
+VALDATAWS		[ \t!"$-~]
 WS				[ \t]
 NL				[\r\n]
 OP				[:=]
 
 %%
-
-
-
 						char buf[1000];
 						char * pbuf;
 						char * key;
@@ -62,9 +61,7 @@ OP				[:=]
 						*pbuf++=0;
 						BEGIN(INITIAL);
 					}
-
 <keyac>{WS}+
-
 <valinit>{WS}+
 <valinit>{NL}+		{
 						BEGIN(INITIAL);
@@ -74,7 +71,7 @@ OP				[:=]
 						*pbuf++ = yytext[0];
 						BEGIN(valac);
 					}
-<valac>{VALDATA}+{ALNUM}		{
+<valac>{VALDATAWS}+{VALDATA}		{
 						strcpy(pbuf,yytext);
 						pbuf += strlen(yytext);
 					}
@@ -94,6 +91,7 @@ OP				[:=]
 					}
 
 %%
+/*
 void ConfigFileParser(const char * file, stack<KVPair> * kvstack) {
 	yyin = fopen( file, "r" );
 
@@ -101,4 +99,23 @@ void ConfigFileParser(const char * file, stack<KVPair> * kvstack) {
 
 	yylex();
 	fclose(yyin);
+}
+*/
+
+#include <fcntl.h>
+#include <share.h>
+#include <fstream>
+#include "MyString.h"
+
+void ConfigFileParser(const char * file, stack<KVPair> * kvstack) {
+
+	std::ifstream fs(file, ios::in | ios::binary);
+
+	_kvstack = kvstack;
+
+	yyFlexLexer lexer(&fs);
+	 lexer.yylex();
+
+// 	yylex();
+// 	fclose(yyin);
 }
