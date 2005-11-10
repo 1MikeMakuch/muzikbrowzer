@@ -850,21 +850,31 @@ CPlayerDlg::resetControls() {
 	m_Config.ReadReg(regSD);
 
 
-	int los = regSD.Read("BackgroundType",0);
-	LayOutStyle bgtype;
+	int los = regSD.Read("BackgroundMainType",-1);
+	if (-1 == los) 
+		los = regSD.Read("BackgroundType",1);
+
+	LayOutStyle BackgroundMainType,BackgroundPanelType;
 	m_FixedSize = FALSE;
 	switch (los) {
 	case 1:
-		bgtype = LO_TILED;
+		BackgroundMainType = LO_TILED;
 		break;
 	case 2:
-		bgtype = LO_FIXED;
+		BackgroundMainType = LO_FIXED;
 		break;
 	case 0:
 	default:
-		bgtype = LO_STRETCHED;
+		BackgroundMainType = LO_STRETCHED;
 		break;
 	}
+	los = regSD.Read("BackgroundPanelType",0);
+	if (LO_STRETCHED) {
+		BackgroundPanelType = LO_STRETCHED;
+	} else {
+		BackgroundPanelType = LO_TILED;
+	}
+
 	int w = 0;
 	int h = 0;
 
@@ -873,7 +883,7 @@ CPlayerDlg::resetControls() {
 		w = m_InitialSize.cx;
 		h = m_InitialSize.cy;
 	}
-	if (LO_FIXED == bgtype) {
+	if (LO_FIXED == BackgroundMainType) {
 		CDIBSectionLite bmpBgMain;
 		bmpBgMain.Load(m_Config.getSkin(MB_SKIN_BACKGROUNDMAIN));
 		w = bmpBgMain.GetWidth();
@@ -887,7 +897,7 @@ CPlayerDlg::resetControls() {
 		rect.bottom = rect.top + h;
 		MoveWindow(rect, TRUE );
 	}
-	if (LO_FIXED == bgtype) {
+	if (LO_FIXED == BackgroundMainType) {
 		m_FixedSize = TRUE;
 	}
 
@@ -1284,7 +1294,7 @@ CPlayerDlg::resetControls() {
 #pragma hack		
 		// hack alert: rect0 needs 2 b Window instead of client
 		// for the resizing border
-		SetBitmap(bgmain, rect0, bgtype, CS("frame"));
+		SetBitmap(bgmain, rect0, BackgroundMainType, CS("frame"));
 
 	}
 
@@ -1309,7 +1319,7 @@ CPlayerDlg::resetControls() {
 	plrect.bottom = ControlBoxBottom + borderpanel;
 	bgpanel = m_Config.getSkin(MB_SKIN_BACKGROUNDPLAYLIST);
 	if (bgpanel.GetLength()) {
-		SetBitmap(bgpanel, plrect, bgtype, CS("play panel"));
+		SetBitmap(bgpanel, plrect, BackgroundPanelType, CS("play panel"));
 	}
 
 	// lib panel
@@ -1319,7 +1329,7 @@ CPlayerDlg::resetControls() {
 	librect.right = m_Controls.dialogrect.right - border;
 	bgpanel = m_Config.getSkin(MB_SKIN_BACKGROUNDLIBRARY);
 	if (bgpanel.GetLength()) {
-		SetBitmap(bgpanel, librect, bgtype, CS("lib panel"));
+		SetBitmap(bgpanel, librect, BackgroundPanelType, CS("lib panel"));
 	}
 
 	// album panel
@@ -1328,7 +1338,7 @@ CPlayerDlg::resetControls() {
 	alrect.right = librect.right;
 	bgpanel = m_Config.getSkin(MB_SKIN_BACKGROUNDALBUMART);
 	if (bgpanel.GetLength()) {
-		SetBitmap(bgpanel, alrect, bgtype, CS("album"));
+		SetBitmap(bgpanel, alrect, BackgroundPanelType, CS("album"));
 	}
 
 	// button background

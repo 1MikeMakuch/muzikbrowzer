@@ -1748,7 +1748,8 @@ reg.Write("ControlBoxHeight", m_PicInsCRect.Height());
 reg.Write("BorderHorz",m_nBorderHorz);
 reg.Write("BorderVert",m_nBorderVert);
 reg.Write("BorderPanel",m_nBorderPanel);
-reg.Write("BackgroundType", m_BgType);
+reg.Write("BackgroundMainType", m_BgType);
+reg.Write("BackgroundPanelType", 1);
 reg.Write("BackgroundTypes:","0=Stretched, 1=Tiled, 2=Fixed");
 reg.WriteFile();
 
