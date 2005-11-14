@@ -287,6 +287,7 @@ BEGIN_MESSAGE_MAP(CPlayerDlg, CDialogClassImpl)
 	ON_COMMAND(ID_MENU_ADD, OnMusicAdd)
 	ON_COMMAND(ID_MENU_SCAN, OnMusicScan)
 	ON_COMMAND(ID_MENU_SCANNEW, OnMusicScanNew)
+	ON_WM_INITMENUPOPUP()
 
 
 END_MESSAGE_MAP()
@@ -520,7 +521,16 @@ BOOL CPlayerDlg::OnInitDialog()
 		}
 		_initdialog->DestroyWindow();
 	}
+
+	CMenu* pSysMenu = GetSystemMenu(FALSE);
+	if (pSysMenu != NULL)
+	{
+		pSysMenu->AppendMenu(MF_SEPARATOR);
+		pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, "A&bout Muzikbrowzer");
+	}
+
 	logger.ods("End of InitDialog");
+
 
 	return FALSE;  // return TRUE  unless you set the focus to a control
 }
@@ -1038,8 +1048,10 @@ CPlayerDlg::resetControls() {
 	rowMaxY = __max(rowMaxY, y + p->height);
 	m_Controls.move(p, x, y, p->row, p->col);
 
+#define SYSCTRLSWIDTH 2
+
 	p = m_Controls.getObj(IDC_BUTTON_MAXIMIZE);
-	x -= (5+ p->width);
+	x -= (SYSCTRLSWIDTH + p->width);
 	rowMaxY = __max(rowMaxY, y + p->height);
 	m_Controls.move(p, x, y, p->row, p->col);
 
@@ -1047,13 +1059,13 @@ CPlayerDlg::resetControls() {
 	m_Controls.move(p, x, y, p->row, p->col);
 
 	p = m_Controls.getObj(IDC_BUTTON_MINIMIZE);
-	x -= (5+ p->width);
+	x -= (SYSCTRLSWIDTH + p->width);
 	rowMaxY = __max(rowMaxY, y + p->height);
 	m_Controls.move(p, x, y, p->row, p->col);	
 	int playpaneltop = rowMaxY;
 
 	p = m_Controls.getObj(IDC_BUTTON_RESIZE);
-	x -= (5+ p->width);
+	x -= (SYSCTRLSWIDTH + p->width);
 	rowMaxY = __max(rowMaxY, y + p->height);
 	m_Controls.move(p, x, y, p->row, p->col);	
 	playpaneltop = rowMaxY;
@@ -2957,6 +2969,7 @@ void CPlayerDlg::OnCaptureChanged(CWnd *pWnd) {
 	
 	CDialog::OnCaptureChanged(pWnd);
 }
+
 void CPlayerDlg::OnSize(UINT nType, int cx, int cy) 
 {
     static int first = 0;
@@ -2965,16 +2978,21 @@ void CPlayerDlg::OnSize(UINT nType, int cx, int cy)
         return;
     }
 	if (!m_Resizing) {
-		CDialogClassImpl::OnSize(nType, cx, cy);
-		if (FALSE == m_FixedSize) {
-			CRect wr;
-			GetWindowRect(wr);
-			if (wr.Size() != m_WindowRect.Size())
-				resetControls();
+		if (SIZE_MAXIMIZED == nType && TRUE == m_FixedSize) {
+			PlayerStatusTempSet("This skin is not resizeable");
 		} else {
-				PlayerStatusTempSet("This skin is not resizeable");
+			CDialogClassImpl::OnSize(nType, cx, cy);
+			resetControls();
 		}
 	}
+	if (SIZE_MAXIMIZED == nType) {
+		m_ButtonMaximize.ShowWindow(SW_HIDE);
+		m_ButtonRestore.ShowWindow(SW_NORMAL);
+	} else {
+		m_ButtonMaximize.ShowWindow(SW_NORMAL);
+		m_ButtonRestore.ShowWindow(SW_HIDE);
+	}
+
 }
 void
 CPlayerDlg::CurrentTitleSet(LPCTSTR lpmsg) {
@@ -3428,28 +3446,31 @@ void CPlayerDlg::OnButtonMinimize()
 
 void CPlayerDlg::OnButtonMaximize() 
 {
-    WINDOWPLACEMENT lpwndpl;
-    BOOL r = GetWindowPlacement(&lpwndpl);
-    UINT newstate;
-	m_Maximized = FALSE;
-    if (lpwndpl.showCmd == SW_SHOWMAXIMIZED) {
-        newstate = SW_SHOWNORMAL;
-		m_ButtonMaximize.ShowWindow(SW_NORMAL);
-		m_ButtonRestore.ShowWindow(SW_HIDE);
-    } else if (lpwndpl.showCmd == SW_SHOWMINIMIZED
-        || lpwndpl.showCmd == SW_SHOWNORMAL) {
-        newstate = SW_SHOWMAXIMIZED;
-		m_Maximized = TRUE;
-		m_ButtonMaximize.ShowWindow(SW_HIDE);
-		m_ButtonRestore.ShowWindow(SW_NORMAL);
-    } else {
-        newstate = SW_SHOWNORMAL;
-		m_ButtonMaximize.ShowWindow(SW_NORMAL);
-		m_ButtonRestore.ShowWindow(SW_HIDE);
-    }
+	if (TRUE != m_FixedSize) {
+		WINDOWPLACEMENT lpwndpl;
+		BOOL r = GetWindowPlacement(&lpwndpl);
+		UINT newstate;
+		m_Maximized = FALSE;
+		if (lpwndpl.showCmd == SW_SHOWMAXIMIZED) {
+			newstate = SW_SHOWNORMAL;
+			m_ButtonMaximize.ShowWindow(SW_NORMAL);
+			m_ButtonRestore.ShowWindow(SW_HIDE);
+		} else if (lpwndpl.showCmd == SW_SHOWMINIMIZED
+			|| lpwndpl.showCmd == SW_SHOWNORMAL) {
+			newstate = SW_SHOWMAXIMIZED;
+			m_Maximized = TRUE;
+			m_ButtonMaximize.ShowWindow(SW_HIDE);
+			m_ButtonRestore.ShowWindow(SW_NORMAL);
+		} else {
+			newstate = SW_SHOWNORMAL;
+			m_ButtonMaximize.ShowWindow(SW_NORMAL);
+			m_ButtonRestore.ShowWindow(SW_HIDE);
+		}
 
-	ShowWindow(newstate);
-//	resizeControls();
+		ShowWindow(newstate);
+	} else {
+		PlayerStatusTempSet("This skin is not resizeable");
+	}
 	
 }
 
@@ -3882,4 +3903,25 @@ LRESULT
 CPlayerDlg::OnGoWWWMsg(UINT wParam, LONG lParam) {
 	PlayerStatusTempSet(MBURL);
 	return 0;
+}
+
+
+void CPlayerDlg::OnInitMenuPopup(CMenu *pSysMenu, 
+								 UINT nIndex,
+								 BOOL bSysMenu)
+{
+	// Disable maximize button for fixed skins
+	if (pSysMenu != NULL)
+	{
+		int count = pSysMenu->GetMenuItemCount();
+		CString tmp;
+		for(int i=0 ; i < count ; i++) {
+			pSysMenu->GetMenuString(i, tmp, MF_BYPOSITION);
+			if (TRUE == m_FixedSize && "Ma&ximize" == tmp) {
+				pSysMenu->EnableMenuItem(i, 
+					MF_BYPOSITION|MF_DISABLED|MF_GRAYED);
+			}
+		}
+	}
+
 }

@@ -358,6 +358,8 @@ public:
 	afx_msg LRESULT OnSerialMsg (WPARAM wParam, LPARAM lParam);
 	afx_msg void OnNcPaint( );
 	afx_msg void OnGetMinMaxInfo( MINMAXINFO FAR* lpMMI );
+	afx_msg void OnInitMenuPopup(CMenu *pPopupMenu, UINT nIndex,BOOL bSysMenu);
+
 
 	DECLARE_MESSAGE_MAP()
 
