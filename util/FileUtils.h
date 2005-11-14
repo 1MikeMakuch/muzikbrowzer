@@ -4,13 +4,14 @@
 
 class FileUtil {
 public:
-	static BOOL	IsReadable(CString & file);
-	static BOOL IsWriteable(CString & file);
-	static CString	basename(CString & file);
-	static CString dirname(CString  file);
-	static BOOL	mv(CString &, CString &);
-	static BOOL	rm_dir(CString &, BOOL, BOOL);
-	static BOOL mkdirp(CString &);
+	static BOOL	IsReadable(const CString & file);
+	static BOOL IsWriteable(const CString & file);
+	static BOOL DirIsWriteable(const CString & dir);
+	static CString	basename(const CString & file);
+	static CString dirname(const CString   &file);
+	static BOOL	mv(const CString &, const CString &);
+	static BOOL	rm_dir(const CString &, BOOL, BOOL);
+	static BOOL mkdirp(const CString &);
 	static BOOL BmpSave(HBITMAP, CString);
 	static void BmpLog(HDC, CString, int width, int height, int x=0, int y=0);
 	static void BmpLog(HBITMAP, CString);

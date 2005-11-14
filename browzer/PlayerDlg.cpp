@@ -420,8 +420,10 @@ BOOL CPlayerDlg::OnInitDialog()
     if (m_mlib.init()) {
 		MBMessageBox("Error", "Database corrupted. Rebuild it by performing a\r\nScan in Options/Configuration");
 		PlayerStatusSet(CString(
-			"Database corrupted. Do a scan in Configuration."));
+			"Database corrupted. Do a Scan."));
 	}
+
+	m_mlib.MovePlaylistsToDir();
 
     // set some of the control's properties
 	// progress slider must be 0 to 100 in order for percentage
@@ -1459,6 +1461,7 @@ CPlayerDlg::resetControls() {
 
 	//m_GenresLabel.RedrawWindow();
 	GetWindowRect(m_WindowRect);
+	readConfig();
 }
 
 
@@ -1549,7 +1552,7 @@ HCURSOR CPlayerDlg::OnQueryDragIcon()
 
 BOOL CPlayerDlg::DestroyWindow() 
 {
-	SavePlaylist(" MostRecent");
+	SavePlaylist("Current");
 	// delete the Xaudio player
     if (m_Player) {
         Stop();
@@ -1830,7 +1833,7 @@ void CPlayerDlg::updatePlaylist(const BOOL save) {
 
     m_Playlist.invalidate();
 	if (save)
-		SavePlaylist(" MostRecent");
+		SavePlaylist("Current");
 }
 
 void CPlayerDlg::OnDblclkSongs() 
@@ -2314,7 +2317,6 @@ CPlayerDlg::redraw() {
 
 void CPlayerDlg::OnMenuClearplaylist() 
 {
-	SavePlaylist(" MostRecent");
     m_mlib._playlist.reset();
     m_PlaylistCurrent = -1;
     updatePlaylist(FALSE);
@@ -2450,12 +2452,12 @@ void CPlayerDlg::SavePlaylist(CString name) {
 
 void CPlayerDlg::OnMenuShuffleplaylist() 
 {
-	SavePlaylist(" MostRecent");
 	m_mlib.shufflePlaylist();
     m_Playlist.ResetContent();
 	m_mlib.getPlaylist(m_Playlist);
 	m_Playlist.SetCurSel(0);
 	UpdateWindow();
+	SavePlaylist("Current");
     Stop();
     m_PlaylistCurrent = -1;
 	PlayLoop();	
@@ -2463,7 +2465,6 @@ void CPlayerDlg::OnMenuShuffleplaylist()
 
 void CPlayerDlg::OnMenuRandomizePlaylist() 
 {
-	SavePlaylist(" MostRecent");
 	m_mlib.RandomizePlaylist();
     m_Playlist.ResetContent();
 	m_mlib.getPlaylist(m_Playlist);
@@ -2471,6 +2472,7 @@ void CPlayerDlg::OnMenuRandomizePlaylist()
 	UpdateWindow();
     Stop();
     m_PlaylistCurrent = -1;
+	SavePlaylist("Current");
 	PlayLoop();	
 }
 
@@ -2663,6 +2665,8 @@ void CPlayerDlg::PlayLoop() {
 			msg += m_mlib._playlist[m_PlaylistCurrent]->getId3("TPE1");
 			msg += " on ";
 			msg += m_mlib._playlist[m_PlaylistCurrent]->getId3("TALB");
+			msg += " in ";
+			msg += m_mlib._playlist[m_PlaylistCurrent]->getId3("TCON");
             CurrentTitleSet(msg);
 			if (m_Config.trialMode() == 1) {
 				PlayerStatusTempSet("Trial Mode. Set Password in Configuration.");
@@ -2722,8 +2726,10 @@ void CPlayerDlg::LoadPlaylist(CString name) {
     m_Playlist.ResetContent();
     CString errormsg;
     int r = m_mlib.loadPlaylist(name,errormsg);
-
-	m_mlib.getPlaylist(m_Playlist);
+	{
+		CWaitCursor c;
+		m_mlib.getPlaylist(m_Playlist);
+	}
 	m_Playlist.SetCurSel(m_Playlist.GetCount()-1);
 	
 	UpdateWindow();

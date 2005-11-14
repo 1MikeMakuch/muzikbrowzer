@@ -279,9 +279,18 @@ AutoBuf::AutoBuf(int size) {
     p = new char[size];
 	memset(p, 0, size-1);
 }
+AutoBuf::AutoBuf() {
+	p = NULL;
+}
+void AutoBuf::size(int size) {
+	ASSERT(NULL == p);
+    p = new char[size];
+	memset(p, 0, size-1);
+}
 
 AutoBuf::~AutoBuf() {
-    delete [] p;
+	if (p)
+		delete [] p;
 }
 
 

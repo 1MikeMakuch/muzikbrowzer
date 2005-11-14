@@ -60,6 +60,8 @@ class String {
 
 class AutoBuf {
 public:
+	AutoBuf();
+	void size(int size);
     AutoBuf(int size);
     ~AutoBuf();
     char * p;

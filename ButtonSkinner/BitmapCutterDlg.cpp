@@ -791,7 +791,7 @@ void CBitmapCutterDlg::OnButtonFileSettings()
 	m_FileSettings.GetWindowText(m_sFileSettings);
 	CFileDialog dialog(TRUE, "mbsd", m_sFileSettings,
 		OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
-		"mbsd's  {*.mbsd}|*.mbsd|All Files {*.*}|*.*||");
+		"mbsd's  {*.mbsd}|SkinDefCustom.mbsd|All Files {*.*}|*.*||");
 	int ret = 0;
 	ret = dialog.DoModal();
 	if (ret == IDOK) {

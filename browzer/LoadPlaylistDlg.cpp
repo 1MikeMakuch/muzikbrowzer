@@ -62,6 +62,7 @@ END_MESSAGE_MAP()
 
 void LoadPlaylistDlg::OnDblclkPlaylistNames() 
 {
+	CWaitCursor c;
     int sel = m_PlaylistNames.GetCurSel();
     if (sel < 0) return;
     CString name;
@@ -73,6 +74,7 @@ void LoadPlaylistDlg::OnDblclkPlaylistNames()
 void LoadPlaylistDlg::OnSelchangePlaylistNames() 
 {
     UpdateWindow();
+	CWaitCursor c;
 	m_PlaylistSongs.ResetContent();
     int sel = m_PlaylistNames.GetCurSel();
     if (sel < 0) return;
@@ -120,6 +122,7 @@ BOOL LoadPlaylistDlg::OnInitDialog()
 }
 void
 LoadPlaylistDlg::init() {
+	CWaitCursor c;
 	m_PlaylistNames.ResetContent();
     m_mdb->getPlaylistNames(m_PlaylistNames);
     m_PlaylistNames.SetCurSel(0);

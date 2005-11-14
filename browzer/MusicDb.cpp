@@ -284,113 +284,117 @@ MusicLib::addSongToDb(int & ctr, Song &song, const CString & file) {
 
 	return m_SongLib.addSong(song);
 }
-int
-MusicLib::getPlaylistNames(CExtendedListBox & box) {
-    CString glob(m_dir);
-    glob += "\\";
-    glob += MUZIKBROWZER;
-	glob += MBPLAYLIST;
-    glob += "*";
-	glob += MBPLAYLISTEXT;
-    CFileFind finder;
-    BOOL bWorking = finder.FindFile(glob);
-    while (bWorking)
-    {
-        bWorking = finder.FindNextFile();
-        CString fname = finder.GetFileName();
-        CString mbname = MUZIKBROWZER;
-        mbname += MBPLAYLIST;
-//        fname = fname.Mid(mbname.GetLength(), fname.GetLength()-25);
-        CString name = String::extract(fname, mbname, MBPLAYLISTEXT);
-        int sel = box.AddString(name);
-    }
-	finder.Close();
+void
+MusicLib::MovePlaylistsToDir() {
 
-    return 0;
-}
-int
-MusicLib::getPlaylistNames(CStringList & box) {
-    CString glob(m_dir);
-    glob += "\\";
-    glob += MUZIKBROWZER;
-	glob += MBPLAYLIST;
-    glob += "*";
-	glob += MBPLAYLISTEXT;
-    CFileFind finder;
-    BOOL bWorking = finder.FindFile(glob);
-    while (bWorking)
-    {
-        bWorking = finder.FindNextFile();
-        CString fname = finder.GetFileName();
-        CString mbname = MUZIKBROWZER;
-        mbname += MBPLAYLIST;
-//        fname = fname.Mid(mbname.GetLength(), fname.GetLength()-25);
-        CString name = String::extract(fname, mbname, MBPLAYLISTEXT);
-        box.AddTail(name);
-    }
-	finder.Close();
-
-    return 0;
-}
-int
-MusicLib::getSongsInPlaylist(const CString & name, CExtendedListBox & box) {
-
-    CString dbfilename(m_dir);
-    dbfilename += "\\";
-    dbfilename += MUZIKBROWZER;
-    dbfilename += MBPLAYLIST;
-    dbfilename += name;
-    dbfilename += MBPLAYLISTEXT;
-    const char * pszFileName = (LPCTSTR) dbfilename;
-	CFile myFile;
-	CFileException fileException;
-
-	if ( !myFile.Open( pszFileName,
-        CFile::modeRead,
-        &fileException ))
-	{
-
-        CString msg = "Unable to read playlist ";
-		msg += dbfilename;
-        MBMessageBox(CString("alert"), msg);
-        return -1;
+	CString errormsg;
+	CStringList plist;
+	CString oldpdir(m_dir);
+	CString newpdir(oldpdir);
+	newpdir += "\\" + CS(MBPLAYLISTDIR);
+	if (!FileUtil::DirIsWriteable(newpdir)) {
+		FileUtil::mkdirp(newpdir);
 	}
-    if (myFile.GetLength()) {
-        AutoBuf buf(myFile.GetLength()+1);
-        myFile.Read(buf.p, myFile.GetLength());
-        CString genre, artist, album, song, file;
-        char * p = buf.p;
-        while (p < buf.p + myFile.GetLength()) {
-            genre = p;
-            p += genre.GetLength()+1;
-            artist = p;
-            p += artist.GetLength()+1;
-            album = p;
-            p += album.GetLength()+1;
-            song = p;
-            p += song.GetLength()+1;
-			file = p;
-			p += file.GetLength()+1;
-            while ((p < buf.p + myFile.GetLength())
-                && (p[0] == '\r' || p[0] == '\n'))
-                p++;
-//            CString desc = genre; desc += " / ";
-//            desc += artist; desc += " / ";
-//            desc += album; desc += " / ";
-//           desc += song;
-			CString desc = song;
-			desc += " by ";
-			desc += artist + " on ";
-			desc += album;
-            int sel = box.AddString(desc);
-//            box.SetItemData(sel, (DWORD) 0);
-        }
+    CString glob(m_dir);
+    glob += "\\";
+    glob += MUZIKBROWZER;
+	glob += MBPLAYLIST;
+    glob += "*";
+	glob += MBPLAYLISTEXT;
+    CFileFind finder;
+    BOOL bWorking = finder.FindFile(glob);
+	// get old playlists from mb dir
+	int oldtypecount = 0;
+    while (bWorking)
+    {
+        bWorking = finder.FindNextFile();
+        CString fname = m_dir;
+		fname += "\\" + finder.GetFileName();
+        CString mbname = MUZIKBROWZER;
+        mbname += MBPLAYLIST;
+        plist.AddTail(fname);
+		oldtypecount++;
     }
-    myFile.Close();
-    return 0;
+	finder.Close();
+
+	// now convert to m3u
+	POSITION pos;
+    for (pos = plist.GetHeadPosition(); pos != NULL; ) {
+        CString srcpl = plist.GetAt(pos);
+		CString dstpl = newpdir;
+		FExtension fext(srcpl);
+		CStringList playlist;
+		CString left;
+		left += "\\";
+		left += MUZIKBROWZER;
+		left += MBPLAYLIST;
+		CString right = MBPLAYLISTEXT;
+		CString name = String::extract(srcpl,left,right);
+		CString bakpl = newpdir + "\\" + name + MBPLAYLISTEXT;
+		dstpl += "\\" + name + "." + MBPLAYLISTM3U;
+		if (!loadOldPlaylist(name, playlist)) {
+			errormsg += "Unable to read playlist\r\n";
+			errormsg += srcpl;
+			errormsg += "\r\n";
+			break;
+		}
+		CFile myFile2;
+		CFileException fileException;
+		if ( !myFile2.Open( dstpl,
+			CFile::modeWrite | CFile::modeCreate | CFile::typeBinary,
+			&fileException ))
+		{
+			errormsg += "Unable to convert playlist ";
+			errormsg += "\r\n";
+			errormsg += dstpl;
+			errormsg += "\r\n";
+			break;
+		}
+		POSITION pos2;
+		for (pos2 = playlist.GetHeadPosition(); pos2 != NULL; ) {
+			CString songfile = plist.GetAt(pos2);
+			myFile2.Write(songfile.GetBuffer(0),songfile.GetLength());
+			myFile2.Write("\r\n",2);
+			playlist.GetNext(pos2);
+
+		}
+		myFile2.Close();
+
+		// We've successfully converted mbp to m3u. So move the old one
+		// into the new dir and we won't try converting again, but we
+		// keep it just in case.
+		logger.log("moved ", srcpl, " to ", bakpl);
+		if (FileUtil::mv(srcpl,bakpl)) {
+			LONG e = ::GetLastError();
+			logger.log(MBFormatError(e));
+		}
+
+
+        plist.GetNext(pos);
+    }
+	CString src,dst;
+	src = m_dir + "\\muzikbrowzer.files";
+	dst = m_dir + "\\muzikbrowzer.mbfls";
+	if (!FileUtil::IsReadable(dst))
+		FileUtil::mv(src,dst);
+
+	CString msg = "This version of muzikbrowzer converts your old\r\n";
+	msg += "playlists into a new format.\r\n\r\n";
+	if (errormsg.GetLength()) {
+		msg += "Errors encountered during playlist conversion.\r\n";
+		msg += "Make a copy of the muzikbrowzer.log file below and\r\n";
+		msg += "contact support. " + CS(MBURL);
+	} else {
+		msg += "Your playlists have been converted to the new industry\r\n";
+		msg += "standard m3u format and placed in\r\n\r\n";
+		msg += newpdir;
+	}
+	if (oldtypecount || errormsg.GetLength())
+		MBMessageBox("Notice", msg);
+
 }
 int
-MusicLib::loadPlaylist(const CString & name, CString & error_msg) {
+MusicLib::loadOldPlaylist(const CString & name, CStringList & plist) {
 
     CString dbfilename(m_dir);
     dbfilename += "\\";
@@ -410,13 +414,14 @@ MusicLib::loadPlaylist(const CString & name, CString & error_msg) {
 	{
         CString msg = "Unable to read playlist ";
 		msg += pszFileName;
-        MBMessageBox(CString("alert"), msg);
-        return -1;
+		msg += msg;
+		msg += "\r\n";
+        return FALSE;
 	}
     if (myFile.GetLength()) {
         AutoBuf buf(myFile.GetLength()+1);
         myFile.Read(buf.p, myFile.GetLength());
-        CString genre, artist, album, song;
+        CString genre, artist, album, title, file;
         char * p = buf.p;
         while (p < buf.p + myFile.GetLength()) {
             genre = p;
@@ -425,8 +430,18 @@ MusicLib::loadPlaylist(const CString & name, CString & error_msg) {
             p += artist.GetLength()+1;
             album = p;
             p += album.GetLength()+1;
-            song = p;
-            p += song.GetLength()+1;
+            title = p;
+
+			// look for file name present. If version > 1.4.0 it should
+			// be there, else not. Maybe just go with; if file name ain't
+			// there, blow it off.
+			// p shoule either be a newline or file name
+            p += title.GetLength()+1;
+			file = "";
+			if ('\r' != *p && '\n' != *p) {
+				file = p;
+				p += file.GetLength()+1;
+			}
 
 			// First get to the eol
             while ((p < buf.p + myFile.GetLength())
@@ -436,32 +451,157 @@ MusicLib::loadPlaylist(const CString & name, CString & error_msg) {
             while ((p < buf.p + myFile.GetLength())
                 && (p[0] == '\r' || p[0] == '\n'))
                 p++;
+     
+			if ("" == file) {
+				Song song = new CSong;
+				song = getSong(genre,artist,album,title);
+				file = song->getId3("FILE");
+			}
+			if ("" != file) {
+				plist.AddTail(file);
+			}
 
-            count1 ++;
-            int count2 = addSongToPlaylist(genre, artist, album, song);
-            if (count2 == 0) {
-                error_msg += "LoadPlayList: song not found: Genre:";
-                error_msg += genre + " Artist:" + artist + " Album:" 
-                    + album + " Title:" + song
-                    + "\r\n";
-            } else if (count2 > 1) {
-                error_msg += "LoadPlayList: more than one song found: Genre:";
-                error_msg += genre + " Artist:" + artist + " Album:" 
-                    + album + " Title:" + song
-                    + "\r\n";
-            } else if (count2 == 1) {
-                count3++;
-            }
         }
     }
     myFile.Close();
-    // 0 on success
-    if (count1 == count3) {
-        return 0;
-    } else {
-		logger.log(error_msg);
-        return 1;
+	return TRUE;
+}
+int
+MusicLib::getPlaylistNames(CExtendedListBox & box) {
+    CString glob(m_dir);
+    glob += "\\" + CS(MBPLAYLISTDIR) + "\\*." + CS(MBPLAYLISTM3U);
+    CFileFind finder;
+    BOOL bWorking = finder.FindFile(glob);
+    while (bWorking)
+    {
+        bWorking = finder.FindNextFile();
+        CString fname = finder.GetFileName();
+		FExtension fext(fname);
+        int sel = box.AddString(FileUtil::basename(fext.filename()));
     }
+	finder.Close();
+
+    return 0;
+}
+int
+MusicLib::getPlaylistNames(CStringList & box) {
+    CString glob(m_dir);
+    glob += "\\" + CS(MBPLAYLISTDIR) + "\\*." + CS(MBPLAYLISTM3U);
+    CFileFind finder;
+    BOOL bWorking = finder.FindFile(glob);
+    while (bWorking)
+    {
+        bWorking = finder.FindNextFile();
+        CString fname = finder.GetFileName();
+		FExtension fext(fname);
+        box.AddTail(FileUtil::basename(fext.filename()));
+    }
+	finder.Close();
+
+    return 0;
+}
+int
+MusicLib::getSongsInPlaylist(const CString & name, CExtendedListBox & box) {
+
+    CString dbfilename(m_dir);
+    dbfilename += "\\" + CS(MBPLAYLISTDIR) + "\\";
+    dbfilename += name;
+	dbfilename += ".";
+    dbfilename += MBPLAYLISTM3U;
+    const char * pszFileName = (LPCTSTR) dbfilename;
+	CFile myFile;
+	CFileException fileException;
+
+	if ( !myFile.Open( pszFileName,
+        CFile::modeRead,
+        &fileException ))
+	{
+
+        CString msg = "Unable to read playlist ";
+		msg += dbfilename;
+        MBMessageBox(CString("alert"), msg);
+        return -1;
+	}
+    if (myFile.GetLength()) {
+        AutoBuf buf(myFile.GetLength()+1);
+        myFile.Read(buf.p, myFile.GetLength());
+		buf.p[myFile.GetLength()] = 0;
+        CString genre, artist, album, song, file;
+        char * p = buf.p;
+		char * end = (buf.p + myFile.GetLength());
+		
+		p = strtok(buf.p,"\r\n");
+        while (NULL != p) {
+			if (strlen(p)) {
+				CString file(p);
+				if (FileUtil::IsReadable(file)) {
+					Song song = m_SongLib.m_files.getSong(file);
+					CString disp ;
+					if (song->GetCount()) {
+						disp = song->getId3("TIT2");
+						disp += " by ";
+						disp += song->getId3("TPE1");
+						disp += " on ";
+						disp += song->getId3("TALB");
+						disp += " in ";
+						disp += song->getId3("TCON");
+					} else {
+						disp = "missing: " + file;
+					}
+					box.AddString(disp);
+				}
+			}
+			p = strtok(NULL,"\r\n");
+        }
+    }
+	myFile.Close();
+    return 0;
+}
+int
+MusicLib::loadPlaylist(const CString & name, CString & error_msg) {
+
+    CString dbfilename(m_dir);
+    dbfilename += "\\" + CS(MBPLAYLISTDIR) + "\\";
+    dbfilename += name;
+	dbfilename += ".";
+    dbfilename += MBPLAYLISTM3U;
+    const char * pszFileName = (LPCTSTR) dbfilename;
+
+	CFile myFile;
+	CFileException fileException;
+
+	if ( !myFile.Open( pszFileName,
+        CFile::modeRead,
+        &fileException ))
+	{
+
+        CString msg = "Unable to read playlist ";
+		msg += dbfilename;
+        MBMessageBox(CString("alert"), msg);
+        return -1;
+	}
+    if (myFile.GetLength()) {
+        AutoBuf buf(myFile.GetLength()+1);
+        myFile.Read(buf.p, myFile.GetLength());
+		buf.p[myFile.GetLength()] = 0;
+        CString genre, artist, album, song, file;
+        char * p = buf.p;
+		char * end = (buf.p + myFile.GetLength());
+
+		p = strtok(buf.p,"\r\n");
+        while (NULL != p) {
+			if (strlen(p) && '\r' != p[0] && '\n' != p[0]) {
+				Song s = m_SongLib.m_files.getSong(p);
+				if (s->GetCount())
+					addSongToPlaylist(s);
+			}
+			p = strtok(NULL,"\r\n");
+        }
+    }
+    myFile.Close();
+
+    return 0;
+
 }
 int
 MusicLib::getGenres(CExtendedListBox & box) {
@@ -670,6 +810,8 @@ MusicLib::getPlaylist(CExtendedListBox & box) {
 		buf += p->_item->getId3("TPE1");
 		buf += " on ";
 		buf += p->_item->getId3("TALB");
+		buf += " in ";
+		buf += p->_item->getId3("TCON");
 
 
 		int sel = box.AddString(buf);
@@ -704,6 +846,14 @@ MSongLib::getSong(int pi) {
 	return r.createSong();
 }
 
+int
+MusicLib::addFileToPlaylist(const CString & file) {
+	if (FileUtil::IsReadable(file)) {
+		Song addsong = createSongFromFile(file);
+		addSongToPlaylist(addsong);
+	}
+	return 1;
+}
 int
 MusicLib::addSongToPlaylist(const Song & song) {
 	_playlist.append(song);
@@ -849,7 +999,8 @@ MusicLib::scanDirectories(const CStringList & directories,
 
 	// now done with m_files
 	m_SongLib.m_files.write();
-	m_SongLib.m_files.removeAll();
+	// No longer clearing it, gonna be using it
+//	m_SongLib.m_files.removeAll();
 
     _id->SendUpdateStatus(2, "", 0, m_totalMp3s);
 
@@ -1380,9 +1531,18 @@ MusicLib::deletePlaylist(const CString & name) {
     CFile::Remove(dbfilename);
 
 }
+#ifdef asdf
 void
 MusicLib::savePlaylist(Playlist & playlist, const CString & file) {
-    CString dbfilename = m_dir;
+
+	CString playlistDir = m_dir;
+	playlistDir += "\\playlists";
+
+	if (!FileUtil::IsWriteable(playlistDir)) {
+		FileUtil::mkdirp(playlistDir);
+	}
+
+    CString dbfilename = playlistDir;
     dbfilename += "\\";
     dbfilename += MUZIKBROWZER;
     dbfilename += MBPLAYLIST;
@@ -1397,7 +1557,7 @@ MusicLib::savePlaylist(Playlist & playlist, const CString & file) {
 		char * buf = (char*)malloc(len+1);
 		UINT read = myFile.Read(buf, len);
 		myFile.Close();
-		dbfilename = m_dir;
+		dbfilename = playlistDir;
 		dbfilename += "\\";
 		dbfilename += MUZIKBROWZER;
 		dbfilename += MBPLAYLIST;
@@ -1419,7 +1579,7 @@ MusicLib::savePlaylist(Playlist & playlist, const CString & file) {
 		myFile.Close();
 		free(buf);
 
-		dbfilename = m_dir;
+		dbfilename = playlistDir;
 		dbfilename += "\\";
 		dbfilename += MUZIKBROWZER;
 		dbfilename += MBPLAYLIST;
@@ -1450,10 +1610,57 @@ MusicLib::savePlaylist(Playlist & playlist, const CString & file) {
 		buf += p->_item->getId3("TIT2");
 		buf += (char)0;
 //#ifdef _DEBUG
-		buf += p->_item->getId3("FILE");
-		buf += (char)0;
+//		buf += p->_item->getId3("FILE");
+//		buf += (char)0;
 //#endif
         buf += "\n";
+    }
+    myFile.Write(buf,buf.GetLength());
+    myFile.Flush();
+
+}
+#endif
+void
+MusicLib::savePlaylist(Playlist & playlist, const CString & file) {
+
+	CString playlistDir = m_dir;
+	playlistDir += "\\";
+	playlistDir += MBPLAYLISTDIR;
+
+	if (!FileUtil::IsWriteable(playlistDir)) {
+		FileUtil::mkdirp(playlistDir);
+	}
+
+    CString dbfilename = playlistDir;
+    dbfilename += "\\";
+    dbfilename += file;
+    dbfilename += "." MBPLAYLISTM3U;
+
+
+
+	if ("Current" == file) {
+		CString previous = m_dir + "\\" + MBPLAYLISTDIR "\\Previous.m3u";
+		FileUtil::mv(dbfilename, previous);
+	}
+
+	CFile myFile;
+	CFileException fileException;
+	if ( !myFile.Open( (LPCTSTR)dbfilename,
+        CFile::modeWrite | CFile::modeCreate,
+        &fileException ))
+	{
+        CString msg = "Unable to save playlist ";
+        msg += dbfilename;
+        MBMessageBox(CString("alert"), msg);
+        return ;
+	}
+
+    CString buf;
+	for (PlaylistNode *p = playlist.head();
+		p != (PlaylistNode*)0;
+		p = playlist.next(p)) {
+			buf += p->_item->getId3("FILE");
+		    buf += "\n";
     }
     myFile.Write(buf,buf.GetLength());
     myFile.Flush();
@@ -1688,7 +1895,8 @@ MusicLib::modifyID3(Song oldSong, Song newSong) {
 #pragma hack
 				// hack alert m_files only used for scanning/verifying,
 				// so keep it empty cause addSong will pre-exit if...
-				m_SongLib.m_files.removeAll();
+				// not any more
+//				m_SongLib.m_files.removeAll();
 				m_SongLib.removeSong(delsong);
 				m_SongLib.addSong(addsong);
 			}
@@ -2859,27 +3067,130 @@ TEST(MListTreeTests3, MList)
 
 }
 /////////////////////////////////////////////////////////////////////
+MTags::MTags(const CString & genre,
+			const CString & artist,
+			const CString & album,
+			const CString & title,
+			const CString & tlen)
+			: mgenre(genre),martist(artist),malbum(album),mtitle(title),
+			mtlen(tlen)
+{}
+
 void
-MFiles::add(const CString & file) {
+MTags::serialize(AutoBuf & buf) {
+	int l = mgenre.GetLength()   + martist.GetLength() 
+			+ malbum.GetLength() + mtitle.GetLength() 
+			+ mtlen.GetLength()
+			+ 27; // LlllDddddddd,.....
+	buf.size(l+2);
+	sprintf(buf.p,"%04d%s,%04d%s,%04d%s,%04d%s,%04d%s\r\n",
+		mgenre.GetLength(), mgenre.GetBuffer(0),
+		martist.GetLength(), martist.GetBuffer(0),
+		malbum.GetLength(), malbum.GetBuffer(0),
+		mtitle.GetLength(), mtitle.GetBuffer(0),
+		mtlen.GetLength(), mtlen.GetBuffer(0));
+}
+
+// 0004Rock0009Aerosmith
+
+MTags::MTags(char * buf) {
+	int l=0;
+	char * p = buf;
+	
+	sscanf(p, "%04d",&l);
+	p[l + 4] = 0;
+	p += 4;
+	mgenre = p;
+
+	p += l+1;
+	sscanf(p, "%04d",&l);
+	p[l + 4] = 0;
+	p += 4;
+	martist = p;
+
+	p += l+1;
+	sscanf(p, "%04d",&l);
+	p[l + 4] = 0;
+	p += 4;
+	malbum = p;
+
+	p += l+1;
+	sscanf(p, "%04d",&l);
+	p[l + 4] = 0;
+	p += 4;
+	mtitle = p;
+
+	p += l+1;
+	sscanf(p, "%04d",&l);
+	p[l + 4] = 0;
+	p += 4;
+	mtlen = p;
+	
+}
+
+TEST(MTags, tagstest)
+{
+	MTags tag("Rock","Aerosmith","Rocks","Walk this way", "240");
+	AutoBuf buf;
+	tag.serialize(buf);
+	MTags tag2(buf.p);
+}
+
+/////////////////////////////////////////////////////////////////////
+void
+MFiles::add(const CString & file,
+			const CString & genre,
+			const CString & artist,
+			const CString & album,
+			const CString & title,
+			const CString & tlen) {
 	int at;
 	if (!contains(file, at)) {
-		add(at, file);
+		add(at, file, genre,artist,album,title,tlen);
 	}
 }
 void
-MFiles::add(int at, const CString & file) {
+MFiles::add(int at, const CString & file,
+			const CString & genre,
+			const CString & artist,
+			const CString & album,
+			const CString & title,
+			const CString & tlen) {
 	m_files.InsertAt(at, file);
+	
+	MTags tags(genre,artist,album,title,tlen);
+	AutoBuf buf;
+	tags.serialize(buf);
+	m_tags.InsertAt(at, buf.p);
 }
 void
 MFiles::remove(const CString & file) {
 	int at;
 	if (contains(file, at)) {
 		remove(at);
+
 	}
 }
 void
 MFiles::remove(int at) {
 	m_files.RemoveAt(at);
+	m_tags.RemoveAt(at);
+}
+Song
+MFiles::getSong(const LPCTSTR file) {
+	int at = -1;
+	Song song = new CSong;
+	if (contains(file,at)) {
+		CString s = m_tags[at];
+		MTags tags(s.GetBuffer(0));
+		song->setId3("TCON",tags.mgenre);
+		song->setId3("TPE1",tags.martist);
+		song->setId3("TALB",tags.malbum);
+		song->setId3("TIT2",tags.mtitle);
+		song->setId3("FILE",file);
+		song->setId3("TLEN",tags.mtlen);
+	}
+	return song;
 }
 BOOL
 MFiles::contains(const CString & file, int & at) {
@@ -2920,6 +3231,17 @@ MFiles::write() {
 	m_files.Serialize(ar);
 	ar.Close();
 	file.Close();
+
+    if (!file.Open( (LPCTSTR)m_idx, 
+			CFile::modeCreate | CFile::modeWrite,
+			&fileException )) {
+		return -1;
+	}
+
+	CArchive ar2( &file, CArchive::store);
+	m_tags.Serialize(ar2);
+	ar2.Close();
+	file.Close();
 	return 0;
 }
 
@@ -2930,7 +3252,6 @@ MFiles::read() {
     if (!file.Open( (LPCTSTR)m_loc, 
 			CFile::modeRead,
 			&fileException )) {
-//		file.Close();
 		return -1;
 	}
 
@@ -2939,28 +3260,45 @@ MFiles::read() {
 	m_files.Serialize(ar);
 	ar.Close();
 	file.Close();
+
+    if (!file.Open( (LPCTSTR)m_idx, 
+			CFile::modeRead,
+			&fileException )) {
+		return -1;
+	}
+
+	CArchive ar2( &file, CArchive::load);
+	m_tags.RemoveAll();
+	m_tags.Serialize(ar2);
+	ar2.Close();
+	file.Close();
 	return 0;
 }
 void
 MFiles::removeAll() {
 	m_files.RemoveAll();
+	m_tags.RemoveAll();
 }
 void
 MFiles::setDbLocation(const CString & loc) {
-	m_loc = loc;
+	m_dir = loc;
+	m_loc = m_dir;
 	m_loc += "\\";
 	m_loc += MUZIKBROWZER;
-	m_loc += ".files";
+	m_loc += ".mbfls";
+	m_idx = m_dir + "\\";
+	m_idx += MUZIKBROWZER;
+	m_idx += ".mbtgs";
 }
 TEST(MFilesTest, MFiles)
 {
 	MFiles files;
 	files.setDbLocation("..\\testdata");
-	files.add("c");
-	files.add("a");
-	files.add("z");
-	files.add("x");
-	files.add("b");
+	files.add("c","genre1","artist1","album1","title1","tlen1");
+	files.add("a","genre2","artist2","album2","title2","tlen2");
+	files.add("z","genre3","artist3","album3","title3","tlen3");
+	files.add("x","genre4","artist4","album4","title4","tlen4");
+	files.add("b","genre5","artist5","album5","title5","tlen5");
 	files.write();
 
 	files.read();
@@ -3001,21 +3339,26 @@ int
 MSongLib::addSong(Song & song) {
 	//MMemory m_mem(MBTESTFILE);
 	++m_songcount;
-    CString artistname, albumname, titlename, genrename,year,track,file;
+    CString artistname, albumname, titlename, genrename,year,track,file,tlen;
 
 	file = song->getId3("FILE");
 
 	// Prevent same file being added more than once
+	// Now gonna manage it nicely, being used by loadplaylist et al
 	int at;
 	if (m_files.contains(file, at)) {
-		return 0;
+		m_files.remove(at);
+//		return 0;
 	} 
-	m_files.add(at, file);
+
 
 	artistname = song->getId3("TPE1");
 	albumname = song->getId3("TALB");
 	titlename = song->getId3("TIT2");
     genrename = song->getId3("TCON");
+	tlen = song->getId3("TLEN");
+
+	m_files.add(at, file,genrename,artistname,albumname,titlename);
 
 	MList genreList(m_mem);
 	MList artistList = genreList.list(genrename);
@@ -3228,8 +3571,8 @@ MSongLib::readFromFile() {
 		if (m_files.read() == -1) { // create files list if !exists
 			int a,r;
 			verify("Performing database maintenance", a, r);
-		} else {
-			m_files.removeAll();
+//		} else {
+//			m_files.removeAll();
 		}
 	}
 	m_dirty = 0;
@@ -3445,7 +3788,13 @@ MSongLib::verify(CString msg, int & total_albums, int & total_songs) {
 							removed += file + "\r\n";
 						} else {
 							num_songs++;
-							m_files.add(file);
+							m_files.add(file,
+								song.lookupVal("TCON"),
+								song.lookupVal("TPE1"),
+								song.lookupVal("TALB"),
+								song.lookupVal("TIT2"),
+								song.lookupVal("TLEN")
+								);
 						}
 						dialog->ProgressPos(total_song_count++);
 						dialog->UpdateWindow();
@@ -3480,7 +3829,7 @@ MSongLib::verify(CString msg, int & total_albums, int & total_songs) {
 	}
 	results += contents;
 	m_files.write();
-	m_files.removeAll();
+//	m_files.removeAll();
 	dialog->EndDialog(IDOK);
 	delete dialog;
     return results;

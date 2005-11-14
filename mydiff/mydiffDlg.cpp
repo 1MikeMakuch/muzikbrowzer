@@ -105,7 +105,7 @@ BOOL CMydiffDlg::OnInitDialog()
 		MessageBox(tr.results(), "mydiff Test Results");
 
 	controlsEnable(FALSE);
-	getcwd();
+
 
 	CString args = ::GetCommandLine();
 
@@ -114,6 +114,7 @@ BOOL CMydiffDlg::OnInitDialog()
 	CString command = "/cygdrive/c/mkm/src/muzik/mydiff/cstat";
 	logger.open("mydiff.log");
 	logger.log("mydiff started");
+	getcwd();
 
 	mysystem(command, UPM_CSTAT_DONE);
 
@@ -131,8 +132,15 @@ void CMydiffDlg::getcwd() {
 	AutoBuf buf(MAX_PATH);
 	_getcwd(buf.p, MAX_PATH );
 	m_cwd = buf.p;
+
+	CString ch = m_cwd.GetAt(0);
+	ch.MakeLower();
+	m_cwd = ch + m_cwd.Right(m_cwd.GetLength()-1);
+
+
 	m_EditCWD.SetWindowText(m_cwd);
 	UpdateData(FALSE);
+	logger.log("cwd:",m_cwd);
 }
 
 void CMydiffDlg::OnPaint() 
@@ -283,6 +291,7 @@ LRESULT CMydiffDlg::OnLine(WPARAM wParam, LPARAM)
 	return 0;
 }
 
+
 LRESULT CMydiffDlg::OnCstatDone(WPARAM wParam, LPARAM) {
 	POSITION pos;
 	for(pos = m_ComOutput.GetHeadPosition() ; pos != NULL;) {
@@ -412,7 +421,7 @@ void CMydiffDlg::dodiff() {
 
 	CString cwd;
 	file = String::replace(m_currentfile,"","/home2/cvsroot/",1);
-	cwd = String::replace(m_cwd,"","C:\\mkm\\",1);
+	cwd = String::replace(m_cwd,"","c:\\mkm\\",1);
 	cwd += "\\";
 	cwd = String::replace(cwd,"/","\\");
 	file = String::replace(file,"",cwd,1);

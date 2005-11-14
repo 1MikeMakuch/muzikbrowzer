@@ -8,6 +8,7 @@
 #include <sys/stat.h>
 #include <direct.h>
 #include "DIBSectionLite.h"
+#include "MyLog.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -16,7 +17,7 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 CString
-FileUtil::basename(CString & file) {
+FileUtil::basename(const CString & file) {
 	long dc = String::delCount(file, "\\");
 	return String::field(file, "\\", dc);
 }
@@ -37,7 +38,7 @@ TEST(FileUtils, basename)
 }
 
 CString
-FileUtil::dirname(CString  file) {
+FileUtil::dirname(const CString   &file) {
 	int pos = String::last(file, '\\');
 	if (pos == 0) {
 		return CString("\\");
@@ -67,10 +68,17 @@ TEST(FileUtils, dirname)
 }
 // this doesn't appear to work on dirs
 BOOL
-FileUtil::IsReadable(CString & file) {
+FileUtil::IsReadable(const CString & file) {
+
+	DWORD result = GetFileAttributes(file);
+	if (0xFFFFFFFF == result) {
+		return FALSE;
+	} else {
+		return TRUE;
+	}
+
 	CFile myFile;
 	CFileException fileException;
-
 	if ( !myFile.Open( file,
         CFile::modeRead,
         &fileException ))
@@ -91,7 +99,7 @@ FileUtil::IsReadable(CString & file) {
 //}
 
 BOOL
-FileUtil::IsWriteable(CString & file) {
+FileUtil::IsWriteable(const CString & file) {
 	CFile myFile;
 	CFileException fileException;
 
@@ -106,6 +114,16 @@ FileUtil::IsWriteable(CString & file) {
 	}
 
 }
+BOOL
+FileUtil::DirIsWriteable(const CString & file) {
+	DWORD result = GetFileAttributes(file);
+	if (FILE_ATTRIBUTE_DIRECTORY == result) {
+		return TRUE;
+	} else {
+		return FALSE;
+	}
+
+}
 
 //TEST(FileUtils, IsWriteable)
 //{
@@ -115,20 +133,21 @@ FileUtil::IsWriteable(CString & file) {
 //}
 
 BOOL
-FileUtil::mv(CString & src, CString & dst) {
+FileUtil::mv(const CString & src, const CString & dst) {
 
+	_unlink(dst);
 	return rename( src, dst);
 
 }
 
 
 BOOL
-FileUtil::rm_dir(CString & dirname, BOOL f1, BOOL f2) {
+FileUtil::rm_dir(const CString & dirname, BOOL f1, BOOL f2) {
 	return _rmdir(dirname);
 }
 
 BOOL
-FileUtil::mkdirp(CString & dirname)
+FileUtil::mkdirp(const CString & dirname)
 {
 	CString tmp;
 	tmp = String::replace(dirname, "\\", "/");  // normalize

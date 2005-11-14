@@ -13,6 +13,7 @@
 #include "MBGlobals.h"
 #include "PicCache.h"
 //#include "WmaTagger.h"
+#include "MyString.h"
 class WmaTag;
 
 // A MemDb is a hierarchical tree looking structure not
@@ -72,6 +73,7 @@ class CSong {
 		CString getId3(const CString &, int unknown = 1);
         SongKeys * createSongKeys();
 		int removeId3(const CString &);
+		int GetCount() { return _obj.GetCount(); }
 //        CString serialize();
 	private:
 		int _refcnt;
@@ -191,14 +193,37 @@ class MList {
 //		const MMemory & m_memc;
 };
 
+class MTags {
+	public:
+		MTags(const CString & genre,
+			const CString & artist,
+			const CString & album,
+			const CString & title,
+			const CString & tlen);
+		MTags(char * buf);
+		~MTags(){};
+		void serialize(AutoBuf & buf);
+		CString mgenre,martist,malbum,mtitle,mtlen;
+};
+
 class MFiles {
 	public:
 		MFiles() {
 //			m_files.SetSize(1,100); // doesn't work right
 		}
 		~MFiles(){}
-		void add(const CString & file);
-		void add(int at, const CString & file);
+		void add(const CString & file,
+			const CString & genre,
+			const CString & artist,
+			const CString & album,
+			const CString & title,
+			const CString & tlen);
+		void add(int at, const CString & file,
+			const CString & genre,
+			const CString & artist,
+			const CString & album,
+			const CString & title,
+			const CString & tlen);
 		void remove(const CString & file);
 		void remove(int at);
 		BOOL contains(const CString & file, int & at);
@@ -212,11 +237,13 @@ class MFiles {
 		void removeAll();
 		int getLength() { return m_files.GetSize(); }
 		CString getAt(int i) { return m_files.GetAt(i); }
+		Song getSong(const LPCTSTR file);
 	private:
 		CString m_loc;
+		CString m_dir;
+		CString m_idx;
 		CStringArray m_files;
-
-		
+		CStringArray m_tags;
 };
 
 class MSongLib {
@@ -292,6 +319,7 @@ class MusicLib
 			const CString &, const CString &);
 //        int addSongToPlaylist(int);
         int addSongToPlaylist(const Song &);
+		int addFileToPlaylist(const CString & file);
 		BOOL apic(const CString & file, uchar *& rawdata, size_t & size);
         int clearPlaylist();
         Song createSongFromId3(ID3_Tag *);
@@ -317,6 +345,7 @@ class MusicLib
         int getPlaylist(CExtendedListBox &);
         int getPlaylistNames(CExtendedListBox &);
 		int getPlaylistNames(CStringList &);
+		void MovePlaylistsToDir();
         int getSongs(const CString &, const CString &, const CString &,
 			CExtendedListBox&);
         int getSongsInPlaylist(const CString &, CExtendedListBox &);
@@ -327,6 +356,8 @@ class MusicLib
         CString getLibraryCounts();
         int init();
         int loadPlaylist(const CString & name, CString & errormsg);
+		// for converting to new m3u format
+		int loadOldPlaylist(const CString & name, CStringList & playlist);
         void modifyID3(Song old, Song newSong);
 		void modifyPlaylists(Song old, Song newSong);
 		void modifyPlaylist(const CString playlist, Song oldsong,
