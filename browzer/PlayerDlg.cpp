@@ -86,6 +86,7 @@ CString ScanDirectories(const CStringList & directories,
 											initDlg, scanNew, bAdd);
 }
 
+
 /////////////////////////////////////////////////////////////////////////////
 // CPlayerDlg dialog
 
@@ -205,6 +206,7 @@ BEGIN_MESSAGE_MAP(CPlayerDlg, CDialogClassImpl)
 	ON_LBN_DBLCLK(IDC_GENRES, OnDblclkGenres)
 	ON_BN_CLICKED(IDC_MENU_BUTTON, OnMenuButton)
 	ON_COMMAND(ID_MENU_OPTIONS, OnMenuOptions)
+	ON_COMMAND(ID_MENU_EDITPL, OnMenuEditPlaylist)
 	ON_BN_CLICKED(IDC_BUTTON_CLEAR,OnMenuClearplaylist)
 	ON_COMMAND(ID_MENU_EXIT, OnMenuExit)
 	ON_BN_CLICKED(IDC_BUTTON_LOAD,OnMenuLoadplaylist)
@@ -267,6 +269,8 @@ BEGIN_MESSAGE_MAP(CPlayerDlg, CDialogClassImpl)
 	ON_MESSAGE(MB_PROGRESS_MSG, OnProgress)
     ON_MESSAGE(MB_POST_MYIDLE_MESSAGE, OnPostMyIdle)
 	ON_MESSAGE(MB_GOWWW_MSG, OnGoWWWMsg)
+	ON_MESSAGE(MB_LISTMOVEUP, OnMovePlaylistUp)
+	ON_MESSAGE(MB_LISTMOVEDN, OnMovePlaylistDn)
 	ON_LBN_SETFOCUS(IDC_GENRES, OnGenresFocus)
 	ON_LBN_SETFOCUS(IDC_ARTISTS, OnArtistsFocus)
 	ON_LBN_SETFOCUS(IDC_ALBUMS, OnAlbumsFocus)
@@ -445,6 +449,11 @@ BOOL CPlayerDlg::OnInitDialog()
 	m_AlbumsLabel.setText("Albums");
 	m_SongsLabel.setText("Songs");
 	m_PlaylistLabel.setText("Playlist");
+	m_Genres.SetPWnd(this);
+	m_Artists.SetPWnd(this);
+	m_Albums.SetPWnd(this);
+	m_Songs.SetPWnd(this);
+	m_Playlist.SetPWnd(this);
 
     CRect rect;
     int max;
@@ -852,6 +861,7 @@ CPlayerDlg::setColors() {
 }
 void
 CPlayerDlg::resetControls() {
+
 	static BOOL firsttime = TRUE;
 	CWaitCursor c;
 
@@ -2409,9 +2419,17 @@ void CPlayerDlg::OnExit()
         saveConfig();
     }
 }
+void CPlayerDlg::OnMenuEditPlaylist() {
+    LoadPlaylistDlg * m_LoadPlaylistDlg 
+        = new LoadPlaylistDlg (this, &m_mlib, this, TRUE);
+    *m_Dialog = m_LoadPlaylistDlg;
+	int r = m_LoadPlaylistDlg->DoModal();
+	delete m_LoadPlaylistDlg;
+	m_LoadPlaylistDlg = 0;
+    *m_Dialog = this;
+}
 void CPlayerDlg::OnMenuLoadplaylist() 
 {
-
     LoadPlaylistDlg * m_LoadPlaylistDlg 
         = new LoadPlaylistDlg (this, &m_mlib, this);
     *m_Dialog = m_LoadPlaylistDlg;
@@ -2746,7 +2764,7 @@ void CPlayerDlg::LoadPlaylist(CString name) {
 	
 	UpdateWindow();
     if (r != 0) {
-        errormsg = "There are errors in your playlist\r\n\r\n" + errormsg;
+        errormsg = "Muzikbrowzer encountered problems with your playlist\r\n\r\n" + errormsg;
         MBMessageBox("alert", errormsg);
     }
     PlayLoop();
@@ -3057,6 +3075,16 @@ CPlayerDlg::PlayerStatusRevert() {
         m_PlayerStatusTime = CTime::GetCurrentTime();
     }
 }
+LRESULT
+CPlayerDlg::OnMovePlaylistUp(UINT wParam, LONG lParam) {
+	movePlaylistUp(wParam);
+	return 0;
+}
+LRESULT
+CPlayerDlg::OnMovePlaylistDn(UINT wParam, LONG lParam) {
+	movePlaylistUp(wParam);
+	return 0;
+}
 void
 CPlayerDlg::movePlaylistUp(int sel) {
     m_mlib.movePlaylistUp(m_PlaylistCurrent, sel);
@@ -3163,34 +3191,12 @@ void CPlayerDlg::OnNcMouseMove(UINT nHitTest, CPoint point)
 {
 	
 	if (m_LibraryDragging) {
-		CString msg = " mAL=" + numToString(m_AdjustLibrary);
-		msg += "\r\n";
+
 		CPoint cpoint(point);
 		ScreenToClient(&cpoint);
 		CRect rect;
-//		Invalidate();
 		RedrawWindow();
-#ifdef asdf
-		m_Genres.Invalidate();
-		m_GenresLabel.Invalidate();
-		m_Genres.RedrawWindow();
-		m_GenresLabel.RedrawWindow();
 
-		m_Artists.Invalidate();
-		m_ArtistsLabel.Invalidate();
-		m_Artists.RedrawWindow();
-		m_ArtistsLabel.RedrawWindow();
-
-		m_Albums.Invalidate();
-		m_AlbumsLabel.Invalidate();
-		m_Albums.RedrawWindow();
-		m_AlbumsLabel.RedrawWindow();
-
-		m_Songs.Invalidate();
-		m_SongsLabel.Invalidate();
-		m_Songs.RedrawWindow();
-		m_SongsLabel.RedrawWindow();
-#endif
 		BOOL doit = TRUE;
 		switch(m_AdjustLibrary) {
 		case 1: {

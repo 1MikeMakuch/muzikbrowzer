@@ -162,6 +162,10 @@ SOURCE=.\PictureStatic.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\ResizableGrip.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\SkinBmp.cpp
 # End Source File
 # Begin Source File
@@ -240,6 +244,10 @@ SOURCE=.\Picture.h
 # Begin Source File
 
 SOURCE=.\PictureStatic.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ResizableGrip.h
 # End Source File
 # Begin Source File
 

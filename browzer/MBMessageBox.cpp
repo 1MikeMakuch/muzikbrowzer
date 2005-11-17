@@ -94,6 +94,8 @@ BOOL MBMessageBoxImpl::OnInitDialog()
 
 	CWnd * ctrl = GetDlgItem(IDC_MESSAGEBOX_CANCEL);
 	ctrl->EnableWindow(m_EnableCancel);
+	if (!m_EnableCancel)
+		ctrl->ShowWindow(SW_HIDE);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE

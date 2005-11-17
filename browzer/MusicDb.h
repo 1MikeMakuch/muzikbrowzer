@@ -348,7 +348,9 @@ class MusicLib
 		void MovePlaylistsToDir();
         int getSongs(const CString &, const CString &, const CString &,
 			CExtendedListBox&);
-        int getSongsInPlaylist(const CString &, CExtendedListBox &);
+        int getSongsInPlaylist(const CString &name , CStringList & desc, CStringList & plist);
+		int getSongsInPlaylist(const CString & name, CStringArray & desc, CStringArray & plist);
+		int getSongsInPlaylist(const CString & name, CExtendedListBox &);
 		CString getSongVal(const CString & key, const CString & genre,
 			const CString & artist, const CString & album,
 			const CString & song);
@@ -368,8 +370,10 @@ class MusicLib
         void RandomizePlaylist();
         void readDbLocation();
         UINT readDb();
+		void savePlaylist(const CStringArray & list, const CString & file);
         void savePlaylist(const CString &);
 		void savePlaylist(Playlist & playlist, const CString & file);
+		BOOL renamePlaylist(const CString src,const CString dest, BOOL overwrite=FALSE);
         CString scanDirectories(const CStringList & dirs, InitDlg*,
 			BOOL scanNew, BOOL bAdd);
         void searchForMp3s(CStringList & songs, const CString & genre,

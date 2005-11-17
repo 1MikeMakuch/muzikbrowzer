@@ -11,6 +11,7 @@ public:
 	static CString dirname(const CString   &file);
 	static BOOL	mv(const CString &, const CString &);
 	static BOOL	rm_dir(const CString &, BOOL, BOOL);
+	static BOOL rm(const CString & file);
 	static BOOL mkdirp(const CString &);
 	static BOOL BmpSave(HBITMAP, CString);
 	static void BmpLog(HDC, CString, int width, int height, int x=0, int y=0);

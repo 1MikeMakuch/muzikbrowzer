@@ -71,6 +71,11 @@
 #define IDB_BITMAP11                    251
 #define IDD_FRACTAL_DLG                 252
 #define IDD_FILEANDFOLDER               254
+#define IDD_GETTEXTFIELD                257
+#define IDB_OBM_UPARROW                 259
+#define IDB_OBM_DNARROW                 260
+#define IDB_OBM_SCRLBTN                 261
+#define IDB_OBM_SCRLBG                  262
 #define IDC_VOLUME_BUTTON               1000
 #define IDC_STOP_BUTTON                 1001
 #define IDC_PLAY_BUTTON                 1002
@@ -203,9 +208,13 @@
 #define IDC_PLAYLIST_DELETE             1180
 #define IDC_GO                          1180
 #define IDC_PLAYLIST_LOAD               1181
+#define IDC_PLAYLIST_UP                 1182
 #define IDC_GAAS                        1183
+#define IDC_PLAYLIST_DOWN               1184
+#define IDC_PLAYLIST_SAVE               1185
 #define IDC_BUTTON2                     1186
 #define IDC_OPTIONS_BUTTON              1186
+#define IDC_PLAYLIST_RENAME             1186
 #define IDC_BUTTON_MINIMIZE             1187
 #define IDC_SKIN_DELETE                 1187
 #define IDC_BUTTON_MAXIMIZE             1188
@@ -364,6 +373,10 @@
 #define IDC_TREE                        2039
 #define IDC_MSG                         2040
 #define IDC_SWAP_SETTINGS_LABEL         2042
+#define IDC_LPD_NAMES_LABEL             2043
+#define IDC_LPD_SONGS_LABEL             2044
+#define IDC_GETTEXTFIELD                2045
+#define IDC_GETTEXTFIELD_DESC           2046
 #define IDC_BUTTON_LOGO                 12052
 #define ID_XXX                          32775
 #define ID__EXIT                        32785
@@ -400,14 +413,15 @@
 #define ID_MENU_ADD                     32821
 #define ID_MENU_SCAN                    32822
 #define ID_MENU_SCANNEW                 32823
+#define ID_MENU_EDITPL                  32824
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        256
-#define _APS_NEXT_COMMAND_VALUE         32824
-#define _APS_NEXT_CONTROL_VALUE         2043
+#define _APS_NEXT_RESOURCE_VALUE        263
+#define _APS_NEXT_COMMAND_VALUE         32825
+#define _APS_NEXT_CONTROL_VALUE         2047
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

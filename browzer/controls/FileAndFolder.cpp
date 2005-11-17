@@ -541,6 +541,8 @@ void CFileAndFolder::resizeControls() {
 	cancelrect.right = cancelrect.left + okrect.Width();
 	cok->MoveWindow(cancelrect,TRUE);
 }
+
+
 #define MBCFAF_MIN_WIDTH  300
 #define MBCFAF_MIN_HEIGHT  300
 

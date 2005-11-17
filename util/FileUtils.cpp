@@ -145,6 +145,10 @@ BOOL
 FileUtil::rm_dir(const CString & dirname, BOOL f1, BOOL f2) {
 	return _rmdir(dirname);
 }
+BOOL
+FileUtil::rm(const CString & file) {
+	return _unlink(file);
+}
 
 BOOL
 FileUtil::mkdirp(const CString & dirname)

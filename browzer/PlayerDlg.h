@@ -292,6 +292,7 @@ public:
 	afx_msg void OnDblclkGenres();
 	afx_msg void OnMenuButton();
 	afx_msg void OnMenuOptions();
+	afx_msg void OnMenuEditPlaylist();
 	afx_msg void OnMenuClearplaylist();
 	afx_msg void OnMenuExit();
 	afx_msg void OnMenuLoadplaylist();
@@ -331,6 +332,8 @@ public:
 	afx_msg LRESULT OnVolume(UINT wParam, LONG lParam);
 	afx_msg LRESULT OnProgress(UINT wParam, LONG lParam);
 	afx_msg LRESULT OnGoWWWMsg(UINT wParam, LONG lParam);
+	afx_msg LRESULT OnMovePlaylistUp(UINT wParam, LONG lParam);
+	afx_msg LRESULT OnMovePlaylistDn(UINT wParam, LONG lParam);
     afx_msg LRESULT OnPostMyIdle(UINT wParam, LONG lParam);
 
 //	afx_msg LRESULT OnSkinPic(UINT wParam, LONG lParam);

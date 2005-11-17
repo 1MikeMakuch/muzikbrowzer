@@ -15,14 +15,15 @@
 
 #include "stdafx.h"
 #include "DIBSectionLite.h"
-
+#include "MyDC.h"
 /////////////////////////////////////////////////////////////////////////////
 // Custom Listbox - containing colors
 
 class CExtendedListBox : public CListBox
 {
 public:
-    CExtendedListBox(BOOL usecolors=TRUE, CString desc="");
+    CExtendedListBox(BOOL usecolors=TRUE, CString desc="", 
+		BOOL setstatus = TRUE);
 	~CExtendedListBox();
 
 // Operations
@@ -66,6 +67,7 @@ public:
 	void DrawIt(BOOL flag) {
 		m_DrawIt = flag;
 	}
+	void SetPWnd(CDialog * p) { m_pCWnd = p; }
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CExtendedListBox)
 protected:
@@ -77,9 +79,9 @@ protected:
     void move(UINT);
     void DrawBorders();
     void DrawScroll();
-    void DrawScrollBg();
+    void DrawScrollBg(CMemDC & dc);
     void DrawScrollArrows();
-    void DrawScrollButton();
+    void DrawScrollButton(BOOL calc = TRUE, CPoint p = CPoint(0,0));
 
 	//{{AFX_MSG(CExtendedListBox)
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
@@ -124,7 +126,9 @@ private:
     BOOL m_UseColors;
 	CFont m_font;
 	CBrush m_brush;
-	UINT m_Count;
+	int m_Count;
+	int m_ItemsPerPage;
+	int m_ScrollButtonDelta;
 
 	CDIBSectionLite m_BmpUp;
 	CDIBSectionLite m_BmpDown;
@@ -134,6 +138,9 @@ private:
 	int m_ScrollWidth;
 	int m_ScrollButtonHeight;
 	CRect m_ClientRect;
+	BOOL m_SetStatus;
+	CDialog * m_pCWnd;
+	CBrush m_HatchBrush;
 
     void TransparentBlt( HDC hdcDest, int nXDest, int nYDest, int nWidth, 
 			int nHeight, HBITMAP hBitmap, int nXSrc, int nYSrc,

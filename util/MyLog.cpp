@@ -5,6 +5,8 @@
 
 #include "MyLog.h"
 #include "MBGlobals.h"
+#include "MyString.h"
+#include "FileUtils.h"
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -38,6 +40,24 @@ MyLog::open(CString path) {
 			path += ".log";
 		}
 	}
+	int i;
+	CString src = path;
+	CString dst = path;
+	CString mblog = "muzikbrowzer.log";
+	for(i = 2 ; i > 0 ; i--) {
+		src = path;
+		dst = path;
+		CString mbnumberedlogi = "muzikbrowzer" + numToString(i) + ".log";
+		CString mbnumberedlogiplusone = 
+			"muzikbrowzer" + numToString(i+1) + ".log";
+		src = String::replace(path,mbnumberedlogi,mblog);
+		dst = String::replace(path,mbnumberedlogiplusone,mblog);
+		FileUtil::mv(src,dst);
+	}
+	src = path;
+	dst = String::replace(path,"muzikbrowzer1.log",mblog);
+	FileUtil::mv(src,dst);
+
 	file = path;
     _pathfile = file;
     BOOL r = _file.Open(_pathfile, 

@@ -130,6 +130,10 @@ SOURCE=.\FileUtils.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\GetTextField.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\Misc.cpp
 # End Source File
 # Begin Source File
@@ -180,6 +184,10 @@ SOURCE=.\FileUtils.h
 # Begin Source File
 
 SOURCE=.\FlexLexer.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\GetTextField.h
 # End Source File
 # Begin Source File
 

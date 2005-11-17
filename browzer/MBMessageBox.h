@@ -61,6 +61,7 @@ private:
 
 };
 
+// returns 1 for OK and 0 for Cancel
 int MBMessageBox(CString title, CString msg, BOOL log = TRUE, 
 				 BOOL enableCancel=FALSE);
 

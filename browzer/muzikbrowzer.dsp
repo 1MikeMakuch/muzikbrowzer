@@ -646,6 +646,22 @@ SOURCE=.\muzikbrowzer.rc
 # End Source File
 # Begin Source File
 
+SOURCE=.\res\OBM_DNARROW.bmp
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\OBM_SCROLLBG.bmp
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\OBM_SCROLLBUTTON.bmp
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\OBM_UPARROW.bmp
+# End Source File
+# Begin Source File
+
 SOURCE=.\res\printer.bmp
 # End Source File
 # Begin Source File
