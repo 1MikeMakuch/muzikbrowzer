@@ -85,7 +85,7 @@ CPoint crbottomleft(CRect & rect) {
 //}
 
 const char * val10 = "0	 !\"$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
-
+const char * val11 = "100 , 100 , 100";
 TEST(ConfigFileParser2, ParseTest2)
 {
 	stack<KVPair> kvstack;
@@ -102,9 +102,18 @@ TEST(ConfigFileParser2, ParseTest2)
 	int result;
 	const char * k = kvstack.top().key();
 	const char * v = kvstack.top().val();
-	CHECK(strcmp(k,"key10") == 0);
-	result = strcmp(v,val10) == 0;
-	CHECK(result == 0);
+
+	CHECK(strcmp(k,"key11") == 0);
+	result = strcmp(v,val11);
+	CHECK(0 == result);
+
+	kvstack.pop();
+
+	const char * k2 = kvstack.top().key();
+	const char * v2 = kvstack.top().val();
+	CHECK(strcmp(k2,"key10") == 0);
+	result = strcmp(v2,val10) == 0;
+	CHECK(0 == result);
 	kvstack.pop();
 	for (i = 9 ; i > 0 ; i--) {
 		CHECK(kvstack.empty() == FALSE);
@@ -115,18 +124,87 @@ TEST(ConfigFileParser2, ParseTest2)
 		sprintf(lbuf.p,"[%s]=[%s]",k,v);
 		logger.ods(lbuf.p);
 		result = strcmp(keyb.p,k);
-		if (0 != result) {
-			CHECK(0 == result);
-		}
+		CHECK(0 == result);
+
 		result = strcmp(valb.p,v);
-		if (0 != result) {
-			CHECK(0 == result);
-		}
+		CHECK(0 == result);
+
 		//free(k);free(v);
 		kvstack.pop();
 
 	}
 	CHECK(kvstack.empty() == TRUE);
 }
+
+
+// get the RGB value from a string like "100,100,100"
+BOOL
+MBUtil::RgbTriple(char * val, unsigned long & rgb) 
+{
+	char * pr,*pg,*pb;
+	pr = pg = pb = NULL;
+
+	pr = strtok(val,", ");
+	if (NULL == pr)	return FALSE;
+	pg = strtok(NULL,", ");
+	if (NULL == pg)	return FALSE;
+	pb = strtok(NULL,", ");
+	if (NULL == pb)	return FALSE;
+
+	int r,g,b;
+	r = g = b = 0;
+	r = atoi(pr); g = atoi(pg) ; b = atoi(pb);
+
+	rgb = RGB(r,g,b);
+	return TRUE;
+}
+
+TEST(MBUtilRgbTriple, test1)
+{
+	char *buf1 = "10,20,30";
+
+	unsigned long rgb,rgb2;
+	BOOL r = MBUtil::RgbTriple(buf1, rgb);
+	CHECK(TRUE == r);
+	CHECK(1971210 == rgb);
+
+	char *buf2= "";
+	r = MBUtil::RgbTriple(buf2, rgb);
+	CHECK(FALSE == r);
+
+	char *buf3 = ",";
+	r = MBUtil::RgbTriple(buf3, rgb);
+	CHECK(FALSE == r);
+
+	char *buf4 = "0,0,";
+	r = MBUtil::RgbTriple(buf4, rgb);
+	CHECK(FALSE == r);
+
+	char * buf5 = " 1 , 1 , 1 ";
+	r = MBUtil::RgbTriple(buf5, rgb);
+
+	char * buf6 = "1,1,1";
+	r = MBUtil::RgbTriple(buf6, rgb2);
+	CHECK(rgb == rgb2);
+
+	char * buf7 = " 1 1 1 ";
+	r = MBUtil::RgbTriple(buf7, rgb2);
+	CHECK(rgb == rgb2);
+
+	char * buf8 = " 1  1  1  1 ";
+	r = MBUtil::RgbTriple(buf8, rgb2);
+	CHECK(rgb == rgb2);
+
+}
+
+
+
+
+
+
+
+
+
+
 
 

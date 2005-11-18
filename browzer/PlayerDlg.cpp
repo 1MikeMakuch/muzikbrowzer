@@ -328,25 +328,29 @@ BOOL CPlayerDlg::OnInitDialog()
 	}
 
 	m_Config.createit(this, &m_callbacks);
-	CString skindef = m_Config.getSkin(MB_SKIN_DEF);
-	RegistryKey regSD(skindef);
-	regSD.ReadFile();
+//	CString skindef = m_Config.getSkin(MB_SKIN_DEF);
+//	RegistryKey regSD(skindef);
+//	regSD.ReadFile();
+//
+//	CString skincustom = m_Config.getSkin(MB_SKIN_DEF_CUSTOM);
+//	RegistryKey regSDCustom(skincustom);
+//	regSDCustom.ReadFile();
+//	regSD.Copy(regSDCustom);
 
-	CString skincustom = m_Config.getSkin(MB_SKIN_DEF_CUSTOM);
-	RegistryKey regSDCustom(skincustom);
-	regSDCustom.ReadFile();
-	regSD.Copy(regSDCustom);
 
+	MBCONFIG_READ_SKIN_DEFS(m_Config,regSD);
 
-	int r,g,b;
-	r = regSD.Read("TransRedMain",254);
-	g = regSD.Read("TransGreenMain",0);
-	b = regSD.Read("TransBlueMain",0);
-	m_TransMain = RGB(r,g,b);
-	r = regSD.Read("TransRedPanel",253);
-	g = regSD.Read("TransGreenPanel",0);
-	b = regSD.Read("TransBluePanel",0);
-	m_TransPanel = RGB(r,g,b);
+//	int r,g,b;
+//	r = regSD.Read("TransRedMain",254);
+//	g = regSD.Read("TransGreenMain",0);
+//	b = regSD.Read("TransBlueMain",0);
+//	m_TransMain = RGB(r,g,b);
+//	r = regSD.Read("TransRedPanel",253);
+//	g = regSD.Read("TransGreenPanel",0);
+//	b = regSD.Read("TransBluePanel",0);
+//	m_TransPanel = RGB(r,g,b);
+
+	MBCONFIG_READ_TRANS_COLORS(regSD,m_TransMain,m_TransPanel);
 
 	// this is to remain hard coded at 255,0,0 8/2/05
 	_initdialog = new CTransparentDialogDlg(NULL, RGB(255,0,0));
@@ -646,16 +650,69 @@ void CPlayerDlg::setFont() {
 
 }
 void
-CPlayerDlg::setColors() {
-	m_GenresLabel.SetTextColor(m_Config.getColorTxColHdr());
-	m_ArtistsLabel.SetTextColor(m_Config.getColorTxColHdr());
-	m_AlbumsLabel.SetTextColor(m_Config.getColorTxColHdr());
-	m_SongsLabel.SetTextColor(m_Config.getColorTxColHdr());
-	m_PlaylistLabel.SetTextColor(m_Config.getColorTxColHdr());
-//	m_VolumeLabel.SetTextColor(m_Config.getColorTxPanel());
-	m_PositionLabel.SetTextColor(m_Config.getColorTxPanel());
-//	m_CurrentTitle.SetTextColor(m_Config.getColorTxCurPlay());
-	m_PlayerStatus.SetTextColor(m_Config.getColorTxPanel());
+CPlayerDlg::setColors(RegistryKey & regSD) {
+	
+	COLORREF crColHdrInUL,crColHdrInLR,crColHdrOutUL,crColHdrOutLR;
+	COLORREF crDataInUL,crDataInLR,crDataOutUL,crDataOutLR;
+	COLORREF crStatusInUL,crStatusInLR,crStatusOutUL,crStatusOutLR;
+
+	MBCONFIG_READ_COLOR_3D(regSD,"ColHdr",
+		crColHdrInUL,crColHdrInLR,crColHdrOutUL,crColHdrOutLR);
+	
+	MBCONFIG_READ_COLOR_3D(regSD,"Data",
+		crDataInUL,crDataInLR,crDataOutUL,crDataOutLR);
+	
+	MBCONFIG_READ_COLOR_3D(regSD,"Status",
+		crStatusInUL,crStatusInLR,crStatusOutUL,crStatusOutLR);
+
+	BOOL threeDDataWindows	= regSD.Read("3dDataWindows",0);
+	BOOL threeDColHdrs		= regSD.Read("3dColHdrs",0);
+	BOOL threeDStatus		= regSD.Read("3dStatus",0);
+
+	COLORREF crColHdrFg,crColHdrBg;
+	crColHdrFg = m_Config.getColorTxColHdr();
+	crColHdrBg = m_Config.getColorBkColHdr();
+	
+#define _LABEL_COLORS_ crColHdrFg,crColHdrBg,\
+	crColHdrInUL,crColHdrInLR,crColHdrOutUL,crColHdrOutLR,\
+	threeDColHdrs
+	
+	m_GenresLabel.SetColors(_LABEL_COLORS_);
+	m_ArtistsLabel.SetColors(_LABEL_COLORS_);
+	m_AlbumsLabel.SetColors(_LABEL_COLORS_);
+	m_SongsLabel.SetColors(_LABEL_COLORS_);
+	m_PlaylistLabel.SetColors(_LABEL_COLORS_);
+
+	COLORREF	crTxNormalFg,	crTxNormalBg, 
+				crTxHighFg,		crTxHighBg,		
+				crTxSelFg,		crTxSelBg,
+				crStatusFg,		crStatusBg;
+	crTxNormalFg = m_Config.getColorTxNormal();
+	crTxNormalBg = m_Config.getColorBkNormal();
+	crTxHighFg   = m_Config.getColorTxHigh();
+	crTxHighBg   = m_Config.getColorBkHigh();
+	crTxSelFg	 = m_Config.getColorTxSel();
+	crTxSelBg	 = m_Config.getColorBkSel();
+	crStatusFg	 = m_Config.getColorTxPanel();
+	crStatusBg	 = m_Config.getColorBkPanel();
+
+#define _DATA_COLORS_ crTxNormalBg,crTxHighBg,crTxSelBg,\
+	crTxNormalFg,crTxHighFg,crTxSelFg,threeDDataWindows,\
+	crDataInUL,crDataInLR,crDataOutUL,crDataOutLR
+
+	m_Genres.SetColors(_DATA_COLORS_);
+	m_Artists.SetColors(_DATA_COLORS_);
+	m_Albums.SetColors(_DATA_COLORS_);
+	m_Songs.SetColors(_DATA_COLORS_);
+	m_Playlist.SetColors(_DATA_COLORS_);
+	
+#define _STATUS_COLORS_ crStatusFg,crStatusBg,\
+	crStatusInUL,crStatusInLR,crStatusOutUL,crStatusOutLR,\
+	threeDStatus
+
+	m_PositionLabel.SetColors(_STATUS_COLORS_);
+	m_PlayerStatus.SetColors(_STATUS_COLORS_);
+
 	m_PlayerStatus.SetTicking(TRUE);
 
 	m_GenresLabel.setDesc  ("genre ");
@@ -665,48 +722,7 @@ CPlayerDlg::setColors() {
 	m_PlaylistLabel.setDesc("playl ");
 	m_PlayerStatus.setDesc ("status");
 	m_PositionLabel.setDesc("poslbl");
-//	m_CurrentTitle.setDesc ("curtit");
 
-	m_GenresLabel.SetBkColor(m_Config.getColorBkColHdr());
-	m_ArtistsLabel.SetBkColor(m_Config.getColorBkColHdr());
-	m_AlbumsLabel.SetBkColor(m_Config.getColorBkColHdr());
-	m_SongsLabel.SetBkColor(m_Config.getColorBkColHdr());
-	m_PlaylistLabel.SetBkColor(m_Config.getColorBkColHdr());
-//	m_VolumeLabel.SetBkColor(m_Config.getColorBkPanel());
-	m_PositionLabel.SetBkColor(m_Config.getColorBkPanel());
-//	m_CurrentTitle.SetBkColor(m_Config.getColorBkCurPlay());
-	m_PlayerStatus.SetBkColor(m_Config.getColorBkPanel());
-
-	m_Genres.SetColors(m_Config.getColorBkNormal(),
-		m_Config.getColorBkHigh(),
-		m_Config.getColorBkSel(),
-		m_Config.getColorTxNormal(),
-		m_Config.getColorTxHigh(),
-		m_Config.getColorTxSel());
-	m_Artists.SetColors(m_Config.getColorBkNormal(),
-		m_Config.getColorBkHigh(),
-		m_Config.getColorBkSel(),
-		m_Config.getColorTxNormal(),
-		m_Config.getColorTxHigh(),
-		m_Config.getColorTxSel());
-	m_Albums.SetColors(m_Config.getColorBkNormal(),
-		m_Config.getColorBkHigh(),
-		m_Config.getColorBkSel(),
-		m_Config.getColorTxNormal(),
-		m_Config.getColorTxHigh(),
-		m_Config.getColorTxSel());
-	m_Songs.SetColors(m_Config.getColorBkNormal(),
-		m_Config.getColorBkHigh(),
-		m_Config.getColorBkSel(),
-		m_Config.getColorTxNormal(),
-		m_Config.getColorTxHigh(),
-		m_Config.getColorTxSel());
-	m_Playlist.SetColors(m_Config.getColorBkNormal(),
-		m_Config.getColorBkHigh(),
-		m_Config.getColorBkSel(),
-		m_Config.getColorTxNormal(),
-		m_Config.getColorTxHigh(),
-		m_Config.getColorTxSel());
 
 	m_OptionsButton.SetBitmaps(
 		m_Config.getSkin(MB_SKIN_BUTTONMENUIN),	m_TransPanel,
@@ -866,17 +882,18 @@ CPlayerDlg::resetControls() {
 	CWaitCursor c;
 
 	// read skin def
-	CString skindef = m_Config.getSkin(MB_SKIN_DEF);
-	RegistryKey regSD(skindef);
-	regSD.ReadFile();
+//	CString skindef = m_Config.getSkin(MB_SKIN_DEF);
+//	RegistryKey regSD(skindef);
+//	regSD.ReadFile();
+//
+//	// read SkinDefCustom
+//	CString skindefcustom = m_Config.getSkin(MB_SKIN_DEF_CUSTOM);
+//	RegistryKey regSDCustom(skindefcustom);
+//	regSDCustom.ReadFile();
+//	// custom overlays standard
+//	regSD.Copy(regSDCustom);
 
-	// read SkinDefCustom
-	CString skindefcustom = m_Config.getSkin(MB_SKIN_DEF_CUSTOM);
-	RegistryKey regSDCustom(skindefcustom);
-	regSDCustom.ReadFile();
-
-	// custom overlays standard
-	regSD.Copy(regSDCustom);
+	MBCONFIG_READ_SKIN_DEFS(m_Config,regSD);
 
 	// Now read into m_Config memory
 	// Necessary cause I'm getting config info from 2 places
@@ -947,19 +964,21 @@ CPlayerDlg::resetControls() {
 	int ControlBoxWidth = regSD.Read("ControlBoxWidth",0);
 	int ControlBoxHeight = regSD.Read("ControlBoxHeight",0);
 
-	int r,g,b;
-	r = regSD.Read("TransRedMain",254);
-	g = regSD.Read("TransGreenMain",0);
-	b = regSD.Read("TransBlueMain",0);
-	m_TransMain  = RGB(r,g,b);
-	r = regSD.Read("TransRedPanel",253);
-	g = regSD.Read("TransGreenPanel",0);
-	b = regSD.Read("TransBluePanel",0);
-	m_TransPanel = RGB(r,g,b);
+//	int r,g,b;
+//	r = regSD.Read("TransRedMain",254);
+//	g = regSD.Read("TransGreenMain",0);
+//	b = regSD.Read("TransBlueMain",0);
+//	m_TransMain  = RGB(r,g,b);
+//	r = regSD.Read("TransRedPanel",253);
+//	g = regSD.Read("TransGreenPanel",0);
+//	b = regSD.Read("TransBluePanel",0);
+//	m_TransPanel = RGB(r,g,b);
+
+	MBCONFIG_READ_TRANS_COLORS(regSD,m_TransMain,m_TransPanel);
 
 	SetTransparentColor(m_TransMain, m_TransPanel); // set red as the 
 	setFont();
-	setColors();
+	setColors(regSD);
 
 	int border = m_Config.getDlgBorderWidth();
 	int borderpanel = regSD.Read("BorderPanel",5);

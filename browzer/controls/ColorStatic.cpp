@@ -65,6 +65,12 @@ CColorStatic::CColorStatic()
 	m_ClrShadowDark = RGB(0,0,0);
 	m_ClrShadowLight = RGB(255,255,255);
 
+	m_crInUL = 0;
+	m_crInLR = 0;
+	m_crOutUL = 0;
+	m_crOutLR = 0;
+	m_3d = FALSE;
+
 #define TICKERLEFTBORDER 4
 	m_TickerX = TICKERLEFTBORDER;
 	m_TickerY = 0;
@@ -127,7 +133,23 @@ void CColorStatic::OnDestroy()
     m_brBlinkBkgnd[1].DeleteObject();
 } // End of OnDestroy
 
-
+void CColorStatic::SetColors(
+	COLORREF fg, 
+	COLORREF bg,
+	COLORREF inUL,
+	COLORREF inLR,
+	COLORREF outUL,
+	COLORREF outLR,
+	BOOL threeD) {
+	
+	SetTextColor(fg);
+	SetBkColor(bg);
+	m_crInUL = inUL;
+	m_crInLR = inLR;
+	m_crOutUL = outUL;
+	m_crOutLR = outLR;
+	m_3d = threeD;
+}
 void CColorStatic::SetTextColor(COLORREF crTextColor)
 {
 	// Set new foreground color
@@ -351,16 +373,18 @@ void CColorStatic::OnPaint() {
 	GetClientRect(m_Rect);
 	CPaintDC pDC(this);
     CMemDC memdc(&pDC, &m_Rect);
-
+	CRect rect(m_Rect);
+	
 	memdc.FillSolidRect(&m_Rect, m_crBkColor  );
-//	int nEdge=0;
-//	if (m_text == "Genres") nEdge = EDGE_BUMP;
-//	else if (m_text == "Artists") nEdge = EDGE_ETCHED;
-//	else if (m_text == "Albums") nEdge = EDGE_RAISED;
-//	else if (m_text == "Songs") nEdge = EDGE_SUNKEN;
-//	if (nEdge)
-//		memdc.DrawEdge(m_Rect, nEdge, BF_TOPLEFT);
+	if (m_3d) {
 
+		memdc.Draw3dRect(rect, m_crOutUL, m_crOutLR);
+		rect.DeflateRect(1,1);
+		memdc.Draw3dRect(rect, m_crInUL, m_crInLR);
+	}
+
+
+	//return;
     if (m_text.GetLength()) {
 		CFont * oldfont = memdc.SelectObject(&m_font);
 		CSize cs = memdc.GetTextExtent(m_text);

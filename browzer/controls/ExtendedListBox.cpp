@@ -12,20 +12,7 @@
 static char THIS_FILE[] = __FILE__;
 #endif
     
-static COLORREF crbgNormal = GetSysColor(COLOR_WINDOW);
-static COLORREF crtextNormal = GetSysColor(COLOR_WINDOWTEXT);
-static COLORREF crbgMedium = GetSysColor(COLOR_HIGHLIGHT);
-static COLORREF crtextMedium = GetSysColor(COLOR_HIGHLIGHTTEXT);
-static COLORREF crbgHigh = GetSysColor(COLOR_BTNFACE);
-static COLORREF crtextHigh = GetSysColor(COLOR_BTNTEXT);
 
-static COLORREF crBtnFace = GetSysColor(COLOR_BTNFACE);
-static COLORREF crBtnHighLight = GetSysColor(COLOR_BTNHIGHLIGHT);
-static COLORREF crBtnShadow = GetSysColor(COLOR_BTNSHADOW);
-static COLORREF crBtnText = GetSysColor(COLOR_BTNTEXT);
-
-static COLORREF cr3dDkShadow = GetSysColor(COLOR_3DDKSHADOW);
-static COLORREF cr3dLight    = GetSysColor(COLOR_3DLIGHT);
 
 #define SCROLL_BAR_WIDTH 10
 #define SCROLL_BUTTON_HEIGHT 10
@@ -78,6 +65,11 @@ CExtendedListBox::CExtendedListBox(BOOL usecolors, CString desc, BOOL set)
 	m_TxHigh = crtextHigh;
 	m_BkSel = crbgMedium;
 	m_TxSel = crtextMedium;
+
+	m_crInnerUpperLeft = cr3dDkShadow;
+	m_crInnerLowerRight = cr3dLight;
+	m_crOuterUpperLeft = crBtnShadow;
+	m_crOuterLowerRight= crBtnHighLight;
 	
 	//m_HatchBrush.CreateHatchBrush(HS_DIAGCROSS,GetSysColor(COLOR_BTNFACE));
 
@@ -85,6 +77,7 @@ CExtendedListBox::CExtendedListBox(BOOL usecolors, CString desc, BOOL set)
 
 	m_ScrollWidth = SCROLL_BAR_WIDTH;
 	m_ScrollButtonHeight = SCROLL_BUTTON_HEIGHT;
+	m_3d = FALSE;
 }
 CExtendedListBox::~CExtendedListBox()
 {
@@ -163,7 +156,7 @@ void CExtendedListBox::DrawItem(LPDRAWITEMSTRUCT lpDIS)
 	CRect rect;
 	rect.top = 0;
 	rect.left = 0;
-	rect.right = lpDIS->rcItem.right - lpDIS->rcItem.left;
+	rect.right = (lpDIS->rcItem.right - lpDIS->rcItem.left)+1;
 	rect.bottom = lpDIS->rcItem.bottom - lpDIS->rcItem.top;
 
 	CDC memdc;
@@ -344,25 +337,37 @@ void CExtendedListBox::DrawBorders()
 	m_ClientRect = rect;
     CRect srect(rect);
 
+	int barleft = rect.right + 1;
+	if (!m_3d)
+		barleft += 2;
+	if (m_HaveScroll) 
+		rect.right += m_ScrollWidth+1 ;
 	// 1st inflate the background by 1 with bknormal
 	rect.InflateRect(MB_BORDER_WIDTH-1, MB_BORDER_HEIGHT-1);    
     CBrush br(thePlayer->config().getColorBkNormal());
 
-//	pDC->Draw3dRect(rect, cr3dDkShadow, cr3dLight);
-
-	pDC->FrameRect(rect, &br);
-	rect.InflateRect(MB_BORDER_WIDTH-1, MB_BORDER_HEIGHT-1);    
-	pDC->FrameRect(rect, &br);
-//	pDC->Draw3dRect(rect, crBtnShadow, crBtnHighLight);
+	if (m_3d) {
+		pDC->Draw3dRect(rect, m_crInnerUpperLeft, m_crInnerLowerRight);
+		rect.InflateRect(MB_BORDER_WIDTH-1, MB_BORDER_HEIGHT-1);    
+		pDC->Draw3dRect(rect, m_crOuterUpperLeft, m_crOuterLowerRight);
+	} else {
+		pDC->FrameRect(rect, &br);
+		rect.InflateRect(MB_BORDER_WIDTH-1, MB_BORDER_HEIGHT-1);    
+		pDC->FrameRect(rect, &br);
+	}
 
 	ReleaseDC(pDC); //Frees the DC
 
     if (m_HaveScroll == TRUE) {
         m_ScrollBarBorderRect = rect;
 
-        m_ScrollBarBorderRect.left = m_ScrollBarBorderRect.right+1;
+        m_ScrollBarBorderRect.left = barleft;//m_ScrollBarBorderRect.right-1;
         m_ScrollBarBorderRect.right = (m_ScrollBarBorderRect.left +
             (m_ScrollWidth )/*+ MB_BORDER_WIDTH*/);
+		if (m_3d) {
+			m_ScrollBarBorderRect.top += 2;
+			m_ScrollBarBorderRect.bottom -= 2;
+		}
 
         CRect innerRect  = m_ScrollBarBorderRect;
 //        innerRect.DeflateRect(1,1);
@@ -455,6 +460,7 @@ void CExtendedListBox::DrawScrollArrows()
 
 void CExtendedListBox::DrawScrollButton(BOOL calc, CPoint p)
 {
+
 	// Draw the elevator button
 
     if (m_HaveScroll == FALSE) return;
@@ -701,7 +707,12 @@ CExtendedListBox::alphaDown() {
 }
 
 void CExtendedListBox::SetColors(COLORREF bknormal, COLORREF bkhigh, COLORREF bksel,
-		COLORREF txnormal, COLORREF txhigh, COLORREF txsel)
+		COLORREF txnormal, COLORREF txhigh, COLORREF txsel,
+		BOOL threeD,
+		COLORREF InnerUpperLeft,
+		COLORREF InnerLowerRight,
+		COLORREF OuterUpperLeft,
+		COLORREF OuterLowerRight)
 {
         m_BkNormal = bknormal;
         m_BkHigh = bkhigh;
@@ -709,6 +720,12 @@ void CExtendedListBox::SetColors(COLORREF bknormal, COLORREF bkhigh, COLORREF bk
         m_TxNormal = txnormal;
         m_TxHigh = txhigh;
         m_TxSel = txsel;
+
+		m_crInnerUpperLeft = InnerUpperLeft;
+		m_crInnerLowerRight = InnerLowerRight;
+		m_crOuterUpperLeft = OuterUpperLeft;
+		m_crOuterLowerRight = OuterLowerRight;
+		m_3d = threeD;
 }
 
 HBRUSH CExtendedListBox::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor) 
@@ -851,6 +868,11 @@ BOOL CExtendedListBox::OnEraseBkgnd(CDC* pDC)
 		CBrush br(m_BkNormal);
 		CRect rc;
 		GetClientRect(rc);
+
+		// hack to eliminate pesky little bits, one column wide immediately
+		// to the left of the scroll bg. This wipes it out.
+		if (m_HaveScroll) rc.right++;
+		if (!m_3d) rc.right += 2;
 		pDC->FillRect(rc, &br);
 		return TRUE;
 //	}

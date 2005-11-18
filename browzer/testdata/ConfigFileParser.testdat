@@ -1,7 +1,7 @@
 # test data for the ConfigFileParser Test. If you change this you
 # also need to change the TEST in util/Misc.pp
 
-# The lexer should return 10 kv pairs from key1,val1 to key10,val10
+# The lexer should return 11 kv pairs from key1,val1 to key10,val10
 # all others are ignored as errors and omitted.
 
 # No keys with whitespaces.
@@ -36,4 +36,4 @@ key 95 =5  # key5.5 = 5.5
 	key9	=	val9	
 # all chars except "#"
  	key10 	: 	0	 !"$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~
-
+key11 : 100 , 100 , 100

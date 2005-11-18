@@ -16,6 +16,8 @@
 #include "stdafx.h"
 #include "DIBSectionLite.h"
 #include "MyDC.h"
+#include "GetSysColors.h"
+
 /////////////////////////////////////////////////////////////////////////////
 // Custom Listbox - containing colors
 
@@ -62,8 +64,15 @@ public:
     void invalidate();
 	void alphaUp();
 	void alphaDown();
+	void Set3d(BOOL threeD) { m_3d = threeD; }
 	void SetColors(COLORREF bknormal, COLORREF bkhigh, COLORREF bksel,
-		COLORREF txnormal, COLORREF txhigh, COLORREF txsel);
+		COLORREF txnormal, COLORREF txhigh, COLORREF txsel,
+		BOOL threeD=FALSE,
+		COLORREF InnerUpperLeft = cr3dDkShadow,
+		COLORREF InnerLowerRight = cr3dLight,
+		COLORREF OuterUpperLeft = crBtnShadow,
+		COLORREF OuterLowerRight= crBtnHighLight
+		);
 	void DrawIt(BOOL flag) {
 		m_DrawIt = flag;
 	}
@@ -97,6 +106,12 @@ private:
     COLORREF m_TxNormal;
     COLORREF m_TxHigh;
     COLORREF m_TxSel;
+
+	COLORREF m_crInnerUpperLeft;
+	COLORREF m_crInnerLowerRight;
+	COLORREF m_crOuterUpperLeft;
+	COLORREF m_crOuterLowerRight;
+
     UINT m_ScrollHitPos;
     BOOL m_Capture;
     BOOL m_HaveScroll;
@@ -141,6 +156,7 @@ private:
 	BOOL m_SetStatus;
 	CDialog * m_pCWnd;
 	CBrush m_HatchBrush;
+	BOOL m_3d;
 
     void TransparentBlt( HDC hdcDest, int nXDest, int nYDest, int nWidth, 
 			int nHeight, HBITMAP hBitmap, int nXSrc, int nYSrc,

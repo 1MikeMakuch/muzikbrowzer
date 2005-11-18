@@ -187,6 +187,10 @@ SOURCE=.\FlexLexer.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\GetSysColors.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\GetTextField.h
 # End Source File
 # Begin Source File

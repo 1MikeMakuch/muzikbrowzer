@@ -800,40 +800,35 @@ CConfigDisplay::showSample() {
 	m_SampleTitles.SetFont(&m_FontSampleTitles, TRUE);
 	m_SampleTitles.changeFont(&m_FontSampleTitles);
 	m_SampleTitles.setText("Big Fish Howlers");
-	m_SampleTitles.SetTextColor(m_vTxNormal);
-	m_SampleTitles.SetBkColor(m_vBkNormal);
+	m_SampleTitles.SetColors(m_vTxNormal,m_vBkNormal);
 
 	m_FontSamplePanel.DeleteObject();
 	m_FontSamplePanel.CreateFontIndirect(&m_samplelfPanel);
 	m_SamplePanel.SetFont(&m_FontSamplePanel, TRUE);
 	m_SamplePanel.changeFont(&m_FontSamplePanel);
-	m_SamplePanel.setText("Press Menu for options");
-	m_SamplePanel.SetTextColor(m_vTxPanel);
-	m_SamplePanel.SetBkColor(m_vBkPanel);
+	m_SamplePanel.setText("01:30/03:29 Howling Fish by Big Fish Howlers");
+	m_SamplePanel.SetColors(m_vTxNormal,m_vBkPanel);
 
 	m_FontSampleColHdr.DeleteObject();
 	m_FontSampleColHdr.CreateFontIndirect(&m_samplelfColHdr);
 	m_SampleColHdr.SetFont(&m_FontSampleColHdr, TRUE);
 	m_SampleColHdr.changeFont(&m_FontSampleColHdr);
 	m_SampleColHdr.setText("Artists");
-	m_SampleColHdr.SetTextColor(m_vTxColHdr);
-	m_SampleColHdr.SetBkColor(m_vBkColHdr);
+	m_SampleColHdr.SetColors(m_vTxNormal,m_vBkColHdr);
 
 	m_FontSampleSel.DeleteObject();
 	m_FontSampleSel.CreateFontIndirect(&m_samplelfTitles);
 	m_SampleSel.SetFont(&m_FontSampleSel, TRUE);
 	m_SampleSel.changeFont(&m_FontSampleSel);
 	m_SampleSel.setText("Big Fish Howlers");
-	m_SampleSel.SetTextColor(m_vTxSel);
-	m_SampleSel.SetBkColor(m_vBkSel);
+	m_SampleSel.SetColors(m_vTxNormal,m_vBkSel);
 
 	m_FontSampleHigh.DeleteObject();
 	m_FontSampleHigh.CreateFontIndirect(&m_samplelfTitles);
 	m_SampleHigh.SetFont(&m_FontSampleHigh, TRUE);
 	m_SampleHigh.changeFont(&m_FontSampleHigh);
 	m_SampleHigh.setText("Big Fish Howlers");
-	m_SampleHigh.SetTextColor(m_vTxHigh);
-	m_SampleHigh.SetBkColor(m_vBkHigh);
+	m_SampleHigh.SetColors(m_vTxNormal,m_vBkHigh);
 
 //	m_FontSampleCurPlay.DeleteObject();
 //	m_FontSampleCurPlay.CreateFontIndirect(&m_samplelfCurPlay);
@@ -889,6 +884,11 @@ void CConfigDisplay::OnOK()
 
 	CString skindefcustom = getSkin(MB_SKIN_DEF_CUSTOM, FALSE);
 	RegistryKey regSDCustom(skindefcustom);
+	
+	// This ReadFile() preserves any extra settings in def file
+	// which may have been put there manually.
+	regSDCustom.ReadFile();
+	
 	StoreReg(regSDCustom);
 	regSDCustom.WriteFile();
 
@@ -1176,3 +1176,4 @@ void CConfigDisplay::OnSwapSettingsButton()
 	} // else 0
 	
 }
+

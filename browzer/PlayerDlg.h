@@ -103,7 +103,7 @@ public:
     void OnNextSong();
     void OnPreviousSong();
     void setFont();
-	void setColors();
+	void setColors(RegistryKey &);
     MBConfig & config() { return m_Config; }
     void PlayerStatusSet(CString &);
 	void PlayerStatusClear();

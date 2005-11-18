@@ -102,20 +102,31 @@ BOOL LoadPlaylistDlg::OnInitDialog()
 	m_pd->config().getRegistry("LoadPlaylistWidth", iwidth, MB_MIN_WIDTH);
 	m_pd->config().getRegistry("LoadPlaylistHeight", iheight, MB_MIN_HEIGHT);
 
-	CString skindef = m_pd->config().getSkin(MB_SKIN_DEF);
-	RegistryKey regSD(skindef);
-	regSD.ReadFile();
 
-	CString skincustom = m_pd->config().getSkin(MB_SKIN_DEF_CUSTOM);
-	RegistryKey regSDCustom(skincustom);
-	regSDCustom.ReadFile();
-	regSD.Copy(regSDCustom);
+	MBCONFIG_READ_SKIN_DEFS(m_pd->config(),regSD);
+	COLORREF crTransMain,crTransPanel;
+	MBCONFIG_READ_TRANS_COLORS(regSD,crTransMain,crTransPanel);
 
-	int r,g,b;
-	r = regSD.Read("TransRedPanel",253);
-	g = regSD.Read("TransGreenPanel",0);
-	b = regSD.Read("TransBluePanel",0);
-	COLORREF m_TransPanel = RGB(r,g,b);
+	COLORREF crColHdrInUL,crColHdrInLR,crColHdrOutUL,crColHdrOutLR;
+	COLORREF crDataInUL,crDataInLR,crDataOutUL,crDataOutLR;
+	COLORREF crStatusInUL,crStatusInLR,crStatusOutUL,crStatusOutLR;
+
+	MBCONFIG_READ_COLOR_3D(regSD,"ColHdr",
+		crColHdrInUL,crColHdrInLR,crColHdrOutUL,crColHdrOutLR);
+	
+	MBCONFIG_READ_COLOR_3D(regSD,"Data",
+		crDataInUL,crDataInLR,crDataOutUL,crDataOutLR);
+	
+	MBCONFIG_READ_COLOR_3D(regSD,"Status",
+		crStatusInUL,crStatusInLR,crStatusOutUL,crStatusOutLR);
+
+	BOOL threeDDataWindows	= regSD.Read("3dDataWindows",0);
+	BOOL threeDColHdrs		= regSD.Read("3dColHdrs",0);
+	BOOL threeDStatus		= regSD.Read("3dStatus",0);
+
+	COLORREF crColHdrFg,crColHdrBg;
+	crColHdrFg = m_pd->config().getColorTxColHdr();
+	crColHdrBg = m_pd->config().getColorBkColHdr();
 
 	m_PlaylistSongs.ResetContent();
 	m_PlaylistNames.ResetContent();
@@ -125,6 +136,8 @@ BOOL LoadPlaylistDlg::OnInitDialog()
 	if (m_IsEditor) { 
 		m_PlaylistNames.SetBitmaps(cdc);
 		m_PlaylistSongs.SetBitmaps(cdc);
+		m_PlaylistNames.Set3d(TRUE);
+		m_PlaylistSongs.Set3d(TRUE);
 		m_NamesLabel.initFont();
 		m_SongsLabel.initFont();
 	} else {
@@ -140,40 +153,44 @@ BOOL LoadPlaylistDlg::OnInitDialog()
 		m_NamesLabel.changeFont(lplf);
 		m_SongsLabel.changeFont(lplf);
 
-		m_NamesLabel.SetTextColor(m_pd->config().getColorTxColHdr());
-		m_SongsLabel.SetTextColor(m_pd->config().getColorTxColHdr());
+		COLORREF crColHdrFg,crColHdrBg;
+		crColHdrFg = m_pd->config().getColorTxColHdr();
+		crColHdrBg = m_pd->config().getColorBkColHdr();
 
-		COLORREF rgb = m_pd->config().getColorBkColHdr();
+#define _LABEL_COLORS_ crColHdrFg,crColHdrBg,\
+	crColHdrInUL,crColHdrInLR,crColHdrOutUL,crColHdrOutLR,\
+	threeDColHdrs
 
-		m_NamesLabel.SetBkColor(rgb);
-		m_SongsLabel.SetBkColor(rgb);
-		
+		m_NamesLabel.SetColors(_LABEL_COLORS_);
+		m_SongsLabel.SetColors(_LABEL_COLORS_);
 
 		m_PlaylistSongs.SetColors(m_pd->config().getColorBkNormal(),
 			m_pd->config().getColorBkHigh(),
 			m_pd->config().getColorBkSel(),
 			m_pd->config().getColorTxNormal(),
 			m_pd->config().getColorTxHigh(),
-			m_pd->config().getColorTxSel());
+			m_pd->config().getColorTxSel(),
+			crDataInUL,crDataInLR,crDataOutUL,crDataOutLR,threeDDataWindows);
 
 		m_PlaylistNames.SetColors(m_pd->config().getColorBkNormal(),
 			m_pd->config().getColorBkHigh(),
 			m_pd->config().getColorBkSel(),
 			m_pd->config().getColorTxNormal(),
 			m_pd->config().getColorTxHigh(),
-			m_pd->config().getColorTxSel());
+			m_pd->config().getColorTxSel(),
+			crDataInUL,crDataInLR,crDataOutUL,crDataOutLR,threeDDataWindows);
 
 		m_PlaylistNames.SetBitmaps(cdc, 
-			m_pd->config().getSkin(MB_SKIN_SCROLLUPARROW),m_TransPanel,
-			m_pd->config().getSkin(MB_SKIN_SCROLLDOWNARROW),m_TransPanel,
-			m_pd->config().getSkin(MB_SKIN_SCROLLBUTTON),m_TransPanel,
-			m_pd->config().getSkin(MB_SKIN_SCROLLBACKGROUND),m_TransPanel);
+			m_pd->config().getSkin(MB_SKIN_SCROLLUPARROW),crTransPanel,
+			m_pd->config().getSkin(MB_SKIN_SCROLLDOWNARROW),crTransPanel,
+			m_pd->config().getSkin(MB_SKIN_SCROLLBUTTON),crTransPanel,
+			m_pd->config().getSkin(MB_SKIN_SCROLLBACKGROUND),crTransPanel);
 		
 		m_PlaylistSongs.SetBitmaps(cdc, 
-			m_pd->config().getSkin(MB_SKIN_SCROLLUPARROW),m_TransPanel,
-			m_pd->config().getSkin(MB_SKIN_SCROLLDOWNARROW),m_TransPanel,
-			m_pd->config().getSkin(MB_SKIN_SCROLLBUTTON),m_TransPanel,
-			m_pd->config().getSkin(MB_SKIN_SCROLLBACKGROUND),m_TransPanel);
+			m_pd->config().getSkin(MB_SKIN_SCROLLUPARROW),crTransPanel,
+			m_pd->config().getSkin(MB_SKIN_SCROLLDOWNARROW),crTransPanel,
+			m_pd->config().getSkin(MB_SKIN_SCROLLBUTTON),crTransPanel,
+			m_pd->config().getSkin(MB_SKIN_SCROLLBACKGROUND),crTransPanel);
 	}
 	ReleaseDC(cdc);
 	

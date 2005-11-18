@@ -95,4 +95,49 @@ const static TCHAR MB_SKIN_SCROLLBUTTON[] = _T("ScrollButton.bmp");
 const static TCHAR MB_SKIN_SCROLLDOWNARROW[] = _T("ScrollDownArrow.bmp");
 const static TCHAR MB_SKIN_SCROLLUPARROW[] = _T("ScrollUpArrow.bmp");
 
+#define MBCONFIG_READ_COLOR_3D(_MBREG_OBJ_,_MBLOCATION_,_MB_IN_UL_,_MB_IN_LR_,_MB_OUT_UL_,_MB_OUT_LR_)\
+	_MB_IN_UL_  = _MBREG_OBJ_.Read("Color3d" + CS(_MBLOCATION_) + "InUL",0);\
+	_MB_IN_LR_  = _MBREG_OBJ_.Read("Color3d" + CS(_MBLOCATION_) + "InLR",0);\
+	_MB_OUT_UL_ = _MBREG_OBJ_.Read("Color3d" + CS(_MBLOCATION_) + "OutUL",0);\
+	_MB_OUT_LR_ = _MBREG_OBJ_.Read("Color3d" + CS(_MBLOCATION_) + "OutLR",0);
+
+
+#define MBCONFIG_READ_SKIN_DEFS(_MBCONFIG_OBJ_,_REGISTRY_KEY_OBJ_) \
+	RegistryKey _REGISTRY_KEY_OBJ_(_MBCONFIG_OBJ_.getSkin(MB_SKIN_DEF));\
+	_REGISTRY_KEY_OBJ_.ReadFile();\
+	{\
+		RegistryKey RegObjTmp(_MBCONFIG_OBJ_.getSkin(MB_SKIN_DEF_CUSTOM));\
+		RegObjTmp.ReadFile();\
+		_REGISTRY_KEY_OBJ_.Copy(RegObjTmp);\
+	}
+
+#define MBCONFIG_READ_TRANS_COLORS(_REG_OBJ_,_MBVARMAIN_,_MBVARPANEL_) \
+	_MBVARMAIN_ = RGB(_REG_OBJ_.Read("TransRedMain",254),\
+		_REG_OBJ_.Read("TransGreenMain",0),\
+		_REG_OBJ_.Read("TransBlueMain",0));\
+	_MBVARPANEL_ = RGB(_REG_OBJ_.Read("TransRedPanel",253),\
+		_REG_OBJ_.Read("TransGreenPanel",0),\
+		_REG_OBJ_.Read("TransBluePanel",0));
+
+
+
+
+
+
+
+
 #endif
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -7,7 +7,7 @@
 
 // ColorStaticST.h : header file
 //
-//#include "SkinBmp.h"
+#include "GetSysColors.h"
 
 class CColorStatic : public CStatic //, public SkinBmp
 {
@@ -35,6 +35,15 @@ public:
 	void SizeToContent();
 	void setDesc(CString desc) { m_desc = desc; }
 //	virtual DWORD SetBitmaps(CDC * cdc, LPCTSTR nBitmap, COLORREF crTransColor);
+
+	void SetColors(
+		COLORREF fg, 
+		COLORREF bg,
+		COLORREF inUL=0,
+		COLORREF inLR=0,
+		COLORREF outUL=0,
+		COLORREF outLR=0,
+		BOOL threeD=FALSE);
 
 	void SetTextColor(COLORREF crTextColor = 0xffffffff);
 	COLORREF GetTextColor();
@@ -105,6 +114,12 @@ private:
 
 	COLORREF m_ClrShadowDark;
 	COLORREF m_ClrShadowLight;
+
+	COLORREF m_crInUL;
+	COLORREF m_crInLR;
+	COLORREF m_crOutUL;
+	COLORREF m_crOutLR;
+	BOOL m_3d;
 
 	CBrush m_brBkgnd;
 	CBrush m_brBlinkBkgnd[2];

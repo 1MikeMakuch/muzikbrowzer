@@ -17,6 +17,11 @@ class CObjectInt : public CObject
 		int m_int;
 };
 
+class MBUtil {
+public:
+	static BOOL RgbTriple(char * val, unsigned long & rgb);
 
+
+}	;
 
 #endif

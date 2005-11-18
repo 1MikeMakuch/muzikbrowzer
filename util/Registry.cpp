@@ -17,6 +17,7 @@
 #include <stack>
 using namespace std;
 #include "ConfigFileLexer.h"
+#include "Misc.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -132,78 +133,6 @@ BOOL RegistryKey::ReadFile()
 		kvstack.pop();
 	}
 	return TRUE;
-
-
-#ifdef asdf
-	CFile cfile;
-	CFileException e;
-	if (cfile.Open(mFileName, 
-		//CFile::modeCreate
-		//        |CFile::modeNoTruncate
-		CFile::modeRead
-		//        |CFile::typeText
-		|CFile::shareDenyNone,
-		&e) == FALSE) {
-		return FALSE;
-	}
-	AutoBuf buf(cfile.GetLength()+1);
-	UINT r = cfile.Read(buf.p, cfile.GetLength());
-	buf.p[r] = 0;
-
-	cfile.Close();
-
-    CString key;
-    CString val;
-//	long lines = String::delCount(data, CString("\r\n"));
-//	long i;
-//	for(i = 1 ; i <= lines ; i++) {
-//		CString line = String::field(data, "\r\n", i);
-//		if (line != "") {
-//			key = String::field(line, ": ", 1);
-//			val = String::field(line, ": ", 2);
-//			mKeyValPairs->SetAt(key, val);
-//			logger.ods(key + " " + val);
-//
-//		}
-//	}
-
-	long bytes = strlen(buf.p);
-	char * pkey, * pval;
-	char * pch = buf.p;
-	while (pch != 0 && (pch - buf.p) < bytes) {
-		
-		// ignore comment lines
-		if (*pch == '#') {
-			while ((*pch != '\r' && *pch != '\n') && (pch - buf.p) < bytes)
-				pch++;
-		}
-
-		// everything up to first ':' is the key
-		pkey = pch++;
-		while (*pch != ':' && (pch - buf.p) < bytes)
-			pch++;
-		*pch = 0;
-		pch++;
-
-		// eat whitespace
-		while ((*pch == ' ' || *pch == '\t') && (pch - buf.p) < bytes)
-			pch++;
-
-		// val begins here up to '\r'
-		pval = pch;
-		while ((*pch != '\r' && *pch != '\n') && (pch - buf.p) < bytes)
-			pch++;
-		*pch = 0;
-		pch++;
-
-		// eat blanks
-		while ((*pch == '\r' || *pch == '\n') && (pch - buf.p) < bytes)
-			pch++;
-
-		mKeyValPairs->SetAt(pkey,pval);
-	}
-#endif
-	return TRUE;
 }
 ///////////////////////////////////////////////////////////////////////
 // Character strings
@@ -211,6 +140,7 @@ BOOL RegistryKey::ReadFile()
 void RegistryKey::Read( const TCHAR* value, TCHAR* data,
 					   unsigned long maxSize, const TCHAR* deflt ) const
 {
+
 	if (key != NULL) {
 		DWORD byteSize = maxSize * sizeof( TCHAR );
 		if( !ReadData( value, data, byteSize, REG_SZ ) )
@@ -222,7 +152,11 @@ void RegistryKey::Read( const TCHAR* value, TCHAR* data,
 		if (mKeyValPairs->Lookup(key, val) == 0) { // not found
 			val = deflt;
 		} else {
-			val = val.Right(val.GetLength()-2);
+			// just to remain backwards compatible with inhouse versions only
+			// can go prior to release
+#pragma hack
+			if (val.Left(2) == "L " || val.Left(2) == "S ")
+				val = val.Right(val.GetLength()-2);
 		}
 		_tcsnccpy( data, val.GetBuffer(0), maxSize );
 
@@ -248,7 +182,7 @@ void RegistryKey::Write( const TCHAR* value, const TCHAR* data ) const
 		WriteData( value, data, ( _tcslen( data ) + 1 ) * sizeof( TCHAR ),
 			REG_SZ );
 	} else {
-		CString val("S ");
+		CString val;//("S ");
 		val += data;
 		mKeyValPairs->SetAt(value, val);
 	}
@@ -259,6 +193,10 @@ TEST(Registry, FileWrite)
 {
 	RegistryKey rk("..\\testdata\\registry.dat");
 	rk.Write("key1","val1");
+	rk.Write("key11","S val1.1");
+	rk.Write("key12","L val1.2");
+	rk.Write("key13","X val1.3");
+	rk.Write("key14","L 104");
 	rk.Write("key2", 100);
 	rk.Write("key9", 900);
 	rk.Write("key8", 800);
@@ -266,6 +204,7 @@ TEST(Registry, FileWrite)
 	rk.Write("key3", 300);
 	rk.Write("key4", 400);
 	rk.Write("key5", 500);
+	rk.Write("Colorrgb", "100,100,100");
 	BOOL r = rk.WriteFile();
 	CHECK(r == TRUE);
 
@@ -279,6 +218,24 @@ TEST(Registry, FileWrite)
 	CString val(data);
 	CHECK(val == "val1");
 	CHECK(val2 == 100);
+
+	rk2.Read("key11", (TCHAR*) &data, (unsigned long) 100, (const TCHAR*)"default");
+	val = data;
+	CHECK(val == "val1.1");
+
+	rk2.Read("key12", (TCHAR*) &data, (unsigned long) 100, (const TCHAR*)"default");
+	val = data;
+	CHECK(val == "val1.2");
+
+	rk2.Read("key13", (TCHAR*) &data, (unsigned long) 100, (const TCHAR*)"default");
+	val = data;
+	CHECK(val == "X val1.3");
+
+	val2 = rk2.Read((const TCHAR*)"key14", (unsigned long)999);
+	CHECK(val2 == 104);
+
+	val2 = rk2.Read((const TCHAR*)"Colorrgb", (unsigned long)999);
+	CHECK(6579300 == val2);
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -301,7 +258,17 @@ unsigned long RegistryKey::Read( const TCHAR* value, unsigned long deflt ) const
 		if (mKeyValPairs->Lookup(key, val) == 0) { // not found
 			val = numToString(deflt);
 		} else {
-			val = val.Right(val.GetLength()-2);
+			// just to remain backwards compatible with inhouse versions only
+			// can go prior to release
+#pragma hack
+			if (val.Left(2) == "L " || val.Left(2) == "S ")
+				val = val.Right(val.GetLength()-2);
+
+			// if it's a key starting with "Color" and the value has 2
+			// commas surrounded by non white space, it must be an rgb! Argh!
+			if (key.Left(5) == "Color" 
+				&& MBUtil::RgbTriple(val.GetBuffer(0),retVal))
+				return retVal;
 		}
 		retVal = atol(val.GetBuffer(0));
 	}
@@ -314,7 +281,7 @@ void RegistryKey::Write( const TCHAR* value, unsigned long data ) const
 	if (key != NULL) {
 		WriteData( value, &data, sizeof( data ), REG_DWORD );
 	} else {
-		CString val("L ");
+		CString val;//("L ");
 		val += numToString(data);
 		mKeyValPairs->SetAt(value, val);
 	}
