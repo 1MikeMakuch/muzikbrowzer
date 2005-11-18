@@ -9,8 +9,8 @@
 #include "SkinDefs.h"
 #include "MBMessageBox.h"
 #include "MyLog.h"
-
 #include "FileUtils.h"
+#include "Misc.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -31,6 +31,7 @@ static unsigned int clipprecision;
 static unsigned int quality;
 static unsigned int pitchandfamily;
 
+#define MBFontErrorMsg(_MBFONTSPEC_) "Error in SkinDefinition setting:" + CS(_MBFONTSPEC_) + "\r\n\r\nGo to Settings/Display, make a change and click\r\nOK or Apply to create a new SkinDefintion file."
 /////////////////////////////////////////////////////////////////////////////
 // CConfigDisplay property page
 
@@ -414,7 +415,7 @@ CConfigDisplay::ReadReg(RegistryKey & reg, BOOL readskin) {
 	}
 
     reg.Read(RegWindowsFontTitles, buf.p, 999, "");
-    if (strlen(buf.p) > CCFONTFACEPOS) {
+    if (MBUtil::ConfigFontValidate(buf.p) && strlen(buf.p) > CCFONTFACEPOS) {
         sscanf(buf.p, CCFONTFMT, 
             &m_lfTitles.lfHeight, &m_lfTitles.lfWidth, &m_lfTitles.lfEscapement,
             &m_lfTitles.lfOrientation,
@@ -436,10 +437,12 @@ CConfigDisplay::ReadReg(RegistryKey & reg, BOOL readskin) {
         m_lfTitles.lfQuality = quality;
         m_lfTitles.lfPitchAndFamily = pitchandfamily;
         strcpy(m_lfTitles.lfFaceName, (buf.p + CCFONTFACEPOS));
-    }
+    } else {
+		MBMessageBox("Warning",MBFontErrorMsg(RegWindowsFontTitles));
+	}
 
     reg.Read(RegWindowsFontPanel, buf.p, 999, "");
-    if (strlen(buf.p) > CCFONTFACEPOS) {
+    if (MBUtil::ConfigFontValidate(buf.p) && strlen(buf.p) > CCFONTFACEPOS) {
         sscanf(buf.p, CCFONTFMT, 
             &m_lfPanel.lfHeight, &m_lfPanel.lfWidth, &m_lfPanel.lfEscapement,
             &m_lfPanel.lfOrientation,
@@ -461,10 +464,12 @@ CConfigDisplay::ReadReg(RegistryKey & reg, BOOL readskin) {
         m_lfPanel.lfQuality = quality;
         m_lfPanel.lfPitchAndFamily = pitchandfamily;
         strcpy(m_lfPanel.lfFaceName, (buf.p + CCFONTFACEPOS));
-    }
+    } else {
+		MBMessageBox("Warning",MBFontErrorMsg(RegWindowsFontTitles));
+	}
 
     reg.Read(RegWindowsFontColHdr, buf.p, 999, "");
-    if (strlen(buf.p) > CCFONTFACEPOS) {
+    if (MBUtil::ConfigFontValidate(buf.p) && strlen(buf.p) > CCFONTFACEPOS) {
         sscanf(buf.p, CCFONTFMT, 
             &m_lfColHdr.lfHeight, &m_lfColHdr.lfWidth, &m_lfColHdr.lfEscapement,
             &m_lfColHdr.lfOrientation,
@@ -486,10 +491,12 @@ CConfigDisplay::ReadReg(RegistryKey & reg, BOOL readskin) {
         m_lfColHdr.lfQuality = quality;
         m_lfColHdr.lfPitchAndFamily = pitchandfamily;
         strcpy(m_lfColHdr.lfFaceName, (buf.p + CCFONTFACEPOS));
-    }
+    } else {
+		MBMessageBox("Warning",MBFontErrorMsg(RegWindowsFontTitles));
+	}
 
 //    reg.Read(RegWindowsFontCurPlay, buf.p, 999, "");
-//    if (strlen(buf.p) > CCFONTFACEPOS) {
+//    if (MBUtil::ConfigFontValidate(buf.p) && strlen(buf.p) > CCFONTFACEPOS) {
 //        sscanf(buf.p, CCFONTFMT, 
 //            &m_lfCurPlay.lfHeight, &m_lfCurPlay.lfWidth, &m_lfCurPlay.lfEscapement,
 //            &m_lfCurPlay.lfOrientation,
@@ -511,7 +518,9 @@ CConfigDisplay::ReadReg(RegistryKey & reg, BOOL readskin) {
 //        m_lfCurPlay.lfQuality = quality;
 //        m_lfCurPlay.lfPitchAndFamily = pitchandfamily;
 //        strcpy(m_lfCurPlay.lfFaceName, (buf.p + CCFONTFACEPOS));
-//    }
+//    } else {
+//		MBMessageBox("Warning",MBFontErrorMsg(RegWindowsFontTitles));
+//	}
 }
 void
 CConfigDisplay::StoreReg(RegistryKey & reg, BOOL storeskin) {

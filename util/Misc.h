@@ -19,8 +19,8 @@ class CObjectInt : public CObject
 
 class MBUtil {
 public:
-	static BOOL RgbTriple(char * val, unsigned long & rgb);
-
+	static BOOL RgbTriple(const char * val, unsigned long & rgb);
+	static BOOL ConfigFontValidate(const char * font);
 
 }	;
 

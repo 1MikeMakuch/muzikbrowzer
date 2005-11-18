@@ -2,6 +2,8 @@
 #ifndef _MBConfigFileParser_h
 #define _MBConfigFileParser_h
 #include <io.h>
+#include <stack>
+using namespace std;
 
 //typedef struct {
 //	char * key;
@@ -36,5 +38,6 @@ private:
 };
 
 void ConfigFileParser(const char * file, stack<KVPair> * kvstack);
+BOOL ConfigFontParser(const char * str);
 
 #endif

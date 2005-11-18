@@ -136,15 +136,34 @@ TEST(ConfigFileParser2, ParseTest2)
 	CHECK(kvstack.empty() == TRUE);
 }
 
+// Validate font spec from config file
+BOOL
+MBUtil::ConfigFontValidate(const char * val)
+{
+	return ConfigFontParser(val);
+}
+TEST(ConfigFontParser, parsetest)
+{
+
+	char * font1 = "0";
+	BOOL r = MBUtil::ConfigFontValidate(font1);
+	CHECK(r == FALSE);
+	char * font2 = "FFFFFEC0 00000000 00000000 00000000 000002BC 00 00 00 00 00 00 00 00 Arial";
+	r = MBUtil::ConfigFontValidate(font2);
+	CHECK(r == TRUE);
+
+}
 
 // get the RGB value from a string like "100,100,100"
 BOOL
-MBUtil::RgbTriple(char * val, unsigned long & rgb) 
+MBUtil::RgbTriple(const char * vali, unsigned long & rgb) 
 {
+	AutoBuf val(strlen(vali)+1);
+	strcpy(val.p, vali);
 	char * pr,*pg,*pb;
 	pr = pg = pb = NULL;
 
-	pr = strtok(val,", ");
+	pr = strtok(val.p,", ");
 	if (NULL == pr)	return FALSE;
 	pg = strtok(NULL,", ");
 	if (NULL == pg)	return FALSE;

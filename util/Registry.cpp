@@ -267,7 +267,7 @@ unsigned long RegistryKey::Read( const TCHAR* value, unsigned long deflt ) const
 			// if it's a key starting with "Color" and the value has 2
 			// commas surrounded by non white space, it must be an rgb! Argh!
 			if (key.Left(5) == "Color" 
-				&& MBUtil::RgbTriple(val.GetBuffer(0),retVal))
+				&& MBUtil::RgbTriple((LPCTSTR)val,retVal))
 				return retVal;
 		}
 		retVal = atol(val.GetBuffer(0));

@@ -20,6 +20,7 @@
 
 %option c++
 %option nounput noyywrap
+%option prefix="ConfigFile"
 
 %x keyac
 %x valinit
@@ -113,7 +114,7 @@ void ConfigFileParser(const char * file, stack<KVPair> * kvstack) {
 
 	_kvstack = kvstack;
 
-	yyFlexLexer lexer(&fs);
+	ConfigFileFlexLexer lexer(&fs, NULL);
 	 lexer.yylex();
 
 // 	yylex();
