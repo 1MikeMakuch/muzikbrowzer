@@ -21,7 +21,7 @@ class MBUtil {
 public:
 	static BOOL RgbTriple(const char * val, unsigned long & rgb);
 	static BOOL ConfigFontValidate(const char * font);
-
+	static CString CrToRGB(COLORREF rgb);
 }	;
 
 #endif

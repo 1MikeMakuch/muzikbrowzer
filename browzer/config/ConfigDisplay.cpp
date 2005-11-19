@@ -526,18 +526,18 @@ void
 CConfigDisplay::StoreReg(RegistryKey & reg, BOOL storeskin) {
 	AutoLog alog("CCD::StoreREg");
 
-    reg.Write(RegWindowsColorBkPanel, m_vBkPanel);
-    reg.Write(RegWindowsColorBkNormal, m_vBkNormal);
-    reg.Write(RegWindowsColorBkHigh, m_vBkHigh);
-    reg.Write(RegWindowsColorBkSel, m_vBkSel);
-    reg.Write(RegWindowsColorTxPanel, m_vTxPanel);
-    reg.Write(RegWindowsColorTxNormal, m_vTxNormal);
-    reg.Write(RegWindowsColorTxHigh, m_vTxHigh);
-    reg.Write(RegWindowsColorTxSel, m_vTxSel);
-    reg.Write(RegWindowsColorBkColHdr, m_vBkColHdr);
-    reg.Write(RegWindowsColorTxColHdr, m_vTxColHdr);
-//    reg.Write(RegWindowsColorBkCurPlay, m_vBkCurPlay);
-//    reg.Write(RegWindowsColorTxCurPlay, m_vTxCurPlay);
+    reg.Write(RegWindowsColorBkPanel, MBUtil::CrToRGB(m_vBkPanel));
+    reg.Write(RegWindowsColorBkNormal, MBUtil::CrToRGB(m_vBkNormal));
+    reg.Write(RegWindowsColorBkHigh, MBUtil::CrToRGB(m_vBkHigh));
+    reg.Write(RegWindowsColorBkSel, MBUtil::CrToRGB(m_vBkSel));
+    reg.Write(RegWindowsColorTxPanel, MBUtil::CrToRGB(m_vTxPanel));
+    reg.Write(RegWindowsColorTxNormal, MBUtil::CrToRGB(m_vTxNormal));
+    reg.Write(RegWindowsColorTxHigh, MBUtil::CrToRGB(m_vTxHigh));
+    reg.Write(RegWindowsColorTxSel, MBUtil::CrToRGB(m_vTxSel));
+    reg.Write(RegWindowsColorBkColHdr, MBUtil::CrToRGB(m_vBkColHdr));
+    reg.Write(RegWindowsColorTxColHdr, MBUtil::CrToRGB(m_vTxColHdr));
+//    reg.Write(RegWindowsColorBkCurPlay, MBUtil::CrToRGB(m_vBkCurPlay));
+//    reg.Write(RegWindowsColorTxCurPlay, MBUtil::CrToRGB(m_vTxCurPlay));
 
 	int sel = m_SkinList.GetCurSel();
 	if (sel > -1) {

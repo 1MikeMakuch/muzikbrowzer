@@ -153,6 +153,13 @@ TEST(ConfigFontParser, parsetest)
 	CHECK(r == TRUE);
 
 }
+CString
+MBUtil::CrToRGB(COLORREF rgb) {
+	CString srgb  = numToString(GetRValue(rgb)) + ","
+		+ numToString(GetGValue(rgb)) + ","
+		+ numToString(GetBValue(rgb));
+	return srgb;
+}
 
 // get the RGB value from a string like "100,100,100"
 BOOL
