@@ -1,5 +1,11 @@
 
-		#include <stdafx.h>
+		#ifdef _MUZIKBR_MAIN_
+			#include <stdafx.h>
+		#else
+			#define BOOL bool
+			#define TRUE 1
+			#define FALSE 0
+		#endif
 		#include <stdio.h>
 		#include <errno.h>
 		#include <malloc.h>
@@ -67,12 +73,12 @@ OP				[:=]
 <valinit>{NL}+		{
 						BEGIN(INITIAL);
 					}
-<valinit>{ALNUM}	{
+<valinit>{VALDATA}	{
 						val = pbuf;
 						*pbuf++ = yytext[0];
 						BEGIN(valac);
 					}
-<valac>{VALDATAWS}+{VALDATA}		{
+<valac>{VALDATAWS}*{VALDATA}		{
 						strcpy(pbuf,yytext);
 						pbuf += strlen(yytext);
 					}
@@ -104,9 +110,11 @@ void ConfigFileParser(const char * file, stack<KVPair> * kvstack) {
 */
 
 #include <fcntl.h>
-#include <share.h>
+#ifdef _MUZIKBR_MAIN_
+	#include <share.h>
+#endif
 #include <fstream>
-#include "MyString.h"
+//#include "MyString.h"
 
 void ConfigFileParser(const char * file, stack<KVPair> * kvstack) {
 
@@ -120,3 +128,19 @@ void ConfigFileParser(const char * file, stack<KVPair> * kvstack) {
 // 	yylex();
 // 	fclose(yyin);
 }
+
+
+#ifdef _MUZKBR_MAIN_
+int
+main(int argc, char *argv[]) {
+	stack<KVPair> kvstack;
+	ConfigFileParser(argv[1], &kvstack);
+	char * pkey,*pval;
+	while(!kvstack.empty()) {
+		pkey = kvstack.top().key();
+		pval = kvstack.top().val();
+		printf("%s=%s\n",pkey,pval);
+		kvstack.pop();
+	}
+}
+#endif

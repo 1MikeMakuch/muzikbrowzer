@@ -260,7 +260,7 @@ static yyconst short int yy_accept[41] =
     {   0,
         0,    0,    0,    0,    0,    0,    0,    0,   17,   16,
         3,    1,    4,    2,    9,    6,    5,    7,   10,   11,
-       12,   14,   15,   16,   14,    1,    9,    8,    7,    6,
+       12,   14,   15,   13,   14,    1,    9,    8,    7,    6,
         0,    5,   10,   11,    0,   13,   14,    8,    8,    0
     } ;
 
@@ -323,7 +323,7 @@ static yyconst short int yy_nxt[71] =
     {   0,
        10,   10,   11,   11,   10,   12,   13,   14,   10,   15,
        16,   16,   10,   10,   17,   18,   10,   19,   20,   20,
-       10,   10,   21,   10,   10,   22,   23,   23,   24,   25,
+       21,   10,   21,   21,   10,   22,   23,   23,   24,   25,
        24,   24,   27,   36,   39,   33,   28,   28,   29,   31,
        39,   35,   35,   33,   32,   26,   26,   40,   26,   30,
        30,   34,   34,   37,   37,   40,   37,   38,   38,   40,
@@ -349,7 +349,13 @@ static yyconst short int yy_chk[71] =
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 #define INITIAL 0
+#ifdef _MUZIKBR_MAIN_
 #include <stdafx.h>
+#else
+#define BOOL bool
+#define TRUE 1
+#define FALSE 0
+#endif
 #include <stdio.h>
 #include <errno.h>
 #include <malloc.h>
@@ -1501,9 +1507,11 @@ void ConfigFileParser(const char * file, stack<KVPair> * kvstack) {
 */
 
 #include <fcntl.h>
-#include <share.h>
+#ifdef _MUZIKBR_MAIN_
+	#include <share.h>
+#endif
 #include <fstream>
-#include "MyString.h"
+//#include "MyString.h"
 
 void ConfigFileParser(const char * file, stack<KVPair> * kvstack) {
 
@@ -1517,3 +1525,19 @@ void ConfigFileParser(const char * file, stack<KVPair> * kvstack) {
 // 	yylex();
 // 	fclose(yyin);
 }
+
+
+#ifdef _MUZKBR_MAIN_
+int
+main(int argc, char *argv[]) {
+	stack<KVPair> kvstack;
+	ConfigFileParser(argv[1], &kvstack);
+	char * pkey,*pval;
+	while(!kvstack.empty()) {
+		pkey = kvstack.top().key();
+		pval = kvstack.top().val();
+		printf("%s=%s\n",pkey,pval);
+		kvstack.pop();
+	}
+}
+#endif

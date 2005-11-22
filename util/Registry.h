@@ -70,8 +70,11 @@ class RegistryKey
 {
 public:
   // Open (or create, if necessary) the key below the specified handle
+	RegistryKey();
   RegistryKey( HKEY base, const TCHAR* keyName );
   RegistryKey(CString filename);
+  void init( HKEY base, const TCHAR* keyName );
+  void init(CString filename);
 
   // Close the key
   ~RegistryKey();

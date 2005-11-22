@@ -24,20 +24,42 @@ using namespace std;
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
 #endif
+RegistryKey::RegistryKey():mKeyValPairs(NULL),key(NULL)
+{}
+void
+RegistryKey::init(HKEY base, const TCHAR* keyName )
+{
+	if( RegCreateKeyEx( base, keyName, 0, _T(""), 0,
+                      KEY_QUERY_VALUE | KEY_SET_VALUE,
+                      NULL, &key, NULL ) != ERROR_SUCCESS )
+		key = NULL;
+
+	mFileName = "";
+	if (mKeyValPairs)
+		delete mKeyValPairs;
+}
+void
+RegistryKey::init(CString filename)
+{
+	if (mKeyValPairs)
+		delete mKeyValPairs;
+	key = NULL;
+	mKeyValPairs = new CMapStringToString;
+	mFileName = filename;
+}
 
 RegistryKey::RegistryKey( HKEY base, const TCHAR* keyName )
-	: mKeyValPairs(NULL)
+	: mKeyValPairs(NULL),key(NULL)
 {
   if( RegCreateKeyEx( base, keyName, 0, _T(""), 0,
                       KEY_QUERY_VALUE | KEY_SET_VALUE,
                       NULL, &key, NULL ) != ERROR_SUCCESS )
-    key = NULL;
+		key = NULL;
 	mFileName = "";
 }
 RegistryKey::RegistryKey( CString filename ) : mFileName(filename)
-	,mKeyValPairs(NULL)
+	,mKeyValPairs(NULL),key(NULL)
 {
-	key = NULL;
 	mKeyValPairs = new CMapStringToString;
 }
 
@@ -204,6 +226,7 @@ TEST(Registry, FileWrite)
 	rk.Write("key3", 300);
 	rk.Write("key4", 400);
 	rk.Write("key5", 500);
+	rk.Write("key39", 39);
 	rk.Write("Colorrgb", "100,100,100");
 	BOOL r = rk.WriteFile();
 	CHECK(r == TRUE);
@@ -218,6 +241,8 @@ TEST(Registry, FileWrite)
 	CString val(data);
 	CHECK(val == "val1");
 	CHECK(val2 == 100);
+	int v = rk2.Read("key39", 1);
+	CHECK(39 == v);
 
 	rk2.Read("key11", (TCHAR*) &data, (unsigned long) 100, (const TCHAR*)"default");
 	val = data;

@@ -118,6 +118,10 @@ SOURCE=.\ConfigFileLexer.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\ConfigFontLexer.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\DIBSectionLite.cpp
 # End Source File
 # Begin Source File

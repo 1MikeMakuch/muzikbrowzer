@@ -6,7 +6,7 @@ using namespace std;
 #include "ConfigFileLexer.h"
 #include "TestHarness.h"
 #include "MyLog.h"
-
+#include "FileUtils.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -223,14 +223,295 @@ TEST(MBUtilRgbTriple, test1)
 
 }
 
+void MBUtil::BmpToDC(CDC* pDC, BitmapToCRect * bmcr, 
+						   BOOL doTrans, COLORREF bkcolor, int offset)
+{
+    if (!bmcr)
+        return ;
+	
+    HBITMAP    pbmpOldBmp = NULL;
+	HBITMAP hMask = NULL;
+	UINT BITBLTTYPE = SRCCOPY;
+
+	// offset of 0 is used for painting the main dialog background + the
+	// resize border (2). offset of 2 is used for remainder of 
+	// background panels so they line up properly. If using this func
+	// for other use just leave offset at 0.
+	int x,y,srcwidth,srcheight,destwidth,destheight;
+	x = bmcr->m_rect.left+offset;
+	y =  bmcr->m_rect.top+offset;
+	
+	// dst dimensions
+	destwidth = bmcr->m_rect.Width();
+	destheight = bmcr->m_rect.Height();
+	
+	// src dimensions
+	srcwidth = bmcr->m_width;
+	srcheight = bmcr->m_height;
+
+	if (doTrans) { // do the transparent stuff
+		hMask = MBUtil::CreateBitmapMask(bmcr->m_hBitmap, destwidth, destheight,
+			srcwidth, srcheight, bmcr->m_loStyle,bkcolor);
+
+		BitmapToCRect bmcrTrans((HBITMAP)hMask, bmcr->m_rect, bmcr->m_loStyle, 
+			srcwidth,srcheight, CS("MBUtil::BmpToDC"));
+		MBUtil::CutAndTileBmp(pDC,&bmcrTrans,offset,SRCAND);
+
+		BITBLTTYPE = SRCPAINT;
+	}
+	MBUtil::CutAndTileBmp(pDC, bmcr, offset, BITBLTTYPE);
+	
+	::DeleteObject(hMask);
+	
+    return ;
+}
+//void MBUtil::CutAndTileBmp(CDC* pDC, HDC hdcSrc, HBITMAP bmp,
+//		CRect & destrect, LayOutStyle los, 
+//		int srcwidth, int srcheight,
+//		int offset,UINT BITBLTTYPE ) {
+//
+//	BitmapToCRect bmcr(bmp, destrect, los, 
+//		srcwidth,srcheight, CS("MBUtil::BmpToDC"), hdcSrc);
+//	MBUtil::CutAndTileBmp(pDC, &bmcr, offset, BITBLTTYPE);
+//}
+static void tileloop(const int xoff,  const int yoff,
+					 const int destwidth, const int destheight,
+					 const int left, const int right,
+					 const int top  , const int bottom,
+					 const int width, const int height,
+					 const int x_src, const int y_src,
+					 CDC * dc, CDC * pDC, const DWORD rop,
+					 int PaintEdges)
+{
+	int lwidth = width;
+	int lheight = height;
+	int trimWidth = width * PaintEdges;    // PaintEdges == 1 or 0
+	int trimHeight = height * PaintEdges;
+	int x,y;
+	for (x = left; x < right ; x += width) {
+		for (y = top; y < bottom; y += height) {
+			if (x > right - width)
+				lwidth =  ((xoff + destwidth) - trimWidth) - x;
+			if (y > bottom - height)
+				lheight = ((yoff + destheight) - trimHeight) - y;
+			pDC->BitBlt(x,y, lwidth, lheight,
+				dc, x_src, y_src, rop);
+			lwidth = width; lheight = height;
+		}
+	}
+}
+
+#define TileLoop \
+		tileloop(x,y,destwidth,destheight,\
+			left,right,top,bottom,width,height,\
+			x_src,y_src,dc,pDC,BITBLTTYPE, 0);
+
+#define TileLoopNoEdges \
+		tileloop(x,y,destwidth,destheight,\
+			left,right,top,bottom,width,height,\
+			x_src,y_src,dc,pDC,BITBLTTYPE, 1);
+
+void MBUtil::CutAndTileBmp(CDC* pDC, BitmapToCRect * bmcr, 
+						   int offset, UINT		BITBLTTYPE )
+{
+    CDC * dc = NULL;
+	HBITMAP pbmpOldBmp = NULL;
+	if (NULL != bmcr->m_dc) {
+		dc = bmcr->m_dc;
+	} else {
+		dc = new CDC();
+		dc->CreateCompatibleDC(NULL);
+		pbmpOldBmp = (HBITMAP)::SelectObject(dc->m_hDC, bmcr->m_hBitmap);
+	}
 
 
+	int x,y,srcwidth,srcheight,destwidth,destheight;
+	x = bmcr->m_rect.left+offset;
+	y =  bmcr->m_rect.top+offset;
+	
+	// dst dimensions
+	destwidth = bmcr->m_rect.Width();
+	destheight = bmcr->m_rect.Height();
+	
+	// src dimensions
+	srcwidth = bmcr->m_width;
+	srcheight = bmcr->m_height;
+
+	int x_src,y_src,x_dst,y_dst;
+	int width,height;
+	int thirdwidth = bmcr->m_width / 3;
+	int thirdheight = bmcr->m_height / 3;
+	if (thirdwidth > destwidth/3)
+		thirdwidth = destwidth / 3;
+	if (thirdheight > destheight/3)
+		thirdheight = destheight / 3;
+
+	x_src = y_src = x_dst = y_dst = 0;
+	x_dst = x;
+	y_dst = y;
+	int left,right,top,bottom;
+
+    if ( bmcr->m_loStyle == LO_FIXED )
+    {
+		pDC->BitBlt(bmcr->m_rect.left+offset, bmcr->m_rect.top+offset, 
+				destwidth, destheight, dc, 0, 0, BITBLTTYPE);
+    } else if (bmcr->m_loStyle == LO_TILED0) {
+		left = x;
+		right = x + destwidth;
+		top = y;
+		bottom = y + destheight;
+		width = srcwidth;
+		height = srcheight;
+		TileLoop;
+		
+		left = x + width;
+		right = x + destwidth;
+		top = y + height;
+		bottom = y + destheight;
+		width = srcwidth;
+		height = srcheight;
+		TileLoop;
+    } else if (bmcr->m_loStyle == LO_TILED) {
+		width = thirdwidth;
+		height = thirdheight;
+
+//goto bottomedge;
+		// middle
+		x_src = thirdwidth;
+		y_src = thirdheight;
+		left = width + x;
+		right = (destwidth - width) + x;
+		top = height + y;
+		bottom = (destheight - height) + y;
+		TileLoopNoEdges;
+
+		// top edge
+		x_src = thirdwidth;
+		y_src = 0;
+		top = y;;
+		bottom = top + height;
+		TileLoopNoEdges;
+
+		// right edge
+		x_src = bmcr->m_width - thirdwidth;
+		y_src = thirdheight;
+		top = height + y;
+		bottom = (destheight - height) + y;
+		left = (destwidth - width) + x;
+		right = destwidth + x;
+		TileLoopNoEdges;
+//bottomedge:
+		// bottom edge
+		x_src = width;
+		y_src = bmcr->m_height - thirdheight;
+		top = (destheight - height) + y;
+		bottom = destheight + y;
+		left = width + x;
+		right = (destwidth - width) + x;
+		TileLoopNoEdges;
+//goto bottomcorners;
+		// left edge
+		x_src = 0;
+		y_src = thirdheight;
+		top = height + y;
+		bottom = (destheight - height) + y;
+		left = x;
+		right = width + x;
+		TileLoopNoEdges;
 
 
+		// upper left
+		x_src = y_src = x_dst = y_dst = 0;
+		x_dst = x;
+		y_dst = y;
+		width = width = thirdwidth;
+		height = height = thirdheight;
+		pDC->BitBlt(x_dst,y_dst, width, height, dc, x_src, y_src, BITBLTTYPE);
+
+		// upper right
+		x_src = bmcr->m_width - thirdwidth;
+		x_dst = (destwidth - thirdwidth)+x;
+		pDC->BitBlt(x_dst,y_dst, width, height, dc, x_src, y_src, BITBLTTYPE);
+//bottomcorners:
+		// lower left
+		x_src = 0;
+		y_src = bmcr->m_height - thirdheight;
+		x_dst = x;
+		y_dst = (destheight - thirdheight)+y;
+		pDC->BitBlt(x_dst,y_dst, width, height, dc, x_src, y_src, BITBLTTYPE);
+
+		// lower right
+		x_src = bmcr->m_width - thirdwidth;
+		x_dst = (destwidth - thirdwidth)+x;
+		y_dst = (destheight - thirdheight)+y;
+		pDC->BitBlt(x_dst,y_dst, width, height, dc, x_src, y_src, BITBLTTYPE);
+	}
+    else if (bmcr->m_loStyle == LO_CENTER)
+    {
+        int ixOrg = x + (destwidth - bmcr->m_width) / 2;
+        int iyOrg = y + (destheight - bmcr->m_height) / 2;
+        pDC->BitBlt(ixOrg+offset, iyOrg+offset, destwidth, destheight, dc, 0, 0, BITBLTTYPE);
+    }
+    else if ( bmcr->m_loStyle == LO_STRETCHED)
+    {
+        pDC->StretchBlt(x, y, destwidth, destheight, 
+			dc, 0, 0, srcwidth, srcheight, BITBLTTYPE);
+    }
+//quitit:
+	if (NULL == bmcr->m_dc) {
+		::SelectObject(dc->m_hDC, pbmpOldBmp);
+		dc->DeleteDC();
+		delete dc;
+	}
+
+}
 
 
+HBITMAP MBUtil::CreateBitmapMask(HBITMAP hSourceBitmap, 
+				DWORD destwidth, DWORD destheight,
+				DWORD srcwidth, DWORD srcheight,
+				LayOutStyle los,
+				COLORREF bkcolor)
+{
+	HBITMAP		hMask		= NULL;
+	CDC			dcSrc;
+	CDC			dcDest;
+	CDC			dcTmp;
+	HBITMAP		hbmSrcT		= NULL;
+	HBITMAP		hbmDestT	= NULL;
+	HBITMAP		hbmNewSrc	= NULL;
+	HBITMAP		hbmTmp		= NULL;
+	COLORREF	crSaveBk;
+	COLORREF	crSaveDestText;
 
+	CDC dc;
+	dc.CreateCompatibleDC(NULL);
 
+	hMask = ::CreateCompatibleBitmap(dc.m_hDC, srcwidth,srcheight);
+	if (hMask == NULL)	return NULL;
 
+	dcSrc.CreateCompatibleDC(NULL);
+	dcDest.CreateCompatibleDC(NULL);
 
+	FileUtil::BmpLog(hSourceBitmap, "hSrc");
+	
+	hbmSrcT = (HBITMAP)dcSrc.SelectObject(hSourceBitmap);
+	hbmDestT = (HBITMAP)dcDest.SelectObject(hMask);
 
+	crSaveBk = dcSrc.SetBkColor(bkcolor);
+
+	dcDest.BitBlt(0,0,srcwidth,srcheight,&dcSrc,0,0,SRCCOPY);
+
+	crSaveDestText = dcSrc.SetTextColor(RGB(255, 255, 255));
+	dcSrc.SetBkColor(RGB(0, 0, 0));
+
+	dcSrc.BitBlt(0,0,srcwidth,srcheight,&dcDest,0,0,SRCAND);
+
+	dcDest.SetTextColor(crSaveDestText);
+
+	dcSrc.SetBkColor(crSaveBk);
+	dcSrc.SelectObject(hbmSrcT);
+	dcDest.SelectObject(hbmDestT);
+
+	return hMask;
+} // End of CreateBitmapMask
