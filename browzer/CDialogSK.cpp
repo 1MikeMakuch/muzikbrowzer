@@ -6,32 +6,9 @@
 #include "MyLog.h"
 #include "MyString.h"
 #include "FileUtils.h"
+#include "Misc.h"
 
 
-class BitmapToCRect
-{
-public:
-	BitmapToCRect(HBITMAP bm, CRect & rect, LayOutStyle los, 
-		DWORD width, DWORD height, CString & desc)
-		
-		: m_hBitmap(bm),
-		m_rect(rect), m_loStyle(los), m_width(width), m_height(height),
-		m_desc(desc)
-	{};
-	~BitmapToCRect() {
-		::DeleteObject(m_hBitmap);
-		::DeleteObject(m_hMask);
-	};
-
-	HBITMAP m_hBitmap;
-	HBITMAP m_hMask;
-	CRect   m_rect;
-	LayOutStyle m_loStyle;
-	DWORD m_width;
-	DWORD m_height;
-	CString m_desc;
-
-};
 static lpfnSetLayeredWindowAttributes g_pSetLayeredWindowAttributes;
 /////////////////////////////////////////////////////////////////////////////
 // CDialogSK dialog
@@ -259,65 +236,7 @@ DWORD CDialogSK::SetBitmap(HBITMAP hBitmap, CRect & rect, LayOutStyle los
     
 }
 
-HBITMAP CDialogSK::CreateBitmapMask(HBITMAP hSourceBitmap, 
-				DWORD dwidth, DWORD dheight,
-				DWORD swidth, DWORD sheight,
-				LayOutStyle los)
-{
-	HBITMAP		hMask		= NULL;
-	HDC			hdcSrc		= NULL;
-	HDC			hdcDest		= NULL;
-	HDC			hdcTmp		= NULL;
-	HBITMAP		hbmSrcT		= NULL;
-	HBITMAP		hbmDestT	= NULL;
-	HBITMAP		hbmNewSrc	= NULL;
-	HBITMAP		hbmTmp		= NULL;
-	COLORREF	crSaveBk;
-	COLORREF	crSaveDestText;
 
-	HDC hdc = ::CreateCompatibleDC(NULL);
-	hMask = ::CreateCompatibleBitmap(hdc, dwidth,dheight);
-	if (hMask == NULL)	return NULL;
-
-	hdcSrc	= ::CreateCompatibleDC(NULL);
-	hdcDest	= ::CreateCompatibleDC(NULL);
-	
-	hbmSrcT = (HBITMAP)::SelectObject(hdcSrc, hSourceBitmap);
-	hbmDestT = (HBITMAP)::SelectObject(hdcDest, hMask);
-
-	crSaveBk = ::SetBkColor(hdcSrc, m_Panel);
-
-//	if (los == LO_STRETCHED) {
-//		::StretchBlt(hdcDest, 0, 0, dwidth, dheight,
-//			hdcSrc, 0, 0, swidth, sheight, SRCCOPY);
-//	} else {
-		::BitBlt(hdcDest, 0, 0, dwidth, dheight,
-			hdcSrc, 0, 0, SRCCOPY);
-//	}
-
-	crSaveDestText = ::SetTextColor(hdcSrc, RGB(255, 255, 255));
-	::SetBkColor(hdcSrc,RGB(0, 0, 0));
-
-//	if (los == LO_STRETCHED) {
-//		::StretchBlt(hdcSrc, 0, 0, dwidth, dheight,
-//			hdcDest, 0, 0, swidth, sheight, SRCAND);
-//	} else {
-		::BitBlt(hdcSrc, 0, 0, dwidth,dheight,
-			hdcDest, 0, 0, SRCAND);
-//	}
-
-	::SetTextColor(hdcDest, crSaveDestText);
-
-	::SetBkColor(hdcSrc, crSaveBk);
-	::SelectObject(hdcSrc, hbmSrcT);
-	::SelectObject(hdcDest, hbmDestT);
-
-	::DeleteDC(hdcSrc);
-	::DeleteDC(hdcDest);
-	::DeleteDC(hdc);
-
-	return hMask;
-} // End of CreateBitmapMask
 
 void CDialogSK::make(CDC * wDC) {
 //	CString msg = "make bg\r\n";
@@ -341,7 +260,7 @@ void CDialogSK::make(CDC * wDC) {
 
 	for (i = 0 ; i < m_NumBitmapToCRect; i++) {
 		bmcr = m_BitmapToCRect[i];
-		applyOneBg(&dc, bmcr, (i>0)*frameborder);
+		MBUtil::BmpToDC(&dc, bmcr, (i>0)*TRUE, m_Panel, (i>0)*frameborder);
 	}		
 	dc.SelectObject(oldbm);
 
@@ -363,14 +282,14 @@ void CDialogSK::make(CDC * wDC) {
 	dc2.SelectObject(oldbm2);
 	dc.SelectObject(oldbm);
 
-//	FileUtil::BmpSave(*m_bmBackground, "c:\\mkm\\bmps\\bgBg.bmp");
+	FileUtil::BmpSave(*m_bmBackground, "c:\\mkm\\bmps\\bgBg.bmp");
 
 
 	
 	ReleaseDC(pDC);
 	dc.DeleteDC();
 
-	//FileUtil::BmpSave(*m_bmFrame, "c:\\mkm\\bmps\\bgFrame.bmp");
+	FileUtil::BmpSave(*m_bmFrame, "c:\\mkm\\bmps\\bgFrame.bmp");
 
 
 }
@@ -409,184 +328,7 @@ BOOL CDialogSK::EraseBkgndNC(CDC *pDC) {
 //	OutputDebugString("CDialogSK::OnEraseBkgndNC\r\n");
 	return TRUE;
 }
-BOOL CDialogSK::applyOneBg(CDC* pDC, BitmapToCRect * bmcr, int offset)
-{
-    if (!bmcr)
-        return FALSE;
-	
-    CDC dc;
-    dc.CreateCompatibleDC(NULL);
 
-    HBITMAP    pbmpOldBmp = NULL;
-	HBITMAP hMask = NULL;
-	HDC hdcTmp = (HDC)::CreateCompatibleDC(NULL);
-
-    pbmpOldBmp = (HBITMAP)::SelectObject(dc.m_hDC, bmcr->m_hBitmap);
-
-	int x,y,swidth,sheight,dwidth,dheight;
-	x = bmcr->m_rect.left+offset;
-	y =  bmcr->m_rect.top+offset;
-	dwidth = bmcr->m_rect.Width();
-	dheight = bmcr->m_rect.Height();
-	swidth = bmcr->m_width;
-	sheight = bmcr->m_height;
-	
-    if ( bmcr->m_loStyle == LO_FIXED )
-    {
-		if (offset) { // do the transparent stuff
-			::SelectObject(dc.m_hDC, pbmpOldBmp);
-
-			hMask = CreateBitmapMask(bmcr->m_hBitmap, swidth, sheight,
-				swidth, sheight, bmcr->m_loStyle);
-//			FileUtil::BmpLog(hMask, "SK-Mask");
-
-			pbmpOldBmp = (HBITMAP)::SelectObject(dc.m_hDC, bmcr->m_hBitmap);
-
-			// from DrawTheBitmap
-			// And the mask
-			// Why stretching?
-			HBITMAP hOldMask = (HBITMAP)::SelectObject(hdcTmp, hMask);
-			::StretchBlt(pDC->m_hDC,x,y,dwidth,dheight,hdcTmp,0,0,
-				swidth,sheight,SRCAND);
-			::SelectObject(hdcTmp, hOldMask);
-				::DeleteObject(hMask);
-			pDC->BitBlt(bmcr->m_rect.left+offset, bmcr->m_rect.top+offset, 
-				bmcr->m_rect.Width(), bmcr->m_rect.Height(), &dc, 0, 0, SRCPAINT);
-		} else {
-			pDC->BitBlt(bmcr->m_rect.left+offset, bmcr->m_rect.top+offset, 
-				bmcr->m_rect.Width(), bmcr->m_rect.Height(), &dc, 0, 0, SRCCOPY);
-		}
-    } else if (bmcr->m_loStyle == LO_TILED0) {
-		// Need to add offset/transparent code here
-		int ixOrg, iyOrg;
-        for (iyOrg = 0; iyOrg < bmcr->m_rect.Height(); iyOrg += bmcr->m_height)
-        {
-            for (ixOrg = 0; ixOrg < bmcr->m_rect.Width(); ixOrg += bmcr->m_width)
-            {
-                pDC->BitBlt (ixOrg+offset, iyOrg+offset, bmcr->m_rect.Width(), 
-					bmcr->m_rect.Height(), &dc, 0, 0, SRCCOPY);
-            }
-        }
-    } else if (bmcr->m_loStyle == LO_TILED) {
-
-		// Need to add offset/transparent code here
-		int x_src,y_src,x_dst,y_dst;
-		int width,height;
-		int thirdwidth = bmcr->m_width / 3;
-		int thirdheight = bmcr->m_height / 3;
-
-		x_src = y_src = x_dst = y_dst = 0;
-		x_dst = x;
-		y_dst = y;
-		width = thirdwidth;
-		height = thirdheight;
-
-		// middle
-		x_src = thirdwidth;
-		y_src = thirdheight;
-		for (x_dst = width+x; x_dst < (bmcr->m_rect.Width() - width)+x ; x_dst += width) {
-			for (y_dst = height+y ; y_dst < (bmcr->m_rect.Height() - height)+y; y_dst += height) {
-				pDC->BitBlt(x_dst,y_dst, width, height, &dc, x_src, y_src, SRCCOPY);
-			}
-		}
-		// top edge
-		x_src = thirdwidth;
-		y_src = 0;
-		y_dst = y;
-		for (x_dst = width+x; x_dst < (bmcr->m_rect.Width() - width)+x ; x_dst += width) {
-			pDC->BitBlt(x_dst,y_dst, width, height, &dc, x_src, y_src, SRCCOPY);
-		}
-
-		// right edge
-		x_src = bmcr->m_width - thirdwidth;
-		y_src = thirdheight;
-		x_dst = (bmcr->m_rect.Width() - width)+x;
-		for (y_dst = height+y ; y_dst < (bmcr->m_rect.Height() - height)+y; y_dst += height) {
-			pDC->BitBlt(x_dst,y_dst, width, height, &dc, x_src, y_src, SRCCOPY);
-		}
-		// bottom edge
-		x_src = width;
-		y_src = bmcr->m_height - thirdheight;
-		y_dst = (bmcr->m_rect.Height() - thirdheight)+y;
-		for (x_dst = width+x; x_dst < (bmcr->m_rect.Width() - width)+x ; x_dst += width) {
-			pDC->BitBlt(x_dst,y_dst, width, height, &dc, x_src, y_src, SRCCOPY);
-		}
-		// left edge
-		x_src = 0;
-		y_src = thirdheight;
-		x_dst = x;
-		for (y_dst = height+y ; y_dst < (bmcr->m_rect.Height() - height)+y; y_dst += height) {
-			pDC->BitBlt(x_dst,y_dst, width, height, &dc, x_src, y_src, SRCCOPY);
-		}
-
-
-		// upper left
-		x_src = y_src = x_dst = y_dst = 0;
-		x_dst = x;
-		y_dst = y;
-		width = width = thirdwidth;
-		height = height = thirdheight;
-		pDC->BitBlt(x_dst,y_dst, width, height, &dc, x_src, y_src, SRCCOPY);
-
-		// upper right
-		x_src = bmcr->m_width - thirdwidth;
-		x_dst = (bmcr->m_rect.Width() - thirdwidth)+x;
-		pDC->BitBlt(x_dst,y_dst, width, height, &dc, x_src, y_src, SRCCOPY);
-
-		// lower left
-		x_src = 0;
-		y_src = bmcr->m_height - thirdheight;
-		x_dst = x;
-		y_dst = (bmcr->m_rect.Height() - thirdheight)+y;
-		pDC->BitBlt(x_dst,y_dst, width, height, &dc, x_src, y_src, SRCCOPY);
-
-		// lower right
-		x_src = bmcr->m_width - thirdwidth;
-		x_dst = (bmcr->m_rect.Width() - thirdwidth)+x;
-		y_dst = (bmcr->m_rect.Height() - thirdheight)+y;
-		pDC->BitBlt(x_dst,y_dst, width, height, &dc, x_src, y_src, SRCCOPY);
-
-
-	}
-    else if (bmcr->m_loStyle == LO_CENTER)
-    {
-		// Need to add offset/transparent code here
-        int ixOrg = (bmcr->m_rect.Width() - bmcr->m_width) / 2;
-        int iyOrg = (bmcr->m_rect.Height() - bmcr->m_height) / 2;
-        pDC->BitBlt(ixOrg+offset, iyOrg+offset, bmcr->m_rect.Width(), bmcr->m_rect.Height(), &dc, 0, 0, SRCCOPY);
-    }
-    else if ( bmcr->m_loStyle == LO_STRETCHED)
-    {
-		if (offset) { // do the transparent stuff
-			::SelectObject(dc.m_hDC, pbmpOldBmp);
-
-			hMask = CreateBitmapMask(bmcr->m_hBitmap, swidth, sheight,
-				swidth, sheight, bmcr->m_loStyle);
-
-			pbmpOldBmp = (HBITMAP)::SelectObject(dc.m_hDC, bmcr->m_hBitmap);
-
-			// from DrawTheBitmap
-			// And the mask
-			HBITMAP hOldMask = (HBITMAP)::SelectObject(hdcTmp, hMask);
-			::StretchBlt(pDC->m_hDC,x,y,dwidth,dheight,hdcTmp,0,0,
-				swidth,sheight,SRCAND);
-			::SelectObject(hdcTmp, hOldMask);
-			::DeleteObject(hMask);
-			pDC->StretchBlt(x, y, dwidth, dheight, 
-				&dc, 0, 0, swidth, sheight, SRCPAINT);
-		} else {
-	        pDC->StretchBlt(x, y, dwidth, dheight, 
-				&dc, 0, 0, swidth, sheight, SRCCOPY);
-		}
-
-    }
-    
-	::SelectObject(dc.m_hDC, pbmpOldBmp);
-	::DeleteDC(hdcTmp);
-	
-	
-    return TRUE;
-}
 
 void
 CDialogSK::OnSize(UINT nType, int cx, int cy) 
