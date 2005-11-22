@@ -17,7 +17,7 @@
 #include "DIBSectionLite.h"
 #include "MyDC.h"
 #include "GetSysColors.h"
-
+#include "PlayerCallbacks.h"
 /////////////////////////////////////////////////////////////////////////////
 // Custom Listbox - containing colors
 
@@ -25,7 +25,7 @@ class CExtendedListBox : public CListBox
 {
 public:
     CExtendedListBox(BOOL usecolors=TRUE, CString desc="", 
-		BOOL setstatus = TRUE);
+		BOOL setstatus = TRUE,PlayerCallbacks * m_playercallbacks=NULL);
 	~CExtendedListBox();
 
 // Operations
@@ -157,6 +157,7 @@ private:
 	CDialog * m_pCWnd;
 	CBrush m_HatchBrush;
 	BOOL m_3d;
+	PlayerCallbacks * m_playercallbacks;
 
     void TransparentBlt( HDC hdcDest, int nXDest, int nYDest, int nWidth, 
 			int nHeight, HBITMAP hBitmap, int nXSrc, int nYSrc,

@@ -265,23 +265,35 @@
 #define IDC_FONTSIZE_COLHDR             1210
 #define IDC_PRODVERSION                 1211
 #define IDC_SAMPLE_HIGH                 1211
+#define IDC_COLOR_COLHDR_INUL           1211
 #define IDC_APP_LABEL                   1212
 #define IDC_SAMPLE_SEL                  1212
+#define IDC_COLOR_COLHDR_INLR           1212
 #define IDC_BOLD2                       1213
 #define IDC_SAMPLE_COLHDR               1213
 #define IDC_COLOR_BORDERS               1214
 #define IDC_COLOR_BK_CURPLY             1214
+#define IDC_COLOR_COLHDR_OUTUL          1214
 #define IDC_COLOR_BK_CTRLS              1215
 #define IDC_COLOR_TX_CURPLY             1215
+#define IDC_COLOR_COLHDR_OUTLR          1215
 #define IDC_COLOR_TX_CTRLS              1216
 #define IDC_FONTSIZE_CURPLY             1216
+#define IDC_COLOR_DATA_INUL             1216
 #define IDC_BORDER_PANEL                1217
 #define IDC_RESTORE_SKIN_DEFAULTS       1217
 #define IDC_SWAP_SETTINGS_BUTTON        1217
 #define IDC_BORDER_HORZ                 1218
+#define IDC_COLOR_DATA_INLR             1218
 #define IDC_BORDER_VERT                 1219
+#define IDC_COLOR_DATA_OUTUL            1219
 #define IDC_FONT_CURPLY                 1220
+#define IDC_COLOR_DATA_OUTLR            1220
 #define IDC_SAMPLE_CURPLY               1221
+#define IDC_COLOR_STATUS_INUL           1221
+#define IDC_COLOR_STATUS_INLR           1222
+#define IDC_COLOR_STATUS_OUTUL          1223
+#define IDC_COLOR_STATUS_OUTLR          1224
 #define IDC_IRUP                        1500
 #define IDC_IRDOWN                      1501
 #define IDC_IRLEFT                      1502
@@ -364,6 +376,9 @@
 #define IDC_BOLD_PANEL                  2020
 #define IDC_BOLD_COLHDR                 2021
 #define IDC_BOLD_CURPLY                 2022
+#define IDC_3DCOLHDRS                   2022
+#define IDC_3DDATA                      2023
+#define IDC_3DSTATUS                    2024
 #define IDC_ROUND_CORNERS               2027
 #define IDC_SKIN_LIST                   2028
 #define IDC_PLAYLIST_HEIGHT             2031
@@ -377,6 +392,8 @@
 #define IDC_LPD_SONGS_LABEL             2044
 #define IDC_GETTEXTFIELD                2045
 #define IDC_GETTEXTFIELD_DESC           2046
+#define IDC_SAMPLE_PLAYLIST             2047
+#define IDC_SAMPLE_GROUP                2048
 #define IDC_BUTTON_LOGO                 12052
 #define ID_XXX                          32775
 #define ID__EXIT                        32785
@@ -421,7 +438,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        263
 #define _APS_NEXT_COMMAND_VALUE         32825
-#define _APS_NEXT_CONTROL_VALUE         2047
+#define _APS_NEXT_CONTROL_VALUE         2049
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

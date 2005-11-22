@@ -5,6 +5,7 @@
 #include "MyLog.h"
 #include "PlayerDlg.h"
 #include "IRCodes.h"
+#include "PlayerCallbacks.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -40,11 +41,12 @@ BEGIN_MESSAGE_MAP(CExtendedListBox, CListBox)
 	ON_WM_PAINT()
 END_MESSAGE_MAP()
 
-CExtendedListBox::CExtendedListBox(BOOL usecolors, CString desc, BOOL set) 
+CExtendedListBox::CExtendedListBox(BOOL usecolors, CString desc, BOOL set
+								   ,PlayerCallbacks * playercallbacks) 
 	: m_UseColors(usecolors), m_id(desc),
      m_reorder(FALSE), m_ScrollButtonRect(0,0,0,0), m_ScrollHitPos(0),
      m_Capture(FALSE), m_HaveScroll(FALSE), m_DrawIt(TRUE), m_SetStatus(set),
-	 m_pCWnd(NULL)
+	 m_pCWnd(NULL),m_playercallbacks(playercallbacks)
 {
 	m_UseColors = TRUE;
     CListBox::CListBox();
@@ -146,8 +148,8 @@ void CExtendedListBox::DrawItem(LPDRAWITEMSTRUCT lpDIS)
     } else {
         data = "none";
     }
-	if (selectedbit && focusbit && m_SetStatus) {
-		thePlayer->PlayerStatusTempSet(data);
+	if (selectedbit && focusbit && m_SetStatus && m_playercallbacks) {
+		(*m_playercallbacks->statustempset)(data);
 	}
 
 	CDC pDC;

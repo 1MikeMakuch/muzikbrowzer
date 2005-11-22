@@ -95,11 +95,26 @@ const static TCHAR MB_SKIN_SCROLLBUTTON[] = _T("ScrollButton.bmp");
 const static TCHAR MB_SKIN_SCROLLDOWNARROW[] = _T("ScrollDownArrow.bmp");
 const static TCHAR MB_SKIN_SCROLLUPARROW[] = _T("ScrollUpArrow.bmp");
 
+#define MB3DDATACOLOR "Data"
+#define MB3DCOLHDRCOLOR "ColHdr"
+#define MB3DSTATUSCOLOR "Status"
+#define MB3DDATA "3dDataWindows"
+#define MB3DCOLHDRS "3dColHdrs"
+#define MB3DSTATUS "3dStatus"
+
 #define MBCONFIG_READ_COLOR_3D(_MBREG_OBJ_,_MBLOCATION_,_MB_IN_UL_,_MB_IN_LR_,_MB_OUT_UL_,_MB_OUT_LR_)\
 	_MB_IN_UL_  = _MBREG_OBJ_.Read("Color3d" + CS(_MBLOCATION_) + "InUL",0);\
 	_MB_IN_LR_  = _MBREG_OBJ_.Read("Color3d" + CS(_MBLOCATION_) + "InLR",0);\
 	_MB_OUT_UL_ = _MBREG_OBJ_.Read("Color3d" + CS(_MBLOCATION_) + "OutUL",0);\
 	_MB_OUT_LR_ = _MBREG_OBJ_.Read("Color3d" + CS(_MBLOCATION_) + "OutLR",0);
+
+
+#define MBCONFIG_WRITE_COLOR_3D(_MBREG_OBJ_,_MBLOCATION_,_MB_IN_UL_,_MB_IN_LR_,_MB_OUT_UL_,_MB_OUT_LR_)\
+	_MBREG_OBJ_.Write("Color3d" + CS(_MBLOCATION_) + "InUL",MBUtil::CrToRGB(_MB_IN_UL_));\
+	_MBREG_OBJ_.Write("Color3d" + CS(_MBLOCATION_) + "InLR",MBUtil::CrToRGB(_MB_IN_LR_));\
+	_MBREG_OBJ_.Write("Color3d" + CS(_MBLOCATION_) + "OutUL",MBUtil::CrToRGB(_MB_OUT_UL_));\
+	_MBREG_OBJ_.Write("Color3d" + CS(_MBLOCATION_) + "OutLR",MBUtil::CrToRGB(_MB_OUT_LR_));
+
 
 
 #define MBCONFIG_READ_SKIN_DEFS(_MBCONFIG_OBJ_,_REGISTRY_KEY_OBJ_) \
@@ -119,25 +134,41 @@ const static TCHAR MB_SKIN_SCROLLUPARROW[] = _T("ScrollUpArrow.bmp");
 		_REG_OBJ_.Read("TransGreenPanel",0),\
 		_REG_OBJ_.Read("TransBluePanel",0));
 
-
-
-
-
-
+#define MBCONFIG_READ_BACKGROUND_TYPES(_REG_OBJ_,_BGMAIN_TYPE_,_BGPANEL_TYPE_)  \
+	{  \
+		int los = _REG_OBJ_.Read("BackgroundMainType",-1);  \
+		if (-1 == los) /* just for internal use. Can go away.  */ \
+			los = _REG_OBJ_.Read("BackgroundType",1);  \
+		switch (los) {  \
+		case 1:  \
+			_BGMAIN_TYPE_ = LO_TILED;  \
+			break;  \
+		case 2:  \
+			_BGMAIN_TYPE_ = LO_FIXED;  \
+			break;  \
+		case 3:  \
+			_BGMAIN_TYPE_ = LO_TILED0;  \
+			break;  \
+		case 0:  \
+		default:  \
+			_BGMAIN_TYPE_ = LO_STRETCHED;  \
+			break;  \
+		}  \
+		los = _REG_OBJ_.Read("BackgroundPanelType",0);  \
+		switch (los) {  \
+		case 1:  \
+			_BGPANEL_TYPE_ = LO_TILED;  \
+			break;  \
+		case 3:  \
+			_BGPANEL_TYPE_ = LO_TILED0;  \
+			break;  \
+		case 0:  \
+		case 2:  \
+		default:  \
+			_BGPANEL_TYPE_ = LO_STRETCHED;  \
+			break;  \
+		}\
+	}
 
 
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -36,11 +36,10 @@ typedef BOOL (WINAPI *lpfnSetLayeredWindowAttributes)
 enum LayOutStyle
 {
 	LO_STRETCHED=0, // Stretch the background picture to the dialog window size
-	LO_TILED=1,    // Tile the background picture
+	LO_TILED=1,    // Cut and Tile the background picture
     LO_FIXED=2,   // Resize the dialog so that it just fits the background 
-
-    LO_CENTER=3,  // Center the background picture
-	LO_TILED0=4
+	LO_TILED0=3,		// Traditional tiling
+	LO_CENTER=4  // Center the background picture
 };
 
 //  ===========================================================================

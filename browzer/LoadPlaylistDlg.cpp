@@ -111,18 +111,18 @@ BOOL LoadPlaylistDlg::OnInitDialog()
 	COLORREF crDataInUL,crDataInLR,crDataOutUL,crDataOutLR;
 	COLORREF crStatusInUL,crStatusInLR,crStatusOutUL,crStatusOutLR;
 
-	MBCONFIG_READ_COLOR_3D(regSD,"ColHdr",
+	MBCONFIG_READ_COLOR_3D(regSD,MB3DCOLHDRCOLOR,
 		crColHdrInUL,crColHdrInLR,crColHdrOutUL,crColHdrOutLR);
 	
-	MBCONFIG_READ_COLOR_3D(regSD,"Data",
+	MBCONFIG_READ_COLOR_3D(regSD,MB3DDATACOLOR,
 		crDataInUL,crDataInLR,crDataOutUL,crDataOutLR);
 	
-	MBCONFIG_READ_COLOR_3D(regSD,"Status",
+	MBCONFIG_READ_COLOR_3D(regSD,MB3DSTATUSCOLOR,
 		crStatusInUL,crStatusInLR,crStatusOutUL,crStatusOutLR);
 
-	BOOL threeDDataWindows	= regSD.Read("3dDataWindows",0);
-	BOOL threeDColHdrs		= regSD.Read("3dColHdrs",0);
-	BOOL threeDStatus		= regSD.Read("3dStatus",0);
+	BOOL threeDDataWindows	= regSD.Read(MB3DDATA,0);
+	BOOL threeDColHdrs		= regSD.Read(MB3DCOLHDRS,0);
+	BOOL threeDStatus		= regSD.Read(MB3DSTATUS,0);
 
 	COLORREF crColHdrFg,crColHdrBg;
 	crColHdrFg = m_pd->config().getColorTxColHdr();

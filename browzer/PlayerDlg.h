@@ -219,6 +219,7 @@ private:
 	CSize m_InitialSize;
 	BOOL m_FixedSize;
 	CRect m_WindowRect;
+	CPoint m_LastSized;
 // Dialog Data
 	//{{AFX_DATA(CPlayerDlg)
 	enum { IDD = IDD_PLAYER_DIALOG };

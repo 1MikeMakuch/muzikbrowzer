@@ -3,7 +3,10 @@
 
 //#include "stdafx.h"
 #include "Registry.h"
+
+
 #include "ConfigDisplay.h"
+
 #include "MyString.h"
 #include "MBGlobals.h"
 #include "SkinDefs.h"
@@ -11,6 +14,8 @@
 #include "MyLog.h"
 #include "FileUtils.h"
 #include "Misc.h"
+#include "GetSysColors.h"
+#include "DIBSectionLite.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -31,6 +36,14 @@ static unsigned int clipprecision;
 static unsigned int quality;
 static unsigned int pitchandfamily;
 
+CConfigDisplay * theConfigDisplay = NULL;
+void MBConfigStatusSet(CString text) {
+	theConfigDisplay->StatusSet(text);
+}
+void MBConfigStatusTempSet(CString text) {
+	theConfigDisplay->StatusTempSet(text);
+}
+
 #define MBFontErrorMsg(_MBFONTSPEC_) "Error in SkinDefinition setting:" + CS(_MBFONTSPEC_) + "\r\n\r\nGo to Settings/Display, make a change and click\r\nOK or Apply to create a new SkinDefintion file."
 /////////////////////////////////////////////////////////////////////////////
 // CConfigDisplay property page
@@ -39,9 +52,11 @@ IMPLEMENT_DYNCREATE(CConfigDisplay, CPropertyPage)
 
 CConfigDisplay::CConfigDisplay(CWnd * p, PlayerCallbacks * pcb) 
 		: CPropertyPage(CConfigDisplay::IDD),
-    m_lplfTitles(0), m_lplfPanel(0), m_lplfColHdr(0), m_playercallbacks(pcb),
-	m_Modified(FALSE)
+    m_lplfTitles(0), m_lplfPanel(0), m_lplfColHdr(0), m_callbacks(pcb),
+	m_Modified(FALSE),m_SamplePlaylist(TRUE,"config",TRUE, &m_ConfigCallbacks)
+
 {
+	theConfigDisplay = this;
 	//{{AFX_DATA_INIT(CConfigDisplay)
 	//}}AFX_DATA_INIT
     memset(&m_lfTitles, 0, sizeof(LOGFONT));
@@ -53,8 +68,8 @@ CConfigDisplay::CConfigDisplay(CWnd * p, PlayerCallbacks * pcb)
 
 	// Read skin def
 	CString skindef = getSkin(MB_SKIN_DEF);
-	RegistryKey regSD(skindef);
-	regSD.ReadFile();
+	m_regSD.init(skindef);
+	m_regSD.ReadFile();
 
 	// read skin def custom
 	CString save = m_sSkinName;
@@ -63,9 +78,19 @@ CConfigDisplay::CConfigDisplay(CWnd * p, PlayerCallbacks * pcb)
 	regSDCustom.ReadFile();
 
 	// custom overlays standard
-	regSD.Copy(regSDCustom);
-	ReadReg(regSD);
+	m_regSD.Copy(regSDCustom);
+	ReadReg(m_regSD);
 	m_sSkinName = save;
+
+	m_ConfigCallbacks.redraw = NULL;
+	m_ConfigCallbacks.mbdir = NULL;
+	m_ConfigCallbacks.initDb = NULL;
+	m_ConfigCallbacks.getLibraryCounts = NULL;
+	m_ConfigCallbacks.statusset = &::MBConfigStatusSet;
+	m_ConfigCallbacks.statustempset = &::MBConfigStatusTempSet;
+	m_ConfigCallbacks.UpdateWindow = NULL;
+	m_ConfigCallbacks.setDbLocation = NULL;
+	m_ConfigCallbacks.scanDirectories = NULL;
 
 }
 
@@ -83,13 +108,25 @@ void CConfigDisplay::DoDataExchange(CDataExchange* pDX)
 {
 	CPropertyPage::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CConfigDisplay)
+	DDX_Control(pDX, IDC_SAMPLE_GROUP, m_SampleGroup);
+	DDX_Control(pDX, IDC_3DCOLHDRS, m_3dColHdrsCheck);
+	DDX_Control(pDX, IDC_3DDATA, m_3dDataCheck);
+	DDX_Control(pDX, IDC_3DSTATUS, m_3dStatusCheck);
+	DDX_Control(pDX, IDC_COLOR_COLHDR_INUL, m_ColorColHdrInUL);
+	DDX_Control(pDX, IDC_COLOR_COLHDR_INLR, m_ColorColHdrInLR);
+	DDX_Control(pDX, IDC_COLOR_COLHDR_OUTUL, m_ColorColHdrOutUL);
+	DDX_Control(pDX, IDC_COLOR_COLHDR_OUTLR, m_ColorColHdrOutLR);
+	DDX_Control(pDX, IDC_COLOR_DATA_INUL, m_ColorDataInUL);
+	DDX_Control(pDX, IDC_COLOR_DATA_INLR, m_ColorDataInLR);
+	DDX_Control(pDX, IDC_COLOR_DATA_OUTUL, m_ColorDataOutUL);
+	DDX_Control(pDX, IDC_COLOR_DATA_OUTLR, m_ColorDataOutLR);
+	DDX_Control(pDX, IDC_COLOR_STATUS_INUL, m_ColorStatusInUL);
+	DDX_Control(pDX, IDC_COLOR_STATUS_INLR, m_ColorStatusInLR);
+	DDX_Control(pDX, IDC_COLOR_STATUS_OUTUL, m_ColorStatusOutUL);
+	DDX_Control(pDX, IDC_COLOR_STATUS_OUTLR, m_ColorStatusOutLR);
+	DDX_Control(pDX, IDC_SAMPLE_PLAYLIST, m_SamplePlaylist);
 	DDX_Control(pDX, IDC_SWAP_SETTINGS_LABEL, m_SwapSettingsLabel);
 	DDX_Control(pDX, IDC_SWAP_SETTINGS_BUTTON, m_SwapSettingsButton);
-//	DDX_Control(pDX, IDC_SAMPLE_CURPLY, m_SampleCurPlay);
-//	DDX_Control(pDX, IDC_FONTSIZE_CURPLY, m_SizeCurPlay);
-//	DDX_Control(pDX, IDC_COLOR_TX_CURPLY, m_TxCurPlay);
-//	DDX_Control(pDX, IDC_COLOR_BK_CURPLY, m_BkCurPlay);
-//	DDX_Control(pDX, IDC_BOLD_CURPLY, m_BoldCurPlay);
      DDX_Control(pDX, IDC_SKIN_LIST,            m_SkinList);
      DDX_Control(pDX, IDC_BORDER_WIDTH,         m_BorderWidth);
      DDX_Control(pDX, IDC_BOLD_COLHDR,          m_BoldColHdr);
@@ -106,19 +143,17 @@ void CConfigDisplay::DoDataExchange(CDataExchange* pDX)
      DDX_Control(pDX, IDC_COLOR_TX_PANEL,		m_TxPanel);
      DDX_Control(pDX, IDC_COLOR_TX_SEL,         m_TxSel);
      DDX_Control(pDX, IDC_SAMPLE_COLHDR,        m_SampleColHdr);
-     DDX_Control(pDX, IDC_SAMPLE_HIGH,          m_SampleHigh);
      DDX_Control(pDX, IDC_SAMPLE_PANEL,         m_SamplePanel);
-     DDX_Control(pDX, IDC_SAMPLE_SEL,           m_SampleSel);
-     DDX_Control(pDX, IDC_SAMPLE_TITLES,        m_SampleTitles);
      DDX_Control(pDX, IDC_FONTSIZE_COLHDR,		m_SizeColHdr);
      DDX_Control(pDX, IDC_FONTSIZE_PANEL,		m_SizePanel);
      DDX_Control(pDX, IDC_FONTSIZE,             m_SizeTitles);
      DDX_Control(pDX, IDC_FONT_COLHDR,          m_FontColHdr);
      DDX_Control(pDX, IDC_FONT_PANEL,           m_FontPanel);
      DDX_Control(pDX, IDC_FONT,                 m_FontTitles);
-//	DDX_Control(pDX, IDC_FONT_CURPLY, m_FontCurPlay);
 	//}}AFX_DATA_MAP
 }
+
+
 
 
 BEGIN_MESSAGE_MAP(CConfigDisplay, CPropertyPage)
@@ -127,35 +162,51 @@ BEGIN_MESSAGE_MAP(CConfigDisplay, CPropertyPage)
     ON_CBN_EDITCHANGE(IDC_FONT_COLHDR,              OnSelchangeFont)
     ON_CBN_SELENDOK(IDC_SKIN_LIST,                  OnSkinChoose)
     ON_BN_CLICKED(IDC_SKIN_DELETE,                  OnSkinDelete)
-	ON_CBN_SELENDOK(IDC_COLOR_BK_COLHDR,			OnColorButton)
-    ON_BN_CLICKED(IDC_BOLD_COLHDR,                  onbold)
+	ON_BN_CLICKED(IDC_COLOR_BK_COLHDR,              OnColorButton)
+	ON_BN_CLICKED(IDC_SWAP_SETTINGS_BUTTON, OnSwapSettingsButton)
+    ON_BN_CLICKED(IDC_3DCOLHDRS,					On3dColHdrs)
+	ON_BN_CLICKED(IDC_3DDATA,						On3dData)
+	ON_BN_CLICKED(IDC_3DSTATUS,						On3dStatus)
+	ON_BN_CLICKED(IDC_BOLD_CURPLY,                  onbold)
     ON_BN_CLICKED(IDC_BOLD_PANEL,                   onbold)
     ON_BN_CLICKED(IDC_BOLD_TITLES,                  onbold)
-	ON_BN_CLICKED(IDC_BOLD_CURPLY,                  onbold)
-    ON_CBN_EDITCHANGE(IDC_BORDER_PANEL,             OnUpdateWidth)
-    ON_CBN_EDITCHANGE(IDC_BORDER_WIDTH,             OnUpdateWidth)
+	ON_BN_CLICKED(IDC_BOLD_TITLES,                  onbold)
+	ON_BN_CLICKED(IDC_COLOR_BK_CURPLY,              OnColorButton)
+	ON_BN_CLICKED(IDC_COLOR_BK_HIGH,                OnColorButton)
+	ON_BN_CLICKED(IDC_COLOR_BK_NORMAL,              OnColorButton)
+	ON_BN_CLICKED(IDC_COLOR_BK_PANEL,               OnColorButton)
+	ON_BN_CLICKED(IDC_COLOR_BK_SEL,					OnColorButton)
+	ON_BN_CLICKED(IDC_COLOR_BORDERS,                OnColorButton)
+	ON_BN_CLICKED(IDC_COLOR_TX_COLHDR,              OnColorButton)
+	ON_BN_CLICKED(IDC_COLOR_TX_CURPLY,              OnColorButton)
+	ON_BN_CLICKED(IDC_COLOR_TX_HIGH,                OnColorButton)
+	ON_BN_CLICKED(IDC_COLOR_TX_NORMAL,              OnColorButton)
+	ON_BN_CLICKED(IDC_COLOR_TX_PANEL,               OnColorButton)
+	ON_BN_CLICKED(IDC_COLOR_TX_SEL,					OnColorButton)
 	ON_CBN_EDITCHANGE(IDC_BORDER_HORZ,             OnUpdateWidth)
+    ON_CBN_EDITCHANGE(IDC_BORDER_PANEL,             OnUpdateWidth)
 	ON_CBN_EDITCHANGE(IDC_BORDER_VERT,             OnUpdateWidth)
+    ON_CBN_EDITCHANGE(IDC_BORDER_WIDTH,             OnUpdateWidth)
     ON_CBN_EDITCHANGE(IDC_FONT,                     OnSelchangeFont)
     ON_CBN_EDITCHANGE(IDC_FONT_PANEL,               OnSelchangeFont)
     ON_CBN_EDITCHANGE(IDC_FONTSIZE_COLHDR,			OnSelchangeFont)
+	ON_CBN_EDITCHANGE(IDC_FONTSIZE_CURPLY,			OnSelchangeFont)
     ON_CBN_EDITCHANGE(IDC_FONTSIZE,                 OnSelchangeFont)
     ON_CBN_EDITCHANGE(IDC_FONTSIZE_PANEL,			OnSelchangeFont)
-	ON_CBN_EDITCHANGE(IDC_FONTSIZE_CURPLY,			OnSelchangeFont)
-    ON_CBN_EDITUPDATE(IDC_BORDER_PANEL,             OnUpdateWidth)
-    ON_CBN_EDITUPDATE(IDC_BORDER_WIDTH,             OnUpdateWidth)
 	ON_CBN_EDITUPDATE(IDC_BORDER_HORZ,             OnUpdateWidth)
+    ON_CBN_EDITUPDATE(IDC_BORDER_PANEL,             OnUpdateWidth)
 	ON_CBN_EDITUPDATE(IDC_BORDER_VERT,             OnUpdateWidth)
+    ON_CBN_EDITUPDATE(IDC_BORDER_WIDTH,             OnUpdateWidth)
     ON_CBN_EDITUPDATE(IDC_FONT_COLHDR,              OnSelchangeFont)
     ON_CBN_EDITUPDATE(IDC_FONT,                     OnSelchangeFont)
     ON_CBN_EDITUPDATE(IDC_FONT_PANEL,               OnSelchangeFont)
     ON_CBN_EDITUPDATE(IDC_FONTSIZE_COLHDR,			OnSelchangeFont)
     ON_CBN_EDITUPDATE(IDC_FONTSIZE,                 OnSelchangeFont)
     ON_CBN_EDITUPDATE(IDC_FONTSIZE_PANEL,			OnSelchangeFont)
-    ON_CBN_SELCHANGE(IDC_BORDER_PANEL,              OnUpdateWidth)
-    ON_CBN_SELCHANGE(IDC_BORDER_WIDTH,              OnUpdateWidth)
 	ON_CBN_SELCHANGE(IDC_BORDER_HORZ,              OnUpdateWidth)
+    ON_CBN_SELCHANGE(IDC_BORDER_PANEL,              OnUpdateWidth)
 	ON_CBN_SELCHANGE(IDC_BORDER_VERT,              OnUpdateWidth)
+    ON_CBN_SELCHANGE(IDC_BORDER_WIDTH,              OnUpdateWidth)
     ON_CBN_SELCHANGE(IDC_FONT_COLHDR,               OnSelchangeFont)
     ON_CBN_SELCHANGE(IDC_FONT,                      OnSelchangeFont)
     ON_CBN_SELCHANGE(IDC_FONT_PANEL,                OnSelchangeFont)
@@ -163,30 +214,18 @@ BEGIN_MESSAGE_MAP(CConfigDisplay, CPropertyPage)
 	ON_CBN_SELCHANGE(IDC_FONTSIZE_CURPLY,			OnSelchangeFont)
     ON_CBN_SELCHANGE(IDC_FONTSIZE,                  OnSelchangeFont)
     ON_CBN_SELCHANGE(IDC_FONTSIZE_PANEL,			OnSelchangeFont)
-    ON_CBN_SELENDOK(IDC_BORDER_PANEL,               OnUpdateWidth)
-    ON_CBN_SELENDOK(IDC_BORDER_WIDTH,               OnUpdateWidth)
 	ON_CBN_SELENDOK(IDC_BORDER_HORZ,               OnUpdateWidth)
+    ON_CBN_SELENDOK(IDC_BORDER_PANEL,               OnUpdateWidth)
 	ON_CBN_SELENDOK(IDC_BORDER_VERT,               OnUpdateWidth)
+    ON_CBN_SELENDOK(IDC_BORDER_WIDTH,               OnUpdateWidth)
+	ON_CBN_SELENDOK(IDC_COLOR_BK_COLHDR,			OnColorButton)
     ON_CBN_SELENDOK(IDC_FONT_COLHDR,                OnSelchangeFont)
     ON_CBN_SELENDOK(IDC_FONT,                       OnSelchangeFont)
     ON_CBN_SELENDOK(IDC_FONT_PANEL,                 OnSelchangeFont)
     ON_CBN_SELENDOK(IDC_FONTSIZE_COLHDR,			OnSelchangeFont)
     ON_CBN_SELENDOK(IDC_FONTSIZE,                   OnSelchangeFont)
     ON_CBN_SELENDOK(IDC_FONTSIZE_PANEL,             OnSelchangeFont)
-	ON_BN_CLICKED(IDC_COLOR_BK_COLHDR,              OnColorButton)
-	ON_BN_CLICKED(IDC_COLOR_BK_CURPLY,              OnColorButton)
-	ON_BN_CLICKED(IDC_COLOR_TX_CURPLY,              OnColorButton)
-	ON_BN_CLICKED(IDC_COLOR_BK_HIGH,                OnColorButton)
-	ON_BN_CLICKED(IDC_COLOR_BK_NORMAL,              OnColorButton)
-	ON_BN_CLICKED(IDC_COLOR_BK_PANEL,               OnColorButton)
-	ON_BN_CLICKED(IDC_COLOR_BK_SEL,					OnColorButton)
-	ON_BN_CLICKED(IDC_COLOR_BORDERS,                OnColorButton)
-	ON_BN_CLICKED(IDC_COLOR_TX_COLHDR,              OnColorButton)
-	ON_BN_CLICKED(IDC_COLOR_TX_HIGH,                OnColorButton)
-	ON_BN_CLICKED(IDC_COLOR_TX_NORMAL,              OnColorButton)
-	ON_BN_CLICKED(IDC_COLOR_TX_PANEL,               OnColorButton)
-	ON_BN_CLICKED(IDC_COLOR_TX_SEL,					OnColorButton)
-	ON_BN_CLICKED(IDC_SWAP_SETTINGS_BUTTON, OnSwapSettingsButton)
+	ON_LBN_SELCHANGE(IDC_SAMPLE_PLAYLIST, OnSelchangeSamplePlaylist)
 	//}}AFX_MSG_MAP
 	ON_MESSAGE(MB_CONFIG_CBUTTON, OnCButtonMessage)
 END_MESSAGE_MAP()
@@ -266,13 +305,15 @@ BOOL CConfigDisplay::OnInitDialog()
 	StoreReg(RegistryKey( HKEY_LOCAL_MACHINE, RegKeyPrevVals ),TRUE);
 
 	m_Modified = FALSE;
+
+	
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
 }
 void
 CConfigDisplay::init() {
 	CString dir;
-	dir = (*m_playercallbacks->mbdir)();
+	dir = (*m_callbacks->mbdir)();
     setDefaults();
 	m_SkinDir = dir;
 	m_SkinDir += "\\skins";
@@ -304,7 +345,23 @@ CConfigDisplay::setDefaults() {
 	m_vBorderWidth = 5;
 	m_vBorderHorz = 5;
 	m_vBorderVert = 5;
-//	m_vGenreWidthPct = 15;
+
+	m_vcrColHdrInUL =	cr3dDkShadow;
+	m_vcrColHdrInLR =	cr3dLight;
+	m_vcrColHdrOutUL =	crBtnShadow; 
+	m_vcrColHdrOutLR =	crBtnHighLight; 
+	m_vcrDataInUL =		cr3dDkShadow;
+	m_vcrDataInLR =		cr3dLight;
+	m_vcrDataOutUL =	crBtnShadow;
+	m_vcrDataOutLR =	crBtnHighLight;
+	m_vcrStatusInUL =	cr3dDkShadow;
+	m_vcrStatusInLR =	cr3dLight;
+	m_vcrStatusOutUL =	crBtnShadow; 
+	m_vcrStatusOutLR =	crBtnHighLight; 
+
+	
+	m_3dData = m_3dColHdr = m_3dStatus = FALSE;
+
 
     sscanf(deffont, CCFONTFMT, &m_lfTitles.lfHeight, &m_lfTitles.lfWidth, 
 		&m_lfTitles.lfEscapement, &m_lfTitles.lfOrientation,
@@ -377,6 +434,26 @@ CConfigDisplay::ReadReg(RegistryKey & reg, BOOL readskin) {
 	m_vTxColHdr = reg.Read(RegWindowsColorTxColHdr, m_vTxColHdr);
 //	m_vBkCurPlay = reg.Read(RegWindowsColorBkCurPlay, m_vBkCurPlay);
 //	m_vTxCurPlay = reg.Read(RegWindowsColorTxCurPlay, m_vTxCurPlay);
+
+	MBCONFIG_READ_COLOR_3D(reg,MB3DCOLHDRCOLOR,
+		m_vcrColHdrInUL,m_vcrColHdrInLR,m_vcrColHdrOutUL,m_vcrColHdrOutLR);
+	
+	MBCONFIG_READ_COLOR_3D(reg,MB3DDATACOLOR,
+		m_vcrDataInUL,m_vcrDataInLR,m_vcrDataOutUL,m_vcrDataOutLR);
+	
+	MBCONFIG_READ_COLOR_3D(reg,MB3DSTATUSCOLOR,
+		m_vcrStatusInUL,m_vcrStatusInLR,m_vcrStatusOutUL,m_vcrStatusOutLR);
+
+	m_3dData = reg.Read(MB3DDATA,0);
+	m_3dColHdr = reg.Read(MB3DCOLHDRS,0);
+	m_3dStatus = reg.Read(MB3DSTATUS,0);
+
+	if (IsWindow(m_3dDataCheck.m_hWnd)) {
+		m_3dColHdrsCheck.SetCheck(m_3dColHdr);
+		m_3dDataCheck.SetCheck(m_3dData);
+		m_3dStatusCheck.SetCheck(m_3dStatus);
+	}
+
     v2m();
 
 	m_vBorderWidth = reg.Read(RegWindowsBorderWidth, m_vBorderWidth);
@@ -521,6 +598,8 @@ CConfigDisplay::ReadReg(RegistryKey & reg, BOOL readskin) {
 //    } else {
 //		MBMessageBox("Warning",MBFontErrorMsg(RegWindowsFontTitles));
 //	}
+	EnableDisable();
+
 }
 void
 CConfigDisplay::StoreReg(RegistryKey & reg, BOOL storeskin) {
@@ -538,6 +617,25 @@ CConfigDisplay::StoreReg(RegistryKey & reg, BOOL storeskin) {
     reg.Write(RegWindowsColorTxColHdr, MBUtil::CrToRGB(m_vTxColHdr));
 //    reg.Write(RegWindowsColorBkCurPlay, MBUtil::CrToRGB(m_vBkCurPlay));
 //    reg.Write(RegWindowsColorTxCurPlay, MBUtil::CrToRGB(m_vTxCurPlay));
+
+	MBCONFIG_WRITE_COLOR_3D(reg,MB3DCOLHDRCOLOR,
+		m_vcrColHdrInUL,m_vcrColHdrInLR,m_vcrColHdrOutUL,m_vcrColHdrOutLR);
+	
+	MBCONFIG_WRITE_COLOR_3D(reg,MB3DDATACOLOR,
+		m_vcrDataInUL,m_vcrDataInLR,m_vcrDataOutUL,m_vcrDataOutLR);
+	
+	MBCONFIG_WRITE_COLOR_3D(reg,MB3DSTATUSCOLOR,
+		m_vcrStatusInUL,m_vcrStatusInLR,m_vcrStatusOutUL,m_vcrStatusOutLR);
+
+	if (IsWindow(m_3dDataCheck.m_hWnd)) {
+		m_3dColHdr = m_3dColHdrsCheck.GetCheck();
+		m_3dData = m_3dDataCheck.GetCheck();
+		m_3dStatus = m_3dStatusCheck.GetCheck();
+	}
+
+	reg.Write(MB3DDATA,m_3dData );
+	reg.Write(MB3DCOLHDRS,m_3dColHdr );
+	reg.Write(MB3DSTATUS,m_3dStatus );
 
 	int sel = m_SkinList.GetCurSel();
 	if (sel > -1) {
@@ -618,6 +716,21 @@ void CConfigDisplay::v2m() {
 	m_TxColHdr.currentcolor = m_vTxColHdr;
 //	m_BkCurPlay.currentcolor = m_vBkCurPlay;
 //	m_TxCurPlay.currentcolor = m_vTxCurPlay;
+
+	m_ColorColHdrInUL.currentcolor = m_vcrColHdrInUL  ;
+	m_ColorColHdrInLR.currentcolor = m_vcrColHdrInLR  ;
+	m_ColorColHdrOutUL.currentcolor =m_vcrColHdrOutUL  ;
+	m_ColorColHdrOutLR.currentcolor =m_vcrColHdrOutLR  ;
+	m_ColorDataInUL.currentcolor = m_vcrDataInUL    ;
+	m_ColorDataInLR.currentcolor = m_vcrDataInLR    ;
+	m_ColorDataOutUL.currentcolor = m_vcrDataOutUL   ;
+	m_ColorDataOutLR.currentcolor = m_vcrDataOutLR   ;
+	m_ColorStatusInUL.currentcolor = m_vcrStatusInUL  ;
+	m_ColorStatusInLR.currentcolor = m_vcrStatusInLR  ;
+	m_ColorStatusOutUL.currentcolor =m_vcrStatusOutUL  ;
+	m_ColorStatusOutLR.currentcolor =m_vcrStatusOutLR  ;
+
+
 }
 void CConfigDisplay::m2v() {
     m_vBkPanel = m_BkPanel.currentcolor;
@@ -632,6 +745,22 @@ void CConfigDisplay::m2v() {
 	m_vTxColHdr = m_TxColHdr.currentcolor;
 //	m_vBkCurPlay = m_BkCurPlay.currentcolor;
 //	m_vTxCurPlay = m_TxCurPlay.currentcolor;
+	
+	m_vcrColHdrInUL = m_ColorColHdrInUL.currentcolor;
+	m_vcrColHdrInLR = m_ColorColHdrInLR.currentcolor;
+	m_vcrColHdrOutUL = m_ColorColHdrOutUL.currentcolor;
+	m_vcrColHdrOutLR = m_ColorColHdrOutLR.currentcolor;
+	m_vcrDataInUL = m_ColorDataInUL.currentcolor;
+	m_vcrDataInLR = m_ColorDataInLR.currentcolor;
+	m_vcrDataOutUL = m_ColorDataOutUL.currentcolor;
+	m_vcrDataOutLR = m_ColorDataOutLR.currentcolor;
+	m_vcrStatusInUL = m_ColorStatusInUL.currentcolor;
+	m_vcrStatusInLR = m_ColorStatusInLR.currentcolor;
+	m_vcrStatusOutUL = m_ColorStatusOutUL.currentcolor;
+	m_vcrStatusOutLR = m_ColorStatusOutLR.currentcolor;
+
+
+
 }
 
 void CConfigDisplay::initFontSels() {
@@ -799,61 +928,144 @@ CConfigDisplay::copy2lf(LOGFONT & lfT, LOGFONT & lfP, LOGFONT & lfC/*,
 }
 
 void
-CConfigDisplay::showSample() {
+CConfigDisplay::setupSample() {
 	UpdateData(TRUE);
 	m2v();
 	copy2lf(m_samplelfTitles,m_samplelfPanel,m_samplelfColHdr/*,m_samplelfCurPlay*/);
 
-	m_FontSampleTitles.DeleteObject();
-	m_FontSampleTitles.CreateFontIndirect(&m_samplelfTitles);
-	m_SampleTitles.SetFont(&m_FontSampleTitles, TRUE);
-	m_SampleTitles.changeFont(&m_FontSampleTitles);
-	m_SampleTitles.setText("Big Fish Howlers");
-	m_SampleTitles.SetColors(m_vTxNormal,m_vBkNormal);
+    static int first = 1;
+    if (first) {
+        first = 0;
+		m_SamplePlaylist.initFont();
+	}
+
+	COLORREF crTransMain,crTransPanel;
+	MBCONFIG_READ_TRANS_COLORS(m_regSD,crTransMain,crTransPanel);
+
+	// Column Header
+	m_FontSampleColHdr.DeleteObject();
+	m_FontSampleColHdr.CreateFontIndirect(&m_samplelfColHdr);
+	m_SampleColHdr.SetFont(&m_FontSampleColHdr, TRUE);
+	m_SampleColHdr.changeFont(&m_FontSampleColHdr);
+	m_SampleColHdr.setText("Artists");
+
+	m_SampleColHdr.SetColors(m_vTxNormal,m_vBkColHdr,
+		m_vcrColHdrInUL,m_vcrColHdrInLR,m_vcrColHdrOutUL,m_vcrColHdrOutLR,
+		m_3dColHdr);
+	
+	CRect rectColHdr;
+	m_SampleColHdr.GetWindowRect(rectColHdr);
+	ScreenToClient(rectColHdr);
+
+	// Data Window
+	CRect rectData,rectDataNew;
+	m_SamplePlaylist.GetWindowRect(rectData);
+	ScreenToClient(rectData);
+	
+	rectDataNew = rectColHdr;
+	rectDataNew.top = rectColHdr.bottom+2;
+	rectDataNew.bottom = rectDataNew.top + rectData.Height();
+	rectDataNew.left += 2;
+	rectDataNew.right = (rectDataNew.left + rectColHdr.Width())-4;
+
+	m_SamplePlaylist.SetPWnd(this);
+	m_SamplePlaylist.SetColors(m_vBkNormal,m_vBkHigh,m_vBkSel,
+		m_vTxNormal,m_vTxHigh,m_vTxSel,m_3dData,
+		m_vcrDataInUL,m_vcrDataInLR,m_vcrDataOutUL,m_vcrDataOutLR);
+
+	CDC * cdc = GetDC();
+	LPLOGFONT lplf = &m_samplelfTitles;
+    m_SamplePlaylist.changeFont(lplf);
+	m_SamplePlaylist.SetBitmaps(cdc, 
+		getSkin(MB_SKIN_SCROLLUPARROW),crTransPanel,
+		getSkin(MB_SKIN_SCROLLDOWNARROW),crTransPanel,
+		getSkin(MB_SKIN_SCROLLBUTTON),crTransPanel,
+		getSkin(MB_SKIN_SCROLLBACKGROUND),crTransPanel);
+	ReleaseDC(cdc);
+
+
+	// Status 
+	CRect rectStatus,rectStatusNew;
+	m_SamplePanel.GetWindowRect(rectStatus);
+	ScreenToClient(rectStatus);
+	
+	rectStatusNew = rectColHdr;
+	rectStatusNew.top = rectDataNew.bottom+5;
+	rectStatusNew.bottom = rectStatusNew.top + rectStatus.Height();
 
 	m_FontSamplePanel.DeleteObject();
 	m_FontSamplePanel.CreateFontIndirect(&m_samplelfPanel);
 	m_SamplePanel.SetFont(&m_FontSamplePanel, TRUE);
 	m_SamplePanel.changeFont(&m_FontSamplePanel);
 	m_SamplePanel.setText("01:30/03:29 Howling Fish by Big Fish Howlers");
-	m_SamplePanel.SetColors(m_vTxNormal,m_vBkPanel);
+	m_SamplePanel.SetTicking(TRUE);
 
-	m_FontSampleColHdr.DeleteObject();
-	m_FontSampleColHdr.CreateFontIndirect(&m_samplelfColHdr);
-	m_SampleColHdr.SetFont(&m_FontSampleColHdr, TRUE);
-	m_SampleColHdr.changeFont(&m_FontSampleColHdr);
-	m_SampleColHdr.setText("Artists");
-	m_SampleColHdr.SetColors(m_vTxNormal,m_vBkColHdr);
-
-	m_FontSampleSel.DeleteObject();
-	m_FontSampleSel.CreateFontIndirect(&m_samplelfTitles);
-	m_SampleSel.SetFont(&m_FontSampleSel, TRUE);
-	m_SampleSel.changeFont(&m_FontSampleSel);
-	m_SampleSel.setText("Big Fish Howlers");
-	m_SampleSel.SetColors(m_vTxNormal,m_vBkSel);
-
-	m_FontSampleHigh.DeleteObject();
-	m_FontSampleHigh.CreateFontIndirect(&m_samplelfTitles);
-	m_SampleHigh.SetFont(&m_FontSampleHigh, TRUE);
-	m_SampleHigh.changeFont(&m_FontSampleHigh);
-	m_SampleHigh.setText("Big Fish Howlers");
-	m_SampleHigh.SetColors(m_vTxNormal,m_vBkHigh);
-
-//	m_FontSampleCurPlay.DeleteObject();
-//	m_FontSampleCurPlay.CreateFontIndirect(&m_samplelfCurPlay);
-//	m_SampleCurPlay.SetFont(&m_FontSampleCurPlay, TRUE);
-//	m_SampleCurPlay.changeFont(&m_FontSampleCurPlay);
-//	m_SampleCurPlay.setText("Got Fish? by Big Fish Howlers");
-//	m_SampleCurPlay.SetTextColor(m_vTxCurPlay);
-//	m_SampleCurPlay.SetBkColor(m_vBkCurPlay);
+	m_SamplePanel.SetColors(m_vTxNormal,m_vBkPanel,\
+		m_vcrStatusInUL,m_vcrStatusInLR,m_vcrStatusOutUL,m_vcrStatusOutLR,\
+		m_3dStatus);
+	m_SamplePanel.MoveWindow(rectStatusNew);
 
 
+	m_SamplePlaylist.ResetContent();
+	m_SamplePlaylist.AddString(" all");
+	m_SamplePlaylist.AddString("Little Twisty Big Fun Band");
+	m_SamplePlaylist.AddString("Twisty Little Big Fun Band");
+	m_SamplePlaylist.AddString("Big Fun Little Twisty Band");
+	m_SamplePlaylist.AddString("Fun Big Little Twisty Band");
+	m_SamplePlaylist.AddString("Band O Little Twisty Big Fun Folks");
+	m_SamplePlaylist.AddString("Little Twisty Big Fun Band O Folks");
+	m_SamplePlaylist.AddString("Twisty Fun Big Band O Littles");
+	m_SamplePlaylist.AddString("Xyzzy");
+	m_SamplePlaylist.AddString("Big Little Band O Little Twisties");
+	m_SamplePlaylist.AddString("Plugh");
+	m_SamplePlaylist.AddString("Did you get the memo on your TDS Report Cover sheet?");
+
+	m_SamplePlaylist.MoveWindow(rectDataNew);
+	m_SamplePlaylist.invalidate();
+	
+	
+	CDIBSectionLite bmp;
+	bmp.Load(getSkin(MB_SKIN_BACKGROUNDLIBRARY));
+
+	CRect grect;
+	grect.UnionRect(rectColHdr,rectStatusNew);
+	grect.InflateRect(10,10,10,10);
+	CDC * dc = GetDC();	
+	
+	LayOutStyle BackgroundMainType,BackgroundPanelType;
+	MBCONFIG_READ_BACKGROUND_TYPES(m_regSD,BackgroundMainType,BackgroundPanelType);
+
+	BitmapToCRect bmcr((HBITMAP)bmp, grect, BackgroundPanelType, 
+		bmp.GetWidth(), bmp.GetHeight(), CS("config"));
+
+//	dc->FillSolidRect(grect, RGB(0,255,0));
+	MBUtil::BmpToDC(dc, &bmcr, TRUE, crTransPanel, 0);
+
+	ReleaseDC(dc);
+	
+	m_SampleColHdr.RedrawWindow();	
+	m_SamplePanel.RedrawWindow();
+	m_SamplePlaylist.RedrawWindow();
+
+//	m_SampleColHdr.ShowWindow(SW_HIDE);	
+//	m_SamplePanel.ShowWindow(SW_HIDE);
+//	m_SamplePlaylist.ShowWindow(SW_HIDE);
+
+
+	
 }
+void
+CConfigDisplay::showSample() 
+{
+	setupSample();
+	//m_SamplePlaylist.invalidate();
+}
+	
 
 void CConfigDisplay::OnPaint() 
 {
 	CPaintDC dc(this); // device context for painting
-	showSample();
+	setupSample();
 	
 	// TODO: Add your message handler code here
 	
@@ -867,6 +1079,24 @@ void CConfigDisplay::OnCButtonMessage(WPARAM w, LPARAM l) {
 	Invalidate();
 }
 void CConfigDisplay::onbold() {
+	modified(TRUE);
+	showSample();
+}
+void CConfigDisplay::On3dColHdrs(){
+	m_3dColHdr = m_3dColHdrsCheck.GetCheck();
+	EnableDisable();
+	modified(TRUE);
+	showSample();
+}
+void CConfigDisplay::On3dData() {
+	m_3dData = m_3dDataCheck.GetCheck();
+	EnableDisable();
+	modified(TRUE);
+	showSample();
+}
+void CConfigDisplay::On3dStatus() {
+	m_3dStatus = m_3dStatusCheck.GetCheck();
+	EnableDisable();
 	modified(TRUE);
 	showSample();
 }
@@ -902,7 +1132,7 @@ void CConfigDisplay::OnOK()
 	regSDCustom.WriteFile();
 
 	if (m_Modified) {
-		(*m_playercallbacks->redraw)();
+		(*m_callbacks->redraw)();
 	}
 	m_Modified = FALSE;
 	modified(FALSE);
@@ -930,6 +1160,10 @@ BOOL CConfigDisplay::verifySkin(CString skin) {
 	bmps.AddTail(MB_SKIN_DEF);
 	bmps.AddTail(MB_SKIN_ALBUMART);
 	bmps.AddTail(MB_SKIN_BACKGROUNDMAIN);
+	bmps.AddTail(MB_SKIN_BACKGROUNDALBUMART);
+	bmps.AddTail(MB_SKIN_BACKGROUNDLIBRARY);
+	bmps.AddTail(MB_SKIN_BACKGROUNDMAIN);
+	bmps.AddTail(MB_SKIN_BACKGROUNDPLAYLIST);
 	bmps.AddTail(MB_SKIN_BUTTONLOGOOUT);
 	bmps.AddTail(MB_SKIN_BUTTONLOGOHOVER);
 	bmps.AddTail(MB_SKIN_BUTTONLOGOIN);
@@ -1039,15 +1273,19 @@ BOOL CConfigDisplay::OnSkinChoose(CString skin)
 {
 	if (verifySkin(skin)) {
 		m_sSkinName = skin;
-	} else 
+	} else {
+		CString tmp = "Bad skin. See " + (*m_callbacks->mbdir)();
+		tmp += "/muzikbrowzer.log";
+		MBMessageBox("Corrupt skin", tmp, TRUE, FALSE);
 		return FALSE;
+	}
 
 	m_sSkinName = skin;
 
 		// Read skin def
 	CString skindef = getSkin(MB_SKIN_DEF);
-	RegistryKey regSD(skindef);
-	regSD.ReadFile();
+	m_regSD.init(skindef);
+	m_regSD.ReadFile();
 
 	// read skin def custom
 	CString save = m_sSkinName;
@@ -1056,8 +1294,8 @@ BOOL CConfigDisplay::OnSkinChoose(CString skin)
 	regSDCustom.ReadFile();
 
 	// overwrite custom on skin def
-	regSD.Copy(regSDCustom);
-	ReadReg(regSD);
+	m_regSD.Copy(regSDCustom);
+	ReadReg(m_regSD);
 	m_sSkinName = save;
 
 	RegistryKey reg( HKEY_LOCAL_MACHINE, RegKey );
@@ -1065,11 +1303,7 @@ BOOL CConfigDisplay::OnSkinChoose(CString skin)
 	return TRUE;
 
 //	initFontSels();
-
 }
-
-
-
 
 const CString CConfigDisplay::getSkin(const CString skinname, 
 									  const CString key) {
@@ -1174,9 +1408,9 @@ void CConfigDisplay::OnSwapSettingsButton()
 
 	if (1 == r) {
 		CString skindef = getSkin(MB_SKIN_DEF);
-		RegistryKey regSD(skindef);
-		regSD.ReadFile();
-		ReadReg(regSD);
+		m_regSD.init(skindef);
+		m_regSD.ReadFile();
+		ReadReg(m_regSD);
 		UpdateData(FALSE);
 		initFontSels();
 		showSample();
@@ -1186,3 +1420,54 @@ void CConfigDisplay::OnSwapSettingsButton()
 	
 }
 
+void CConfigDisplay::StatusSet(CString text) {
+	m_SamplePanel.setText(text);
+}
+void CConfigDisplay::StatusTempSet(CString text) {
+	m_SamplePanel.setText(text);
+}
+void CConfigDisplay::EnableDisable() {
+	if (!IsWindow(m_hWnd)) return;
+	if (m_3dColHdr) {
+		m_ColorColHdrInUL.EnableWindow(TRUE);
+		m_ColorColHdrInLR.EnableWindow(TRUE);
+		m_ColorColHdrOutUL.EnableWindow(TRUE);
+		m_ColorColHdrOutLR.EnableWindow(TRUE);
+	} else {
+		m_ColorColHdrInUL.EnableWindow(FALSE);
+		m_ColorColHdrInLR.EnableWindow(FALSE);
+		m_ColorColHdrOutUL.EnableWindow(FALSE);
+		m_ColorColHdrOutLR.EnableWindow(FALSE);
+	}
+	if (m_3dData) {
+		m_ColorDataInUL.EnableWindow(TRUE);
+		m_ColorDataInLR.EnableWindow(TRUE);
+		m_ColorDataOutUL.EnableWindow(TRUE);
+		m_ColorDataOutLR.EnableWindow(TRUE);
+	} else {
+		m_ColorDataInUL.EnableWindow(FALSE);
+		m_ColorDataInLR.EnableWindow(FALSE);
+		m_ColorDataOutUL.EnableWindow(FALSE);
+		m_ColorDataOutLR.EnableWindow(FALSE);
+	}
+	if (m_3dStatus) {
+		m_ColorStatusInUL.EnableWindow(TRUE);
+		m_ColorStatusInLR.EnableWindow(TRUE);
+		m_ColorStatusOutUL.EnableWindow(TRUE);
+		m_ColorStatusOutLR.EnableWindow(TRUE);
+	} else {
+		m_ColorStatusInUL.EnableWindow(FALSE);
+		m_ColorStatusInLR.EnableWindow(FALSE);
+		m_ColorStatusOutUL.EnableWindow(FALSE);
+		m_ColorStatusOutLR.EnableWindow(FALSE);
+	}
+}
+
+void CConfigDisplay::OnSelchangeSamplePlaylist() 
+{
+	int sel = m_SamplePlaylist.GetCurSel();
+	CString text;
+	m_SamplePlaylist.GetText(sel,text);
+	m_SamplePanel.setText(text);
+	
+}

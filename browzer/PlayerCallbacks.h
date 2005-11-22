@@ -14,6 +14,7 @@ public:
 	void (*initDb)();
 	CString (*getLibraryCounts)();
 	void (*statusset)(CString);
+	void (*statustempset)(CString);
 	void (*UpdateWindow)();
 	void (*setDbLocation)(CString);
 	CString (*scanDirectories)(const CStringList & directories,

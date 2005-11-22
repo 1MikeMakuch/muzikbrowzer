@@ -74,6 +74,9 @@ CString GetLibraryCounts() {
 void PlayerStatusSet(CString text) {
 	thePlayer->PlayerStatusSet(text);
 }
+void PlayerStatusTempSet(CString text) {
+	thePlayer->PlayerStatusTempSet(text);
+}
 void PlayerUpdateWindow() {
 	thePlayer->UpdateWindow();
 }
@@ -101,16 +104,17 @@ CPlayerDlg::CPlayerDlg(CPlayerApp * theApp,
 	m_Control(new VirtualControl), m_Dialog(new VirtualDialog),
 	m_trialCounter(0),
 	m_InitDone(FALSE),
-	m_Genres(TRUE,"Genres"),
-	m_Artists(TRUE,"Artists"),
-	m_Albums(TRUE,"Albums"),
-	m_Songs(TRUE,"songs"),
-	m_Playlist(TRUE, "Playlist"),
+	m_Genres(TRUE,"Genres",TRUE, &m_callbacks),
+	m_Artists(TRUE,"Artists",TRUE, &m_callbacks),
+	m_Albums(TRUE,"Albums",TRUE, &m_callbacks),
+	m_Songs(TRUE,"songs",TRUE, &m_callbacks),
+	m_Playlist(TRUE, "Playlist",TRUE, &m_callbacks),
 	m_Maximized(FALSE),
 	m_AdjustLibrary(0),
 	m_LibraryDragging(FALSE),
 	m_Resizing(FALSE),
-	m_FixedSize(FALSE)
+	m_FixedSize(FALSE),
+	m_LastSized(0,0)
 
 {
 	//{{AFX_DATA_INIT(CPlayerDlg)
@@ -126,6 +130,7 @@ CPlayerDlg::CPlayerDlg(CPlayerApp * theApp,
 	m_callbacks.initDb = &::initDb;
 	m_callbacks.getLibraryCounts = &::GetLibraryCounts;
 	m_callbacks.statusset = &::PlayerStatusSet;
+	m_callbacks.statustempset = &::PlayerStatusTempSet;
 	m_callbacks.UpdateWindow = &::PlayerUpdateWindow;
 	m_callbacks.setDbLocation = &::SetDbLocation;
 	m_callbacks.scanDirectories = &::ScanDirectories;
@@ -656,18 +661,18 @@ CPlayerDlg::setColors(RegistryKey & regSD) {
 	COLORREF crDataInUL,crDataInLR,crDataOutUL,crDataOutLR;
 	COLORREF crStatusInUL,crStatusInLR,crStatusOutUL,crStatusOutLR;
 
-	MBCONFIG_READ_COLOR_3D(regSD,"ColHdr",
+	MBCONFIG_READ_COLOR_3D(regSD,MB3DCOLHDRCOLOR,
 		crColHdrInUL,crColHdrInLR,crColHdrOutUL,crColHdrOutLR);
 	
-	MBCONFIG_READ_COLOR_3D(regSD,"Data",
+	MBCONFIG_READ_COLOR_3D(regSD,MB3DDATACOLOR,
 		crDataInUL,crDataInLR,crDataOutUL,crDataOutLR);
 	
-	MBCONFIG_READ_COLOR_3D(regSD,"Status",
+	MBCONFIG_READ_COLOR_3D(regSD,MB3DSTATUSCOLOR,
 		crStatusInUL,crStatusInLR,crStatusOutUL,crStatusOutLR);
 
-	BOOL threeDDataWindows	= regSD.Read("3dDataWindows",0);
-	BOOL threeDColHdrs		= regSD.Read("3dColHdrs",0);
-	BOOL threeDStatus		= regSD.Read("3dStatus",0);
+	BOOL threeDDataWindows	= regSD.Read(MB3DDATA,0);
+	BOOL threeDColHdrs		= regSD.Read(MB3DCOLHDRS,0);
+	BOOL threeDStatus		= regSD.Read(MB3DSTATUS,0);
 
 	COLORREF crColHdrFg,crColHdrBg;
 	crColHdrFg = m_Config.getColorTxColHdr();
@@ -882,17 +887,6 @@ CPlayerDlg::resetControls() {
 	CWaitCursor c;
 
 	// read skin def
-//	CString skindef = m_Config.getSkin(MB_SKIN_DEF);
-//	RegistryKey regSD(skindef);
-//	regSD.ReadFile();
-//
-//	// read SkinDefCustom
-//	CString skindefcustom = m_Config.getSkin(MB_SKIN_DEF_CUSTOM);
-//	RegistryKey regSDCustom(skindefcustom);
-//	regSDCustom.ReadFile();
-//	// custom overlays standard
-//	regSD.Copy(regSDCustom);
-
 	MBCONFIG_READ_SKIN_DEFS(m_Config,regSD);
 
 	// Now read into m_Config memory
@@ -901,31 +895,10 @@ CPlayerDlg::resetControls() {
 	m_Config.ReadReg(regSD);
 
 	m_AlbumArt = m_Config.getSkin(MB_SKIN_ALBUMART);
-
-	int los = regSD.Read("BackgroundMainType",-1);
-	if (-1 == los) 
-		los = regSD.Read("BackgroundType",1);
+	m_FixedSize = FALSE;
 
 	LayOutStyle BackgroundMainType,BackgroundPanelType;
-	m_FixedSize = FALSE;
-	switch (los) {
-	case 1:
-		BackgroundMainType = LO_TILED;
-		break;
-	case 2:
-		BackgroundMainType = LO_FIXED;
-		break;
-	case 0:
-	default:
-		BackgroundMainType = LO_STRETCHED;
-		break;
-	}
-	los = regSD.Read("BackgroundPanelType",0);
-	if (LO_STRETCHED) {
-		BackgroundPanelType = LO_STRETCHED;
-	} else {
-		BackgroundPanelType = LO_TILED;
-	}
+	MBCONFIG_READ_BACKGROUND_TYPES(regSD,BackgroundMainType,BackgroundPanelType);
 
 	int w = 0;
 	int h = 0;
@@ -2987,9 +2960,11 @@ void CPlayerDlg::OnSizing(UINT fwSide, LPRECT pRect)
 		CDialogClassImpl::OnSizing(fwSide, pRect);
 	}
 	m_Resizing = TRUE;	
+	logger.ods("OnSizing");
 }
 void CPlayerDlg::OnCaptureChanged(CWnd *pWnd) {
 	// This forces rubber band style resizing
+	logger.ods("OnCaptureChanged");
 	if (m_Resizing)
 	{
 		m_Resizing = FALSE;
@@ -3014,12 +2989,32 @@ void CPlayerDlg::OnSize(UINT nType, int cx, int cy)
         first++;
         return;
     }
+	logger.ods(CS("OnSize ") + numToString(nType));
+
+
 	if (!m_Resizing) {
 		if (SIZE_MAXIMIZED == nType && TRUE == m_FixedSize) {
 			PlayerStatusTempSet("This skin is not resizeable");
 		} else {
 			CDialogClassImpl::OnSize(nType, cx, cy);
-			resetControls();
+			switch(nType) {
+			case SIZE_RESTORED:
+//				switch(m_LastSized) {
+//				case SIZE_MAXIMIZED:
+//					resetControls();
+//					break;
+//				}
+				if (m_LastSized.x != cx || m_LastSized.y != cy)
+					resetControls();
+				break;
+			case SIZE_MINIMIZED:
+				break;
+			case SIZE_MAXIMIZED:
+			case SIZE_MAXSHOW:
+			case SIZE_MAXHIDE:
+				resetControls();
+				break;
+			}
 		}
 	}
 	if (SIZE_MAXIMIZED == nType) {
@@ -3029,7 +3024,8 @@ void CPlayerDlg::OnSize(UINT nType, int cx, int cy)
 		m_ButtonMaximize.ShowWindow(SW_NORMAL);
 		m_ButtonRestore.ShowWindow(SW_HIDE);
 	}
-
+	m_LastSized.x = cx;
+	m_LastSized.y = cy;
 }
 void
 CPlayerDlg::CurrentTitleSet(LPCTSTR lpmsg) {
@@ -3442,7 +3438,7 @@ CPlayerDlg::OnSkinPic(UINT wParam) {
 		} else {
 			CString tmp = "Bad skin. See " + m_Config.mbdir();
 			tmp += "/muzikbrowzer.log";
-			PlayerStatusTempSet(tmp);
+			MBMessageBox("Corrupt skin", tmp, TRUE, FALSE);
 		}
 	}
 

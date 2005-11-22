@@ -7,6 +7,8 @@
 #include "controls/colorbtn.h"
 #include "controls/ColorStatic.h"
 #include <afxdlgs.h>
+#include "ExtendedListBox.h"
+#include "ButtonSkin.h"
 
 #if _MSC_VER > 1000
 #pragma once
@@ -30,13 +32,25 @@ public:
 // Dialog Data
 	//{{AFX_DATA(CConfigDisplay)
 	enum { IDD = IDD_CONFIG_DISPLAY };
+	CButton	m_SampleGroup;
+	CButton	m_3dColHdrsCheck;
+	CButton	m_3dDataCheck;
+	CButton	m_3dStatusCheck;
+	CColorBtn	m_ColorColHdrInUL;
+	CColorBtn	m_ColorColHdrInLR;
+	CColorBtn	m_ColorColHdrOutUL;
+	CColorBtn	m_ColorColHdrOutLR;
+	CColorBtn	m_ColorDataInUL;
+	CColorBtn	m_ColorDataInLR;
+	CColorBtn	m_ColorDataOutUL;
+	CColorBtn	m_ColorDataOutLR;
+	CColorBtn	m_ColorStatusInUL;
+	CColorBtn	m_ColorStatusInLR;
+	CColorBtn	m_ColorStatusOutUL;
+	CColorBtn	m_ColorStatusOutLR;
+	CExtendedListBox	m_SamplePlaylist;
 	CStatic	m_SwapSettingsLabel;
 	CButton	m_SwapSettingsButton;
-//	CColorStatic	m_SampleCurPlay;
-//	CComboBox	m_SizeCurPlay;
-//	CColorBtn	m_TxCurPlay;
-//	CColorBtn	m_BkCurPlay;
-//	CButton	m_BoldCurPlay;
 	CSpinButtonCtrl	m_GenreSpin;
 	CComboBox		m_SkinList;
 	CComboBox		m_BorderWidth;
@@ -64,7 +78,6 @@ public:
 	CFontCombo      m_FontColHdr;
 	CFontCombo      m_FontPanel;
 	CFontCombo      m_FontTitles;
-//	CFontCombo	m_FontCurPlay;
 	//}}AFX_DATA
 
 
@@ -93,13 +106,18 @@ protected:
 	afx_msg void OnSelendokSkinList();
 	afx_msg void OnColorButton();
 	afx_msg void OnSwapSettingsButton();
+	afx_msg void OnSelchangeSamplePlaylist();
 	//}}AFX_MSG
 	afx_msg void OnCButtonMessage(WPARAM w, LPARAM l)  ;
 	afx_msg void onbold();
+	afx_msg void On3dColHdrs();
+	afx_msg void On3dData();
+	afx_msg void On3dStatus();
 	afx_msg void OnUpdateWidth();
 	DECLARE_MESSAGE_MAP()
 private:
-    PlayerCallbacks * m_playercallbacks;
+    PlayerCallbacks * m_callbacks;
+	PlayerCallbacks m_ConfigCallbacks;
 //	COLORREF m_vTxCurPlay;
 //	COLORREF m_vBkCurPlay;
     COLORREF m_vBkPanel;
@@ -112,6 +130,13 @@ private:
     COLORREF m_vTxSel;
 	COLORREF m_vTxColHdr;
 	COLORREF m_vBkColHdr;
+
+	COLORREF m_vcrColHdrInUL,m_vcrColHdrInLR,m_vcrColHdrOutUL,m_vcrColHdrOutLR;
+	COLORREF m_vcrDataInUL,m_vcrDataInLR,m_vcrDataOutUL,m_vcrDataOutLR;
+	COLORREF m_vcrStatusInUL,m_vcrStatusInLR,m_vcrStatusOutUL,m_vcrStatusOutLR;
+	BOOL m_3dData,m_3dColHdr,m_3dStatus;
+
+
 public:
     void ReadReg(RegistryKey & key,BOOL readskin=FALSE);
 private:
@@ -158,13 +183,16 @@ private:
 	int m_vBorderHorz;
 	int m_vBorderVert;
 	BOOL m_Modified;
+	RegistryKey m_regSD;
 
     void init();
 	void initFontSels();
     void showSample();
+	void setupSample();
     void copy2lf(LOGFONT &, LOGFONT &, LOGFONT &/*, LOGFONT &*/);
 	CString m_SkinDir;
 	void readSkins();
+	void EnableDisable();
 	
 public:
     LPLOGFONT getTitlesFont() { return m_lplfTitles; }
@@ -199,6 +227,8 @@ public:
 	void getSkins(CStringList &);
 	const CString getCurrentSkin() { return m_sSkinName; }
 	BOOL verifySkin(CString skin);
+	void StatusSet(CString text);
+	void StatusTempSet(CString text);
 
 };
 
