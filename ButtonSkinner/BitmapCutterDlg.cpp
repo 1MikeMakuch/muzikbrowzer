@@ -1749,8 +1749,8 @@ reg.Write("BorderHorz",m_nBorderHorz);
 reg.Write("BorderVert",m_nBorderVert);
 reg.Write("BorderPanel",m_nBorderPanel);
 reg.Write("BackgroundMainType", m_BgType);
-reg.Write("BackgroundPanelType", 1);
-reg.Write("BackgroundTypes:","0=Stretched, 1=Tiled, 2=Fixed");
+reg.Write("BackgroundPanelType", m_BgType);
+reg.Write("BackgroundTypes:","0=Stretched, 1=CutAndTiled, 2=Fixed, 3=NormalTiled");
 reg.WriteFile();
 
 }
