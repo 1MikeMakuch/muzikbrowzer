@@ -34,12 +34,14 @@ public:
 	
 	static COLORREF colors[20];
     static BYTE used[20];
+	static COLORREF custom[16];
 
     CButton *parent;
     int colorindex;
+	COLORREF currentcolor;
 
-	CColorBtnDlg(CWnd* pParent = NULL);   // standard constructor
-
+	CColorBtnDlg(COLORREF curcol=RGB(255,255,255), CWnd* pParent = NULL);   // standard constructor
+	~CColorBtnDlg();
      
 // Dialog Data
 	//{{AFX_DATA(CColorBtnDlg)
@@ -57,6 +59,7 @@ public:
 
 // Implementation
 protected:
+	CPen *m_pen;
 
 	// Generated message map functions
 	//{{AFX_MSG(CColorBtnDlg)
@@ -65,7 +68,9 @@ protected:
 	afx_msg void OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruct);
 	afx_msg void OnOther();
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
+	afx_msg void OnPaint();
 	//}}AFX_MSG
+	static UINT WINAPI ColorDlgWindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 	void OnColor(UINT id);    
     void EndDialog( int nResult );

@@ -340,7 +340,7 @@ CConfigDisplay::setDefaults() {
 	m_vTxColHdr = 16777215;
 	m_vBkColHdr = RGB(0,0,0);
 //	m_vTxCurPlay = RGB(255,255,255);
-    v2m();
+
 	m_sSkinName = MUZIKBROWZER;
 	m_vBorderWidth = 5;
 	m_vBorderHorz = 5;
@@ -359,6 +359,7 @@ CConfigDisplay::setDefaults() {
 	m_vcrStatusOutUL =	crBtnShadow; 
 	m_vcrStatusOutLR =	crBtnHighLight; 
 
+    v2m();
 	
 	m_3dData = m_3dColHdr = m_3dStatus = FALSE;
 
@@ -1018,7 +1019,7 @@ CConfigDisplay::setupSample() {
 	m_SamplePlaylist.AddString("Xyzzy");
 	m_SamplePlaylist.AddString("Big Little Band O Little Twisties");
 	m_SamplePlaylist.AddString("Plugh");
-	m_SamplePlaylist.AddString("Did you get the memo on your TDS Report Cover sheet?");
+	m_SamplePlaylist.AddString("Did you get the memo on your TPS Report Cover sheet?");
 
 	m_SamplePlaylist.MoveWindow(rectDataNew);
 	m_SamplePlaylist.invalidate();

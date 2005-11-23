@@ -57,7 +57,7 @@ void PictureStatic::OnPaint()
 
 //    Region.DeleteObject();
 //    cdc->SelectClipRgn(NULL);
-//    ReleaseDC(cdc);
+    ReleaseDC(cdc);
 	
 	// Do not call CStatic::OnPaint() for painting messages
 }

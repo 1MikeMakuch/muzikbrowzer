@@ -318,7 +318,7 @@ void RegistryKey::Read( const TCHAR* value, void* data,
 					   unsigned long desiredSize, const void* deflt ) const
 {
   unsigned long size = desiredSize;
-  if( !ReadData( value, data, size, REG_BINARY ) && size == desiredSize )
+  if( !ReadData( value, data, size, REG_BINARY ) || size != desiredSize )
     CopyMemory( data, deflt, desiredSize );
 //  CString msg = CString("Registry read  ") + CString(value) + CString(": BIN");
 //  logger.log(msg);
@@ -335,7 +335,8 @@ void RegistryKey::Write( const TCHAR* value, const void* data,
 ///////////////////////////////////////////////////////////////////////
 // privates
 ///////////////////////////////////////////////////////////////////////
-bool RegistryKey::ReadData( const TCHAR* value, void* data, unsigned long& size, unsigned long desiredType ) const
+bool RegistryKey::ReadData( const TCHAR* value, void* data, 
+	unsigned long& size, unsigned long desiredType ) const
 {
   if( key == NULL )
     return false;

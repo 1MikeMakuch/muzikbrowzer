@@ -147,6 +147,7 @@ CPlayerDlg::~CPlayerDlg() {
 	delete m_Control;
 	delete m_Dialog;
 	delete m_Player;
+//	CloseHandle(m_hMutex);
 }
 
 void CPlayerDlg::DoDataExchange(CDataExchange* pDX)
@@ -390,19 +391,19 @@ BOOL CPlayerDlg::OnInitDialog()
 	sa.lpSecurityDescriptor = psd;
 	sa.bInheritHandle = FALSE;
 
-	HANDLE h = CreateMutex(&sa,FALSE, MUZIKBROWZERAPPMUTEXGLOBAL);
+	HANDLE m_hMutex = CreateMutex(&sa,FALSE, MUZIKBROWZERAPPMUTEXGLOBAL);
 	e = GetLastError();
-	if (NULL == h || ERROR_ALREADY_EXISTS == e) {
+	if (NULL == m_hMutex || ERROR_ALREADY_EXISTS == e) {
 		amemsg = "CreateMutex " + CString(MUZIKBROWZERAPPMUTEXGLOBAL);
 		amemsg += "\r\n";
 		amemsg += MBFormatError(e);
 		amemsg += "\r\n";
-		h = CreateMutex(&sa,FALSE, MUZIKBROWZERAPPMUTEX);
+		m_hMutex = CreateMutex(&sa,FALSE, MUZIKBROWZERAPPMUTEX);
 		e = GetLastError();
 		logger.log(amemsg);
 	}
 
-	if (NULL == h || ERROR_ALREADY_EXISTS == e) {
+	if (NULL == m_hMutex || ERROR_ALREADY_EXISTS == e) {
 		ammsg = ("It looks like ");
 		ammsg += MUZIKBROWZER;
 		ammsg += " is already running.\r\nYou should only run one instance at a time.\r\nContinue at your own risk.\r\n";
@@ -538,6 +539,8 @@ BOOL CPlayerDlg::OnInitDialog()
 			Sleep(1000);
 		}
 		_initdialog->DestroyWindow();
+		delete _initdialog;
+
 	}
 
 	CMenu* pSysMenu = GetSystemMenu(FALSE);

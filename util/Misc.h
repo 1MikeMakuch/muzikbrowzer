@@ -25,7 +25,7 @@ public:
 		
 		: m_hBitmap(bm),
 		m_rect(rect), m_loStyle(los), m_width(width), m_height(height),
-		m_desc(desc),m_dc(NULL)
+		m_desc(desc),m_dc(NULL), m_hMask(NULL)
 	{
 		if (hdc) {
 			m_dc = new CDC();
@@ -34,8 +34,10 @@ public:
 
 	};
 	~BitmapToCRect() {
-		//::DeleteObject(m_hBitmap);
-		//::DeleteObject(m_hMask);
+		if (m_hBitmap)
+			::DeleteObject(m_hBitmap);
+		if (m_hMask)
+			::DeleteObject(m_hMask);
 		if (m_dc) {
 			m_dc->Detach();
 			delete m_dc;

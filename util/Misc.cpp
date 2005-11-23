@@ -493,7 +493,7 @@ HBITMAP MBUtil::CreateBitmapMask(HBITMAP hSourceBitmap,
 	dcSrc.CreateCompatibleDC(NULL);
 	dcDest.CreateCompatibleDC(NULL);
 
-	FileUtil::BmpLog(hSourceBitmap, "hSrc");
+//	FileUtil::BmpLog(hSourceBitmap, "hSrc");
 	
 	hbmSrcT = (HBITMAP)dcSrc.SelectObject(hSourceBitmap);
 	hbmDestT = (HBITMAP)dcDest.SelectObject(hMask);

@@ -783,6 +783,9 @@ DWORD CExtendedListBox::SetBitmaps(CDC * cdc,
 		::SelectObject(hdcDest, hbmOldDst);
 		::SelectObject(hdcSrc,  hbmOldSrc);
 
+		::DeleteDC(hdcDest);
+		::DeleteDC(hdcSrc);
+
 		m_HatchBrush.DeleteObject();
 		m_HatchBrush.CreatePatternBrush(&bmp);
 		m_UseSkin = TRUE;

@@ -2,6 +2,8 @@
 
 #include "stdafx.h"
 #include "ColorBtn.h"
+#include "Registry.h"
+#include "MyString.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -42,6 +44,26 @@ BYTE CColorBtnDlg::used[20] =
     1,3,5,7,9,11,13,15,17,19,20,18,16,14,12,10,8,6,4,2    
 };
 
+COLORREF CColorBtnDlg::custom[16] = 
+{
+	RGB(255,255,255),
+	RGB(255,255,255),
+	RGB(255,255,255),
+	RGB(255,255,255),
+	RGB(255,255,255),
+	RGB(255,255,255),
+	RGB(255,255,255),
+	RGB(255,255,255),
+	RGB(255,255,255),
+	RGB(255,255,255),
+	RGB(255,255,255),
+	RGB(255,255,255),
+	RGB(255,255,255),
+	RGB(255,255,255),
+	RGB(255,255,255),
+	RGB(255,255,255)
+};
+
 /////////////////////////////////////////////////////////////////////////////
 // CColorBtn
 
@@ -60,6 +82,7 @@ CColorBtn::CColorBtn()
     nullbrush.CreateStockObject(NULL_BRUSH);
     backbrush.CreateSolidBrush(GetSysColor(COLOR_3DFACE));
     dkgray.CreatePen(PS_SOLID,1,RGB(128,128,128));         
+	Load();
 }
 
 
@@ -245,12 +268,15 @@ void CColorBtn::DrawItem(LPDRAWITEMSTRUCT lpd)
 void CColorBtn::OnClicked() 
 {
     // When the button is clicked, show the dialog.
-
+	
+	dlg.currentcolor = currentcolor;
 	if (dlg.DoModal() == IDOK)
     {
         currentcolor = CColorBtnDlg::colors[dlg.colorindex];
         InvalidateRect(NULL);
 		GetParent()->SendMessage(MB_CONFIG_CBUTTON, 0, 0);  
+		Store();
+		
     }	
 }
 
@@ -258,33 +284,48 @@ void CColorBtn::OnClicked()
 
 BOOL CColorBtn::Store()
 {
-    return (AfxGetApp()->WriteProfileBinary("ColorData", "ColorTable",(LPBYTE)CColorBtnDlg::colors,sizeof(COLORREF)*20) &&
-            AfxGetApp()->WriteProfileBinary("ColorData", "MRU",(LPBYTE)CColorBtnDlg::used,sizeof(BYTE)*20));
-
+//    return (AfxGetApp()->WriteProfileBinary("ColorData", "ColorTable",
+//		(LPBYTE)CColorBtnDlg::colors,sizeof(COLORREF)*20) &&
+//          AfxGetApp()->WriteProfileBinary("ColorData", "MRU",
+//			(LPBYTE)CColorBtnDlg::used,sizeof(BYTE)*20));
+	RegistryKey reg( HKEY_LOCAL_MACHINE, RegKey );
+	reg.Write( "ColorPickerTable", (LPBYTE)CColorBtnDlg::colors,
+		sizeof(COLORREF)*20);
+	reg.Write("ColorPickerMRU",(LPBYTE)CColorBtnDlg::used,sizeof(BYTE)*20);
+	return TRUE;
 }
 
 BOOL CColorBtn::Load()
 {
-    BYTE *data = NULL;
-    UINT size;
+    //BYTE *data = NULL;
+    //UINT size;
+	AutoBuf buf1(sizeof(COLORREF)*20);
+	AutoBuf buf2(sizeof(BYTE)*20);
+	memset(buf1.p,0,sizeof(COLORREF)*20);
+	memset(buf2.p,0,sizeof(BYTE)*20);
 
     // This function allocates the memory it needs
 
-    AfxGetApp()->GetProfileBinary("ColorData", "ColorTable",&data,&size);	
+    //AfxGetApp()->GetProfileBinary("ColorData", "ColorTable",&data,&size);	
+	RegistryKey reg( HKEY_LOCAL_MACHINE, RegKey );
+	reg.Read("ColorPickerTable", (void*)buf1.p, sizeof(COLORREF)*20,
+		(void*)CColorBtnDlg::colors);
 
-    if (data)
+    if (buf1.p)
     {
         // Copy the data into our table and get rid of the buffer
 
-        memcpy((void *)CColorBtnDlg::colors,(void *)data,size);
-        free((void *)data);
+        memcpy((void *)CColorBtnDlg::colors,(void *)buf1.p,sizeof(COLORREF)*20);
+        //free((void *)data);
 
-        AfxGetApp()->GetProfileBinary("ColorData", "MRU",&data,&size);	
+        //AfxGetApp()->GetProfileBinary("ColorData", "MRU",&data,&size);	
+		reg.Read("ColorPickerMRU", (void*)buf2.p, 
+			sizeof(BYTE)*20,(void *)CColorBtnDlg::used);
 
-        if (data)
+        if (buf2.p)
         {
-            memcpy((void *)CColorBtnDlg::used,(void *)data,size);
-            free((void *)data);
+            memcpy((void *)CColorBtnDlg::used,(void *)buf2.p,sizeof(BYTE)*20);
+            //free((void *)data);
             return TRUE;
         }
         
@@ -371,12 +412,24 @@ void CColorBtn::Serialize( CArchive& ar )
 // CColorBtnDlg dialog
 
 
-CColorBtnDlg::CColorBtnDlg(CWnd* pParent /*=NULL*/)
-	: CDialog(CColorBtnDlg::IDD, pParent)
+CColorBtnDlg::CColorBtnDlg(COLORREF curcol,CWnd* pParent /*=NULL*/)
+	: CDialog(CColorBtnDlg::IDD, pParent), currentcolor(curcol),
+	m_pen(NULL)
 {
 	//{{AFX_DATA_INIT(CColorBtnDlg)
 		// NOTE: the ClassWizard will add member initialization here
 	//}}AFX_DATA_INIT
+
+	m_pen = new CPen;
+	m_pen->CreatePen(PS_SOLID,1,RGB(0,0,0));
+	colorindex = -1;
+}
+CColorBtnDlg::~CColorBtnDlg() 
+{
+	if (m_pen)
+		delete m_pen;
+
+	CDialog::~CDialog();
 }
 
 
@@ -395,6 +448,7 @@ BEGIN_MESSAGE_MAP(CColorBtnDlg, CDialog)
 	ON_WM_LBUTTONDOWN()	
 	ON_WM_LBUTTONUP()
     ON_WM_DRAWITEM()	
+	ON_WM_PAINT()
 	//}}AFX_MSG_MAP
     ON_COMMAND_RANGE(IDC_COLOR1,IDC_COLOR20,OnColor)
 END_MESSAGE_MAP()
@@ -402,6 +456,7 @@ END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
 // CColorBtnDlg message handlers
+static 	CPoint m_orig;
 
 BOOL CColorBtnDlg::OnInitDialog() 
 {
@@ -420,17 +475,18 @@ BOOL CColorBtnDlg::OnInitDialog()
     // Check to see if the dialog has a portion outside the
     // screen, if so, adjust.
     
-    if (r2.bottom > GetSystemMetrics(SM_CYSCREEN))
+    if (r2.bottom > GetSystemMetrics(SM_CYVIRTUALSCREEN))
     {   
         r2.top = r.top-(r2.bottom-r2.top);        
     }
 
-    if (r2.right > GetSystemMetrics(SM_CXSCREEN))
+    if (r2.right > GetSystemMetrics(SM_CXVIRTUALSCREEN))
     {
-        r2.left = GetSystemMetrics(SM_CXSCREEN) - (r2.right-r2.left);
+        r2.left = GetSystemMetrics(SM_CXVIRTUALSCREEN) - (r2.right-r2.left);
     }
 
     SetWindowPos(NULL,r2.left,r2.top,0,0,SWP_NOSIZE|SWP_NOZORDER);
+	m_orig = CPoint(r2.left,r2.top);
 
     // Capture the mouse, this allows the dialog to close when
     // the user clicks outside.
@@ -438,7 +494,7 @@ BOOL CColorBtnDlg::OnInitDialog()
     // Remember that the dialog has no "close" button.
 
     SetCapture();
-	
+
 	return TRUE; 
 }
 
@@ -502,7 +558,7 @@ void CColorBtnDlg::OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpd)
 {
 	CDC dc;
     CPen nullpen;
-    CBrush brush;
+    CBrush brush,bbrush;
     CPen *oldpen;
     CBrush *oldbrush;
 
@@ -519,7 +575,7 @@ void CColorBtnDlg::OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpd)
     lpd->rcItem.right++;
     lpd->rcItem.bottom++;
 
-    dc.Rectangle(&lpd->rcItem);
+	dc.Rectangle(&lpd->rcItem);
 
     dc.SelectObject(oldpen);
     dc.SelectObject(oldbrush);
@@ -528,7 +584,35 @@ void CColorBtnDlg::OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpd)
 	
 	CDialog::OnDrawItem(nIDCtl, lpd);
 }
-
+void CColorBtnDlg::OnPaint() 
+{
+	int clrctl = colorindex + IDC_COLOR1;
+	if (!(IDC_COLOR1 <= clrctl && clrctl <= IDC_COLOR20)) {
+		for (int i=0;i<20;i++)
+		{
+	        if (colors[i] == currentcolor)
+			{
+	            colorindex = i;
+				clrctl = colorindex + IDC_COLOR1;
+				break;
+			}
+		}
+	}
+	if (IDC_COLOR1 <= clrctl && clrctl <= IDC_COLOR20) {
+		CWnd * w = GetDlgItem(clrctl);
+		if (w) {
+			CRect rect;
+			w->GetWindowRect(rect);
+			ScreenToClient(rect);
+			CPaintDC dc(this); 
+			rect.InflateRect(1,1,1,1);
+			CPen * oldpen = dc.SelectObject(m_pen);
+			dc.Rectangle(rect);
+			dc.SelectObject(oldpen);
+		}
+	}
+	CDialog::OnPaint();
+}
 
 void CColorBtnDlg::OnColor(UINT id)
 {
@@ -555,28 +639,87 @@ void CColorBtnDlg::OnColor(UINT id)
     EndDialog(IDOK);
 
 }
+UINT 
+CColorBtnDlg::ColorDlgWindowProc(HWND hwnd, UINT message, 
+							WPARAM wParam, LPARAM lParam)
+{
+	CRect r,r2;
 
+	if (message == WM_INITDIALOG)
+	{
+		// place it right where the button dlg is, unless...
+		::GetWindowRect(hwnd, &r);
+
+
+		// Move the dialog to be below the button
+
+		::SetWindowPos(hwnd,HWND_TOP, m_orig.x,m_orig.y,0,0,SWP_NOSIZE|SWP_NOZORDER);
+
+		::GetWindowRect(hwnd,&r2);
+
+		// Check to see if the dialog has a portion outside the
+		// screen, if so, adjust.
+
+		if (r2.bottom > GetSystemMetrics(SM_CYVIRTUALSCREEN))
+		{   
+			r2.top = r.top-(r2.bottom-r2.top);        
+		}
+
+		if (r2.right > GetSystemMetrics(SM_CXVIRTUALSCREEN))
+		{
+			r2.left = GetSystemMetrics(SM_CXVIRTUALSCREEN) - (r2.right-r2.left);
+		}
+
+		::SetWindowPos(hwnd,HWND_TOP,r2.left,r2.top,0,0,SWP_NOSIZE|SWP_NOZORDER);
+
+		//customize the dialog caption
+		::SetWindowText(hwnd, "Choose Color");
+		return 1;
+	}
+	return 0;
+}
 void CColorBtnDlg::OnOther() 
 {
-int i;
-COLORREF newcolor;
+	// The "Other" button.
 
-    // The "Other" button.
+	int i;
+	COLORREF newcolor;
+	RegistryKey reg( HKEY_LOCAL_MACHINE, RegKey );
+	AutoBuf buf(sizeof(COLORREF)*16);
+	reg.Read("ColorPickerCustom", (void*)buf.p, sizeof(COLORREF)*16,
+		(void*)CColorBtnDlg::custom);
+    if (buf.p)
+    {
+        // Copy the data into our table and get rid of the buffer
+
+        memcpy((void *)CColorBtnDlg::custom,(void *)buf.p,
+			sizeof(COLORREF)*16);
+	}	
 
     ReleaseCapture();
 
-	CColorDialog dlg;
-
-    dlg.m_cc.Flags |= CC_FULLOPEN;
 
 
-    if (dlg.DoModal() == IDOK)
+	CColorDialog dlg;//(currentcolor,0,this);
+	dlg.m_cc.rgbResult = currentcolor;
+	dlg.m_cc.lpCustColors = CColorBtnDlg::custom;
+
+    dlg.m_cc.Flags |= 
+		CC_RGBINIT 
+		| CC_ANYCOLOR 
+		;
+	dlg.m_cc.lpfnHook = ColorDlgWindowProc;
+
+	if (dlg.DoModal() == IDOK)
     {
+		reg.Write( "ColorPickerCustom", (void*)CColorBtnDlg::custom,
+			sizeof(COLORREF)*16);
+
         // The user clicked OK.
         // set the color and close
         
         newcolor = dlg.GetColor();            
-
+		
         // Check to see if the selected color is
         // already in the table.
 
