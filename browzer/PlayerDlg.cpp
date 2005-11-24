@@ -432,13 +432,13 @@ BOOL CPlayerDlg::OnInitDialog()
 	msg += osvi.dwPlatformId;
 	logger.log(msg);
 
-    if (m_mlib.init()) {
+	m_mlib.MovePlaylistsToDir();
+    
+	if (m_mlib.init()) {
 		MBMessageBox("Error", "Database corrupted. Rebuild it by performing a\r\nScan in Options/Configuration");
 		PlayerStatusSet(CString(
 			"Database corrupted. Do a Scan."));
 	}
-
-	m_mlib.MovePlaylistsToDir();
 
     // set some of the control's properties
 	// progress slider must be 0 to 100 in order for percentage
@@ -1493,6 +1493,8 @@ CPlayerDlg::init() {
 	lpath += ".log";
     logger.open(lpath);
 	logger.log(CS("muzikbrowzer version: ") + CS(MUZIKBROWZER_VERSION));
+
+	m_mlib.MovePlaylistsToDir();
 
     if (m_mlib.init()) {
 		MBMessageBox("Error", "Database corrupted. Rebuild it by performing a\r\nScan in Options/Configuration");
