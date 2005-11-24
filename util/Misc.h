@@ -21,11 +21,11 @@ class BitmapToCRect
 {
 public:
 	BitmapToCRect(HBITMAP bm, CRect & rect, LayOutStyle los, 
-		DWORD width, DWORD height, CString desc, HDC hdc=NULL)
+		DWORD width, DWORD height, CString desc="", HDC hdc=NULL)
 		
-		: m_hBitmap(bm),
+		: m_hBitmap(bm),m_desc(desc),
 		m_rect(rect), m_loStyle(los), m_width(width), m_height(height),
-		m_desc(desc),m_dc(NULL), m_hMask(NULL)
+		m_dc(NULL), m_hMask(NULL)
 	{
 		if (hdc) {
 			m_dc = new CDC();
@@ -34,10 +34,7 @@ public:
 
 	};
 	~BitmapToCRect() {
-		if (m_hBitmap)
-			::DeleteObject(m_hBitmap);
-		if (m_hMask)
-			::DeleteObject(m_hMask);
+		// don't delete m_hBitmap nor m_hMask here!
 		if (m_dc) {
 			m_dc->Detach();
 			delete m_dc;
@@ -50,8 +47,8 @@ public:
 	LayOutStyle m_loStyle;
 	DWORD m_width;
 	DWORD m_height;
-	CString m_desc;
 	CDC * m_dc;
+	CString m_desc;
 
 };
 class MBUtil {
@@ -61,6 +58,11 @@ public:
 	static CString CrToRGB(COLORREF rgb);
 	static void BmpToDC(CDC* pDC, BitmapToCRect * bmcr, 
 		BOOL doTrans, COLORREF bkcolor,int offset);
+
+	static void BmpToDC(CDC* pDC, HBITMAP bmp, 
+	 const int dx, const int dy, const int dwidth, const int dheight,
+	 const int swidth, const int sheight, const LayOutStyle los,
+	 const BOOL doTrans, const COLORREF transcolor, const int offset);
 	
 	static void CutAndTileBmp(CDC* pDC, BitmapToCRect * bmcr, 
 		int offset,UINT BITBLTTYPE );

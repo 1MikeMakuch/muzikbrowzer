@@ -222,6 +222,15 @@ TEST(MBUtilRgbTriple, test1)
 	CHECK(rgb == rgb2);
 
 }
+void MBUtil::BmpToDC(CDC* pDC, HBITMAP bmp, 
+	 const int dx, const int dy, const int dwidth, const int dheight,
+	 const int swidth, const int sheight, const LayOutStyle los,
+	 const BOOL doTrans, const COLORREF transcolor, const int offset)
+{
+	CRect rect(dx,dy,dx+dwidth,dy+dheight);
+	BitmapToCRect bmcr(bmp, rect, los, swidth, sheight, "xxx");
+	MBUtil::BmpToDC(pDC, &bmcr, doTrans, transcolor, offset);
+}
 
 void MBUtil::BmpToDC(CDC* pDC, BitmapToCRect * bmcr, 
 						   BOOL doTrans, COLORREF bkcolor, int offset)
@@ -254,14 +263,14 @@ void MBUtil::BmpToDC(CDC* pDC, BitmapToCRect * bmcr,
 			srcwidth, srcheight, bmcr->m_loStyle,bkcolor);
 
 		BitmapToCRect bmcrTrans((HBITMAP)hMask, bmcr->m_rect, bmcr->m_loStyle, 
-			srcwidth,srcheight, CS("MBUtil::BmpToDC"));
+			srcwidth,srcheight);
 		MBUtil::CutAndTileBmp(pDC,&bmcrTrans,offset,SRCAND);
-
+		::DeleteObject(hMask);
 		BITBLTTYPE = SRCPAINT;
 	}
 	MBUtil::CutAndTileBmp(pDC, bmcr, offset, BITBLTTYPE);
 	
-	::DeleteObject(hMask);
+
 	
     return ;
 }
@@ -323,7 +332,6 @@ void MBUtil::CutAndTileBmp(CDC* pDC, BitmapToCRect * bmcr,
 		dc->CreateCompatibleDC(NULL);
 		pbmpOldBmp = (HBITMAP)::SelectObject(dc->m_hDC, bmcr->m_hBitmap);
 	}
-
 
 	int x,y,srcwidth,srcheight,destwidth,destheight;
 	x = bmcr->m_rect.left+offset;
@@ -463,7 +471,6 @@ void MBUtil::CutAndTileBmp(CDC* pDC, BitmapToCRect * bmcr,
 		dc->DeleteDC();
 		delete dc;
 	}
-
 }
 
 
@@ -493,8 +500,6 @@ HBITMAP MBUtil::CreateBitmapMask(HBITMAP hSourceBitmap,
 	dcSrc.CreateCompatibleDC(NULL);
 	dcDest.CreateCompatibleDC(NULL);
 
-//	FileUtil::BmpLog(hSourceBitmap, "hSrc");
-	
 	hbmSrcT = (HBITMAP)dcSrc.SelectObject(hSourceBitmap);
 	hbmDestT = (HBITMAP)dcDest.SelectObject(hMask);
 

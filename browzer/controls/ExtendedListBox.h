@@ -88,7 +88,7 @@ protected:
     void move(UINT);
     void DrawBorders();
     void DrawScroll();
-    void DrawScrollBg(CMemDC & dc);
+    void DrawScrollBg(CDC * dc);
     void DrawScrollArrows();
     void DrawScrollButton(BOOL calc = TRUE, CPoint p = CPoint(0,0));
 

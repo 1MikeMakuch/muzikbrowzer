@@ -1037,7 +1037,7 @@ CConfigDisplay::setupSample() {
 	MBCONFIG_READ_BACKGROUND_TYPES(m_regSD,BackgroundMainType,BackgroundPanelType);
 
 	BitmapToCRect bmcr((HBITMAP)bmp, grect, BackgroundPanelType, 
-		bmp.GetWidth(), bmp.GetHeight(), CS("config"));
+		bmp.GetWidth(), bmp.GetHeight());
 
 //	dc->FillSolidRect(grect, RGB(0,255,0));
 	MBUtil::BmpToDC(dc, &bmcr, TRUE, crTransPanel, 0);

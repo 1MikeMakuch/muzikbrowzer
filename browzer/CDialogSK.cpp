@@ -222,11 +222,15 @@ DWORD CDialogSK::SetBitmap(HBITMAP hBitmap, CRect & rect, LayOutStyle los
         DWORD height = (DWORD)csBitmapSize.bmHeight;
 
 		if (m_BitmapToCRect[m_NumBitmapToCRect]) {
+			if (m_BitmapToCRect[m_NumBitmapToCRect]->m_hBitmap)
+				::DeleteObject(m_BitmapToCRect[m_NumBitmapToCRect]->m_hBitmap);
+			if (m_BitmapToCRect[m_NumBitmapToCRect]->m_hMask)
+				::DeleteObject(m_BitmapToCRect[m_NumBitmapToCRect]->m_hMask);
 			delete m_BitmapToCRect[m_NumBitmapToCRect];
 		}
 
 		m_BitmapToCRect[m_NumBitmapToCRect++] 
-			= new BitmapToCRect(hBitmap, rect, los, width, height, desc);
+			= new BitmapToCRect(hBitmap, rect, los, width, height);
     }
     
     if (IsWindow(this->GetSafeHwnd()))
@@ -282,15 +286,8 @@ void CDialogSK::make(CDC * wDC) {
 	dc2.SelectObject(oldbm2);
 	dc.SelectObject(oldbm);
 
-	FileUtil::BmpSave(*m_bmBackground, "c:\\mkm\\bmps\\bgBg.bmp");
-
-
-	
 	ReleaseDC(pDC);
 	dc.DeleteDC();
-
-	FileUtil::BmpSave(*m_bmFrame, "c:\\mkm\\bmps\\bgFrame.bmp");
-
 
 }
 // OnEraseBkgnd 4/26/05
