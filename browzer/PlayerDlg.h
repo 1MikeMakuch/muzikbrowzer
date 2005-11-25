@@ -225,7 +225,6 @@ private:
 	//{{AFX_DATA(CPlayerDlg)
 	enum { IDD = IDD_PLAYER_DIALOG };
 	CButtonST	m_LogoButton;
-	CButtonST	m_ButtonResize;
 	CButtonST	m_ButtonShuffle;
 	CButtonST	m_ButtonSave;
 	CButtonST	m_ButtonReverse;
@@ -321,7 +320,6 @@ public:
 	afx_msg void OnButtonMinimize();
 	afx_msg void OnButtonMaximize();
 	afx_msg void OnCancel();
-	afx_msg void OnButtonResize();
 	afx_msg BOOL OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message);
 	afx_msg void OnNcMouseMove(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);

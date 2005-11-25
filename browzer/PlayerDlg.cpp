@@ -156,7 +156,6 @@ void CPlayerDlg::DoDataExchange(CDataExchange* pDX)
 
 	//{{AFX_DATA_MAP(CPlayerDlg)
 	DDX_Control(pDX, IDC_BUTTON_LOGO, m_LogoButton);
-	DDX_Control(pDX, IDC_BUTTON_RESIZE, m_ButtonResize);
 	DDX_Control(pDX, IDC_BUTTON_SHUFFLE, m_ButtonShuffle);
 	DDX_Control(pDX, IDC_BUTTON_SAVE, m_ButtonSave);
 	DDX_Control(pDX, IDC_BUTTON_REVERSE, m_ButtonReverse);
@@ -238,7 +237,6 @@ BEGIN_MESSAGE_MAP(CPlayerDlg, CDialogClassImpl)
 	ON_BN_CLICKED(IDC_VIDEO_BUTTON, OnVideoButton)
 	ON_BN_CLICKED(IDC_BUTTON_MINIMIZE, OnButtonMinimize)
 	ON_BN_CLICKED(IDC_BUTTON_MAXIMIZE, OnButtonMaximize)
-	ON_BN_CLICKED(IDC_BUTTON_RESIZE, OnButtonResize)
 	ON_WM_SETCURSOR()
 	ON_WM_NCMOUSEMOVE()
 	ON_WM_LBUTTONUP()
@@ -744,11 +742,6 @@ CPlayerDlg::setColors(RegistryKey & regSD) {
 		m_Config.getSkin(MB_SKIN_BUTTONLOGOOUT),	m_TransPanel
 		);
 
-	m_ButtonResize.SetBitmaps(
-		m_Config.getSkin(MB_SKIN_BUTTONRESIZEIN),	m_TransPanel,	
-		m_Config.getSkin(MB_SKIN_BUTTONRESIZEHOVER),	m_TransPanel,	
-		m_Config.getSkin(MB_SKIN_BUTTONRESIZEOUT),		m_TransPanel);
-
 	m_ButtonMinimize.SetBitmaps(
 		m_Config.getSkin(MB_SKIN_BUTTONMINIMIZEIN),	m_TransPanel,	
 		m_Config.getSkin(MB_SKIN_BUTTONMINIMIZEHOVER),	m_TransPanel,	
@@ -840,7 +833,6 @@ CPlayerDlg::setColors(RegistryKey & regSD) {
 	
 //	m_OptionsButton.SetAlign(CButtonST::ST_ALIGN_OVERLAP,TRUE);
 	m_ButtonMinimize.SetAlign(CButtonST::ST_ALIGN_OVERLAP,TRUE);
-	m_ButtonResize.SetAlign(CButtonST::ST_ALIGN_OVERLAP,TRUE);
 	m_ButtonMaximize.SetAlign(CButtonST::ST_ALIGN_OVERLAP,TRUE);
 	m_ButtonExit.SetAlign(CButtonST::ST_ALIGN_OVERLAP,TRUE);
 	m_ButtonRestore.SetAlign(CButtonST::ST_ALIGN_OVERLAP,TRUE);
@@ -852,7 +844,6 @@ CPlayerDlg::setColors(RegistryKey & regSD) {
 	m_LogoButton.DrawTransparent(TRUE);
 	m_LogoButton.SetHoverMsg(this, MB_GOWWW_MSG);
 	m_ButtonMinimize.DrawTransparent(TRUE);
-	m_ButtonResize.DrawTransparent(TRUE);
 	m_ButtonMaximize.DrawTransparent(TRUE);
 	m_ButtonExit.DrawTransparent(TRUE);
 	m_ButtonRestore.DrawTransparent(TRUE);
@@ -970,7 +961,6 @@ CPlayerDlg::resetControls() {
 	m_Controls.add(0,3, "button max",		IDC_BUTTON_MAXIMIZE);
 	m_Controls.add(0,3, "button restore",	IDC_BUTTON_RESTORE);
 	m_Controls.add(0,4, "button exit",	IDC_BUTTON_EXIT);
-	m_Controls.add(0,5, "button resize",IDC_BUTTON_RESIZE);
 	m_Controls.add(1,0, "button reverse",	IDC_BUTTON_REVERSE);
 //	m_Controls.add(1,1, "button music",	IDC_MUSIC_BUTTON);
 //	m_Controls.add(1,1, "button pictures",	IDC_PICTURES_BUTTON);
@@ -1069,11 +1059,11 @@ CPlayerDlg::resetControls() {
 	m_Controls.move(p, x, y, p->row, p->col);	
 	int playpaneltop = rowMaxY;
 
-	p = m_Controls.getObj(IDC_BUTTON_RESIZE);
-	x -= (SYSCTRLSWIDTH + p->width);
-	rowMaxY = __max(rowMaxY, y + p->height);
-	m_Controls.move(p, x, y, p->row, p->col);	
-	playpaneltop = rowMaxY;
+//	p = m_Controls.getObj(IDC_BUTTON_RESIZE);
+//	x -= (SYSCTRLSWIDTH + p->width);
+//	rowMaxY = __max(rowMaxY, y + p->height);
+//	m_Controls.move(p, x, y, p->row, p->col);	
+//	playpaneltop = rowMaxY;
 
 // control box
 
@@ -1935,6 +1925,9 @@ BOOL CPlayerDlg::PreTranslateMessage(MSG* pMsg)
         } else if (pMsg->wParam == VK_DELETE) {
             OnDelete();
             return TRUE;
+		} else if (pMsg->wParam == VK_F5) {
+			resetControls();
+			return TRUE;
         }
     }
     return CDialogClassImpl::PreTranslateMessage(pMsg);
@@ -3861,12 +3854,6 @@ TEST(WmaTag2, read2)
 	CString info = wma.getInfo();
 	CString x;
 }
-
-void CPlayerDlg::OnButtonResize() 
-{
-	resetControls();	
-}
-
 
 void CPlayerDlg::OnMusicButton() {
 }
