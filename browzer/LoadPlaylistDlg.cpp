@@ -22,6 +22,9 @@ LoadPlaylistDlg * theLoader;
 void Need2EraseChooser(BOOL b) {
 	theLoader->m_Need2Erase = b;
 }
+CDialog * getChooser() {
+	return theLoader;
+}
 /////////////////////////////////////////////////////////////////////////////
 // LoadPlaylistDlg dialog
 
@@ -39,8 +42,6 @@ LoadPlaylistDlg::LoadPlaylistDlg(PlayerCallbacks * pcb,
 	//{{AFX_DATA_INIT(LoadPlaylistDlg)
 	//}}AFX_DATA_INIT
 	m_Resizing = FALSE;	
-	m_PlaylistSongs.SetPWnd(this);
-	m_PlaylistNames.SetPWnd(this);
 	m_AdjustLibrary = FALSE;
 	m_LibraryDragging = FALSE;
 	m_Modified = FALSE;
@@ -48,6 +49,7 @@ LoadPlaylistDlg::LoadPlaylistDlg(PlayerCallbacks * pcb,
 
 	m_callbacks.Need2Erase = &::Need2EraseChooser;
 	m_callbacks.mbconfig = m_parentcallbacks->mbconfig;
+	m_callbacks.dlg = &::getChooser;
 
 	MBCONFIG_READ_SKIN_DEFS_POBJ(m_parentcallbacks->mbconfig(),m_reg);
 }
@@ -401,6 +403,7 @@ void LoadPlaylistDlg::OnSelchangePlaylistNames()
 void LoadPlaylistDlg::OnSelchangePlaylistSongs() 
 {
     int sel = m_PlaylistSongs.GetCurSel();
+	if (sel < 0) return;
     CString name;
     m_PlaylistSongs.GetText(sel,name);
     	if (m_IsEditor)
@@ -437,7 +440,7 @@ void LoadPlaylistDlg::OnSetfocusPlaylistSongs()
 	m_Down.EnableWindow(TRUE);
 
 	*m_Control = (CExtendedListBox*)GetDlgItem(IDC_PLAYLIST_SONGS);
-    m_PlaylistSongs.SetCurSel(0);
+//    m_PlaylistSongs.SetCurSel(0);
 	OnSelchangePlaylistSongs();
 	m_Delete.SetTooltipText("Delete selected song from playlist");
 }
@@ -450,6 +453,7 @@ LoadPlaylistDlg::init() {
     m_parentcallbacks->musiclib()->getPlaylistNames(m_PlaylistNames);
     m_PlaylistNames.SetCurSel(0);
     OnSelchangePlaylistNames();
+	m_PlaylistSongs.SetCurSel(0);
 }
 
 void LoadPlaylistDlg::OnControlSelChange() {
@@ -1031,12 +1035,15 @@ LoadPlaylistDlg::OnMovePlaylistUp(UINT sel, LONG lParam) {
 	CString name,file;
 	name = m_csaPlaylistDesc.GetAt(sel);
 	file = m_csaPlaylist.GetAt(sel);
+	int tlen = m_cwaTlen.GetAt(sel);
 	m_csaPlaylistDesc.RemoveAt(sel);
 	m_csaPlaylist.RemoveAt(sel);
+	m_cwaTlen.RemoveAt(sel);
 	sel--;
 	if ((int)sel < 0) sel = 0;
 	m_csaPlaylistDesc.InsertAt(sel,name);
 	m_csaPlaylist.InsertAt(sel,file);
+	m_cwaTlen.InsertAt(sel,tlen);
 	m_Modified = TRUE;
 	m_Save.EnableWindow(TRUE);
 	return 0;
@@ -1046,12 +1053,15 @@ LoadPlaylistDlg::OnMovePlaylistDn(UINT sel, LONG lParam) {
 	CString name,file;
 	name = m_csaPlaylistDesc.GetAt(sel);
 	file = m_csaPlaylist.GetAt(sel);
+	int tlen = m_cwaTlen.GetAt(sel);
 	m_csaPlaylistDesc.RemoveAt(sel);
 	m_csaPlaylist.RemoveAt(sel);
+	m_cwaTlen.RemoveAt(sel);
 	sel++;
 	if ((int)sel > m_PlaylistSongs.GetCount()) sel = m_PlaylistSongs.GetCount();
 	m_csaPlaylistDesc.InsertAt(sel,name);
 	m_csaPlaylist.InsertAt(sel,file);
+	m_cwaTlen.InsertAt(sel,tlen);
 	m_Modified = TRUE;
 	m_Save.EnableWindow(TRUE);
 	return 0;
@@ -1156,21 +1166,23 @@ void LoadPlaylistDlg::OnDeletePlaylist()
 		}
 		m_PlaylistNames.SetCurSel(sel);
 		m_PlaylistNames.SetFocus();
+		OnSelchangePlaylistNames();
 	} else if (m_Control->ptr() == &m_PlaylistSongs) {
 		int sel = m_PlaylistSongs.GetCurSel();
 		if (sel == LB_ERR) return;
+
 		CString name;
 		m_PlaylistSongs.GetText(sel, name);
 		m_PlaylistSongs.DeleteString(sel);
 		m_csaPlaylistDesc.RemoveAt(sel);
 		m_csaPlaylist.RemoveAt(sel);
+		m_cwaTlen.RemoveAt(sel);
 		if (sel > m_PlaylistSongs.GetCount()-1) {
 			sel = m_PlaylistSongs.GetCount()-1;
 		}
-//		m_parentcallbacks->musiclib()->deletePlaylistSong(name);
-		init();
-		m_PlaylistSongs.SetCurSel(sel);
+
 		m_PlaylistSongs.SetFocus();
+		m_PlaylistSongs.SetCurSel(sel);
 		m_Modified = TRUE;
 		m_Save.EnableWindow(TRUE);
 	}
@@ -1179,4 +1191,24 @@ void LoadPlaylistDlg::OnDeletePlaylist()
 CWnd *
 LoadPlaylistDlg::GetResizableWnd() {
 	return this;
+}
+BOOL LoadPlaylistDlg::PreTranslateMessage(MSG* pMsg)
+{	// disable ESC & ENTER from killing the dialog
+    if (pMsg->message == WM_KEYDOWN) {
+//		logger.ods("PreTMsg");
+//        if (pMsg->wParam == VK_RETURN) {
+//			OnControlClick();
+//            return TRUE;
+//		} else if (pMsg->wParam == VK_ESCAPE) {
+//			return TRUE;
+        if (pMsg->wParam == VK_DELETE) {
+            OnDeletePlaylist();
+            return TRUE;
+		}
+//		} else if (pMsg->wParam == VK_F5) {
+//			resetControls();
+//			return TRUE;
+//      }
+    }
+    return CDialog::PreTranslateMessage(pMsg);
 }

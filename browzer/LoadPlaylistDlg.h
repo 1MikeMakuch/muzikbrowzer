@@ -100,7 +100,7 @@ protected:
 	afx_msg LRESULT OnMovePlaylistDn(UINT wParam, LONG lParam=0);
 	void AdjustLibraryWidths(CPoint & point);
 	CWnd* GetResizableWnd();
-
+	virtual BOOL PreTranslateMessage(MSG*);
 private:
 //    MusicLib *m_mdb;
 //    CPlayerDlg *m_pd;
