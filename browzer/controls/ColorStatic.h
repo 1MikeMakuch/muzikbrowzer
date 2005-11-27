@@ -45,11 +45,19 @@ public:
 		COLORREF outLR=0,
 		BOOL threeD=FALSE);
 
+	void SetWordWrap(BOOL b = TRUE) {
+		m_WordWrap = TRUE;
+	}
 	void SetTextColor(COLORREF crTextColor = 0xffffffff);
 	COLORREF GetTextColor();
 
 	void SetBkColor(COLORREF crBkColor = 0xffffffff);
 	COLORREF GetBkColor();
+	
+	void SetTransparent(COLORREF trans) {
+		m_crTrans = trans;
+		m_DoTrans = TRUE;
+	}
 
 	void SetShadowDark(COLORREF clr = 0) {
 		m_ClrShadowDark = clr;
@@ -57,10 +65,6 @@ public:
 
 	void SetShadowLight(COLORREF clr = 0xffffffff) {
 		m_ClrShadowLight = clr;
-	}
-
-	void SetCornerColor(COLORREF val) {
-		m_crCornerColor = val;
 	}
 
 	void SetBlinkTextColors(COLORREF crBlinkTextColor1, COLORREF crBlinkTextColor2);
@@ -121,6 +125,9 @@ private:
 	COLORREF m_crOutLR;
 	BOOL m_3d;
 
+	COLORREF m_crTrans;
+	BOOL m_DoTrans;
+
 	CBrush m_brBkgnd;
 	CBrush m_brBlinkBkgnd[2];
 	CBrush m_brFg;
@@ -145,6 +152,7 @@ private:
 	time_t m_TickerDelay;
 	BOOL m_TickerIt,m_NeedTicker, m_Ticking;
 	CTime m_TickerStart, m_TimeTmp;
+	BOOL m_WordWrap;
 
 public:
 	int m_HCenter;

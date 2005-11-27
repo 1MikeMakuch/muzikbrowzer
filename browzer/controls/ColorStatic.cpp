@@ -9,6 +9,7 @@
 #include "FileUtils.h"
 #include "MyDC.h"
 #include "MyString.h"
+#include "Misc.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -60,8 +61,6 @@ CColorStatic::CColorStatic()
 	m_width = 0;
 	m_HCenter = 0;
 
-	m_crCornerColor = 0;
-
 	m_ClrShadowDark = RGB(0,0,0);
 	m_ClrShadowLight = RGB(255,255,255);
 
@@ -80,6 +79,11 @@ CColorStatic::CColorStatic()
 	m_TickerIt = FALSE;
 	m_Ticking = FALSE;
 	m_TickerDelay = 3;
+
+	m_crTrans = 0;
+	m_DoTrans = FALSE;
+
+	m_WordWrap = FALSE;
 
 } // End of CColorStatic
 
@@ -370,24 +374,29 @@ public:
 
 #define TICKSPACES "                              "
 void CColorStatic::OnPaint() {
+
 	GetClientRect(m_Rect);
 	CPaintDC pDC(this);
-    CMemDC memdc(&pDC, &m_Rect);
+
 	CRect rect(m_Rect);
+	CDC dc;
+	dc.CreateCompatibleDC(NULL);
+	CBitmap bmp;
+	bmp.CreateCompatibleBitmap(&pDC,m_Rect.Width(),m_Rect.Height());
+	CBitmap *oldbmp = dc.SelectObject(&bmp);
 	
-	memdc.FillSolidRect(&m_Rect, m_crBkColor  );
+	dc.FillSolidRect(&m_Rect, m_crBkColor  );
 	if (m_3d) {
 
-		memdc.Draw3dRect(rect, m_crOutUL, m_crOutLR);
+		dc.Draw3dRect(rect, m_crOutUL, m_crOutLR);
 		rect.DeflateRect(1,1);
-		memdc.Draw3dRect(rect, m_crInUL, m_crInLR);
+		dc.Draw3dRect(rect, m_crInUL, m_crInLR);
+		rect.DeflateRect(1,1);
 	}
 
-
-	//return;
     if (m_text.GetLength()) {
-		CFont * oldfont = memdc.SelectObject(&m_font);
-		CSize cs = memdc.GetTextExtent(m_text);
+		CFont * oldfont = dc.SelectObject(&m_font);
+		CSize cs = dc.GetTextExtent(m_text);
 
 		if (cs.cx > m_Rect.Width()) {
 			m_NeedTicker = TRUE;
@@ -398,7 +407,7 @@ void CColorStatic::OnPaint() {
 		if (m_Ticking) {
 			if (m_NeedTicker) {
 				if (m_TickerX <= - cs.cx ){
-					CSize cs2 = memdc.GetTextExtent(TICKSPACES);
+					CSize cs2 = dc.GetTextExtent(TICKSPACES);
 					m_TickerX = cs2.cx;
 				}
 			} else {
@@ -411,8 +420,8 @@ void CColorStatic::OnPaint() {
 				StartTicker();
 			}
 		}
-		memdc.SetTextColor(m_crTextColor);
-		memdc.SetBkMode(TRANSPARENT);
+		dc.SetTextColor(m_crTextColor);
+		dc.SetBkMode(TRANSPARENT);
 		if (m_Ticking) {
 			m_text2 = m_text + TICKSPACES + m_text;
 		} else {
@@ -421,13 +430,26 @@ void CColorStatic::OnPaint() {
 				m_TickerX = (m_Rect.Width() - cs.cx) / 2;
 			}
 		}
-		memdc.TextOut (m_TickerX,m_TickerY,m_text2);
-		memdc.SelectObject(oldfont);
+		if (m_WordWrap) {
+			dc.DrawText(m_text2,rect, DT_LEFT | DT_WORDBREAK);
+		} else {
+			dc.TextOut (m_TickerX,m_TickerY,m_text2);
+		}
+		dc.SelectObject(oldfont);
 	} else {
 		if (m_Ticking) {
 			m_Ticking = FALSE;
 			KillTimer(MB_TICKER_TIMER_ID);
 		}
+	}
+	if (m_DoTrans) {
+		dc.SelectObject(oldbmp);
+		MBUtil::BmpToDC(&pDC,bmp,0,0,m_Rect.Width(),m_Rect.Height(),
+			m_Rect.Width(),m_Rect.Height(),LO_FIXED,TRUE,m_crTrans,0);
+	} else {
+		pDC.BitBlt(m_Rect.left,m_Rect.top,m_Rect.Width(),m_Rect.Height(),
+			&dc,m_Rect.left,m_Rect.top,SRCCOPY);
+		dc.SelectObject(oldbmp);
 	}
 }
 void
