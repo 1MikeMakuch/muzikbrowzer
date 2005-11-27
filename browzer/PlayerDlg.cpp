@@ -124,7 +124,8 @@ CPlayerDlg::CPlayerDlg(CPlayerApp * theApp,
 	m_LibraryDragging(FALSE),
 	m_Resizing(FALSE),
 	m_FixedSize(FALSE),
-	m_LastSized(0,0)
+	m_LastSized(0,0),
+	m_QuickPlay(FALSE)
 
 {
 	//{{AFX_DATA_INIT(CPlayerDlg)
@@ -287,6 +288,7 @@ BEGIN_MESSAGE_MAP(CPlayerDlg, CDialogClassImpl)
 	ON_COMMAND(ID_MYTEST, OnTestMenu)
 	ON_COMMAND_RANGE(MB_SKINPICS_MSGS_BEGIN,MB_SKINPICS_MSGS_END, OnSkinPic)
 	ON_COMMAND(ID_ADDTO_PLAYLIST, OnAddToPlaylist)
+	ON_COMMAND(ID_DELETE_FROM_PL, OnDelete)
 	ON_COMMAND(ID_QUICK_PLAY, OnQuickPlay)
 	ON_LBN_SETFOCUS(IDC_ALBUMS, OnAlbumsFocus)
 	ON_LBN_SETFOCUS(IDC_ARTISTS, OnArtistsFocus)
@@ -1897,9 +1899,6 @@ void CPlayerDlg::OnDblclkSongs()
 	CString last = _selectedGenre + _selectedArtist + _selectedAlbum +
 		_selectedSong;
 	if (last != m_LastThingQueuedUp) {
-//		m_mlib.addSongToPlaylist(_selectedGenre, _selectedArtist, _selectedAlbum,
-//			_selectedSong);
-
 		Song song = new CSong;
 	    int sel = m_Songs.GetCurSel();
 		DWORD data = m_Songs.GetItemData(sel);
@@ -2678,8 +2677,8 @@ void CPlayerDlg::PlayLoop() {
 				InputClose();
             }
             m_PlaylistCurrent++;
-            if (m_PlaylistCurrent+1 > m_mlib._playlist.size()) {
-
+            if (m_PlaylistCurrent+1 > m_mlib._playlist.size() 
+					|| m_PlaylistCurrent < 0) {
                 m_PlaylistCurrent = 0;
             }
 			if (m_Config.trialMode() == 1) {
@@ -2742,6 +2741,12 @@ void CPlayerDlg::PlayLoop() {
             UpdateWindow();
 
         } else {
+			if (m_Player->isStopped() && m_QuickPlay) {
+				m_QuickPlay = FALSE;
+				CurrentTitleSet("");
+				resetPosition();
+				InputClose();
+			}
             good = 1;
         }
     } while (!good);
@@ -2877,9 +2882,13 @@ void CPlayerDlg::OnContextMenu(CWnd* pWnd, CPoint ScreenPnt)
 			if (1 <= mWindowFlag && mWindowFlag <= 4) {
 				popup->EnableMenuItem(ID_ADDTO_PLAYLIST, 
 					MF_ENABLED | MF_BYCOMMAND);
+				popup->EnableMenuItem(ID_DELETE_FROM_PL, 
+					MF_DISABLED |MF_GRAYED| MF_BYCOMMAND);
 			} else {
 				popup->EnableMenuItem(ID_ADDTO_PLAYLIST, 
 					MF_DISABLED |MF_GRAYED| MF_BYCOMMAND);
+				popup->EnableMenuItem(ID_DELETE_FROM_PL, 
+					MF_ENABLED | MF_BYCOMMAND);
 			}
             popup->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON,ScreenPnt.x,
                 ScreenPnt.y, AfxGetMainWnd());
@@ -3657,12 +3666,46 @@ void CPlayerDlg::OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruct) {
     }
 }
 void CPlayerDlg::OnQuickPlay() {
+	CString file;
+	Song song = new CSong;
+	int sel = -1 ;
+	DWORD data = 0;
 	switch (mWindowFlag) {
 	case 4:
+	    sel = m_Songs.GetCurSel();
+		if (sel < 0) return;
+		data = m_Songs.GetItemData(sel);
+		song = m_mlib.m_SongLib.getSong(data);
+		file = song->getId3("FILE");
 		break;
 	case 5:
+		sel = m_Playlist.GetCurSel();
+		if (sel < 0) return;
+		file = m_mlib._playlist[sel]->getId3("FILE");
+		song = m_mlib.createSongFromFile(file);
 		break;
 	}
+
+	if (file.GetLength() < 1 || !FileUtil::IsReadable(file))
+		return;
+
+	CString msg;
+	Stop();
+	InputClose();
+    m_Player->InputOpen(file) ;
+	Play();
+	adjustVolume();
+
+    msg = song->getId3("TIT2");
+	msg += " by ";
+	msg += song->getId3("TPE1");
+	msg += " on ";
+	msg += song->getId3("TALB");
+	msg += " in ";
+	msg += song->getId3("TCON");
+    CurrentTitleSet(msg);
+	m_QuickPlay = TRUE;
+	m_PlaylistCurrent--;
 
 }
 void CPlayerDlg::OnAddToPlaylist() {

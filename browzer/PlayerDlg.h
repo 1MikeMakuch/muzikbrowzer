@@ -220,6 +220,7 @@ private:
 	CRect m_WindowRect;
 	CPoint m_LastSized;
 	HANDLE m_hMutex;
+	BOOL m_QuickPlay;
 // Dialog Data
 	//{{AFX_DATA(CPlayerDlg)
 	enum { IDD = IDD_PLAYER_DIALOG };
