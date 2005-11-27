@@ -157,7 +157,7 @@ private:
 	CDialog * m_pCWnd;
 	CBrush m_HatchBrush;
 	BOOL m_3d;
-	PlayerCallbacks * m_playercallbacks;
+	PlayerCallbacks * m_parentcallbacks;
 
     void TransparentBlt( HDC hdcDest, int nXDest, int nYDest, int nWidth, 
 			int nHeight, HBITMAP hBitmap, int nXSrc, int nYSrc,

@@ -44,11 +44,11 @@ BEGIN_MESSAGE_MAP(CExtendedListBox, CListBox)
 END_MESSAGE_MAP()
 
 CExtendedListBox::CExtendedListBox(BOOL usecolors, CString desc, BOOL set
-								   ,PlayerCallbacks * playercallbacks) 
+								   ,PlayerCallbacks * callbacks)
 	: m_UseColors(usecolors), m_id(desc),
      m_reorder(FALSE), m_ScrollButtonRect(0,0,0,0), m_ScrollHitPos(0),
      m_Capture(FALSE), m_HaveScroll(FALSE), m_DrawIt(TRUE), m_SetStatus(set),
-	 m_pCWnd(NULL),m_playercallbacks(playercallbacks)
+	 m_pCWnd(NULL),m_parentcallbacks(callbacks)
 {
 	m_UseColors = TRUE;
     CListBox::CListBox();
@@ -148,8 +148,9 @@ void CExtendedListBox::DrawItem(LPDRAWITEMSTRUCT lpDIS)
     } else {
         data = "none";
     }
-	if (selectedbit && focusbit && m_SetStatus && m_playercallbacks) {
-		(*m_playercallbacks->statustempset)(data);
+	if (selectedbit && focusbit && m_SetStatus && m_parentcallbacks
+			&& m_parentcallbacks->statustempset) {
+		(*m_parentcallbacks->statustempset)(data);
 	}
 
 	CDC pDC;
@@ -255,13 +256,10 @@ void CExtendedListBox::changeFont(LPLOGFONT lplf) {
 
 void
 CExtendedListBox::OnKeyDown( UINT nChar, UINT nRepCnt, UINT nFlags ) {
-// Note: relying on the fact that CPlayerDlg::m_Playlist.m_reorder
-// is the only CExtendedListBox setting to TRUE!!!!!!!!!!!!!!!!!!!!
-// since it calls movePlaylist[Up|Down] in move below!!!!!!!!!!!!!!
 
-#pragma hack
-	if (m_SetStatus)
-		thePlayer->Need2Erase(FALSE);
+	if (m_parentcallbacks && m_parentcallbacks->Need2Erase) {
+		(*m_parentcallbacks->Need2Erase)(FALSE);
+	}
 	
     if (nChar == VK_LEFT) {
 		Invalidate();
@@ -346,7 +344,11 @@ void CExtendedListBox::DrawBorders()
 		rect.right += m_ScrollWidth+1 ;
 	// 1st inflate the background by 1 with bknormal
 	rect.InflateRect(MB_BORDER_WIDTH-1, MB_BORDER_HEIGHT-1);    
-    CBrush br(thePlayer->config().getColorBkNormal());
+    CBrush br;
+	if (m_parentcallbacks && m_parentcallbacks->mbconfig)
+		br.CreateSolidBrush((*m_parentcallbacks->mbconfig)()->getColorBkNormal());
+	else 
+		br.CreateSolidBrush(RGB(0,0,0));
 
 	if (m_3d) {
 		pDC->Draw3dRect(rect, m_crInnerUpperLeft, m_crInnerLowerRight);
@@ -550,8 +552,9 @@ void CExtendedListBox::DrawScroll()
 
 UINT CExtendedListBox::OnNcHitTest(CPoint point) 
 {
-	if (m_SetStatus)
-		thePlayer->Need2Erase(FALSE);
+	if (m_parentcallbacks && m_parentcallbacks->Need2Erase) {
+		(*m_parentcallbacks->Need2Erase)(FALSE);
+	}
 	UINT where = CListBox::OnNcHitTest(point); //Obtains where the mouse is
     if (m_HaveScroll == FALSE) return where;
     
