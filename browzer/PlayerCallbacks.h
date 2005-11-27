@@ -28,6 +28,7 @@ public:
 		mbconfig = NULL;
 		musiclib = NULL;
 		playerdlg = NULL;
+		dlg = NULL;
 	}
 
 	void (*redraw)();
@@ -42,6 +43,8 @@ public:
 	MBConfig * (*mbconfig)();
 	MusicLib * (*musiclib)();
 	CPlayerDlg * (*playerdlg)();
+	CDialog * (*dlg)();
+
 	CString (*scanDirectories)(const CStringList & directories,
 						  InitDlg * initDlg, BOOL scanNew, BOOL bAdd);
 };

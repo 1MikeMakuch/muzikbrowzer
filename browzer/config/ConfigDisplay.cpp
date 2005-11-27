@@ -969,7 +969,7 @@ CConfigDisplay::setupSample() {
 	rectDataNew.left += 2;
 	rectDataNew.right = (rectDataNew.left + rectColHdr.Width())-4;
 
-	m_SamplePlaylist.SetPWnd(this);
+//	m_SamplePlaylist.SetPWnd(this);
 	m_SamplePlaylist.SetColors(m_vBkNormal,m_vBkHigh,m_vBkSel,
 		m_vTxNormal,m_vTxHigh,m_vTxSel,m_3dData,
 		m_vcrDataInUL,m_vcrDataInLR,m_vcrDataOutUL,m_vcrDataOutLR);

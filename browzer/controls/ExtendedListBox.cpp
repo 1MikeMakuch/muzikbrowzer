@@ -48,7 +48,7 @@ CExtendedListBox::CExtendedListBox(BOOL usecolors, CString desc, BOOL set
 	: m_UseColors(usecolors), m_id(desc),
      m_reorder(FALSE), m_ScrollButtonRect(0,0,0,0), m_ScrollHitPos(0),
      m_Capture(FALSE), m_HaveScroll(FALSE), m_DrawIt(TRUE), m_SetStatus(set),
-	 m_pCWnd(NULL),m_parentcallbacks(callbacks)
+	 m_parentcallbacks(callbacks)
 {
 	m_UseColors = TRUE;
     CListBox::CListBox();
@@ -260,16 +260,18 @@ CExtendedListBox::OnKeyDown( UINT nChar, UINT nRepCnt, UINT nFlags ) {
 	if (m_parentcallbacks && m_parentcallbacks->Need2Erase) {
 		(*m_parentcallbacks->Need2Erase)(FALSE);
 	}
-	
-    if (nChar == VK_LEFT) {
-		Invalidate();
-		if (m_pCWnd) m_pCWnd->PrevDlgCtrl();
-    } else if (nChar == VK_RIGHT) {
-		Invalidate();
-		if (m_pCWnd) m_pCWnd->NextDlgCtrl();
-	} else {
+	if (m_parentcallbacks && m_parentcallbacks->dlg) {
+		if (nChar == VK_LEFT) {
+			Invalidate();
+			(*m_parentcallbacks->dlg)()->PrevDlgCtrl();
+		} else if (nChar == VK_RIGHT) {
+			Invalidate();
+			(*m_parentcallbacks->dlg)()->NextDlgCtrl();
+		} else {
+			CListBox::OnKeyDown(nChar, nRepCnt, nFlags);
+		}
+	} else
 		CListBox::OnKeyDown(nChar, nRepCnt, nFlags);
-	}
 }
 
 void CExtendedListBox::OnSysKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) 
@@ -309,15 +311,15 @@ CExtendedListBox::move(UINT nChar) {
 		sel -= 1;
 		if (sel < 0) sel = 0;
         SetCurSel(sel);
-		if (m_pCWnd)
-			m_pCWnd->PostMessage(MB_LISTMOVEUP,origsel,origsel);
+		if (m_parentcallbacks && m_parentcallbacks->dlg)
+			(*m_parentcallbacks->dlg)()->PostMessage(MB_LISTMOVEUP,origsel,origsel);
 
     } else if (nChar == 40) { // down arrow
         if (sel > GetCount()-2) return;
         DeleteString(sel);
         InsertString(sel+1, (LPCTSTR)name);
-		if (m_pCWnd) 
-			m_pCWnd->PostMessage(MB_LISTMOVEDN,origsel,origsel);
+		if (m_parentcallbacks && m_parentcallbacks->dlg)
+			(*m_parentcallbacks->dlg)()->PostMessage(MB_LISTMOVEDN,origsel,origsel);
 		sel += 1;
         SetCurSel(sel);
 

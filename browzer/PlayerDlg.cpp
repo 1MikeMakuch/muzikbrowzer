@@ -100,6 +100,9 @@ MusicLib * musiclib() {
 CPlayerDlg * getPlayer() {
 	return thePlayer;
 }
+CDialog * getDialog() {
+	return thePlayer;
+}
 /////////////////////////////////////////////////////////////////////////////
 // CPlayerDlg dialog
 
@@ -149,6 +152,7 @@ CPlayerDlg::CPlayerDlg(CPlayerApp * theApp,
 	m_callbacks.mbconfig = &::mbconfig;
 	m_callbacks.musiclib = &::musiclib;
 	m_callbacks.playerdlg = &::getPlayer;
+	m_callbacks.dlg = &::getDialog;
 
 	irman().init(RegKeyIrman, IR_MESSAGE_NUMBER_OF, this);
 //	m_brush.CreateSolidBrush(RGB( 255, 0, 0));
@@ -483,11 +487,6 @@ BOOL CPlayerDlg::OnInitDialog()
 	m_AlbumsLabel.setText("Albums");
 	m_SongsLabel.setText("Songs");
 	m_PlaylistLabel.setText("Playlist");
-	m_Genres.SetPWnd(this);
-	m_Artists.SetPWnd(this);
-	m_Albums.SetPWnd(this);
-	m_Songs.SetPWnd(this);
-	m_Playlist.SetPWnd(this);
 
     CRect rect;
     int max;
@@ -1963,7 +1962,7 @@ void CPlayerDlg::OnDblclkPlaylist()
 BOOL CPlayerDlg::PreTranslateMessage(MSG* pMsg)
 {	// disable ESC & ENTER from killing the dialog
     if (pMsg->message == WM_KEYDOWN) {
-		logger.ods("PreTMsg");
+//		logger.ods("PreTMsg");
         if (pMsg->wParam == VK_RETURN) {
 			OnControlClick();
             return TRUE;

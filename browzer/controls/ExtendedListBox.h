@@ -76,7 +76,6 @@ public:
 	void DrawIt(BOOL flag) {
 		m_DrawIt = flag;
 	}
-	void SetPWnd(CDialog * p) { m_pCWnd = p; }
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CExtendedListBox)
 protected:
@@ -154,7 +153,6 @@ private:
 	int m_ScrollButtonHeight;
 	CRect m_ClientRect;
 	BOOL m_SetStatus;
-	CDialog * m_pCWnd;
 	CBrush m_HatchBrush;
 	BOOL m_3d;
 	PlayerCallbacks * m_parentcallbacks;
