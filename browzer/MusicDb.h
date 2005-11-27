@@ -348,8 +348,8 @@ class MusicLib
 		void MovePlaylistsToDir();
         int getSongs(const CString &, const CString &, const CString &,
 			CExtendedListBox&);
-        int getSongsInPlaylist(const CString &name , CStringList & desc, CStringList & plist);
-		int getSongsInPlaylist(const CString & name, CStringArray & desc, CStringArray & plist);
+		int getSongsInPlaylist(const CString & name, CStringArray & desc, 
+			CStringArray & plist, CDWordArray & tlenArray);
 		int getSongsInPlaylist(const CString & name, CExtendedListBox &);
 		CString getSongVal(const CString & key, const CString & genre,
 			const CString & artist, const CString & album,
@@ -361,9 +361,6 @@ class MusicLib
 		// for converting to new m3u format
 		int loadOldPlaylist(const CString & name, CStringList & playlist);
         void modifyID3(Song old, Song newSong);
-		void modifyPlaylists(Song old, Song newSong);
-		void modifyPlaylist(const CString playlist, Song oldsong,
-			Song newsong);
         void movePlaylistUp(int plc, int sel);
         void movePlaylistDown(int plc, int sel);
         Playlist _playlist;

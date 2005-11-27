@@ -294,6 +294,10 @@
 #define IDC_COLOR_STATUS_INLR           1222
 #define IDC_COLOR_STATUS_OUTUL          1223
 #define IDC_COLOR_STATUS_OUTLR          1224
+#define IDC_COLOR_TX_OTHER              1225
+#define IDC_COLOR_BK_OTHER              1226
+#define IDC_COLOR_TX_BUTTONS            1227
+#define IDC_COLOR_BK_BUTTONS            1228
 #define IDC_IRUP                        1500
 #define IDC_IRDOWN                      1501
 #define IDC_IRLEFT                      1502
@@ -391,6 +395,7 @@
 #define IDC_LPD_NAMES_LABEL             2043
 #define IDC_LPD_SONGS_LABEL             2044
 #define IDC_GETTEXTFIELD                2045
+#define IDC_LPD_TITLE                   2045
 #define IDC_GETTEXTFIELD_DESC           2046
 #define IDC_SAMPLE_PLAYLIST             2047
 #define IDC_SAMPLE_GROUP                2048

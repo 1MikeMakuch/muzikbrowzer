@@ -484,7 +484,7 @@ void sortPlaylist(CStringList & cslList) {
 	pcur = pprev = NULL;
     for (pos = cslList.GetHeadPosition(); pos != NULL; ) {
         CString lstring = cslList.GetAt(pos);
-		if ("Current" == lstring) 
+		if ("Last" == lstring) 
 			pcur = pos;
 		if ("Previous" == lstring)
 			pprev = pos;
@@ -496,7 +496,7 @@ void sortPlaylist(CStringList & cslList) {
 	}
 	if (pcur) {
 		cslList.RemoveAt(pcur);
-		cslList.AddHead("Current");
+		cslList.AddHead("Last");
 	}
 
 }
@@ -520,37 +520,26 @@ MusicLib::getPlaylistNames(CStringList & box) {
 }
 int
 MusicLib::getSongsInPlaylist(const CString & name, CExtendedListBox & box) {
-	CStringList list,playlist;
-	getSongsInPlaylist(name, list, playlist);
-	POSITION pos;
-    for (pos = list.GetHeadPosition(); pos != NULL; ) {
+	CStringArray list,playlist;
+	CDWordArray colTlen;
+	getSongsInPlaylist(name, list, playlist, colTlen);
+//	POSITION pos;
+	int pos,size;
+	size = list.GetSize();
+	for(pos = 0 ; pos < size ; pos++) {
+//    for (pos = list.GetHeadPosition(); pos != NULL; ) {
         CString lstring = list.GetAt(pos);
 		box.AddString(lstring);
-        list.GetNext(pos);
-	}
-	return 0;
-}
-int
-MusicLib::getSongsInPlaylist(const CString & name, 
-							 CStringArray & csaDesc, 
-							 CStringArray & csaPlaylist) {
-	CStringList cslDesc,cslPlaylist;
-	getSongsInPlaylist(name, cslDesc, cslPlaylist );
-	POSITION pos0,pos1;
-	pos1 = cslPlaylist.GetHeadPosition();
-    for (pos0 = cslDesc.GetHeadPosition(); pos0 != NULL; ) {
-		csaDesc.Add(cslDesc.GetAt(pos0));
-		csaPlaylist.Add(cslPlaylist.GetAt(pos1));
-        cslDesc.GetNext(pos0);
-		cslPlaylist.GetNext(pos1);
+//        list.GetNext(pos);
 	}
 	return 0;
 }
 
 int
 MusicLib::getSongsInPlaylist(const CString & name, 
-							 CStringList & cslDesc,
-							 CStringList & cslPlaylist) {
+							 CStringArray & cslDesc,
+							 CStringArray & cslPlaylist,
+							 CDWordArray & cwaTlen) {
 
     CString dbfilename(m_dir);
     dbfilename += "\\" + CS(MBPLAYLISTDIR) + "\\";
@@ -581,6 +570,7 @@ MusicLib::getSongsInPlaylist(const CString & name,
 		
 		p = strtok(buf.p,"\r\n");
         while (NULL != p) {
+			int tlen = 0;
 			if (strlen(p)) {
 				CString file(p);
 				CString disp;
@@ -594,14 +584,16 @@ MusicLib::getSongsInPlaylist(const CString & name,
 						disp += song->getId3("TALB");
 						disp += " in ";
 						disp += song->getId3("TCON");
+						tlen = atoi(song->getId3("TLEN"));
 					} else {
 						disp = "not in library: " + file;
 					}
 				} else {
 					disp = "unreadable: " + file;
 				}
-				cslDesc.AddTail(disp);
-				cslPlaylist.AddTail(file);
+				cslDesc.Add(disp);
+				cslPlaylist.Add(file);
+				cwaTlen.Add(tlen);
 			}
 			p = strtok(NULL,"\r\n");
         }
@@ -1628,9 +1620,7 @@ MusicLib::savePlaylist(Playlist & playlist, const CString & file) {
     dbfilename += file;
     dbfilename += "." MBPLAYLISTM3U;
 
-
-
-	if ("Current" == file) {
+	if ("Last" == file) {
 		CString previous = m_dir + "\\" + MBPLAYLISTDIR "\\Previous.m3u";
 		FileUtil::mv(dbfilename, previous);
 	}
@@ -1940,120 +1930,10 @@ MusicLib::modifyID3(Song oldSong, Song newSong) {
 	writeDb();
 	dialog->EndDialog(0);
 	delete dialog;
-	modifyPlaylists(oldSong, newSong);
+	//modifyPlaylists(oldSong, newSong);
     return;
 }
-void
-MusicLib::modifyPlaylists(Song oldSong, Song newSong) {
-	    InitDlg * dialog = new InitDlg(1,0);
-	CString msg = "Modifying saved playlists...";
-	dialog->SetLabel(msg);
-	dialog->ShowWindow(SW_SHOWNORMAL);
-	dialog->UpdateWindow();
-	CStringList playlists;
 
-	getPlaylistNames(playlists);
-
-    POSITION pos;
-	int ctr = 0;
-    for (pos = playlists.GetHeadPosition(); pos != NULL; ) {
-        CString playlist = playlists.GetAt(pos);
-        dialog->UpdateStatus(playlist);
-        dialog->ProgressPos(ctr++);
-
-		modifyPlaylist(playlist, oldSong, newSong);
-        playlists.GetNext(pos);
-    }
-	delete dialog;
-}
-void
-MusicLib::modifyPlaylist(const CString playlistname, Song oldsong, Song newsong) {
-    CString playlistfile = m_dir;
-    playlistfile += "\\";
-    playlistfile += MUZIKBROWZER;
-    playlistfile += MBPLAYLIST;
-    playlistfile += playlistname;
-    playlistfile += MBPLAYLISTEXT;
-
-    const char * pszFileName = (LPCTSTR) playlistfile;
-	CFile myFile;
-	CFileException fileException;
-    int count1 = 0;
-    int count3 = 0;
-
-	if ( !myFile.Open( pszFileName,
-        CFile::modeRead,
-        &fileException ))
-	{
-        CString msg = "Unable to read playlist ";
-		msg += pszFileName;
-        MBMessageBox(CString("alert"), msg);
-        return;
-	}
-	CString oldGenre, oldArtist, oldAlbum, oldTitle, newGenre, newArtist,
-		newAlbum, newTitle;
-	oldGenre = oldsong->getId3("TCON");
-	newGenre = newsong->getId3("TCON");
-	oldArtist = oldsong->getId3("TPE1");
-	newArtist = newsong->getId3("TPE1");
-	oldAlbum = oldsong->getId3("TALB");
-	newAlbum = newsong->getId3("TALB");
-	oldTitle = oldsong->getId3("TIT2");
-	newTitle = newsong->getId3("TIT2");
-
-	Playlist newplaylist;
-
-    if (myFile.GetLength()) {
-        AutoBuf buf(myFile.GetLength()+1);
-        myFile.Read(buf.p, myFile.GetLength());
-        CString genre, artist, album, song, file;
-        char * p = buf.p;
-        while (p < buf.p + myFile.GetLength()) {
-            genre = p;
-            p += genre.GetLength()+1;
-            artist = p;
-            p += artist.GetLength()+1;
-            album = p;
-            p += album.GetLength()+1;
-            song = p;
-            p += song.GetLength()+1;
-			file = p;
-			p += file.GetLength()+1;
-
-            while ((p < buf.p + myFile.GetLength())
-                && (p[0] == '\r' || p[0] == '\n'))
-                p++;
-
-			if (genre == oldGenre || oldGenre == MBALL) {
-				if (artist == oldArtist || oldArtist == MBUNKNOWN) {
-					if (album == oldAlbum || oldAlbum == MBUNKNOWN) {
-						if (song == oldTitle || oldTitle == MBUNKNOWN) {
-							if (newGenre.GetLength() && newGenre != MBUNKNOWN)
-								genre = newGenre;
-							if (newArtist.GetLength() && newArtist != MBUNKNOWN)
-								artist = newArtist;
-							if (newAlbum.GetLength() && newAlbum != MBUNKNOWN)
-								album = newAlbum;
-							if (newTitle.GetLength() && newTitle != MBUNKNOWN)
-								song = newTitle;
-						}
-					}
-				}
-			}
-			Song tmp = new CSong;
-			tmp->setId3("TCON", genre);
-			tmp->setId3("TPE1", artist);
-			tmp->setId3("TALB", album);
-			tmp->setId3("TIT2", song);
-			tmp->setId3("FILE", file);
-			newplaylist.append(tmp);
-        }
-    }
-    myFile.Close();
-
-	savePlaylist(newplaylist, playlistname);
-
-}
 
 void
 MusicLib::searchForMp3s(CStringList & songs, const CString & genrename_,

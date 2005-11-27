@@ -122,6 +122,7 @@ public:
 	VOID SendHoverMsg();
 	DWORD SetDefaultColors(BOOL bRepaint = TRUE);
 	DWORD SetColor(BYTE byColorIndex, COLORREF crColor, BOOL bRepaint = TRUE);
+	DWORD SetColors(COLORREF fgin,COLORREF bgin,COLORREF fgout,COLORREF bgout);
 	DWORD GetColor(BYTE byColorIndex, COLORREF* crpColor);
 	DWORD OffsetColor(BYTE byColorIndex, short shOffset, BOOL bRepaint = TRUE);
 

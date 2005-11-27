@@ -87,8 +87,6 @@ public:
     void OnExit();
     void SetSavePlaylistFlag(BOOL flag) { m_SavePlaylistFlag = flag; }
 //	void RunTestHarness();
-	void setDuration(int duration);
-	void addDuration(int duration);
 	void calcDuration();
 	afx_msg void OnTimer(UINT nIDEvent);
 
@@ -331,7 +329,7 @@ public:
 	afx_msg LRESULT OnPlayloop(UINT wParam, LONG lParam);
 	afx_msg LRESULT OnVolume(UINT wParam, LONG lParam);
 	afx_msg LRESULT OnProgress(UINT wParam, LONG lParam);
-	afx_msg LRESULT OnGoWWWMsg(UINT wParam, LONG lParam);
+	afx_msg LRESULT OnHoverMsg(UINT wParam, LONG lParam);
 	afx_msg LRESULT OnMovePlaylistUp(UINT wParam, LONG lParam);
 	afx_msg LRESULT OnMovePlaylistDn(UINT wParam, LONG lParam);
     afx_msg LRESULT OnPostMyIdle(UINT wParam, LONG lParam);
@@ -359,7 +357,7 @@ public:
     afx_msg void OnTestMenu();
     afx_msg BOOL OnHelpInfo(HELPINFO* pHelpInfo);
 	afx_msg LRESULT OnSerialMsg (WPARAM wParam, LPARAM lParam);
-	afx_msg void OnNcPaint( );
+//	afx_msg void OnNcPaint( );
 	afx_msg void OnGetMinMaxInfo( MINMAXINFO FAR* lpMMI );
 	afx_msg void OnInitMenuPopup(CMenu *pPopupMenu, UINT nIndex,BOOL bSysMenu);
 

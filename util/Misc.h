@@ -75,6 +75,9 @@ public:
 				DWORD dwidth, DWORD dheight,
 				DWORD swidth, DWORD sheight,
 				LayOutStyle los,COLORREF bkcolor);
+
+	static void SecsToHMS(const int seconds, int & hours, int & mins, 
+		int & secs,	char * buf);
 };
 
 #endif

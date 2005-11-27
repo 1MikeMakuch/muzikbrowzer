@@ -10,29 +10,33 @@
 #include "MusicDb.h"
 #include "ExtendedListBox.h"
 #include "ResizableGrip.h"
+#include "CDialogSK.h"
+#include "Registry.h"
+#include "MBConfig.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // LoadPlaylistDlg dialog
 class VirtualControl;
 
-class LoadPlaylistDlg : public CDialog, public CResizableGrip
+class LoadPlaylistDlg : public CDialogSK //, public CResizableGrip
 {
 // Construction
 public:
-	LoadPlaylistDlg(CPlayerDlg *p, MusicLib *m, 
+	LoadPlaylistDlg(CPlayerDlg *p, MusicLib *m, MBConfig * config,
 		CWnd* pParent = NULL, BOOL editor=FALSE);   // standard constructor
 
 // Dialog Data
 	//{{AFX_DATA(LoadPlaylistDlg)
 	enum { IDD = IDD_LOADPLAYLISTDLG };
-	CButton	m_Delete;
-	CButton	m_Load;
+	CColorStatic	m_TitleLabel;
+	CButtonST	m_Delete;
+	CButtonST	m_Load;
+	CButtonST	m_Exit;
+	CButtonST	m_Up;
+	CButtonST	m_Down;
+	CButtonST	m_Save;
+	CButtonST	m_Rename;
 	CStatic	m_GAAS;
-	CButton m_Exit;
-	CButton m_Up;
-	CButton m_Down;
-	CButton m_Save;
-	CButton m_Rename;
 	CColorStatic m_NamesLabel;
 	CColorStatic m_SongsLabel;
 	//}}AFX_DATA
@@ -106,8 +110,11 @@ private:
 	BOOL m_IsEditor;
 	int m_MinNamesWidth,m_MaxNamesWidth;
 	CStringArray m_csaPlaylistDesc,m_csaPlaylist;
+	CDWordArray m_cwaTlen;
 	CString m_LastName;
 	BOOL m_Modified;
+	RegistryKey m_reg;
+	MBConfig * m_Config;
 };
 
 //{{AFX_INSERT_LOCATION}}

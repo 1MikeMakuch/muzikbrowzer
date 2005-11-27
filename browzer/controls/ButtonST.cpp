@@ -3,6 +3,7 @@
 #include "FileUtils.h"
 #include "MyString.h"
 #include "MBGLobals.h"
+#include "MyLog.h"
 
 #ifdef	BTNST_USE_SOUND
 #pragma comment(lib, "winmm.lib")
@@ -231,6 +232,7 @@ UINT CButtonST::OnGetDlgCode()
 
 BOOL CButtonST::PreTranslateMessage(MSG* pMsg) 
 {
+//	logger.ods("CButtonSt::PTM:" + numToString(pMsg->message));
 	InitToolTip();
 	m_ToolTip.RelayEvent(pMsg);
 	
@@ -780,7 +782,7 @@ void CButtonST::DrawTheBitmap(CDC* pDC, BOOL bHasTitle, RECT* rpItem,
 //		byIndex = (m_csBitmaps[1].hBitmap == NULL ? 0 : 1);
 	if (bIsPressed)
 		byIndex = 0;
-	else if (m_bMouseOnButton) {
+	else if (m_bMouseOnButton || m_bIsFocused) {
 		byIndex = 2;
 		SendHoverMsg();
 	} else
@@ -1804,6 +1806,17 @@ DWORD CButtonST::SetDefaultColors(BOOL bRepaint)
 //		BTNST_INVALIDINDEX
 //			Invalid color index.
 //
+DWORD CButtonST::SetColors(COLORREF crFgIn,COLORREF crBgIn,
+						   COLORREF crFgOut,COLORREF crBgOut)
+{
+	SetColor(BTNST_COLOR_BK_IN,crBgIn);
+	SetColor(BTNST_COLOR_FG_IN,crFgIn);
+	SetColor(BTNST_COLOR_BK_OUT,crBgOut);
+	SetColor(BTNST_COLOR_FG_OUT,crFgOut);
+	SetColor(BTNST_COLOR_BK_FOCUS,crBgIn);
+	SetColor(BTNST_COLOR_FG_FOCUS,crFgIn);
+	return BTNST_OK;
+}
 DWORD CButtonST::SetColor(BYTE byColorIndex, COLORREF crColor, BOOL bRepaint)
 {
 	if (byColorIndex >= BTNST_MAX_COLORS)	return BTNST_INVALIDINDEX;
@@ -2604,7 +2617,7 @@ void CButtonST::SetHoverMsg(CWnd * c, UINT msg) {
 void CButtonST::SendHoverMsg() {
 	if (m_HoverCWnd && ::IsWindow(m_HoverCWnd->m_hWnd)) {
 		m_HoverCWnd->PostMessage(m_HoverMsg,
-			0, (LPARAM)NULL);
+			m_HoverMsg, (LPARAM)m_HoverMsg);
 	}
 }
 

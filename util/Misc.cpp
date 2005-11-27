@@ -520,3 +520,14 @@ HBITMAP MBUtil::CreateBitmapMask(HBITMAP hSourceBitmap,
 
 	return hMask;
 } // End of CreateBitmapMask
+
+void
+MBUtil::SecsToHMS(const int duration, int & hours, int & mins, int & secs,
+				  char * buf)
+{
+	hours = duration / 3600;
+	secs = duration % 3600;
+	mins = secs / 60;
+	secs = secs % 60;
+	sprintf(buf,"%02d:%02d:%02d",hours,mins,secs);
+}
