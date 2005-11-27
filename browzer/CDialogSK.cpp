@@ -124,6 +124,7 @@ BEGIN_MESSAGE_MAP(CDialogSK, CDialog)
 //{{AFX_MSG_MAP(CDialogSK)
 	ON_WM_LBUTTONDOWN()
 	ON_WM_ERASEBKGND()
+	ON_WM_NCPAINT()
 	ON_WM_SIZE()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
@@ -147,6 +148,7 @@ void CDialogSK::Init()
 	m_Need2Erase = TRUE;
 	m_bmBackground = NULL;
 	m_bmFrame = NULL;
+	m_UseSkin = FALSE;
 
 	static BOOL first = TRUE;
 	if (first) {
@@ -208,6 +210,7 @@ DWORD CDialogSK::SetBitmap(HBITMAP hBitmap, CRect & rect, LayOutStyle los
 //	OutputDebugString(msg);
     int nRetValue;
     BITMAP  csBitmapSize;
+	m_UseSkin = TRUE;
     
     if (hBitmap)
     {
@@ -303,26 +306,29 @@ BOOL CDialogSK::OnEraseBkgnd(CDC* pDC)
 //		OutputDebugString("CDialogSK::NOT OnEraseBkgnd\r\n");
 		return TRUE;
 	}
-	CRect rect;
-	GetClientRect(rect);
-	CDC dc;
-	dc.CreateCompatibleDC(pDC);
-	CBitmap * old = dc.SelectObject(m_bmBackground);
-	pDC->BitBlt(0,0,rect.Width(),rect.Height(), &dc, 0, 0, SRCCOPY);
-	dc.SelectObject(old);
-//	OutputDebugString("CDialogSK::OnEraseBkgnd\r\n");
+	if (!m_UseSkin)
+		CDialog::OnEraseBkgnd(pDC);
+	else {
+		CRect rect;
+		GetClientRect(rect);
+		CDC dc;
+		dc.CreateCompatibleDC(pDC);
+		CBitmap * old = dc.SelectObject(m_bmBackground);
+		pDC->BitBlt(0,0,rect.Width(),rect.Height(), &dc, 0, 0, SRCCOPY);
+		dc.SelectObject(old);
+	}
 	return TRUE;
 }
 BOOL CDialogSK::EraseBkgndNC(CDC *pDC) {
-
-	CRect rect;
-	GetWindowRect(rect);
-	CDC dc;
-	dc.CreateCompatibleDC(NULL);
-	CBitmap * old = dc.SelectObject(m_bmFrame);
-	pDC->BitBlt(0,0,rect.Width(),rect.Height(), &dc, 0, 0, SRCCOPY);
-	dc.SelectObject(old);
-//	OutputDebugString("CDialogSK::OnEraseBkgndNC\r\n");
+	if (m_UseSkin) {
+		CRect rect;
+		GetWindowRect(rect);
+		CDC dc;
+		dc.CreateCompatibleDC(NULL);
+		CBitmap * old = dc.SelectObject(m_bmFrame);
+		pDC->BitBlt(0,0,rect.Width(),rect.Height(), &dc, 0, 0, SRCCOPY);
+		dc.SelectObject(old);
+	}
 	return TRUE;
 }
 
@@ -353,3 +359,14 @@ CDialogSK::EnableEasyMove(BOOL pEnable)
 //        SetWindowPos(0, 0, 0, m_dwWidth, m_dwHeight, SWP_NOMOVE | SWP_NOREPOSITION );
 //    }
 //}
+void
+CDialogSK::OnNcPaint() {
+	if (!m_UseSkin)
+		CDialog::OnNcPaint();
+	else {
+		CDC* pdc= GetWindowDC();
+		EraseBkgndNC(pdc);//, BitmapToCRect * bmcr)
+		ReleaseDC(pdc);	
+	}
+	return;
+}

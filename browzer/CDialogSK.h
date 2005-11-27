@@ -145,6 +145,7 @@ protected:
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
+	afx_msg void OnNcPaint( );
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 	void FreeResources();
@@ -159,6 +160,7 @@ private:
 	CBitmap * m_bmBackground;
 	CBitmap * m_bmFrame;
 	COLORREF m_Panel;
+	BOOL m_UseSkin;
 
 };
 
