@@ -103,6 +103,7 @@ public:
     void setFont();
 	void setColors(RegistryKey &);
     MBConfig & config() { return m_Config; }
+	MBConfig * pconfig() { return &m_Config; }
     void PlayerStatusSet(CString &);
 	void PlayerStatusClear();
 	void PlayerStatusSet(LPCTSTR);
@@ -355,6 +356,8 @@ public:
     afx_msg HBRUSH OnCtlColor( CDC* pDC, CWnd* pWnd, UINT nCtlColor );
     afx_msg void OnDrawItem( int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruct );
     afx_msg void OnTestMenu();
+	afx_msg void OnQuickPlay();
+	afx_msg void OnAddToPlaylist();
     afx_msg BOOL OnHelpInfo(HELPINFO* pHelpInfo);
 	afx_msg LRESULT OnSerialMsg (WPARAM wParam, LPARAM lParam);
 //	afx_msg void OnNcPaint( );

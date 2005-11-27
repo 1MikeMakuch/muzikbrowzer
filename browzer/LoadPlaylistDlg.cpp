@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "LoadPlaylistDlg.h"
-//#include "ConfigSettings.h"
+#include "PlayerDlg.h"
 #include "MBGlobals.h"
 #include "VirtualControl.h"
 #include "SkinDefs.h"
@@ -18,22 +18,23 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
+LoadPlaylistDlg * theLoader;
+void Need2EraseChooser(BOOL b) {
+	theLoader->m_Need2Erase = b;
+}
 /////////////////////////////////////////////////////////////////////////////
 // LoadPlaylistDlg dialog
 
 
-LoadPlaylistDlg::LoadPlaylistDlg(CPlayerDlg *p, 
-				MusicLib *m, 
-				MBConfig * config,
+LoadPlaylistDlg::LoadPlaylistDlg(PlayerCallbacks * pcb,
 				CWnd* pParent /*=NULL*/, BOOL editor)
 	: CDialogSK(LoadPlaylistDlg::IDD, pParent), 
-	m_pd(p), 
-	m_mdb(m),
-    m_PlaylistSongs(TRUE, "songs", FALSE), 
-	m_PlaylistNames(TRUE, "names", FALSE),
+	m_parentcallbacks(pcb),
+    m_PlaylistSongs(TRUE, "songs", FALSE, &m_callbacks), 
+	m_PlaylistNames(TRUE, "names", FALSE, &m_callbacks),
 	m_Control(new VirtualControl), 
 	m_IsEditor(editor),
-	m_Config(config)
+	m_reg(pcb->mbconfig()->getSkin(MB_SKIN_DEF))
 {
 	//{{AFX_DATA_INIT(LoadPlaylistDlg)
 	//}}AFX_DATA_INIT
@@ -43,11 +44,12 @@ LoadPlaylistDlg::LoadPlaylistDlg(CPlayerDlg *p,
 	m_AdjustLibrary = FALSE;
 	m_LibraryDragging = FALSE;
 	m_Modified = FALSE;
+	theLoader = this;
 
-	//MBCONFIG_READ_SKIN_DEFS(m_pd->config(),m_reg);
-	CString skindef = m_pd->config().getSkin(MB_SKIN_DEF);
-	m_reg.init(skindef);
-	m_reg.ReadFile();
+	m_callbacks.Need2Erase = &::Need2EraseChooser;
+	m_callbacks.mbconfig = m_parentcallbacks->mbconfig;
+
+	MBCONFIG_READ_SKIN_DEFS_POBJ(m_parentcallbacks->mbconfig(),m_reg);
 }
 
 
@@ -107,17 +109,26 @@ END_MESSAGE_MAP()
 // LoadPlaylistDlg message handlers
 BOOL LoadPlaylistDlg::OnInitDialog() 
 {
+
+	m_Need2Erase = TRUE;
 	CDialogSK::OnInitDialog();
+
+	if (m_IsEditor) { 
+		m_TitleLabel.ShowWindow(SW_HIDE);
+	} else {
+		ModifyStyle(WS_CAPTION,0,0); // delete the title bar
+	}
 
 //	InitGrip();
 //	ShowSizeGrip(TRUE);
 
 	int iwidth,iheight;
-	m_pd->config().getRegistry("LoadPlaylistWidth", iwidth, MB_MIN_WIDTH);
-	m_pd->config().getRegistry("LoadPlaylistHeight", iheight, MB_MIN_HEIGHT);
+	m_parentcallbacks->mbconfig()->getRegistry("LoadPlaylistWidth", iwidth, MB_MIN_WIDTH);
+	m_parentcallbacks->mbconfig()->getRegistry("LoadPlaylistHeight", iheight, MB_MIN_HEIGHT);
 
 	COLORREF crTransMain,crTransPanel;
 	MBCONFIG_READ_TRANS_COLORS(m_reg,crTransMain,crTransPanel);
+	SetTransparentColor(crTransMain,crTransPanel); 
 
 	COLORREF crColHdrInUL,crColHdrInLR,crColHdrOutUL,crColHdrOutLR;
 	COLORREF crDataInUL,crDataInLR,crDataOutUL,crDataOutLR;
@@ -146,13 +157,14 @@ BOOL LoadPlaylistDlg::OnInitDialog()
 	BOOL threeDStatus		= m_reg.Read(MB3DSTATUS,0);
 
 	COLORREF crColHdrFg,crColHdrBg;
-	crColHdrFg = m_pd->config().getColorTxColHdr();
-	crColHdrBg = m_pd->config().getColorBkColHdr();
+	crColHdrFg = m_parentcallbacks->mbconfig()->getColorTxColHdr();
+	crColHdrBg = m_parentcallbacks->mbconfig()->getColorBkColHdr();
 
 	m_PlaylistSongs.ResetContent();
 	m_PlaylistNames.ResetContent();
 
-
+	m_GAAS.setDesc("gaas");
+	m_GAAS.SetWordWrap(TRUE);
 
 	m_Delete.SetDefaultColors(TRUE);
 	m_Load.SetDefaultColors(TRUE);
@@ -198,10 +210,10 @@ BOOL LoadPlaylistDlg::OnInitDialog()
 		m_PlaylistSongs.Set3d(TRUE);
 		m_NamesLabel.initFont();
 		m_SongsLabel.initFont();
-		m_TitleLabel.setText("Playlist Editor");
 	} else {
 		m_TitleLabel.setText("Playlist Chooser");
 		m_TitleLabel.SetColors(crOtherFg,crOtherBg);
+		m_TitleLabel.SetTransparent(crTransPanel);
 
 		m_Delete.SetColors(crButtonsFgHover,crButtonsBgHover,crButtonsFgOut,crButtonsBgOut);
 		m_Load.SetColors(crButtonsFgHover,crButtonsBgHover,crButtonsFgOut,crButtonsBgOut);
@@ -215,17 +227,17 @@ BOOL LoadPlaylistDlg::OnInitDialog()
 		m_PlaylistNames.initFont();
 		m_NamesLabel.initFont();
 		m_SongsLabel.initFont();
-		LPLOGFONT lplf = m_pd->config().getTitlesFont();
+		LPLOGFONT lplf = m_parentcallbacks->mbconfig()->getTitlesFont();
 		m_PlaylistSongs.changeFont(lplf);
 		m_PlaylistNames.changeFont(lplf);
 
-		lplf = m_pd->config().getColHdrFont();
+		lplf = m_parentcallbacks->mbconfig()->getColHdrFont();
 		m_NamesLabel.changeFont(lplf);
 		m_SongsLabel.changeFont(lplf);
 
 		COLORREF crColHdrFg,crColHdrBg;
-		crColHdrFg = m_pd->config().getColorTxColHdr();
-		crColHdrBg = m_pd->config().getColorBkColHdr();
+		crColHdrFg = m_parentcallbacks->mbconfig()->getColorTxColHdr();
+		crColHdrBg = m_parentcallbacks->mbconfig()->getColorBkColHdr();
 
 #define _LABEL_COLORS_ crColHdrFg,crColHdrBg,\
 	crColHdrInUL,crColHdrInLR,crColHdrOutUL,crColHdrOutLR,\
@@ -233,34 +245,37 @@ BOOL LoadPlaylistDlg::OnInitDialog()
 
 		m_NamesLabel.SetColors(_LABEL_COLORS_);
 		m_SongsLabel.SetColors(_LABEL_COLORS_);
+		m_GAAS.SetColors(crColHdrFg,crColHdrBg,
+			crColHdrInUL,crColHdrInLR,crColHdrOutUL,crColHdrOutLR,
+			threeDStatus);
 
-		m_PlaylistSongs.SetColors(m_pd->config().getColorBkNormal(),
-			m_pd->config().getColorBkHigh(),
-			m_pd->config().getColorBkSel(),
-			m_pd->config().getColorTxNormal(),
-			m_pd->config().getColorTxHigh(),
-			m_pd->config().getColorTxSel(),
+		m_PlaylistSongs.SetColors(m_parentcallbacks->mbconfig()->getColorBkNormal(),
+			m_parentcallbacks->mbconfig()->getColorBkHigh(),
+			m_parentcallbacks->mbconfig()->getColorBkSel(),
+			m_parentcallbacks->mbconfig()->getColorTxNormal(),
+			m_parentcallbacks->mbconfig()->getColorTxHigh(),
+			m_parentcallbacks->mbconfig()->getColorTxSel(),
 			threeDDataWindows,crDataInUL,crDataInLR,crDataOutUL,crDataOutLR);
 
-		m_PlaylistNames.SetColors(m_pd->config().getColorBkNormal(),
-			m_pd->config().getColorBkHigh(),
-			m_pd->config().getColorBkSel(),
-			m_pd->config().getColorTxNormal(),
-			m_pd->config().getColorTxHigh(),
-			m_pd->config().getColorTxSel(),
+		m_PlaylistNames.SetColors(m_parentcallbacks->mbconfig()->getColorBkNormal(),
+			m_parentcallbacks->mbconfig()->getColorBkHigh(),
+			m_parentcallbacks->mbconfig()->getColorBkSel(),
+			m_parentcallbacks->mbconfig()->getColorTxNormal(),
+			m_parentcallbacks->mbconfig()->getColorTxHigh(),
+			m_parentcallbacks->mbconfig()->getColorTxSel(),
 			threeDDataWindows,crDataInUL,crDataInLR,crDataOutUL,crDataOutLR);
 
 		m_PlaylistNames.SetBitmaps(cdc, 
-			m_pd->config().getSkin(MB_SKIN_SCROLLUPARROW),crTransPanel,
-			m_pd->config().getSkin(MB_SKIN_SCROLLDOWNARROW),crTransPanel,
-			m_pd->config().getSkin(MB_SKIN_SCROLLBUTTON),crTransPanel,
-			m_pd->config().getSkin(MB_SKIN_SCROLLBACKGROUND),crTransPanel);
+			m_parentcallbacks->mbconfig()->getSkin(MB_SKIN_SCROLLUPARROW),crTransPanel,
+			m_parentcallbacks->mbconfig()->getSkin(MB_SKIN_SCROLLDOWNARROW),crTransPanel,
+			m_parentcallbacks->mbconfig()->getSkin(MB_SKIN_SCROLLBUTTON),crTransPanel,
+			m_parentcallbacks->mbconfig()->getSkin(MB_SKIN_SCROLLBACKGROUND),crTransPanel);
 		
 		m_PlaylistSongs.SetBitmaps(cdc, 
-			m_pd->config().getSkin(MB_SKIN_SCROLLUPARROW),crTransPanel,
-			m_pd->config().getSkin(MB_SKIN_SCROLLDOWNARROW),crTransPanel,
-			m_pd->config().getSkin(MB_SKIN_SCROLLBUTTON),crTransPanel,
-			m_pd->config().getSkin(MB_SKIN_SCROLLBACKGROUND),crTransPanel);
+			m_parentcallbacks->mbconfig()->getSkin(MB_SKIN_SCROLLUPARROW),crTransPanel,
+			m_parentcallbacks->mbconfig()->getSkin(MB_SKIN_SCROLLDOWNARROW),crTransPanel,
+			m_parentcallbacks->mbconfig()->getSkin(MB_SKIN_SCROLLBUTTON),crTransPanel,
+			m_parentcallbacks->mbconfig()->getSkin(MB_SKIN_SCROLLBACKGROUND),crTransPanel);
 	}
 	ReleaseDC(cdc);
 	
@@ -305,7 +320,7 @@ void LoadPlaylistDlg::OnDblclkPlaylistNames()
     if (sel < 0) return;
     CString name;
     m_PlaylistNames.GetText(sel, name);
-    m_pd->LoadPlaylist(name);	
+    m_parentcallbacks->playerdlg()->LoadPlaylist(name);	
     EndDialog(0);
 }
 
@@ -336,7 +351,7 @@ void LoadPlaylistDlg::OnSelchangePlaylistNames()
 			m_csaPlaylistDesc.RemoveAll();
 			m_csaPlaylist.RemoveAll();
 			m_cwaTlen.RemoveAll();
-			m_mdb->getSongsInPlaylist(name,m_csaPlaylistDesc,m_csaPlaylist,
+			m_parentcallbacks->musiclib()->getSongsInPlaylist(name,m_csaPlaylistDesc,m_csaPlaylist,
 				m_cwaTlen);
 			m_Modified = FALSE;
 			m_Save.EnableWindow(FALSE);
@@ -363,7 +378,10 @@ void LoadPlaylistDlg::OnSelchangePlaylistNames()
 	}
 	m_PlaylistNames.invalidate();
 	m_PlaylistSongs.invalidate();
-	m_GAAS.SetWindowText(name);
+	if (m_IsEditor)
+		m_GAAS.SetWindowText(name);
+	else 
+		m_GAAS.setText(name);
 	UpdateWindow();
 	m_LastName = name;
 
@@ -385,14 +403,24 @@ void LoadPlaylistDlg::OnSelchangePlaylistSongs()
     int sel = m_PlaylistSongs.GetCurSel();
     CString name;
     m_PlaylistSongs.GetText(sel,name);
-    m_GAAS.SetWindowText(name);
+    	if (m_IsEditor)
+		m_GAAS.SetWindowText(name);
+	else 
+		m_GAAS.setText(name);
 	m_PlaylistSongs.invalidate();
 }
 
 void LoadPlaylistDlg::OnSetfocusPlaylistNames() 
 {
 	*m_Control = (CExtendedListBox*)GetDlgItem(IDC_PLAYLIST_NAMES);
-    m_GAAS.SetWindowText("");
+	int sel = m_PlaylistNames.GetCurSel();
+	CString name;
+	if (sel > -1)
+		m_PlaylistNames.GetText(sel,name);
+   	if (m_IsEditor)
+		m_GAAS.SetWindowText(name);
+	else 
+		m_GAAS.setText(name);
     m_Load.EnableWindow(TRUE);
     m_Delete.EnableWindow(TRUE);
 	m_Up.EnableWindow(FALSE);
@@ -419,7 +447,7 @@ void
 LoadPlaylistDlg::init() {
 	CWaitCursor c;
 	m_PlaylistNames.ResetContent();
-    m_mdb->getPlaylistNames(m_PlaylistNames);
+    m_parentcallbacks->musiclib()->getPlaylistNames(m_PlaylistNames);
     m_PlaylistNames.SetCurSel(0);
     OnSelchangePlaylistNames();
 }
@@ -616,10 +644,10 @@ void LoadPlaylistDlg::resetControls() {
 	m_Rename.GetClientRect(renamerect);
 	m_TitleLabel.GetClientRect(titlerect);
 
-	int border = m_Config->getDlgBorderWidth();
+	int border = m_parentcallbacks->mbconfig()->getDlgBorderWidth();
 	int borderpanel = m_reg.Read("BorderPanel",5);
-	int borderhorz = m_Config->getDlgBorderHorz();
-	int bordervert = m_Config->getDlgBorderVert();
+	int borderhorz = m_parentcallbacks->mbconfig()->getDlgBorderHorz();
+	int bordervert = m_parentcallbacks->mbconfig()->getDlgBorderVert();
 
 	clientrect.DeflateRect(border,border,border,border);
 
@@ -641,9 +669,9 @@ void LoadPlaylistDlg::resetControls() {
 		// hack alert: rect0 needs 2 b Window instead of client
 		// for the resizing border
 		FreeResources();
-		SetBitmap(m_Config->getSkin(MB_SKIN_BACKGROUNDMAIN), 
+		SetBitmap(m_parentcallbacks->mbconfig()->getSkin(MB_SKIN_BACKGROUNDMAIN), 
 			wrect, BackgroundMainType, CS("frame"));
-		SetBitmap(m_Config->getSkin(MB_SKIN_BACKGROUNDPLAYLIST),
+		SetBitmap(m_parentcallbacks->mbconfig()->getSkin(MB_SKIN_BACKGROUNDPLAYLIST),
 			clientrect, BackgroundPanelType, CS("play panel"));
 		CDC * cdc = GetDC();
 		make(cdc);
@@ -662,9 +690,9 @@ void LoadPlaylistDlg::resetControls() {
 	int iwidth,iheight;
 	iwidth = wrect.Width();
 	iheight = wrect.Height();
-	m_pd->config().getRegistry("LoadPlaylistNamesWidthPct", pct, 25);
-	m_pd->config().setRegistry("LoadPlaylistWidth", iwidth);
-	m_pd->config().setRegistry("LoadPlaylistHeight", iheight);
+	m_parentcallbacks->mbconfig()->getRegistry("LoadPlaylistNamesWidthPct", pct, 25);
+	m_parentcallbacks->mbconfig()->setRegistry("LoadPlaylistWidth", iwidth);
+	m_parentcallbacks->mbconfig()->setRegistry("LoadPlaylistHeight", iheight);
 	double lpct = (double) pct / (double)100;
 
 	int buttonheight = loadrect.Height();
@@ -721,7 +749,7 @@ void LoadPlaylistDlg::resetControls() {
 	CSize s = m_NamesLabel.GetSize("Playlists");
 
 	nameslabelrect.top = clientrect.top;
-	nameslabelrect.bottom = nameslabelrect.top + s.cy;
+	nameslabelrect.bottom = nameslabelrect.top + s.cy + 4;
 	nameslabelrect.left = clientrect.left;
 	nameslabelrect.right = (int)( (double)clientrect.Width() * lpct);
 	if (nameslabelrect.Width() < m_MinNamesWidth) 
@@ -776,38 +804,38 @@ HBRUSH LoadPlaylistDlg::OnCtlColor( CDC* pDC, CWnd* pWnd, UINT nCtlColor ) {
     case CTLCOLOR_BTN: //   3 Button control
 		return hbr;
 
-        bkcolor = m_pd->config().getColorBkPanel();
-        txcolor = m_pd->config().getColorTxPanel();
+        bkcolor = m_parentcallbacks->mbconfig()->getColorBkPanel();
+        txcolor = m_parentcallbacks->mbconfig()->getColorTxPanel();
 
         break;
     case CTLCOLOR_DLG: //   4 Dialog box
 
-		bkcolor = m_pd->config().getColorBkColHdr();
-		txcolor = m_pd->config().getColorTxColHdr();
+		bkcolor = m_parentcallbacks->mbconfig()->getColorBkColHdr();
+		txcolor = m_parentcallbacks->mbconfig()->getColorTxColHdr();
         break;
     case CTLCOLOR_EDIT: //   1 Edit control
-        bkcolor = m_pd->config().getColorBkPanel();
-        txcolor = m_pd->config().getColorTxPanel();
+        bkcolor = m_parentcallbacks->mbconfig()->getColorBkPanel();
+        txcolor = m_parentcallbacks->mbconfig()->getColorTxPanel();
         break;
     case CTLCOLOR_LISTBOX: //  2 List-box control
-        bkcolor = m_pd->config().getColorBkNormal();
-        txcolor = m_pd->config().getColorTxPanel();
+        bkcolor = m_parentcallbacks->mbconfig()->getColorBkNormal();
+        txcolor = m_parentcallbacks->mbconfig()->getColorTxPanel();
         break;
     case CTLCOLOR_MSGBOX: //   0 Message box
-        bkcolor = m_pd->config().getColorBkPanel();
-        txcolor = m_pd->config().getColorTxPanel();
+        bkcolor = m_parentcallbacks->mbconfig()->getColorBkPanel();
+        txcolor = m_parentcallbacks->mbconfig()->getColorTxPanel();
         break;
     case CTLCOLOR_SCROLLBAR: //  5 Scroll-bar control
-        bkcolor = m_pd->config().getColorBkPanel();
-        txcolor = m_pd->config().getColorTxPanel();
+        bkcolor = m_parentcallbacks->mbconfig()->getColorBkPanel();
+        txcolor = m_parentcallbacks->mbconfig()->getColorTxPanel();
         break;
     case CTLCOLOR_STATIC: //  6 Static control
-        bkcolor = m_pd->config().getColorBkPanel();
-        txcolor = m_pd->config().getColorTxPanel();
+        bkcolor = m_parentcallbacks->mbconfig()->getColorBkPanel();
+        txcolor = m_parentcallbacks->mbconfig()->getColorTxPanel();
 		break;
     default:
-        bkcolor = m_pd->config().getColorBkPanel();
-        txcolor = m_pd->config().getColorTxPanel();
+        bkcolor = m_parentcallbacks->mbconfig()->getColorBkPanel();
+        txcolor = m_parentcallbacks->mbconfig()->getColorTxPanel();
         break;
     }
 
@@ -988,7 +1016,7 @@ LoadPlaylistDlg::AdjustLibraryWidths(CPoint &apoint) {
 	m_AdjustInt.UnionRect(nameslabelrect,namesrect);
 
 	pct = int((double)100 * ((double)width / (double)dw));
-	m_pd->config().setRegistry("LoadPlaylistNamesWidthPct", pct);
+	m_parentcallbacks->mbconfig()->setRegistry("LoadPlaylistNamesWidthPct", pct);
 
 
 	OnNcPaint();
@@ -1078,7 +1106,7 @@ void LoadPlaylistDlg::OnPlaylistSave()
 	m_PlaylistNames.GetText(sel, name);
 	GetTextFieldDlg text;
 	if (text.Get("Playlist Name", name) == IDOK) {
-		m_mdb->savePlaylist(m_csaPlaylist,name);
+		m_parentcallbacks->musiclib()->savePlaylist(m_csaPlaylist,name);
 		m_Modified = FALSE;
 		m_Save.EnableWindow(FALSE);
 	}
@@ -1094,10 +1122,10 @@ void LoadPlaylistDlg::OnRenamePlaylist()
 	if (text.Get("New name for Playlist \""+CS(name)+"\"",newname) == IDOK) {
 		if (name == newname) return;
 
-		if (!m_mdb->renamePlaylist(name, newname, FALSE)) {
+		if (!m_parentcallbacks->musiclib()->renamePlaylist(name, newname, FALSE)) {
 			if (text.Confirm("Rename playlist "+name+" to "+newname,
 				"Playlist "+CS(newname)+" exists. Overwrite?") == IDOK) {
-				m_mdb->renamePlaylist(name, newname, TRUE);
+				m_parentcallbacks->musiclib()->renamePlaylist(name, newname, TRUE);
 			} else
 				newname = name;
 		}
@@ -1122,7 +1150,7 @@ void LoadPlaylistDlg::OnDeletePlaylist()
 				if (sel > m_PlaylistNames.GetCount()-1) {
 					sel = m_PlaylistNames.GetCount()-1;
 				}
-				m_mdb->deletePlaylist(name);
+				m_parentcallbacks->musiclib()->deletePlaylist(name);
 				init();
 			}
 		}
@@ -1139,7 +1167,7 @@ void LoadPlaylistDlg::OnDeletePlaylist()
 		if (sel > m_PlaylistSongs.GetCount()-1) {
 			sel = m_PlaylistSongs.GetCount()-1;
 		}
-//		m_mdb->deletePlaylistSong(name);
+//		m_parentcallbacks->musiclib()->deletePlaylistSong(name);
 		init();
 		m_PlaylistSongs.SetCurSel(sel);
 		m_PlaylistSongs.SetFocus();

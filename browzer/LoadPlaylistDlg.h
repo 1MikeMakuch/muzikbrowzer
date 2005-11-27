@@ -6,14 +6,17 @@
 #endif // _MSC_VER > 1000
 // LoadPlaylistDlg.h : header file
 //
-#include "PlayerDlg.h"
+//#include "PlayerDlg.h"
+#include "Resource.h"
 #include "MusicDb.h"
 #include "ExtendedListBox.h"
 #include "ResizableGrip.h"
 #include "CDialogSK.h"
 #include "Registry.h"
 #include "MBConfig.h"
-
+#include "PlayerCallbacks.h"
+#include "ColorStatic.h"
+#include "ButtonST.h"
 /////////////////////////////////////////////////////////////////////////////
 // LoadPlaylistDlg dialog
 class VirtualControl;
@@ -22,7 +25,7 @@ class LoadPlaylistDlg : public CDialogSK //, public CResizableGrip
 {
 // Construction
 public:
-	LoadPlaylistDlg(CPlayerDlg *p, MusicLib *m, MBConfig * config,
+	LoadPlaylistDlg(/*CPlayerDlg *p, */ PlayerCallbacks * pcb,
 		CWnd* pParent = NULL, BOOL editor=FALSE);   // standard constructor
 
 // Dialog Data
@@ -36,7 +39,7 @@ public:
 	CButtonST	m_Down;
 	CButtonST	m_Save;
 	CButtonST	m_Rename;
-	CStatic	m_GAAS;
+	CColorStatic	m_GAAS;
 	CColorStatic m_NamesLabel;
 	CColorStatic m_SongsLabel;
 	//}}AFX_DATA
@@ -99,8 +102,8 @@ protected:
 	CWnd* GetResizableWnd();
 
 private:
-    MusicLib *m_mdb;
-    CPlayerDlg *m_pd;
+//    MusicLib *m_mdb;
+//    CPlayerDlg *m_pd;
 	BOOL m_Resizing;
 	void resetControls();
     void init();
@@ -114,7 +117,9 @@ private:
 	CString m_LastName;
 	BOOL m_Modified;
 	RegistryKey m_reg;
-	MBConfig * m_Config;
+//	MBConfig * m_Config;
+	PlayerCallbacks *m_parentcallbacks;	
+	PlayerCallbacks m_callbacks;	
 };
 
 //{{AFX_INSERT_LOCATION}}

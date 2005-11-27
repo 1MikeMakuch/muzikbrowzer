@@ -88,8 +88,18 @@ CString ScanDirectories(const CStringList & directories,
 	return thePlayer->m_mlib.scanDirectories(directories, 
 											initDlg, scanNew, bAdd);
 }
-
-
+void Need2Erase(BOOL need) {
+	thePlayer->Need2Erase(need);
+}
+MBConfig * mbconfig() {
+	return thePlayer->pconfig();
+}
+MusicLib * musiclib() {
+	return &thePlayer->m_mlib;
+}
+CPlayerDlg * getPlayer() {
+	return thePlayer;
+}
 /////////////////////////////////////////////////////////////////////////////
 // CPlayerDlg dialog
 
@@ -134,6 +144,10 @@ CPlayerDlg::CPlayerDlg(CPlayerApp * theApp,
 	m_callbacks.UpdateWindow = &::PlayerUpdateWindow;
 	m_callbacks.setDbLocation = &::SetDbLocation;
 	m_callbacks.scanDirectories = &::ScanDirectories;
+	m_callbacks.Need2Erase = &::Need2Erase;
+	m_callbacks.mbconfig = &::mbconfig;
+	m_callbacks.musiclib = &::musiclib;
+	m_callbacks.playerdlg = &::getPlayer;
 
 	irman().init(RegKeyIrman, IR_MESSAGE_NUMBER_OF, this);
 //	m_brush.CreateSolidBrush(RGB( 255, 0, 0));
@@ -272,6 +286,8 @@ BEGIN_MESSAGE_MAP(CPlayerDlg, CDialogClassImpl)
 	ON_COMMAND(ID_MENU_SCANNEW, OnMusicScanNew)
 	ON_COMMAND(ID_MYTEST, OnTestMenu)
 	ON_COMMAND_RANGE(MB_SKINPICS_MSGS_BEGIN,MB_SKINPICS_MSGS_END, OnSkinPic)
+	ON_COMMAND(ID_ADDTO_PLAYLIST, OnAddToPlaylist)
+	ON_COMMAND(ID_QUICK_PLAY, OnQuickPlay)
 	ON_LBN_SETFOCUS(IDC_ALBUMS, OnAlbumsFocus)
 	ON_LBN_SETFOCUS(IDC_ARTISTS, OnArtistsFocus)
 	ON_LBN_SETFOCUS(IDC_GENRES, OnGenresFocus)
@@ -2443,7 +2459,7 @@ void CPlayerDlg::OnExit()
 }
 void CPlayerDlg::OnMenuEditPlaylist() {
     LoadPlaylistDlg * m_LoadPlaylistDlg 
-        = new LoadPlaylistDlg (this, &m_mlib, &m_Config, this, TRUE);
+        = new LoadPlaylistDlg (&m_callbacks, this, TRUE);
     *m_Dialog = m_LoadPlaylistDlg;
 	int r = m_LoadPlaylistDlg->DoModal();
 	delete m_LoadPlaylistDlg;
@@ -2453,7 +2469,7 @@ void CPlayerDlg::OnMenuEditPlaylist() {
 void CPlayerDlg::OnMenuLoadplaylist() 
 {
     LoadPlaylistDlg * m_LoadPlaylistDlg 
-        = new LoadPlaylistDlg (this, &m_mlib, &m_Config, this);
+        = new LoadPlaylistDlg (&m_callbacks, this, FALSE);
     *m_Dialog = m_LoadPlaylistDlg;
 	int r = m_LoadPlaylistDlg->DoModal();
 	delete m_LoadPlaylistDlg;
@@ -2851,6 +2867,20 @@ void CPlayerDlg::OnContextMenu(CWnd* pWnd, CPoint ScreenPnt)
             CMenu * popup;
             popup = menu.GetSubMenu(1);
             ASSERT(popup != NULL);
+			if (4 == mWindowFlag || 5 == mWindowFlag) {
+				popup->EnableMenuItem(ID_QUICK_PLAY, 
+					MF_ENABLED | MF_BYCOMMAND);
+			} else {
+				popup->EnableMenuItem(ID_QUICK_PLAY, 
+					MF_DISABLED |MF_GRAYED| MF_BYCOMMAND);
+			}
+			if (1 <= mWindowFlag && mWindowFlag <= 4) {
+				popup->EnableMenuItem(ID_ADDTO_PLAYLIST, 
+					MF_ENABLED | MF_BYCOMMAND);
+			} else {
+				popup->EnableMenuItem(ID_ADDTO_PLAYLIST, 
+					MF_DISABLED |MF_GRAYED| MF_BYCOMMAND);
+			}
             popup->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON,ScreenPnt.x,
                 ScreenPnt.y, AfxGetMainWnd());
         }
@@ -3626,7 +3656,31 @@ void CPlayerDlg::OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruct) {
         break;	
     }
 }
+void CPlayerDlg::OnQuickPlay() {
+	switch (mWindowFlag) {
+	case 4:
+		break;
+	case 5:
+		break;
+	}
 
+}
+void CPlayerDlg::OnAddToPlaylist() {
+	switch (mWindowFlag) {
+	case 1:
+		OnDblclkGenres() ;
+		break;
+	case 2:
+		OnDblclkArtists() ;
+		break;
+	case 3:
+		OnDblclkAlbums();
+		break;
+	case 4:
+		OnDblclkSongs();
+		break;
+	}
+}
 void CPlayerDlg::OnTestMenu() {
 //    CScrollBar *s = new CScrollBar();
 //    LPSCROLLINFO lpScrollInfo;

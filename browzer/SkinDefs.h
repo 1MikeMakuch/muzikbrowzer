@@ -137,6 +137,14 @@ const static TCHAR MB_SKIN_SCROLLUPARROW[] = _T("ScrollUpArrow.bmp");
 		_REGISTRY_KEY_OBJ_.Copy(RegObjTmp);\
 	}
 
+#define MBCONFIG_READ_SKIN_DEFS_POBJ(_MBCONFIG_OBJ_,_REGISTRY_KEY_OBJ_) \
+	_REGISTRY_KEY_OBJ_.ReadFile();\
+	{\
+		RegistryKey RegObjTmp(_MBCONFIG_OBJ_->getSkin(MB_SKIN_DEF_CUSTOM));\
+		RegObjTmp.ReadFile();\
+		_REGISTRY_KEY_OBJ_.Copy(RegObjTmp);\
+	}
+
 #define MBCONFIG_READ_TRANS_COLORS(_REG_OBJ_,_MBVARMAIN_,_MBVARPANEL_) \
 	_MBVARMAIN_ = RGB(_REG_OBJ_.Read("TransRedMain",254),\
 		_REG_OBJ_.Read("TransGreenMain",0),\

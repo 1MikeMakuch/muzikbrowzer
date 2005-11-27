@@ -436,13 +436,15 @@
 #define ID_MENU_SCAN                    32822
 #define ID_MENU_SCANNEW                 32823
 #define ID_MENU_EDITPL                  32824
+#define ID_ADDTO_PLAYLIST               32826
+#define ID_QUICK_PLAY                   32827
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        263
-#define _APS_NEXT_COMMAND_VALUE         32825
+#define _APS_NEXT_COMMAND_VALUE         32828
 #define _APS_NEXT_CONTROL_VALUE         2049
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

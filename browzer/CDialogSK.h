@@ -152,6 +152,7 @@ protected:
 	BOOL applyOneBg(CDC * pDC, BitmapToCRect * p, int offset);
 	BitmapToCRect *	m_BitmapToCRect[10];
 	int m_NumBitmapToCRect;
+public:
 	BOOL m_Need2Erase;
 
 private:
