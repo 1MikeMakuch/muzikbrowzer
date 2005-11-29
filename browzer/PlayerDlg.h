@@ -95,7 +95,7 @@ public:
     VirtualDialog * m_Dialog;
 
     void OnControlSelChange();
-    void OnControlClick();
+    BOOL OnControlClick();
     void OnDelete();
     void OnPageUp();
     void OnPageDown();
@@ -128,7 +128,7 @@ public:
 	}
 private:
 	PlayerCallbacks m_callbacks;	
-	Controls m_Controls;
+	Controls m_BtnControls;
 	int m_PlaylistDuration;
 	CTransparentDialogDlg *_initdialog;
 	Irman m_irman;
@@ -345,6 +345,7 @@ public:
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg void OnLogoButton();
+	afx_msg void OnKillfocusVirtuals();
 	//}}AFX_MSG
 	afx_msg void OnCaptureChanged(CWnd *pWnd);
 	afx_msg LRESULT OnGraphNotify(UINT wParam, LONG lParam);

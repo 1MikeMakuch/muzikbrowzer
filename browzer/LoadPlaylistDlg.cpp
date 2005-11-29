@@ -192,7 +192,7 @@ BOOL LoadPlaylistDlg::OnInitDialog()
 	m_Save.DrawBorder(TRUE);
 	m_Rename.DrawBorder(TRUE);
 
-	m_Load.EnableBalloonTooltip();
+	//m_Load.EnableBalloonTooltip();
 
 	m_Delete.SetTooltipText("Delete selected playlist");
 	m_Load.SetTooltipText("Load selected playlist and play");

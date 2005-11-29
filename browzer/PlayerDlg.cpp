@@ -218,10 +218,6 @@ void CPlayerDlg::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CPlayerDlg, CDialogClassImpl)
 	//{{AFX_MSG_MAP(CPlayerDlg)
-	ON_COMMAND(ID_SEARCH,					OnSearchDlg)
-	ON_BN_CLICKED(IDC_SEARCH_CLEAR,			OnSearchClear)	
-	ON_BN_CLICKED(IDC_SEARCH_GO,				OnSearchGo)
-	ON_BN_CLICKED(IDC_SEARCH_CANCEL,		OnNoSearchDlg)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
@@ -239,6 +235,10 @@ BEGIN_MESSAGE_MAP(CPlayerDlg, CDialogClassImpl)
 	ON_LBN_DBLCLK(IDC_GENRES,				OnDblclkGenres)
 	ON_BN_CLICKED(IDC_MENU_BUTTON,			OnMenuButton)
 	ON_COMMAND(ID_MENU_OPTIONS,				OnMenuOptions)
+	ON_BN_CLICKED(IDC_SEARCH_GO,				OnSearchGo)
+	ON_COMMAND(ID_SEARCH,					OnSearchDlg)
+	ON_BN_CLICKED(IDC_SEARCH_CANCEL,		OnNoSearchDlg)
+	ON_BN_CLICKED(IDC_SEARCH_CLEAR,			OnSearchClear)	
 	ON_COMMAND(ID_MENU_EDITPL,				OnMenuEditPlaylist)
 	ON_BN_CLICKED(IDC_BUTTON_CLEAR,			OnMenuClearplaylist)
 	ON_COMMAND(ID_MENU_EXIT,				OnMenuExit)
@@ -270,6 +270,11 @@ BEGIN_MESSAGE_MAP(CPlayerDlg, CDialogClassImpl)
 	ON_WM_LBUTTONUP()
 	ON_WM_MOUSEMOVE()
 	ON_BN_CLICKED(IDC_BUTTON_LOGO,			OnLogoButton)
+	ON_LBN_KILLFOCUS(IDC_GENRES,			OnKillfocusVirtuals)
+	ON_LBN_KILLFOCUS(IDC_ARTISTS,			OnKillfocusVirtuals)
+	ON_LBN_KILLFOCUS(IDC_ALBUMS,			OnKillfocusVirtuals)
+	ON_LBN_KILLFOCUS(IDC_SONGS,				OnKillfocusVirtuals)
+	ON_LBN_KILLFOCUS(IDC_PLAYLIST,			OnKillfocusVirtuals)
 	ON_BN_CLICKED(IDC_BUTTON_EXIT,			OnCancel)
 	ON_BN_CLICKED(IDC_BUTTON_FASTFORWARD,	OnNextSong)
 	ON_BN_CLICKED(IDC_BUTTON_RESTORE,		OnButtonMaximize)
@@ -978,11 +983,11 @@ CPlayerDlg::resetControls() {
 	}
 
 	
-	m_Controls.init(this);
+	m_BtnControls.init(this);
 
-	GetClientRect(m_Controls.dialogrect);
-//	CString msg = "dlg w,h=" + numToString(m_Controls.dialogrect.Width())
-//		+ " " + numToString(m_Controls.dialogrect.Height()) + "\r\n";
+	GetClientRect(m_BtnControls.dialogrect);
+//	CString msg = "dlg w,h=" + numToString(m_BtnControls.dialogrect.Width())
+//		+ " " + numToString(m_BtnControls.dialogrect.Height()) + "\r\n";
 //	OutputDebugString(msg);
 
 	int ControlBoxWidth = m_reg.Read("ControlBoxWidth",0);
@@ -1010,39 +1015,39 @@ CPlayerDlg::resetControls() {
 	int bordervert = m_Config.getDlgBorderVert();
 
 
-	m_Controls.FreeEm();
+	m_BtnControls.FreeEm();
 
-	m_Controls.add(0,0, "options button", IDC_OPTIONS_BUTTON);
-	m_Controls.add(0,1, "app label",		IDC_BUTTON_LOGO); // logobutton
-	m_Controls.add(0,2, "button min",		IDC_BUTTON_MINIMIZE);
-	m_Controls.add(0,3, "button max",		IDC_BUTTON_MAXIMIZE);
-	m_Controls.add(0,3, "button restore",	IDC_BUTTON_RESTORE);
-	m_Controls.add(0,4, "button exit",	IDC_BUTTON_EXIT);
-	m_Controls.add(1,0, "button reverse",	IDC_BUTTON_REVERSE);
-//	m_Controls.add(1,1, "button music",	IDC_MUSIC_BUTTON);
-//	m_Controls.add(1,1, "button pictures",	IDC_PICTURES_BUTTON);
-//	m_Controls.add(1,1, "button video",	IDC_VIDEO_BUTTON);
-	m_Controls.add(1,1, "button stop",	IDC_BUTTON_STOP);
-	m_Controls.add(1,2, "button play",	IDC_BUTTON_PLAY);
-	m_Controls.add(1,3, "button pause",	IDC_BUTTON_PAUSE);
-	m_Controls.add(1,4,	"button fford", IDC_BUTTON_FASTFORWARD);
-	m_Controls.add(1,5, "playlist",		IDC_PLAYLIST, IDC_PLAYLISTLABEL);
-	m_Controls.add(1,6, "picture",		IDC_PICTURE_CTRL);
-	m_Controls.add(2,0, "random",	IDC_BUTTON_RANDOM);
-	m_Controls.add(2,1, "vol slider",		IDC_VOLUME_SLIDER);
-	m_Controls.add(3,0, "shuffle",		IDC_BUTTON_SHUFFLE);
-	m_Controls.add(4,0, "clear",		IDC_BUTTON_CLEAR);
-	m_Controls.add(5,0, "load",			IDC_BUTTON_LOAD);
-	m_Controls.add(6,0, "save",			IDC_BUTTON_SAVE);
-//	m_Controls.add(7,1, "title",			IDC_CURRENT_TITLE);
-	m_Controls.add(8,0, "genre",			IDC_GENRES, IDC_GENRESLABEL);
-	m_Controls.add(8,1, "artist",			IDC_ARTISTS, IDC_ARTISTSLABEL);
-	m_Controls.add(8,2, "album",			IDC_ALBUMS, IDC_ALBUMSLABEL);
-	m_Controls.add(8,3, "songs",			IDC_SONGS, IDC_SONGSLABEL);
-	m_Controls.add(9,0, "pos label",		IDC_POSITION_LABEL);
-	m_Controls.add(9,1, "player status",	IDC_PLAYER_STATUS);
+	m_BtnControls.add(0,0, "options button", IDC_OPTIONS_BUTTON);
+	m_BtnControls.add(0,1, "app label",		IDC_BUTTON_LOGO); // logobutton
+	m_BtnControls.add(0,2, "button min",		IDC_BUTTON_MINIMIZE);
+	m_BtnControls.add(0,3, "button max",		IDC_BUTTON_MAXIMIZE);
+	m_BtnControls.add(0,3, "button restore",	IDC_BUTTON_RESTORE);
+	m_BtnControls.add(0,4, "button exit",	IDC_BUTTON_EXIT);
+	m_BtnControls.add(1,0, "button reverse",	IDC_BUTTON_REVERSE);
+//	m_BtnControls.add(1,1, "button music",	IDC_MUSIC_BUTTON);
+//	m_BtnControls.add(1,1, "button pictures",	IDC_PICTURES_BUTTON);
+//	m_BtnControls.add(1,1, "button video",	IDC_VIDEO_BUTTON);
+	m_BtnControls.add(1,1, "button stop",	IDC_BUTTON_STOP);
+	m_BtnControls.add(1,2, "button play",	IDC_BUTTON_PLAY);
+	m_BtnControls.add(1,3, "button pause",	IDC_BUTTON_PAUSE);
+	m_BtnControls.add(1,4,	"button fford", IDC_BUTTON_FASTFORWARD);
+	m_BtnControls.add(1,5, "playlist",		IDC_PLAYLIST, IDC_PLAYLISTLABEL);
+	m_BtnControls.add(1,6, "picture",		IDC_PICTURE_CTRL);
+	m_BtnControls.add(2,0, "random",	IDC_BUTTON_RANDOM);
+	m_BtnControls.add(2,1, "vol slider",		IDC_VOLUME_SLIDER);
+	m_BtnControls.add(3,0, "shuffle",		IDC_BUTTON_SHUFFLE);
+	m_BtnControls.add(4,0, "clear",		IDC_BUTTON_CLEAR);
+	m_BtnControls.add(5,0, "load",			IDC_BUTTON_LOAD);
+	m_BtnControls.add(6,0, "save",			IDC_BUTTON_SAVE);
+//	m_BtnControls.add(7,1, "title",			IDC_CURRENT_TITLE);
+	m_BtnControls.add(8,0, "genre",			IDC_GENRES, IDC_GENRESLABEL);
+	m_BtnControls.add(8,1, "artist",			IDC_ARTISTS, IDC_ARTISTSLABEL);
+	m_BtnControls.add(8,2, "album",			IDC_ALBUMS, IDC_ALBUMSLABEL);
+	m_BtnControls.add(8,3, "songs",			IDC_SONGS, IDC_SONGSLABEL);
+	m_BtnControls.add(9,0, "pos label",		IDC_POSITION_LABEL);
+	m_BtnControls.add(9,1, "player status",	IDC_PLAYER_STATUS);
 
-	m_Controls.add(2,0, "pos slider",		IDC_POSITION_SLIDER);
+	m_BtnControls.add(2,0, "pos slider",		IDC_POSITION_SLIDER);
 
 	int labelheight=0;
 //	int textheight=0;
@@ -1082,44 +1087,44 @@ CPlayerDlg::resetControls() {
 	statusheight = m_PlayerStatus.GetItemHeight() + 4;
 
 	Control * p ;
-	p = m_Controls.getObj(IDC_OPTIONS_BUTTON);
+	p = m_BtnControls.getObj(IDC_OPTIONS_BUTTON);
 	rowMaxY = __max(rowMaxY, y + p->height);
-	m_Controls.move(p, x, y, p->row, p->col);
+	m_BtnControls.move(p, x, y, p->row, p->col);
 
 	CDIBSectionLite bmpaplabel;
 	bmpaplabel.Load(m_Config.getSkin(MB_SKIN_BUTTONLOGOOUT));
-	p = m_Controls.getObj(IDC_BUTTON_LOGO);
-	x = (m_Controls.dialogrect.Width() / 2) - (bmpaplabel.GetWidth() / 2);
+	p = m_BtnControls.getObj(IDC_BUTTON_LOGO);
+	x = (m_BtnControls.dialogrect.Width() / 2) - (bmpaplabel.GetWidth() / 2);
 	y = border;
 	rowMaxY = __max(rowMaxY, y + bmpaplabel.GetHeight());
-	m_Controls.move(p, x, y, p->row, p->col);
+	m_BtnControls.move(p, x, y, p->row, p->col);
 
-	p = m_Controls.getObj(IDC_BUTTON_EXIT);
-	x = m_Controls.dialogrect.Width()
+	p = m_BtnControls.getObj(IDC_BUTTON_EXIT);
+	x = m_BtnControls.dialogrect.Width()
 		- (border + p->width);
 	rowMaxY = __max(rowMaxY, y + p->height);
-	m_Controls.move(p, x, y, p->row, p->col);
+	m_BtnControls.move(p, x, y, p->row, p->col);
 
 #define SYSCTRLSWIDTH 2
 
-	p = m_Controls.getObj(IDC_BUTTON_MAXIMIZE);
+	p = m_BtnControls.getObj(IDC_BUTTON_MAXIMIZE);
 	x -= (SYSCTRLSWIDTH + p->width);
 	rowMaxY = __max(rowMaxY, y + p->height);
-	m_Controls.move(p, x, y, p->row, p->col);
+	m_BtnControls.move(p, x, y, p->row, p->col);
 
-	p = m_Controls.getObj(IDC_BUTTON_RESTORE);
-	m_Controls.move(p, x, y, p->row, p->col);
+	p = m_BtnControls.getObj(IDC_BUTTON_RESTORE);
+	m_BtnControls.move(p, x, y, p->row, p->col);
 
-	p = m_Controls.getObj(IDC_BUTTON_MINIMIZE);
+	p = m_BtnControls.getObj(IDC_BUTTON_MINIMIZE);
 	x -= (SYSCTRLSWIDTH + p->width);
 	rowMaxY = __max(rowMaxY, y + p->height);
-	m_Controls.move(p, x, y, p->row, p->col);	
+	m_BtnControls.move(p, x, y, p->row, p->col);	
 	int playpaneltop = rowMaxY;
 
-//	p = m_Controls.getObj(IDC_BUTTON_RESIZE);
+//	p = m_BtnControls.getObj(IDC_BUTTON_RESIZE);
 //	x -= (SYSCTRLSWIDTH + p->width);
 //	rowMaxY = __max(rowMaxY, y + p->height);
-//	m_Controls.move(p, x, y, p->row, p->col);	
+//	m_BtnControls.move(p, x, y, p->row, p->col);	
 //	playpaneltop = rowMaxY;
 
 // control box
@@ -1133,135 +1138,135 @@ CPlayerDlg::resetControls() {
 
 //	x = ControlBoxLeft + m_reg.Read("MenuX",0);
 //	y = ControlBoxTop + m_reg.Read("MenuY", 0);
-//	p = m_Controls.getObj(IDC_OPTIONS_BUTTON);
+//	p = m_BtnControls.getObj(IDC_OPTIONS_BUTTON);
 //	maxX = x + p->width;
 //	rowMaxY = y + p->height;
-//	m_Controls.move(p, x, y, p->row, p->col);
+//	m_BtnControls.move(p, x, y, p->row, p->col);
 
 //	x = ControlBoxLeft + m_reg.Read("MusicX",0);
 //	y = ControlBoxTop + m_reg.Read("MusicY", 0);
-//	p = m_Controls.getObj(IDC_MUSIC_BUTTON);
+//	p = m_BtnControls.getObj(IDC_MUSIC_BUTTON);
 //	maxX = x + p->width;
 ////	rowMaxY = y + p->height;
-//	m_Controls.move(p, x, y, p->row, p->col);
+//	m_BtnControls.move(p, x, y, p->row, p->col);
 //
 //	x = ControlBoxLeft + m_reg.Read("PicturesX",0);
 //	y = ControlBoxTop + m_reg.Read("PicturesY", 0);
-//	p = m_Controls.getObj(IDC_PICTURES_BUTTON);
+//	p = m_BtnControls.getObj(IDC_PICTURES_BUTTON);
 //	maxX = x + p->width;
 ////	rowMaxY = y + p->height;
-//	m_Controls.move(p, x, y, p->row, p->col);
+//	m_BtnControls.move(p, x, y, p->row, p->col);
 //
 //	x = ControlBoxLeft + m_reg.Read("VideoX",0);
 //	y = ControlBoxTop + m_reg.Read("VideoY", 0);
-//	p = m_Controls.getObj(IDC_VIDEO_BUTTON);
+//	p = m_BtnControls.getObj(IDC_VIDEO_BUTTON);
 //	maxX = x + p->width;
 ////	rowMaxY = y + p->height;
-//	m_Controls.move(p, x, y, p->row, p->col);
+//	m_BtnControls.move(p, x, y, p->row, p->col);
 
 	x = ControlBoxLeft + m_reg.Read("StopX",0);
 	y = ControlBoxTop + m_reg.Read("StopY", 0);
-	p = m_Controls.getObj(IDC_BUTTON_STOP);
+	p = m_BtnControls.getObj(IDC_BUTTON_STOP);
 	maxX = x + p->width;
 //	rowMaxY = y + p->height;
-	m_Controls.move(p, x, y, p->row, p->col);	
+	m_BtnControls.move(p, x, y, p->row, p->col);	
 
 	int stopy = y;
 
 	x = ControlBoxLeft + m_reg.Read("PlayX",0);
 	y = ControlBoxTop + m_reg.Read("PlayY", 0);
-	p = m_Controls.getObj(IDC_BUTTON_PLAY);
+	p = m_BtnControls.getObj(IDC_BUTTON_PLAY);
 	maxX = __max(maxX, x + p->width);
 //	rowMaxY = __max(rowMaxY, y + p->height);
-	m_Controls.move(p, x, y, p->row, p->col);	
+	m_BtnControls.move(p, x, y, p->row, p->col);	
 
 	x = ControlBoxLeft + m_reg.Read("PauseX",0);
 	y = ControlBoxTop + m_reg.Read("PauseY", 0);
-	p = m_Controls.getObj(IDC_BUTTON_PAUSE);
+	p = m_BtnControls.getObj(IDC_BUTTON_PAUSE);
 	maxX = __max(maxX, x + p->width);
 //	rowMaxY = __max(rowMaxY, y + p->height);
-	m_Controls.move(p, x, y, p->row, p->col);	
+	m_BtnControls.move(p, x, y, p->row, p->col);	
 	int pauseright = x + p->width;
 	
 	y = rowMaxY;
 
-	p = m_Controls.getObj(IDC_BUTTON_REVERSE);
+	p = m_BtnControls.getObj(IDC_BUTTON_REVERSE);
 	x = ControlBoxLeft + m_reg.Read("ReverseX",0);
 	y = ControlBoxTop + m_reg.Read("ReverseY", 0);
 //	rowMaxY = __max(rowMaxY, y + p->height);
-	m_Controls.move(p, x, y, p->row, p->col);	
+	m_BtnControls.move(p, x, y, p->row, p->col);	
 
 	x += p->width;
-	p = m_Controls.getObj(IDC_BUTTON_FASTFORWARD);
+	p = m_BtnControls.getObj(IDC_BUTTON_FASTFORWARD);
 	x = ControlBoxLeft + m_reg.Read("ForwardX",0);
 	y = ControlBoxTop + m_reg.Read("ForwardY", 0);
 	maxX = __max(maxX, x + p->width);
 //	rowMaxY = __max(rowMaxY, y + p->height);
-	m_Controls.move(p, x, y, p->row, p->col);	
+	m_BtnControls.move(p, x, y, p->row, p->col);	
 	int ffright = x + p->width;
 
 	y = rowMaxY;
 	x = border + borderpanel;
-	p = m_Controls.getObj(IDC_BUTTON_RANDOM);
+	p = m_BtnControls.getObj(IDC_BUTTON_RANDOM);
 	int randomy = y;
 	x = ControlBoxLeft + m_reg.Read("RandomX",0);
 	y = ControlBoxTop + m_reg.Read("RandomY", 0);
 //	rowMaxY = __max(rowMaxY, y + p->height);
 	maxX = __max(maxX, x + p->width);
-	m_Controls.move(p, x, y, p->row, p->col);
+	m_BtnControls.move(p, x, y, p->row, p->col);
 
 	y += p->height;
-	p = m_Controls.getObj(IDC_BUTTON_SHUFFLE);
+	p = m_BtnControls.getObj(IDC_BUTTON_SHUFFLE);
 	x = ControlBoxLeft + m_reg.Read("ShuffleX",0);
 	y = ControlBoxTop + m_reg.Read("ShuffleY", 0);
 	maxX = __max(maxX, x + p->width);
-	m_Controls.move(p, x, y, p->row, p->col);
+	m_BtnControls.move(p, x, y, p->row, p->col);
 	
 	y += p->height;
-	p = m_Controls.getObj(IDC_BUTTON_CLEAR);
+	p = m_BtnControls.getObj(IDC_BUTTON_CLEAR);
 	x = ControlBoxLeft + m_reg.Read("ClearX",0);
 	y = ControlBoxTop + m_reg.Read("ClearY", 0);
 	maxX = __max(maxX, x + p->width);
-	m_Controls.move(p, x, y, p->row, p->col);
+	m_BtnControls.move(p, x, y, p->row, p->col);
 	
 	y += p->height;
-	p = m_Controls.getObj(IDC_BUTTON_LOAD);
+	p = m_BtnControls.getObj(IDC_BUTTON_LOAD);
 	x = ControlBoxLeft + m_reg.Read("LoadX",0);
 	y = ControlBoxTop + m_reg.Read("LoadY", 0);
 	maxX = __max(maxX, x + p->width);
-	m_Controls.move(p, x, y, p->row, p->col);
+	m_BtnControls.move(p, x, y, p->row, p->col);
 	
 	y += p->height;
-	p = m_Controls.getObj(IDC_BUTTON_SAVE);
+	p = m_BtnControls.getObj(IDC_BUTTON_SAVE);
 	x = ControlBoxLeft + m_reg.Read("SaveX",0);
 	y = ControlBoxTop + m_reg.Read("SaveY", 0);
 	maxX = __max(maxX, x + p->width);
-	m_Controls.move(p, x, y, p->row, p->col);
+	m_BtnControls.move(p, x, y, p->row, p->col);
 	int savebottom = y + p->height;
 
-	p = m_Controls.getObj(IDC_VOLUME_SLIDER);
+	p = m_BtnControls.getObj(IDC_VOLUME_SLIDER);
 	x = maxX ;//+ borderhorz;
 	y = stopy;
 	x = ControlBoxLeft + m_reg.Read("VolumeX",0);
 	y = ControlBoxTop + m_reg.Read("VolumeY", 0);
-	m_Controls.move(p, x, y, p->row, p->col);	
+	m_BtnControls.move(p, x, y, p->row, p->col);	
 	int volright = x + p->width;
 	int volbottom = y + p->height;
 
-	p = m_Controls.getObj(IDC_POSITION_SLIDER);
+	p = m_BtnControls.getObj(IDC_POSITION_SLIDER);
 	x = ControlBoxLeft + m_reg.Read("ProgressX",0);
 	y = ControlBoxTop + m_reg.Read("ProgressY", 0);
-	m_Controls.move(p, x, y, p->row, p->col);	
+	m_BtnControls.move(p, x, y, p->row, p->col);	
 	
 	y = ControlBoxTop;
 	//y = rowMaxY + borderpanel /* + bordervert*/;
-	p = m_Controls.getObj(IDC_PICTURE_CTRL);
+	p = m_BtnControls.getObj(IDC_PICTURE_CTRL);
 
 	p->height = ControlBoxHeight;
 	p->width = p->height;
 	int pheight = p->height;
-	x = m_Controls.dialogrect.Width() - (border + p->width + borderpanel);
-	m_Controls.move(p,x,y,p->row,p->col);
+	x = m_BtnControls.dialogrect.Width() - (border + p->width + borderpanel);
+	m_BtnControls.move(p,x,y,p->row,p->col);
 	int picbottom = y + p->height;
 	int picleft = x;
 
@@ -1270,7 +1275,7 @@ CPlayerDlg::resetControls() {
 	int plmaxx = __max(ffright,volright);
 	plmaxx = __max(plmaxx,ControlBoxRight) + borderhorz;
 
-	p = m_Controls.getObj(IDC_PLAYLIST);
+	p = m_BtnControls.getObj(IDC_PLAYLIST);
 //	p->height = plmaxy - (labelheight + textheight + bordervert
 //		+ stopy);
 //	p->height = ControlBoxHeight - (labelheight + curplayheight + bordervert);
@@ -1279,7 +1284,7 @@ CPlayerDlg::resetControls() {
 	p->labelheight = labelheight;
 	x = ControlBoxRight + borderhorz;
 	p->width = (picleft - (( ( 2 * borderpanel) + borderhorz))) - x;
-	m_Controls.move(p,x,y,p->row,p->col);
+	m_BtnControls.move(p,x,y,p->row,p->col);
 	int playlistright = x + p->width;
 	int playlistleft = x;
 	int playlistbottom = y + p->height + labelheight;
@@ -1291,70 +1296,70 @@ CPlayerDlg::resetControls() {
 	posy = __max(posy, playlistbottom) + bordervert;
 
 //	x = x + p->width + borderhorz;
-//	p = m_Controls.getObj(IDC_CURRENT_TITLE);
+//	p = m_BtnControls.getObj(IDC_CURRENT_TITLE);
 //	p->height = curplayheight;
 //	p->width = playlistright - x;
-//	m_Controls.move(p,x,y,p->row,p->col);
+//	m_BtnControls.move(p,x,y,p->row,p->col);
 //	int titlebottom = y + p->height;
 	
 //	y += p->height + bordervert;
 	int genrey = ControlBoxTop + ControlBoxHeight + (2 * borderpanel) +
 		bordervert;
 
-	p = m_Controls.getObj(IDC_POSITION_LABEL);
+	p = m_BtnControls.getObj(IDC_POSITION_LABEL);
 	CSize s = m_PositionLabel.GetSize("00:00/00:00");
 	p->width = s.cx;
 	p->height = statusheight;
 	x = border + borderpanel; 
-	y = m_Controls.dialogrect.Height() 
+	y = m_BtnControls.dialogrect.Height() 
 		- (statusheight + border + borderpanel);
-	m_Controls.move(p, x, y, p->row, p->col);	
+	m_BtnControls.move(p, x, y, p->row, p->col);	
 	int poswidth = p->width;
 
-	p = m_Controls.getObj(IDC_PLAYER_STATUS);
+	p = m_BtnControls.getObj(IDC_PLAYER_STATUS);
 	p->height = statusheight;
 	x = border + poswidth + borderhorz + borderpanel;
-	p->width = m_Controls.dialogrect.Width()
+	p->width = m_BtnControls.dialogrect.Width()
 		- ((2 * (border + borderpanel)) + poswidth + borderhorz );
-	m_Controls.move(p,x,y,p->row,p->col);
+	m_BtnControls.move(p,x,y,p->row,p->col);
 	int statusbottom = y + p->height;
 
-	p = m_Controls.getObj(IDC_GENRES);		
-	p->width = (m_Controls.dialogrect.Width()
+	p = m_BtnControls.getObj(IDC_GENRES);		
+	p->width = (m_BtnControls.dialogrect.Width()
 		- (2 * (borderpanel + border))) * GenresWidthPct;
 	p->labelheight = labelheight;
 	p->height = (y - bordervert) - (genrey + labelheight);
 	y = genrey;
 	x = border + borderpanel;
-	m_Controls.move(p,x,y,p->row,p->col);
+	m_BtnControls.move(p,x,y,p->row,p->col);
 	
 	pheight = p->height;
 	x += p->width + borderhorz;
 
-	p = m_Controls.getObj(IDC_ARTISTS);
-	p->width = (m_Controls.dialogrect.Width()
+	p = m_BtnControls.getObj(IDC_ARTISTS);
+	p->width = (m_BtnControls.dialogrect.Width()
 		- (2 * (borderpanel + border))) * ArtistsWidthPct;
 	p->labelheight = labelheight;
 	p->height = pheight;
-	m_Controls.move(p,x,y,p->row,p->col);
+	m_BtnControls.move(p,x,y,p->row,p->col);
 
 	pwidth = p->width;
 	x += p->width + borderhorz;
 	
-	p = m_Controls.getObj(IDC_ALBUMS);
-	p->width = (m_Controls.dialogrect.Width()
+	p = m_BtnControls.getObj(IDC_ALBUMS);
+	p->width = (m_BtnControls.dialogrect.Width()
 		- (2 * (borderpanel + border))) * AlbumsWidthPct;
 	p->labelheight = labelheight;
 	p->height = pheight;
-	m_Controls.move(p,x,y,p->row,p->col);
+	m_BtnControls.move(p,x,y,p->row,p->col);
 
 	x += p->width + borderhorz;
 	
-	p = m_Controls.getObj(IDC_SONGS);
-	p->width = m_Controls.dialogrect.Width() - (x + border + borderpanel);
+	p = m_BtnControls.getObj(IDC_SONGS);
+	p->width = m_BtnControls.dialogrect.Width() - (x + border + borderpanel);
 	p->labelheight = labelheight;
 	p->height = pheight;
-	m_Controls.move(p,x,y,p->row,p->col);
+	m_BtnControls.move(p,x,y,p->row,p->col);
 	m_LibHeight = pheight;
 	
 	CDC * cdc = GetDC();
@@ -1383,7 +1388,7 @@ CPlayerDlg::resetControls() {
 	}
 
 	// applabel
-//	x = (m_Controls.dialogrect.Width() / 2) - (bmpaplabel.GetWidth() / 2);
+//	x = (m_BtnControls.dialogrect.Width() / 2) - (bmpaplabel.GetWidth() / 2);
 //	y = border;
 //	CRect aplrect(x,y,x+bmpaplabel.GetWidth(),y+bmpaplabel.GetHeight());
 //	SetBitmap(m_Config.getSkin(MB_SKIN_BUTTONAPPLABELOUT), aplrect, LO_FIXED,
@@ -1410,7 +1415,7 @@ CPlayerDlg::resetControls() {
 	CRect librect(plrect);
 	librect.top = genrey-borderpanel;
 	librect.bottom = statusbottom + borderpanel;
-	librect.right = m_Controls.dialogrect.right - border;
+	librect.right = m_BtnControls.dialogrect.right - border;
 	bgpanel = m_Config.getSkin(MB_SKIN_BACKGROUNDLIBRARY);
 	if (bgpanel.GetLength()) {
 		SetBitmap(bgpanel, librect, BackgroundPanelType, CS("lib panel"));
@@ -1518,14 +1523,14 @@ CPlayerDlg::ShowSearchDlg() {
 		m_SearchClear.ShowWindow(SW_HIDE);
 		newheight = m_LibHeight ;
 	}
-	p = m_Controls.getObj(IDC_GENRES);
-	p->y = newy; p->height = newheight; m_Controls.move(p,p->x,p->y,p->row,p->col);
-	p = m_Controls.getObj(IDC_ARTISTS);
-	p->y = newy; p->height = newheight; m_Controls.move(p,p->x,p->y,p->row,p->col);
-	p = m_Controls.getObj(IDC_ALBUMS);
-	p->y = newy; p->height = newheight; m_Controls.move(p,p->x,p->y,p->row,p->col);
-	p = m_Controls.getObj(IDC_SONGS);
-	p->y = newy; p->height = newheight; m_Controls.move(p,p->x,p->y,p->row,p->col);
+	p = m_BtnControls.getObj(IDC_GENRES);
+	p->y = newy; p->height = newheight; m_BtnControls.move(p,p->x,p->y,p->row,p->col);
+	p = m_BtnControls.getObj(IDC_ARTISTS);
+	p->y = newy; p->height = newheight; m_BtnControls.move(p,p->x,p->y,p->row,p->col);
+	p = m_BtnControls.getObj(IDC_ALBUMS);
+	p->y = newy; p->height = newheight; m_BtnControls.move(p,p->x,p->y,p->row,p->col);
+	p = m_BtnControls.getObj(IDC_SONGS);
+	p->y = newy; p->height = newheight; m_BtnControls.move(p,p->x,p->y,p->row,p->col);
 	m_SearchCancel.MoveWindow(m_SearchCancelRect);
 	m_SearchEdit.MoveWindow(m_SearchEditRect);
 	m_SearchGo.MoveWindow(m_SearchGoRect);
@@ -1625,13 +1630,14 @@ void CPlayerDlg::OnNoSearchDlg() {
 
 void CPlayerDlg::OnSearchGo() {
 
+	if (!m_SearchResults) return;
 	CString txt;
 	m_SearchEdit.GetWindowText(txt);
 	CWaitCursor c;
 	int found = 0;
+	m_SearchGo.SetWindowText("Searching");
 	if (0 < (found = m_mlib.Search(txt))) {
 		m_Genres.SetCurSel(0);
-		m_SearchResults = TRUE;
 		ShowSearchDlg();
 		_lastSelectedGenre = "xxx";
 		_lastSelectedArtist = "xxx";
@@ -1639,6 +1645,7 @@ void CPlayerDlg::OnSearchGo() {
 		_selectedArtist = "";
 		initDb();
 	}
+	m_SearchGo.SetWindowText("Search");
 	if (txt.GetLength()) {
 		CString msg = numToString(found) + " songs found with " + txt;
 		PlayerStatusSet(msg);
@@ -1646,8 +1653,8 @@ void CPlayerDlg::OnSearchGo() {
 }
 void CPlayerDlg::OnSearchClear() 
 {
+	if (!m_SearchResults) return;
 	CWaitCursor c;
-	m_SearchResults = TRUE;
 	m_mlib.SearchClear();
 	m_Genres.SetCurSel(0);
 	ShowSearchDlg();
@@ -1860,21 +1867,23 @@ void CPlayerDlg::OnControlSelChange() {
     }
 }
 
-void CPlayerDlg::OnControlClick() {
+BOOL CPlayerDlg::OnControlClick() {
     if (m_Control->ptr() == &m_Genres) {
-        OnDblclkGenres() ;
+        OnDblclkGenres() ; return TRUE;
     } else if (m_Control->ptr() == &m_Artists) {
-        OnDblclkArtists() ;
+        OnDblclkArtists() ;return TRUE;
     } else if (m_Control->ptr() == &m_Albums) {
-        OnDblclkAlbums() ;
+        OnDblclkAlbums() ;return TRUE;
     } else if (m_Control->ptr() == &m_Songs) {
-        OnDblclkSongs();
+        OnDblclkSongs();return TRUE;
     } else if (m_Control->ptr() == &m_Playlist) {
-        OnDblclkPlaylist();
+        OnDblclkPlaylist();return TRUE;
 
 //    } else if (m_Control->ptr() == m_MenuDlg) {
 //        m_MenuDlg->EndDialog(m_MenuDlg->currentbutton());
-    }
+    } else {
+		return FALSE;
+	}
 }
 static void
 rememberSelections(CMapStringToString & map, CString sel,
@@ -2108,10 +2117,11 @@ void CPlayerDlg::OnDblclkPlaylist()
 
 BOOL CPlayerDlg::PreTranslateMessage(MSG* pMsg)
 {	// disable ESC & ENTER from killing the dialog
+	// returning TRUE says msg has been processed, don't further process
     if (pMsg->message == WM_KEYDOWN) {
         if (pMsg->wParam == VK_RETURN) {
-			OnControlClick();
-            return TRUE;
+			if (OnControlClick()) // if one of VirtualControls
+				return TRUE;
 		} else if (pMsg->wParam == VK_ESCAPE) {
 			return TRUE;
         } else if (pMsg->wParam == VK_DELETE) {
@@ -2122,7 +2132,11 @@ BOOL CPlayerDlg::PreTranslateMessage(MSG* pMsg)
 			return TRUE;
         }
     }
-    return CDialogClassImpl::PreTranslateMessage(pMsg);
+	// Since the SearchGo button is the only default button, hitting
+	// return presses that button. There's code in OnSearchGo
+	// to prevent a search if it's not in view.
+	// If there's no default button, a return will exit the dialog.
+	return CDialogClassImpl::PreTranslateMessage(pMsg);
 }
 
 void CPlayerDlg::OnMenuButton() 
@@ -2170,7 +2184,14 @@ void CPlayerDlg::OnMenuButton()
         OnMenuHelp();
     }
 }
-
+void CPlayerDlg::OnKillfocusVirtuals() 
+{
+	// Now that we have non virtual controls, need this
+	// to prevent misdirected actions from going to the
+	// most recent active virtual control.
+		m_Control->zero();
+	
+}
 void
 CPlayerDlg::OnGenresFocus( ) {
 	*m_Control = (CExtendedListBox*)GetDlgItem(IDC_GENRES);
@@ -3461,61 +3482,61 @@ CPlayerDlg::AdjustLibraryWidths(CPoint &apoint) {
 	ScreenToClient(&point);
 	int sw,dx;
 
-	int dw = m_Controls.dialogrect.Width() 
+	int dw = m_BtnControls.dialogrect.Width() 
 		- (m_Config.getDlgBorderWidth()* 2);
 	int pct;
 
 	switch(m_AdjustLibrary) {
 		case 1: 
-			p = m_Controls.getObj(IDC_GENRES);
+			p = m_BtnControls.getObj(IDC_GENRES);
 			sw = p->width;
 			p->width = point.x - p->x;
 			if (p->width < 50) p->width = 50;
 			dx = sw - p->width;
-			m_Controls.move(p,p->x,p->y,p->row,p->col);
+			m_BtnControls.move(p,p->x,p->y,p->row,p->col);
 
 			pct = int((double)100 * ((double)p->width / (double)dw));
 			m_Config.setRegistry("LibGenresWidth", pct);
 
-			p = m_Controls.getObj(IDC_ARTISTS);
+			p = m_BtnControls.getObj(IDC_ARTISTS);
 			p->width += dx;
 			p->x -= dx;
-			m_Controls.move(p,p->x,p->y,p->row,p->col);
+			m_BtnControls.move(p,p->x,p->y,p->row,p->col);
 			
 			pct = int((double)100 * ((double)p->width / (double)dw));
 			m_Config.setRegistry("LibArtistsWidth", pct);
 			break;
 		case 2:
-			p = m_Controls.getObj(IDC_ARTISTS);
+			p = m_BtnControls.getObj(IDC_ARTISTS);
 			sw = p->width;
 			p->width = point.x - p->x;
 			if (p->width < 50) p->width = 50;
 			dx = sw - p->width;
-			m_Controls.move(p,p->x,p->y,p->row,p->col);
+			m_BtnControls.move(p,p->x,p->y,p->row,p->col);
 			pct = int((double)100 * ((double)p->width / (double)dw));
 			m_Config.setRegistry("LibArtistsWidth", pct);
 
-			p = m_Controls.getObj(IDC_ALBUMS);
+			p = m_BtnControls.getObj(IDC_ALBUMS);
 			p->width += dx;
 			p->x -= dx;
-			m_Controls.move(p,p->x,p->y,p->row,p->col);
+			m_BtnControls.move(p,p->x,p->y,p->row,p->col);
 			pct = int((double)100 * ((double)p->width / (double)dw));
 			m_Config.setRegistry("LibAlbumsWidth", pct);
 			break;
 		case 3:
-			p = m_Controls.getObj(IDC_ALBUMS);
+			p = m_BtnControls.getObj(IDC_ALBUMS);
 			sw = p->width;
 			p->width = point.x - p->x;
 			if (p->width < 50) p->width = 50;
 			dx = sw - p->width;
-			m_Controls.move(p,p->x,p->y,p->row,p->col);
+			m_BtnControls.move(p,p->x,p->y,p->row,p->col);
 			pct = int((double)100 * ((double)p->width / (double)dw));
 			m_Config.setRegistry("LibAlbumsWidth", pct);
 
-			p = m_Controls.getObj(IDC_SONGS);
+			p = m_BtnControls.getObj(IDC_SONGS);
 			p->width += dx;
 			p->x -= dx;
-			m_Controls.move(p,p->x,p->y,p->row,p->col);
+			m_BtnControls.move(p,p->x,p->y,p->row,p->col);
 			break;
 		default:
 			break;
@@ -4200,5 +4221,4 @@ void CPlayerDlg::OnInitMenuPopup(CMenu *pSysMenu,
 	}
 
 }
-
 

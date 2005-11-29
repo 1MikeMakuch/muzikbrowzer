@@ -29,6 +29,7 @@ class VirtualControl {
 //        void select();
         void * ptr() { return m_Ptr; }
         BOOL isList() { return m_List != 0; }
+        void zero();
 	private:
 		CComboBox * m_Combo;
         CExtendedListBox * m_List;
@@ -38,7 +39,7 @@ class VirtualControl {
 		CEdit * m_Edit;
         void * m_Ptr;
 
-        void zero();
+
 
 };
 
