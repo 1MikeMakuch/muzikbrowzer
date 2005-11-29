@@ -30,7 +30,7 @@
 // xxx make the increment large before shipping!
 #define MMEMORY_SIZE_INCREMENT 5000
 #define MMEMORY_RESERVE_BYTES 100
-#define MB_GARBAGE_INTERVAL 10
+#define MB_GARBAGE_INTERVAL 2
 #define MB_DB_VERSION 4
 
 #ifdef _DEBUG
@@ -170,7 +170,7 @@ CSong::Contains(const CString & keyword) {
 
 /////////////////////////////////////////////////////////////////////////////////
 
-MusicLib::MusicLib(InitDlg *id): _id(id), m_totalMp3s(0),m_Searching(FALSE)
+MusicLib::MusicLib(InitDlg *id): _id(id), m_totalMp3s(0)
 {
 //	init();
 }
@@ -1369,6 +1369,7 @@ MusicLib::writeSongToFile(Song song) {
 		if (tags == ID3TT_NONE) {
 			result += "unable to update id3 tag in " + file;
 		}
+		delete id3;
 	} else if (fext == "ogg") {
 		OggTag ogg(file);
 		POSITION pos;
@@ -1486,19 +1487,16 @@ MusicLib::garbageCollect(InitDlg * dialog) {
 }
 void
 MusicLib::SearchSetup() {
-	m_Searching = TRUE;
+	m_SaveLib = m_SongLib;
 }
 void
 MusicLib::SearchCancel() {
-	if (m_Searching) {
-		m_Searching = FALSE;
-	}
-	m_SongLib.readFromFile();
+	m_SongLib = m_SaveLib;
 	IgetLibraryCounts();
 }
 void
 MusicLib::SearchClear() {
-	m_SongLib.readFromFile();
+	m_SongLib = m_SaveLib;
 	IgetLibraryCounts();
 }
 int
@@ -1520,6 +1518,7 @@ MusicLib::Search(const CString keywords) {
 			i = n + 1;
 		}
 	}
+
 	IgetLibraryCounts();
 	return found;
 }
@@ -2242,13 +2241,13 @@ MusicLib::apic(const CString & file, uchar *& rawdata, size_t & nDataSize) {
 
 MMemory::MMemory(const CString & file) :
 	m_sizeOrig(MMEMORY_SIZE_INCREMENT), m_file(file),
-	m_space(0), m_next(-1)
+	m_space(0), m_next(-1), _refcnt(0)
 {
 	create();
 }
 MMemory::MMemory() :
 	m_sizeOrig(MMEMORY_SIZE_INCREMENT),
-	m_space(0), m_next(-1)
+	m_space(0), m_next(-1), _refcnt(0)
 {
 	create();
 }
@@ -2256,6 +2255,12 @@ MMemory::MMemory() :
 MMemory::~MMemory() {
 	if (m_space)
 		free(m_space);
+}
+void
+MMemory::unreference() {
+	if (--_refcnt ==0) {
+		delete this;
+	}
 }
 MMemory::operator = (MMemory & mem) {
 	m_sizeOrig = mem.m_sizeOrig;
@@ -2395,7 +2400,48 @@ MMemory::addr(int p) {
 }
 
 #define MBTESTFILE "muzikbrowzer.ck"
+TEST(PMemoryTests, PMemory)
+{
+	PMemory m;
+	m = new MMemory(MBTESTFILE);
+	int i = m->writei(0,14);
+	CHECK(i == -1);
+	int p = m->alloc(100);
+	CHECK(p == 0);
+	i = m->writei(0,14);
+	CHECK(i == 0);
+	i = m->writei(4,15);
+	CHECK(i == 0);
+	i = m->writei(8,16);
+	CHECK(i == 0);
+	i = m->writec(12,"abc");
+	CHECK(i == 0);
 
+	i = m->readi(0);
+	CHECK(i == 14);
+	i = m->readi(4);
+	CHECK(i == 15);
+	i = m->readi(8);
+	CHECK(i == 16);
+	char * t = m->readc(12);
+	CHECK(strcmp(t,"abc") == 0);
+	m->writeToFile();
+
+	PMemory m2;
+	m2 = new MMemory(MBTESTFILE);
+	m2->readFromFile();
+	i = m2->readi(0);
+	CHECK(i == 14);
+	i = m2->readi(4);
+	CHECK(i == 15);
+	i = m2->readi(8);
+	CHECK(i == 16);
+	t = m2->readc(12);
+	CHECK(strcmp(t,"abc") == 0);
+
+	CFile::Remove(MBTESTFILE);
+
+}
 TEST(MMemoryTests, MMemory)
 {
 	MMemory m(MBTESTFILE);
@@ -2443,37 +2489,37 @@ TEST(MMemoryTests, MMemory)
 // reference accessors below. They are only to be used for immediate
 // read & write
 // xxx figure out how to prevent it.
-MRecord::MRecord(MMemory & m, int p) : m_mem(m), m_i(p) {}
+MRecord::MRecord(PMemory & m, int p) : m_mem(m), m_i(p) {}
 MRecord::MRecord(MRecord & r) : m_mem(r.m_mem), m_i(r.m_i) {}
 int &
 MRecord::length() {
-	MRecordt * r = (MRecordt*)m_mem.addr(m_i);
+	MRecordt * r = (MRecordt*)m_mem->addr(m_i);
 	return (int &) r->length;
 }
 int &
 MRecord::next() {
-	MRecordt * r = (MRecordt*)m_mem.addr(m_i);
+	MRecordt * r = (MRecordt*)m_mem->addr(m_i);
 	return (int &) r->next;
 }
 int &
 MRecord::prev() {
-	MRecordt * r = (MRecordt*)m_mem.addr(m_i);
+	MRecordt * r = (MRecordt*)m_mem->addr(m_i);
 	return (int &) r->prev;
 }
 int &
 MRecord::ptr() {
-	MRecordt * r = (MRecordt*)m_mem.addr(m_i);
+	MRecordt * r = (MRecordt*)m_mem->addr(m_i);
 	return (int &) r->ptr;
 }
 CString
 MRecord::label() {
-	char * p = ((char*)m_mem.addr(m_i)) + sizeof(MRecordt);
+	char * p = ((char*)m_mem->addr(m_i)) + sizeof(MRecordt);
 	CString r (p);
 	return r;
 }
 void
 MRecord::label(const CString & val) {
-	char * p = ((char*)m_mem.addr(m_i)) + sizeof(MRecordt);
+	char * p = ((char*)m_mem->addr(m_i)) + sizeof(MRecordt);
 	strcpy(p, (LPCTSTR)val);
 }
 int
@@ -2486,8 +2532,9 @@ MRecord::ptrIdx() {
 }
 TEST(MRecordTests, MRecord) 
 {
-	MMemory m(MBTESTFILE);
-	int pi = m.alloc(100);
+	PMemory m;
+	m = new MMemory(MBTESTFILE);
+	int pi = m->alloc(100);
 
 	MRecord r(m,pi);
 	r.length() = 1;
@@ -2502,11 +2549,12 @@ TEST(MRecordTests, MRecord)
 	CHECK(r.ptr() == 4);
 	CHECK(r.label() == (CString)"abc");
 
-	m.writeToFile();
+	m->writeToFile();
 
-	MMemory m2(MBTESTFILE);
-	m2.readFromFile();
-	pi = m2.alloc(50);
+	PMemory m2;
+	m2 = new MMemory(MBTESTFILE);
+	m2->readFromFile();
+	pi = m2->alloc(50);
 
 	MRecord r2(m2,pi);
 	r2.length() = 21;
@@ -2515,10 +2563,11 @@ TEST(MRecordTests, MRecord)
 	r2.ptr() = 24;
 	r2.label("xyz");
 
-	m2.writeToFile();
+	m2->writeToFile();
 
-	MMemory m3(MBTESTFILE);
-	m3.readFromFile();
+	PMemory m3;
+	m3 = new MMemory(MBTESTFILE);
+	m3->readFromFile();
 
 	MRecord r3(m3,0);
 
@@ -2582,11 +2631,11 @@ MRecord::createSong() {
 // The 1st 4 bytes are reserved for the head pointer, 2nd 4 bytes
 // for songcount
 
-MList::MList(MMemory & m) : m_headstore(0), m_mem(m)
+MList::MList(PMemory & m) : m_headstore(0), m_mem(m)
 {
-	if (m_mem.m_next == -1) {
-		int pi = m_mem.alloc(MMEMORY_RESERVE_BYTES);
-		m_mem.writei(pi, -1); // initialize list head to -1
+	if (m_mem->m_next == -1) {
+		int pi = m_mem->alloc(MMEMORY_RESERVE_BYTES);
+		m_mem->writei(pi, -1); // initialize list head to -1
 		ASSERT(head() == -1); // which indicates empty list
 	}
 }
@@ -2596,9 +2645,9 @@ MList::MList(MMemory & m) : m_headstore(0), m_mem(m)
 MList::MList(MRecord & r) : m_mem(r.mem())
 {
 	m_headstore = r.ptrIdx();
-	int h = m_mem.readi(m_headstore);
+	int h = m_mem->readi(m_headstore);
 	if (h == 0) {
-		m_mem.writei(m_headstore, -1); // initialize list head to -1
+		m_mem->writei(m_headstore, -1); // initialize list head to -1
 		ASSERT(head() == -1); // which indicates empty list
 	}
 }
@@ -2607,7 +2656,7 @@ MList::MList(MRecord & r) : m_mem(r.mem())
 //	m_memc(r.mem())
 //{
 //	m_headstore = r.ptrIdx();
-//	int h = m_mem.readi(m_headstore);
+//	int h = m_mem->readi(m_headstore);
 //	ASSERT(head() != -1); // which indicates empty list
 //}
 
@@ -2616,7 +2665,7 @@ MList::MList(MRecord & r) : m_mem(r.mem())
 int &
 MList::head() 
 {
-	int * h = (int *)m_mem.addr(m_headstore);
+	int * h = (int *)m_mem->addr(m_headstore);
 	return (int &) *h;
 }
 
@@ -2770,7 +2819,7 @@ int
 MList::prepend(const CString & label) 
 {
 	int s = MRecord::needed(label);
-	int pi = m_mem.alloc(s);
+	int pi = m_mem->alloc(s);
 	if (head() == -1)
 		head() = 0;
 
@@ -2811,7 +2860,8 @@ MList::count() {
 }
 TEST(MListTests, MList)
 {
-	MMemory m(MBTESTFILE);
+	PMemory m;
+	m = new MMemory(MBTESTFILE);
 	MList list(m);
 
 	// add five elements and check all records/fields
@@ -2927,7 +2977,8 @@ TEST(MListTests, MList)
 
 TEST(MListFindOrPrepend, MList)
 {
-	MMemory m(MBTESTFILE);
+	PMemory m;
+	m = new MMemory(MBTESTFILE);
 	MList list(m);
 	int pi = list.findOrPrepend("one");
 	CHECK(pi == MMEMORY_RESERVE_BYTES);
@@ -2942,7 +2993,8 @@ TEST(MListFindOrPrepend, MList)
 
 TEST(MListTreeTests1, MList)
 {
-	MMemory m(MBTESTFILE);
+	PMemory m;
+	m = new MMemory(MBTESTFILE);
 	MList list(m);
 	list.prepend("one");
 	list.prepend("two");
@@ -2966,7 +3018,8 @@ TEST(MListTreeTests2, MList)
 	CString artistname = "Aerosmith";
 	CString albumname = "Big Ones";
 	
-	MMemory m_mem;
+	PMemory m_mem;
+	m_mem = new MMemory;
 	
 	int i;
 	for (i = 1 ; i < 4 ; ++i) {
@@ -3019,7 +3072,8 @@ TEST(MListTreeTests3, MList)
 	CString artistname = "Aerosmith";
 	CString albumname = "Big Ones";
 	
-	MMemory m_mem;
+	PMemory m_mem;
+	m_mem = new MMemory;
 	
 	int i;
 	for (i = 1 ; i < 4 ; ++i) {
@@ -3307,7 +3361,7 @@ TEST(MFilesTest, MFiles)
 /////////////////////////////////////////////////////////////////////
 
 MSongLib::MSongLib() : m_songcount(0), m_garbagecollector(0), m_dirty(0),
-	m_db_version(MB_DB_VERSION)
+	m_db_version(MB_DB_VERSION), m_mem(new MMemory)
  {}
 
 MSongLib::~MSongLib()
@@ -3324,7 +3378,7 @@ MSongLib::operator = (MSongLib & songlib) {
 
 void
 MSongLib::init(BOOL rebuild) {
-	m_mem.create();
+	m_mem->create();
 	m_songcount = 0;
 	m_garbagecollector = 0;
 	if (rebuild)
@@ -3332,7 +3386,7 @@ MSongLib::init(BOOL rebuild) {
 }
 int
 MSongLib::addSong(Song & song) {
-	//MMemory m_mem(MBTESTFILE);
+	//PMemory m_mem(MBTESTFILE);
 	++m_songcount;
     CString artistname, albumname, titlename, genrename,year,track,file,tlen;
 
@@ -3546,23 +3600,23 @@ MSongLib::removeGenre(const CString & genrename) {
 }
 void
 MSongLib::setDbLocation(const CString & loc) {
-	m_mem.setDbLocation(loc);
+	m_mem->setDbLocation(loc);
 	m_files.setDbLocation(loc);
 }
 int
 MSongLib::head() {
-	return m_mem.readi(0);
+	return m_mem->readi(0);
 }
 void
 MSongLib::readFromFile() {
-	int r = m_mem.readFromFile();
+	int r = m_mem->readFromFile();
 	if (r == 0) {
-		m_db_version = m_mem.readi(12);
+		m_db_version = m_mem->readi(12);
 		r = validate();
 	}
 	if (r == 0) {
-		m_songcount = m_mem.readi(4);
-		m_garbagecollector = m_mem.readi(8);
+		m_songcount = m_mem->readi(4);
+		m_garbagecollector = m_mem->readi(8);
 		if (m_files.read() == -1) { // create files list if !exists
 			int a,r;
 			r = MBMessageBox("Advisory","Database maintenance required.\r\nClick OK to continue.",TRUE,TRUE);
@@ -3578,10 +3632,10 @@ MSongLib::readFromFile() {
 }
 void
 MSongLib::writeToFile() {
-	m_mem.writei(4,m_songcount);
-	m_mem.writei(8,m_garbagecollector);
-	m_mem.writei(12,MB_DB_VERSION);
-	m_mem.writeToFile();
+	m_mem->writei(4,m_songcount);
+	m_mem->writei(8,m_garbagecollector);
+	m_mem->writei(12,MB_DB_VERSION);
+	m_mem->writeToFile();
 #ifdef _DEBUG
 	dump();
 #endif
@@ -3653,7 +3707,7 @@ MSongLib::dump(CString name) {
     int i;
     AutoBuf buf(1000);
 
-    CString dbfilename = m_mem.DbFile();
+    CString dbfilename = m_mem->DbFile();
 
 	if (name != "") {
 		dbfilename += name;
@@ -3676,13 +3730,13 @@ MSongLib::dump(CString name) {
 
     sprintf(buf.p, 
 "DBV:%d Head:%07d Size:%07d SongCount:%d gc:%d ###########################################\n",
- m_db_version, head(), m_mem.m_size, m_songcount, m_garbagecollector);
+ m_db_version, head(), m_mem->m_size, m_songcount, m_garbagecollector);
     myFile.Write(buf.p, strlen(buf.p));
     sprintf(buf.p, "%7s %7s %7s %7s %7s %s\n", "pos", "length", "prev", "next",
         "ptr", "label");
     myFile.Write(buf.p, strlen(buf.p));
     i = (MMEMORY_RESERVE_BYTES);
-    while (i < m_mem.next()) {
+    while (i < m_mem->next()) {
 		MRecord r(m_mem, i);
 
         sprintf(buf.p, "%07d %07d %07d %07d %07d %s\n",i,
@@ -3710,7 +3764,7 @@ MSongLib::validate() {
 		return -1;
 	}
     int i = (MMEMORY_RESERVE_BYTES);
-	int next = m_mem.next();
+	int next = m_mem->next();
     while (i < next) {
 		MRecord r(m_mem, i);
 		int rlength = r.length();
@@ -3726,7 +3780,7 @@ MSongLib::validate() {
 			MBMessageBox("Error", msg);
 			return -1;
 		}
-		char * label = (char*)m_mem.addr(i + sizeof(MRecordt));
+		char * label = (char*)m_mem->addr(i + sizeof(MRecordt));
 		if (label) {
 			int llen = strlen(label);
 			if (llen != rlength - (sizeof(MRecordt) + 1)) {

@@ -166,6 +166,10 @@ void CDialogSK::FreeResources()
 	int i;
 	for (i = 0 ; i < m_NumBitmapToCRect; i++) {
 		if (m_BitmapToCRect[i]) {
+			if (m_BitmapToCRect[i]->m_hBitmap)
+				::DeleteObject(m_BitmapToCRect[i]->m_hBitmap);
+			if (m_BitmapToCRect[i]->m_hMask)
+				::DeleteObject(m_BitmapToCRect[i]->m_hMask);
 			delete m_BitmapToCRect[i];
 			m_BitmapToCRect[i] = NULL;
 		}

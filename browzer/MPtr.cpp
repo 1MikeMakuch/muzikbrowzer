@@ -94,9 +94,9 @@ MPtr<T>::operator = (const MPtr<T> &pt) {
     //  It works for the case: x = x;
     //
     if (pt.mObj)
-	pt.mObj->reference ();
+		pt.mObj->reference ();
     if (mObj)
-	mObj->unreference ();
+		mObj->unreference ();
     mObj = pt.mObj;
     return *this;
 }

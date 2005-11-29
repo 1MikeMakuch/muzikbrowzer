@@ -96,6 +96,8 @@ class MMemory {
 		MMemory(const CString & file);
 		MMemory();
 		~MMemory();
+		void reference () { _refcnt++;}
+		void unreference();
 		int writeToFile();
 		int readFromFile();
 		int readi(int p);
@@ -109,6 +111,7 @@ class MMemory {
 //		int release() {}
 		operator = (MMemory &);
 	private:
+		int _refcnt;
 		char * m_space;
 		int m_size;
 		int m_sizeOrig;
@@ -119,6 +122,7 @@ class MMemory {
 		void * addr(int p);
 		int next() { return m_next; }
 };
+typedef MPtr<MMemory> PMemory;
 
 typedef struct DbRecordStruct{
 	int length;
@@ -131,7 +135,7 @@ class MRecord {
 	friend class MList;
 	friend class MSongLib;
 	public:
-		MRecord(MMemory & m, int p);
+		MRecord(PMemory & m, int p);
 		MRecord(MRecord & r);
 		~MRecord(){};
 		int & length();
@@ -149,15 +153,15 @@ class MRecord {
 		Song createSong();
 		int i() { return m_i; }
 	protected:
-		MMemory & m_mem;
+		PMemory & m_mem;
 		int m_i;
-		MMemory & mem() { return (MMemory &) m_mem; }
+		PMemory & mem() { return (PMemory &) m_mem; }
 		int ptrIdx();
 };
 
 class MList {
 	public:
-		MList(MMemory & m);
+		MList(PMemory & m);
 		MList(MRecord & r);
 //		a read only MList?
 //		MList(const MRecord & r);
@@ -190,8 +194,8 @@ class MList {
 		friend class Iterator;
 	protected:
 		int m_headstore;
-		MMemory & m_mem;
-//		const MMemory & m_memc;
+		PMemory & m_mem;
+//		const PMemory & m_memc;
 };
 
 class MTags {
@@ -258,7 +262,7 @@ class MSongLib {
 			const CString & artistname);
 		int count() { return m_songcount; }
 		MList genreList();
-		CString getDbLocation() { return m_mem.getDbLocation(); }
+		CString getDbLocation() { return m_mem->getDbLocation(); }
 		CString getSongVal(const MRecord & r, const CString & key);
 		MRecord getSong(const CString & genrename,
 			const CString & artistname, const CString & albumname,
@@ -291,7 +295,7 @@ class MSongLib {
 		int m_garbagecollector;
 		MFiles m_files;
 	private:
-		MMemory m_mem;
+		PMemory m_mem;
 		int m_songcount;
 		int head();
 		int m_dirty;
@@ -399,9 +403,7 @@ class MusicLib
 //        void exportLibrary();
 		MSongLib m_SongLib;
 	private:
-		MSongLib m_SearchLibP;
-		MSongLib m_SaveLibP;
-		BOOL m_Searching;
+		MSongLib m_SaveLib;
 		PicCache m_picCache;
         CString m_dir;
 		CString m_file;

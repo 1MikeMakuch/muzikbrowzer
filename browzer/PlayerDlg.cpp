@@ -411,6 +411,8 @@ BOOL CPlayerDlg::OnInitDialog()
 	sa.lpSecurityDescriptor = psd;
 	sa.bInheritHandle = FALSE;
 
+	// BoundsChecker says this is a resource leak
+	// I tried closing it with CloseHandle and got an abort
 	HANDLE m_hMutex = CreateMutex(&sa,FALSE, MUZIKBROWZERAPPMUTEXGLOBAL);
 	e = GetLastError();
 	if (NULL == m_hMutex || ERROR_ALREADY_EXISTS == e) {
