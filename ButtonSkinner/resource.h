@@ -129,6 +129,8 @@
 #define IDC_TVOLUME                     1105
 #define IDC_TPROGRESS                   1106
 #define IDC_START_WIDTH                 1107
+#define IDC_CLR_BTN_FG_HOV              1107
+#define IDC_CLR_BTN_BG_HOV              1108
 #define IDC_MENU_X                      1109
 #define IDC_RED2                        1110
 #define IDC_GREEN2                      1111
@@ -164,6 +166,10 @@
 #define IDC_BGTYPE_FIXED                1141
 #define IDC_BUTTON_FILE_SETTINGS        1142
 #define IDC_FILE_SETTINGS               1143
+#define IDC_CLR_BTN_FG_OUT              1144
+#define IDC_CLR_BTN_BG_OUT              1145
+#define IDC_CLR_OTHER_BG                1147
+#define IDC_CLR_OTHER_FG                1148
 
 // Next default values for new objects
 // 
@@ -171,7 +177,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        129
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1140
+#define _APS_NEXT_CONTROL_VALUE         1144
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

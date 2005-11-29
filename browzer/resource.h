@@ -297,10 +297,7 @@
 #define IDC_COLOR_STATUS_INLR           1222
 #define IDC_COLOR_STATUS_OUTUL          1223
 #define IDC_COLOR_STATUS_OUTLR          1224
-#define IDC_COLOR_TX_OTHER              1225
-#define IDC_COLOR_BK_OTHER              1226
 #define IDC_COLOR_TX_BUTTONS            1227
-#define IDC_COLOR_BK_BUTTONS            1228
 #define IDC_IRUP                        1500
 #define IDC_IRDOWN                      1501
 #define IDC_IRLEFT                      1502

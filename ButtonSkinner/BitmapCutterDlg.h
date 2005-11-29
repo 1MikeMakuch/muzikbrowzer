@@ -50,6 +50,13 @@ public:
 // Dialog Data
 	//{{AFX_DATA(CBitmapCutterDlg)
 	enum { IDD = IDD_BITMAPCUTTER_DIALOG };
+
+	CEdit	m_ColorOtherFg;
+	CEdit	m_ColorOtherBg;
+	CEdit	m_ColorOtherBtnFgHov;
+	CEdit	m_ColorOtherBtnFgOut;
+	CEdit	m_ColorOtherBtnBgOut;
+	CEdit	m_ColorOtherBtnBgHov;
 	CButton		m_BgTypeStretched;
 	CButton		m_BgTypeTiled;
 	CButton		m_BgTypeFixed;
@@ -163,11 +170,11 @@ public:
     CStatic m_BmpSizeHovers;
     CStatic m_BmpSizeIns;
     CStatic m_BmpSizeOuts;
-    CStatic m_DestDir;
-    CStatic m_FileHovers;
-    CStatic m_FileIns;
-    CStatic m_FileOuts;
-    CStatic m_LabelClear;
+    CEdit m_DestDir;
+    CEdit m_FileHovers;
+    CEdit m_FileIns;
+    CEdit m_FileOuts;
+	CStatic m_LabelClear;
     CStatic m_LabelForward;
     CStatic m_LabelLoad;
     CStatic m_LabelPause;
@@ -191,7 +198,6 @@ public:
 	CStatic	m_TestLabel;
 	CStatic	m_OutsLabel;
 	CStatic	m_HoversLabel;
-
 	//}}AFX_DATA
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CBitmapCutterDlg)
@@ -232,7 +238,7 @@ protected:
 	void OnApplyVol() ;
 	void OnApply() ;
 	void drawIt(CDC * dc);
-	void OnButtonFile(CStatic & clabel, CString & label,HBITMAP & hbitmap, 
+	void OnButtonFile(CEdit & clabel, CString & label,HBITMAP & hbitmap, 
 		CDIBSectionLite & cdib, CStatic & cpic,CRect & picrect, 
 		CRect & picdlgrect, CStatic & csizelabel);
 	void CreateTest();
@@ -287,6 +293,8 @@ protected:
 
 	int m_nLineWidth;
 
+	CString m_sColorOtherFg,m_sColorOtherBg,m_sColorBtnFgHov,
+		m_sColorBtnFgOut,m_sColorBtnBgOut,m_sColorBtnBgHov;
 
 	CRect Menu,Music,Pictures,Video,Stop,Play,Pause,Reverse,Forward,Random,Shuffle,Clear,
 		Load,Save,Volume,Progress;

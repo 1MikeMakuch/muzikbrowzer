@@ -32,7 +32,6 @@ CBitmapCutterDlg::CBitmapCutterDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CBitmapCutterDlg::IDD, pParent), m_PicOuts(this)
 {
 	//{{AFX_DATA_INIT(CBitmapCutterDlg)
-		// NOTE: the ClassWizard will add member initialization here
 	//}}AFX_DATA_INIT
 	// Note that LoadIcon does not require a subsequent DestroyIcon in Win32
 //	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
@@ -60,6 +59,15 @@ void CBitmapCutterDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CBitmapCutterDlg)
+	DDX_Control(pDX, IDC_CLR_BTN_FG_OUT, m_ColorOtherBtnFgOut);
+	DDX_Control(pDX, IDC_CLR_OTHER_FG, m_ColorOtherFg);
+	DDX_Control(pDX, IDC_CLR_OTHER_BG, m_ColorOtherBg);
+	DDX_Control(pDX, IDC_CLR_BTN_FG_HOV, m_ColorOtherBtnFgHov);
+	DDX_Control(pDX, IDC_CLR_BTN_BG_OUT, m_ColorOtherBtnBgOut);
+	DDX_Control(pDX, IDC_CLR_BTN_BG_HOV, m_ColorOtherBtnBgHov);
+	DDX_Control(pDX, IDC_BGTYPE_STRETCHED, m_BgTypeStretched);
+	DDX_Control(pDX, IDC_BGTYPE_TILED, m_BgTypeTiled);
+	DDX_Control(pDX, IDC_BGTYPE_FIXED, m_BgTypeFixed);
 	DDX_Control(pDX, IDC_FILE_SETTINGS, m_FileSettings);
 	DDX_Control(pDX, IDC_BUTTON_FILE_SETTINGS, m_ChooseSettings);
 	DDX_Control(pDX, IDC_TVOLUME, m_TVolume);
@@ -196,9 +204,6 @@ void CBitmapCutterDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_TEST_LABEL, m_TestLabel);
 	DDX_Control(pDX, IDC_OUTS_LABEL, m_OutsLabel);
 	DDX_Control(pDX, IDC_HOVERS_LABEL, m_HoversLabel);
-	DDX_Control(pDX, IDC_BGTYPE_STRETCHED, m_BgTypeStretched);
-	DDX_Control(pDX, IDC_BGTYPE_TILED, m_BgTypeTiled);
-	DDX_Control(pDX, IDC_BGTYPE_FIXED, m_BgTypeFixed);
 	//}}AFX_DATA_MAP
 }
 
@@ -803,7 +808,7 @@ void CBitmapCutterDlg::OnButtonFileSettings()
 	}
 	
 }
-void CBitmapCutterDlg::OnButtonFile(CStatic & clabel, CString & label,
+void CBitmapCutterDlg::OnButtonFile(CEdit & clabel, CString & label,
 					HBITMAP & hbitmap, CDIBSectionLite & cdib, CStatic & cpic,
 					CRect & picrect, CRect & picdlgrect, CStatic & csizelabel) 
 {
@@ -1043,7 +1048,7 @@ void CBitmapCutterDlg::EnableDisable() {
 		&&	(m_Ins.GetCheck() 
 			|| m_Outs.GetCheck()
 			|| m_Hovers.GetCheck())
-		&& (!m_UpdateXY || m_Applied)
+//		&& (!m_UpdateXY || m_Applied)
 			);
 	m_DrawSave.EnableWindow(
 		m_sFileIns != ""
@@ -1541,6 +1546,20 @@ void CBitmapCutterDlg::ReadReg() {
 	m_nBorderVert = reg.Read("BorderVert", 5);
 	m_nBorderPanel = reg.Read("BorderPanel", 5);
 
+	reg.Read("ColorOtherFg",buf,999,"255,255,255");
+	m_ColorOtherFg.SetWindowText(buf);
+	reg.Read("ColorOtherBg",buf,999,"0,0,0");
+	m_ColorOtherBg.SetWindowText(buf);
+
+	reg.Read("ColorOtherBtnFgHover", buf,999,"255,255,255");
+	m_ColorOtherBtnFgHov.SetWindowText(buf);
+	reg.Read("ColorOtherBtnFgOut", buf, 999, "200,200,200");
+	m_ColorOtherBtnFgOut.SetWindowText(buf);
+	reg.Read("ColorOtherBtnBgOut", buf,999, "100,100,100");
+	m_ColorOtherBtnBgOut.SetWindowText(buf);
+	reg.Read("ColorOtherBtnBgHover", buf,999,"150,150,150");
+	m_ColorOtherBtnBgHov.SetWindowText(buf);
+
 	unsigned long e = reg.Read("BackgroundType", BGSTRETCHED);
 	if (0 == e) {
 		m_BgType = BGSTRETCHED;
@@ -1751,6 +1770,14 @@ reg.Write("BorderPanel",m_nBorderPanel);
 reg.Write("BackgroundMainType", m_BgType);
 reg.Write("BackgroundPanelType", m_BgType);
 reg.Write("BackgroundTypes:","0=Stretched, 1=CutAndTiled, 2=Fixed, 3=NormalTiled");
+
+m_ColorOtherFg.GetWindowText(msg);reg.Write("ColorOtherFg",msg);
+m_ColorOtherBg.GetWindowText(msg);reg.Write("ColorOtherBg",msg);
+m_ColorOtherBtnFgHov.GetWindowText(msg);reg.Write("ColorOtherBtnFgHover",msg);
+m_ColorOtherBtnFgOut.GetWindowText(msg);reg.Write("ColorOtherBtnFgOut",msg);
+m_ColorOtherBtnBgOut.GetWindowText(msg);reg.Write("ColorOtherBtnBgOut",msg);
+m_ColorOtherBtnBgHov.GetWindowText(msg);reg.Write("ColorOtherBtnBgHover",msg);
+
 reg.WriteFile();
 
 }
@@ -1825,7 +1852,6 @@ m_ProgressY.SetWindowText(numToString(m_nProgressY));
 m_ProgressWidth.SetWindowText(numToString(m_nProgressWidth));
 m_ProgressHeight.SetWindowText(numToString(m_nProgressHeight));
 
-
 }
 void CBitmapCutterDlg::CEditsToInts() {
 	CString msg;
@@ -1898,7 +1924,6 @@ m_ProgressX.GetWindowText(msg);m_nProgressX=atoi(msg);
 m_ProgressY.GetWindowText(msg);m_nProgressY=atoi(msg);
 m_ProgressWidth.GetWindowText(msg);m_nProgressWidth=atoi(msg);
 m_ProgressHeight.GetWindowText(msg);m_nProgressHeight=atoi(msg);
-
 
 
 }

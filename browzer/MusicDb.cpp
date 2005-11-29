@@ -30,7 +30,7 @@
 // xxx make the increment large before shipping!
 #define MMEMORY_SIZE_INCREMENT 5000
 #define MMEMORY_RESERVE_BYTES 100
-#define MB_GARBAGE_INTERVAL 2
+#define MB_GARBAGE_INTERVAL 10
 #define MB_DB_VERSION 4
 
 #ifdef _DEBUG
