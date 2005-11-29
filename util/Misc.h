@@ -79,5 +79,6 @@ public:
 	static void SecsToHMS(const int seconds, int & hours, int & mins, 
 		int & secs,	char * buf);
 };
-
+#define STC(_STC_ARG_) ScreenToClient(_STC_ARG_);
+#define CTS(_STC_ARG_) ClientToScreen(_STC_ARG_);
 #endif

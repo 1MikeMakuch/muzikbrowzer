@@ -129,7 +129,7 @@ const static TCHAR MB_SKIN_SCROLLUPARROW[] = _T("ScrollUpArrow.bmp");
 	_MBREG_OBJ_.Write("Color3d" + CS(_MBLOCATION_) + "OutLR",MBUtil::CrToRGB(_MB_OUT_LR_));
 
 #define MBCONFIG_READ_SKIN_DEFS(_MBCONFIG_OBJ_,_REGISTRY_KEY_OBJ_) \
-	RegistryKey _REGISTRY_KEY_OBJ_(_MBCONFIG_OBJ_.getSkin(MB_SKIN_DEF));\
+	_REGISTRY_KEY_OBJ_.init(_MBCONFIG_OBJ_.getSkin(MB_SKIN_DEF));\
 	_REGISTRY_KEY_OBJ_.ReadFile();\
 	{\
 		RegistryKey RegObjTmp(_MBCONFIG_OBJ_.getSkin(MB_SKIN_DEF_CUSTOM));\

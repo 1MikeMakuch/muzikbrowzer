@@ -27,6 +27,7 @@
 #include "ButtonSt.h"
 #include "SkinSlider.h"
 #include "PlayerCallbacks.h"
+#include "Registry.h"
 
 #define CDialogClassImpl CDialogSK
 
@@ -101,7 +102,7 @@ public:
     void OnNextSong();
     void OnPreviousSong();
     void setFont();
-	void setColors(RegistryKey &);
+	void setColors();
     MBConfig & config() { return m_Config; }
 	MBConfig * pconfig() { return &m_Config; }
     void PlayerStatusSet(CString &);
@@ -148,7 +149,13 @@ private:
 		m_ArtistsLabelInt,
 		m_AlbumsLabelInt,
 		m_SongsLabelInt,
-		m_ColHdrsRect;
+		m_ColHdrsRect,
+		m_SearchClearRect,
+		m_SearchEditRect,
+		m_SearchGoRect,
+		m_SearchCancelRect,
+		m_LibraryRect;
+
 	CString m_CurrentTitleDesc;
 	COLORREF m_TransMain;
 	COLORREF m_TransPanel;
@@ -196,10 +203,13 @@ private:
 	void recordTLEN();
  	void displayAlbumArt(const CString & file);
  	void killAlbumArt();
+	void ShowSearchDlg();
+	void UpdateRects();
 
     BOOL m_LButtonDown;
     CPoint m_deltaPoint;
     CBrush m_brush,m_HatchBrush;
+	int m_LibHeight;
 
 
     CMapStringToString m_GenreArtist;
@@ -221,9 +231,15 @@ private:
 	CPoint m_LastSized;
 	HANDLE m_hMutex;
 	BOOL m_QuickPlay;
+	BOOL m_SearchResults;
+	RegistryKey m_reg;
 // Dialog Data
 	//{{AFX_DATA(CPlayerDlg)
 	enum { IDD = IDD_PLAYER_DIALOG };
+	CButtonST	m_SearchClear;
+	CButtonST	m_SearchCancel;
+	CButtonST	m_SearchGo;
+	CEdit		m_SearchEdit;
 	CButtonST	m_LogoButton;
 	CButtonST	m_ButtonShuffle;
 	CButtonST	m_ButtonSave;
@@ -293,6 +309,10 @@ public:
 	afx_msg void OnDblclkGenres();
 	afx_msg void OnMenuButton();
 	afx_msg void OnMenuOptions();
+	afx_msg void OnSearchGo();
+	afx_msg void OnSearchDlg();
+	afx_msg void OnNoSearchDlg();
+	afx_msg void OnSearchClear();
 	afx_msg void OnMenuEditPlaylist();
 	afx_msg void OnMenuClearplaylist();
 	afx_msg void OnMenuExit();

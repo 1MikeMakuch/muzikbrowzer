@@ -1001,7 +1001,7 @@ CConfigDisplay::setupSample() {
 	m_SamplePanel.setText("01:30/03:29 Howling Fish by Big Fish Howlers");
 	m_SamplePanel.SetTicking(TRUE);
 
-	m_SamplePanel.SetColors(m_vTxNormal,m_vBkPanel,\
+	m_SamplePanel.SetColors(m_vTxPanel,m_vBkPanel,\
 		m_vcrStatusInUL,m_vcrStatusInLR,m_vcrStatusOutUL,m_vcrStatusOutLR,\
 		m_3dStatus);
 	m_SamplePanel.MoveWindow(rectStatusNew);

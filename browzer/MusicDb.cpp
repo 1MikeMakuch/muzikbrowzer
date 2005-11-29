@@ -151,10 +151,26 @@ CSong::createSongKeys() {
     }
     return p;
 }
+BOOL
+CSong::Contains(const CString & keyword) {
+	CString kw(keyword);
+	kw.MakeLower();
+   POSITION pos;
+    CString key;
+    CString val;
+    for( pos = _obj.GetStartPosition(); pos != NULL; ) {
+        _obj.GetNextAssoc(pos, key, val);
+		val.MakeLower();
+		if ("TCON" == key || "TPE1" == key || "TALB" == key || "TIT2" == key)
+			if (-1 < val.Find(kw))
+				return TRUE;
+    }
+	return FALSE;
+}
 
 /////////////////////////////////////////////////////////////////////////////////
 
-MusicLib::MusicLib(InitDlg *id): _id(id), m_totalMp3s(0)
+MusicLib::MusicLib(InitDlg *id): _id(id), m_totalMp3s(0),m_Searching(FALSE)
 {
 //	init();
 }
@@ -189,7 +205,7 @@ MusicLib::init() {
 	readDbLocation();
 	Genre_init();
 
-	m_SongLib.init();
+	m_SongLib.init(TRUE);
 	int r = readDb();
 	_id = 0;
 	return r;
@@ -1015,28 +1031,12 @@ MusicLib::scanDirectories(const CStringList & directories,
 	if (bAdd || scanNew) {
 		// if no m_files present have to start from scratch
 		if (m_SongLib.m_files.read() == -1) {
-			m_SongLib.init();
+			m_SongLib.init(TRUE);
 		}
 	} else {
-		m_SongLib.init(); // does an m_files.removeAll()
+		m_SongLib.init(TRUE); // does an m_files.removeAll()
 	}
     
-#ifdef asdf
-    RegistryKey reg( HKEY_LOCAL_MACHINE, RegKey );
-    unsigned long numExtensions = reg.Read(RegNumMp3Extensions, 0);
-    if (numExtensions == 0) {
-        m_mp3Extensions.AddTail("mp3");
-    } else {
-        unsigned int i;
-        for (i = 0 ; i < numExtensions ; ++i) {
-            sprintf(buf.p, "%s%02d", RegMp3ExtensionsKey, i);
-            TCHAR extension[100];
-            reg.Read(buf.p, extension, 9, "");
-            m_mp3Extensions.AddTail(String::downcase(extension));
-        }
-    }
-#endif
-
     POSITION pos;
     int * abortflag = &(_id->m_Abort);
     _id->SendUpdateStatus(0, "Scanning directories for audio files", 0,0);
@@ -1159,6 +1159,7 @@ MusicLib::scanDirectories(const CStringList & directories,
 	results += tlen_methods_failed_count;
 	results += "\r\n";
 #endif
+	IgetLibraryCounts();
 
     return results;
 }
@@ -1448,7 +1449,7 @@ MusicLib::garbageCollect(InitDlg * dialog) {
 
 	int ctr = 0;
 	MSongLib newSongLib;
-	newSongLib.init();
+	newSongLib.init(TRUE);
 	newSongLib.setDbLocation(m_SongLib.getDbLocation());
 	MList genreList = m_SongLib.genreList();
 	MList::Iterator genreIter(genreList);
@@ -1482,6 +1483,79 @@ MusicLib::garbageCollect(InitDlg * dialog) {
 //	m_SongLib.addAllGenre();
 //	writeDb();
 	return 1;
+}
+void
+MusicLib::SearchSetup() {
+	m_Searching = TRUE;
+}
+void
+MusicLib::SearchCancel() {
+	if (m_Searching) {
+		m_Searching = FALSE;
+	}
+	m_SongLib.readFromFile();
+	IgetLibraryCounts();
+}
+void
+MusicLib::SearchClear() {
+	m_SongLib.readFromFile();
+	IgetLibraryCounts();
+}
+int
+MusicLib::Search(const CString keywords) {
+	MSongLib results;
+	results.init(TRUE);
+	results.setDbLocation(m_SongLib.getDbLocation());
+
+	CString word;
+	int found = 0;
+	int n = String::delCount(keywords," ");
+	for(int i = 1 ; i <= n ; i++) {
+		word = String::field(keywords," ",i);
+		results.init(TRUE);
+		found = iSearch(word, m_SongLib, results);
+		if (found) {
+			m_SongLib = results;
+		} else {
+			i = n + 1;
+		}
+	}
+	IgetLibraryCounts();
+	return found;
+}
+int
+MusicLib::iSearch(const CString keyword, MSongLib & db, MSongLib & results) {
+	int found = 0;
+	MList genreList = db.genreList();
+	MList::Iterator genreIter(genreList);
+	while (genreIter.more()) {
+		MRecord genre = genreIter.next();
+		if (genre.label() != MBALL) {
+			MList artistList = db.artistList(genre.label());
+			MList::Iterator artistIter(artistList);
+			while (artistIter.more()) {
+				MRecord artist = artistIter.next();
+				MList albumList = db.albumList(genre.label(),
+					artist.label());
+				MList::Iterator albumIter(albumList);
+				while (albumIter.more()) {
+					MRecord album = albumIter.next();
+					MList songList = db.songList(genre.label(),
+						artist.label(), album.label());
+					MList::Iterator songIter(songList);
+					while (songIter.more()) {
+						MRecord songr = songIter.next();
+						Song song = songr.createSong();
+						if (song->Contains(keyword)) {
+							results.addSong(song);
+							found++;
+						}
+					}
+				}
+			}
+		}
+	}
+	return found;
 }
 
 Song
@@ -2025,6 +2099,15 @@ MusicLib::movePlaylistUp(int plcurrent, int element) {
 }
 CString
 MusicLib::getLibraryCounts() {
+	logger.ods("getLibCounts");
+	if (m_libCounts.GetLength())
+		return m_libCounts;
+	else
+		return IgetLibraryCounts();
+}
+CString
+MusicLib::IgetLibraryCounts() {
+	logger.ods("IgetLibCounts");
 	int genrecount, artistcount, albumcount, songcount;
 	genrecount = artistcount = albumcount = songcount = 0;
 	MList genreList = m_SongLib.genreList();
@@ -2060,6 +2143,7 @@ MusicLib::getLibraryCounts() {
     sprintf(buf.p, "%d Genres, %d Artists, %d Albums, %d Songs",
         genrecount, artistcount, albumcount, songcount);
     mesg = buf.p;
+	m_libCounts = mesg;
     return mesg;
 }
 
@@ -2184,6 +2268,7 @@ MMemory::operator = (MMemory & mem) {
 		m_next = -1;
 	}
 	if (mem.m_space && mem.m_size > 0) {
+// short copy
 //		m_space = (char *) malloc(mem.m_size);
 //		memcpy(m_space, mem.m_space, mem.m_size);
 		m_space = mem.m_space;
@@ -3236,12 +3321,14 @@ MSongLib::operator = (MSongLib & songlib) {
 	m_songcount = songlib.m_songcount;
 	m_mem = songlib.m_mem;
 }
+
 void
-MSongLib::init() {
+MSongLib::init(BOOL rebuild) {
 	m_mem.create();
 	m_songcount = 0;
 	m_garbagecollector = 0;
-	m_files.removeAll();
+	if (rebuild)
+		m_files.removeAll();
 }
 int
 MSongLib::addSong(Song & song) {
@@ -3616,7 +3703,7 @@ MSongLib::dump(CString name) {
 int
 MSongLib::validate() {
 	if (m_db_version != MB_DB_VERSION) {
-		init();
+		init(TRUE);
 		CString msg = "The muzikbrowzer database appears to be an\r\nolder incompatible version.\r\n";
 		msg += "You must rebuild by doing a Scan in Configuration.";
 		MBMessageBox("Error", msg);
@@ -3633,7 +3720,7 @@ MSongLib::validate() {
 			|| r.ptr() >= next
 			|| rlength < 1)
 		{
-			init();
+			init(TRUE);
 			CString msg = "muzikbrowzer database corrupted.\r\n";
 			msg += "Rebuild by doing a Scan in config.";
 			MBMessageBox("Error", msg);
@@ -3643,7 +3730,7 @@ MSongLib::validate() {
 		if (label) {
 			int llen = strlen(label);
 			if (llen != rlength - (sizeof(MRecordt) + 1)) {
-				init();
+				init(TRUE);
 				CString msg = "muzikbrowzer database corrupted.\r\n";
 				msg += "Rebuild by doing a Scan in config.";
 				MBMessageBox("Error", msg);
@@ -3654,6 +3741,8 @@ MSongLib::validate() {
     }
 	return 0;
 }
+
+
 CString
 MSongLib::verify(CString msg, int & total_albums, int & total_songs) {
     CString results, contents, removed;

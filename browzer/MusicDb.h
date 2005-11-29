@@ -74,6 +74,7 @@ class CSong {
         SongKeys * createSongKeys();
 		int removeId3(const CString &);
 		int GetCount() { return _obj.GetCount(); }
+		BOOL Contains(const CString & kw);
 //        CString serialize();
 	private:
 		int _refcnt;
@@ -250,7 +251,7 @@ class MSongLib {
 	public:
 		MSongLib();
 		~MSongLib();
-		void init();
+		void init(BOOL rebuild);
 		int addSong(Song &song);
 		MList artistList(const CString & genrename);
 		MList albumList(const CString & genrename,
@@ -283,9 +284,10 @@ class MSongLib {
 			const CString & songname);
 
 		operator = (MSongLib &);
+		void ShortCopy(MSongLib & );
+		void Destroy();
 		CString verify(CString msg, int &, int &);
 		void writeToFile();
-
 		int m_garbagecollector;
 		MFiles m_files;
 	private:
@@ -301,6 +303,7 @@ class MSongLib {
 		void dump(CString name="");
 };
 
+typedef MPtr<MSongLib> MSongLibP;
 
 class OggTag;
 
@@ -355,7 +358,7 @@ class MusicLib
 			const CString & artist, const CString & album,
 			const CString & song);
         int getTotalMp3s() { return m_totalMp3s; }
-        CString getLibraryCounts();
+		CString getLibraryCounts();
         int init();
         int loadPlaylist(const CString & name, CString & errormsg);
 		// for converting to new m3u format
@@ -380,6 +383,11 @@ class MusicLib
 		void searchForAlbums(CStringList & songs, MList & albumList);
         void searchForSongs(CStringList & songs, MList & songList,
 			const CString & song = "");
+		void SearchSetup();
+		void SearchCancel();
+		int Search(const CString name);
+		int iSearch(const CString name, MSongLib & db, MSongLib & results);
+		void SearchClear();
         void setDbLocation(const CString & loc);
 		int setSongVal(const CString & key, const CString & value, 
 			const CString & genrename,
@@ -391,17 +399,21 @@ class MusicLib
 //        void exportLibrary();
 		MSongLib m_SongLib;
 	private:
-		
+		MSongLib m_SearchLibP;
+		MSongLib m_SaveLibP;
+		BOOL m_Searching;
 		PicCache m_picCache;
         CString m_dir;
 		CString m_file;
 		InitDlg *_id;
         int m_totalMp3s;
         CStringList m_mp3Extensions;
+		CString m_libCounts;
 
         int scanDirectory(int * abortf, CStringList &, const CString &,
 			BOOL scanNew, BOOL bAdd);
         int garbageCollect(InitDlg * dialog = NULL);
+		CString IgetLibraryCounts();
         
 };
 

@@ -302,8 +302,6 @@ void CDialogSK::make(CDC * wDC) {
 BOOL CDialogSK::OnEraseBkgnd(CDC* pDC) 
 {
 	if (!m_Need2Erase) {
-		//m_Need2Erase = TRUE;
-//		OutputDebugString("CDialogSK::NOT OnEraseBkgnd\r\n");
 		return TRUE;
 	}
 	if (!m_UseSkin)
@@ -316,6 +314,7 @@ BOOL CDialogSK::OnEraseBkgnd(CDC* pDC)
 		CBitmap * old = dc.SelectObject(m_bmBackground);
 		pDC->BitBlt(0,0,rect.Width(),rect.Height(), &dc, 0, 0, SRCCOPY);
 		dc.SelectObject(old);
+		m_Need2Erase = FALSE;
 	}
 	return TRUE;
 }

@@ -255,8 +255,11 @@
 #define IDC_COLOR_TX_HIGH               1204
 #define IDC_VIDEO_BUTTON                1204
 #define IDC_COLOR_TX_SEL                1205
+#define IDC_SEARCH_CANCEL               1205
 #define IDC_COLOR_BK_PANEL              1206
+#define IDC_SEARCH_GO                   1206
 #define IDC_COLOR_TX_PANEL              1207
+#define IDC_SEARCH_CLEAR                1207
 #define IDC_SCROLLBAR1                  1208
 #define IDC_COLOR_BK_COLHDR             1208
 #define IDC_RUNATSTARTUP                1209
@@ -399,6 +402,7 @@
 #define IDC_GETTEXTFIELD_DESC           2046
 #define IDC_SAMPLE_PLAYLIST             2047
 #define IDC_SAMPLE_GROUP                2048
+#define IDC_SEARCH_TEXT                 2049
 #define IDC_BUTTON_LOGO                 12052
 #define ID_XXX                          32775
 #define ID__EXIT                        32785
@@ -439,14 +443,15 @@
 #define ID_ADDTO_PLAYLIST               32826
 #define ID_QUICK_PLAY                   32827
 #define ID_DELETE_FROM_PL               32828
+#define ID_SEARCH                       32829
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        263
-#define _APS_NEXT_COMMAND_VALUE         32829
-#define _APS_NEXT_CONTROL_VALUE         2049
+#define _APS_NEXT_COMMAND_VALUE         32830
+#define _APS_NEXT_CONTROL_VALUE         2050
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
