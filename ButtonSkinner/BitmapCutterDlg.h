@@ -386,6 +386,10 @@ protected:
 	int m_nBorderHorz;
 	int m_nBorderVert;
 	int m_nBorderPanel;
+	int m_nOtherBtnHover;
+	int m_nOtherBtn3d;
+
+
 
 };
 

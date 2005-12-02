@@ -1545,22 +1545,24 @@ void CBitmapCutterDlg::ReadReg() {
 	m_nBorderHorz = reg.Read("BorderHorz", 5);
 	m_nBorderVert = reg.Read("BorderVert", 5);
 	m_nBorderPanel = reg.Read("BorderPanel", 5);
+	m_nOtherBtnHover = reg.Read("OtherBtnHover",1);
+	m_nOtherBtn3d = reg.Read("OtherBtn3d",1);
 
-	reg.Read("ColorOtherFg",buf,999,"255,255,255");
+	reg.Read("OtherColorFg",buf,999,"255,255,255");
 	m_ColorOtherFg.SetWindowText(buf);
-	reg.Read("ColorOtherBg",buf,999,"0,0,0");
+	reg.Read("OtherColorBg",buf,999,"0,0,0");
 	m_ColorOtherBg.SetWindowText(buf);
 
-	reg.Read("ColorOtherBtnFgHover", buf,999,"255,255,255");
+	reg.Read("OtherColorBtnFgHover", buf,999,"255,255,255");
 	m_ColorOtherBtnFgHov.SetWindowText(buf);
-	reg.Read("ColorOtherBtnFgOut", buf, 999, "200,200,200");
+	reg.Read("OtherColorBtnFgOut", buf, 999, "200,200,200");
 	m_ColorOtherBtnFgOut.SetWindowText(buf);
-	reg.Read("ColorOtherBtnBgOut", buf,999, "100,100,100");
+	reg.Read("OtherColorBtnBgOut", buf,999, "100,100,100");
 	m_ColorOtherBtnBgOut.SetWindowText(buf);
-	reg.Read("ColorOtherBtnBgHover", buf,999,"150,150,150");
+	reg.Read("OtherColorBtnBgHover", buf,999,"150,150,150");
 	m_ColorOtherBtnBgHov.SetWindowText(buf);
 
-	unsigned long e = reg.Read("BackgroundType", BGSTRETCHED);
+	unsigned long e = reg.Read("BackgroundType", BGTILED);
 	if (0 == e) {
 		m_BgType = BGSTRETCHED;
 	} else if (1 == e) {
@@ -1769,14 +1771,17 @@ reg.Write("BorderVert",m_nBorderVert);
 reg.Write("BorderPanel",m_nBorderPanel);
 reg.Write("BackgroundMainType", m_BgType);
 reg.Write("BackgroundPanelType", m_BgType);
-reg.Write("BackgroundTypes:","0=Stretched, 1=CutAndTiled, 2=Fixed, 3=NormalTiled");
+reg.Write("BackgroundTypes","0=Stretched, 1=CutAndTiled, 2=Fixed, 3=NormalTiled");
 
-m_ColorOtherFg.GetWindowText(msg);reg.Write("ColorOtherFg",msg);
-m_ColorOtherBg.GetWindowText(msg);reg.Write("ColorOtherBg",msg);
-m_ColorOtherBtnFgHov.GetWindowText(msg);reg.Write("ColorOtherBtnFgHover",msg);
-m_ColorOtherBtnFgOut.GetWindowText(msg);reg.Write("ColorOtherBtnFgOut",msg);
-m_ColorOtherBtnBgOut.GetWindowText(msg);reg.Write("ColorOtherBtnBgOut",msg);
-m_ColorOtherBtnBgHov.GetWindowText(msg);reg.Write("ColorOtherBtnBgHover",msg);
+m_ColorOtherFg.GetWindowText(msg);reg.Write("OtherColorFg",msg);
+m_ColorOtherBg.GetWindowText(msg);reg.Write("OtherColorBg",msg);
+m_ColorOtherBtnFgHov.GetWindowText(msg);reg.Write("OtherColorBtnFgHover",msg);
+m_ColorOtherBtnFgOut.GetWindowText(msg);reg.Write("OtherColorBtnFgOut",msg);
+m_ColorOtherBtnBgOut.GetWindowText(msg);reg.Write("OtherColorBtnBgOut",msg);
+m_ColorOtherBtnBgHov.GetWindowText(msg);reg.Write("OtherColorBtnBgHover",msg);
+
+reg.Write("OtherBtnHover",m_nOtherBtnHover);
+reg.Write("OtherBtn3d",m_nOtherBtn3d);
 
 reg.WriteFile();
 
