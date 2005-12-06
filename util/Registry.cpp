@@ -81,6 +81,9 @@ BOOL RegistryKey::Copy(const RegistryKey & src) {
 	CStringList slist;
     for( pos = src.mKeyValPairs->GetStartPosition(); pos != NULL; ) {
         src.mKeyValPairs->GetNextAssoc(pos, key, val);
+#pragma hack // this needs to go away before release
+		if ("L " == val.Left(2) || "S " == val.Left(2)) // old "L ", "S " stuff
+			val = val.Mid(2);
 		mKeyValPairs->SetAt(key, val);
 	}
 	return TRUE;

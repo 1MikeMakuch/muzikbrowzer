@@ -133,6 +133,7 @@
 #define IDC_CLR_BTN_BG_HOV              1108
 #define IDC_MENU_X                      1109
 #define IDC_RED2                        1110
+#define IDC_SAVESKINDEF                 1110
 #define IDC_GREEN2                      1111
 #define IDC_BLUE2                       1112
 #define IDC_MENU_Y                      1113
@@ -170,6 +171,8 @@
 #define IDC_CLR_BTN_BG_OUT              1145
 #define IDC_CLR_OTHER_BG                1147
 #define IDC_CLR_OTHER_FG                1148
+#define IDC_CLR_TRANSMAIN               1149
+#define IDC_CLR_TRANSPANEL              1150
 
 // Next default values for new objects
 // 

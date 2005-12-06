@@ -50,7 +50,8 @@ public:
 // Dialog Data
 	//{{AFX_DATA(CBitmapCutterDlg)
 	enum { IDD = IDD_BITMAPCUTTER_DIALOG };
-
+	CEdit	m_TransPanel;
+	CEdit	m_TransMain;
 	CEdit	m_ColorOtherFg;
 	CEdit	m_ColorOtherBg;
 	CEdit	m_ColorOtherBtnFgHov;
@@ -92,14 +93,8 @@ public:
     CButton m_Other;
     CButton m_Outs;
     CEdit   m_Red;
-	CEdit   m_TransRedMain;
-	CEdit   m_TransRedPanel;
 	CEdit   m_Green;
-	CEdit   m_TransGreenMain;
-	CEdit   m_TransGreenPanel;
 	CEdit   m_Blue;
-    CEdit   m_TransBlueMain;
-    CEdit   m_TransBluePanel;
     CEdit   m_ClearHeight;
     CEdit   m_ClearWidth;
     CEdit   m_ClearX;
@@ -274,6 +269,7 @@ protected:
 	afx_msg void OnBgtypeStretched();
 	afx_msg void OnBgtypeFixed();
 	afx_msg void OnBgtypeTiled();
+	afx_msg void OnSaveskindef();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 	afx_msg void OnArrowKey(UINT wParam, LONG lParam);
@@ -287,9 +283,8 @@ protected:
 	CDIBSectionLite m_cdibOuts;
 	CDIBSectionLite m_cdibHovers;
 
-	int m_nRed,m_nTransRedMain,m_nTransRedPanel,
-		m_nGreen,m_nTransGreenMain,m_nTransGreenPanel,
-		m_nBlue,m_nTransBlueMain,m_nTransBluePanel;
+	int m_nRed,m_nGreen,m_nBlue;
+	CString m_sTransMain,m_sTransPanel;
 
 	int m_nLineWidth;
 

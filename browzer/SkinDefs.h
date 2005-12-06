@@ -149,12 +149,15 @@ _MBOTHERBUTTONHOV_,_MBOTHERBUTTON3D_)\
 	}
 
 #define MBCONFIG_READ_TRANS_COLORS(_REG_OBJ_,_MBVARMAIN_,_MBVARPANEL_) \
-	_MBVARMAIN_ = RGB(_REG_OBJ_.Read("TransRedMain",254),\
-		_REG_OBJ_.Read("TransGreenMain",0),\
-		_REG_OBJ_.Read("TransBlueMain",0));\
-	_MBVARPANEL_ = RGB(_REG_OBJ_.Read("TransRedPanel",253),\
-		_REG_OBJ_.Read("TransGreenPanel",0),\
-		_REG_OBJ_.Read("TransBluePanel",0));
+	_MBVARMAIN_ = _REG_OBJ_.Read("ColorTransparentMain",254);\
+	_MBVARPANEL_ = _REG_OBJ_.Read("ColorTransparentPanel",253);
+
+//  _MBVARMAIN_ = RGB(_REG_OBJ_.Read("TransRedMain",254),\
+//		_REG_OBJ_.Read("TransGreenMain",0),\
+//		_REG_OBJ_.Read("TransBlueMain",0));\
+//	_MBVARPANEL_ = RGB(_REG_OBJ_.Read("TransRedPanel",253),\
+//		_REG_OBJ_.Read("TransGreenPanel",0),\
+//		_REG_OBJ_.Read("TransBluePanel",0));
 
 #define MBCONFIG_READ_BACKGROUND_TYPES(_REG_OBJ_,_BGMAIN_TYPE_,_BGPANEL_TYPE_)  \
 	{  \

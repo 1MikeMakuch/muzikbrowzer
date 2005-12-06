@@ -44,13 +44,8 @@ CBitmapCutterDlg::CBitmapCutterDlg(CWnd* pParent /*=NULL*/)
 	m_Adjusting = FALSE;
 	m_AdjustingRect = NULL;
 
-	m_nTransRedMain = 254;
-	m_nTransGreenMain = 0;
-	m_nTransBlueMain = 0;
-
-	m_nTransRedPanel = 253;
-	m_nTransGreenPanel = 0;
-	m_nTransBluePanel = 0;
+	m_sTransMain = "254,0,0";
+	m_sTransPanel = "253,0,0";
 
 	m_BgType = BGSTRETCHED;
 
@@ -59,10 +54,12 @@ void CBitmapCutterDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CBitmapCutterDlg)
-	DDX_Control(pDX, IDC_CLR_BTN_FG_OUT, m_ColorOtherBtnFgOut);
+	DDX_Control(pDX, IDC_CLR_TRANSPANEL, m_TransPanel);
+	DDX_Control(pDX, IDC_CLR_TRANSMAIN, m_TransMain);
 	DDX_Control(pDX, IDC_CLR_OTHER_FG, m_ColorOtherFg);
 	DDX_Control(pDX, IDC_CLR_OTHER_BG, m_ColorOtherBg);
 	DDX_Control(pDX, IDC_CLR_BTN_FG_HOV, m_ColorOtherBtnFgHov);
+	DDX_Control(pDX, IDC_CLR_BTN_FG_OUT, m_ColorOtherBtnFgOut);
 	DDX_Control(pDX, IDC_CLR_BTN_BG_OUT, m_ColorOtherBtnBgOut);
 	DDX_Control(pDX, IDC_CLR_BTN_BG_HOV, m_ColorOtherBtnBgHov);
 	DDX_Control(pDX, IDC_BGTYPE_STRETCHED, m_BgTypeStretched);
@@ -100,14 +97,8 @@ void CBitmapCutterDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_OTHER, m_Other);
 	DDX_Control(pDX, IDC_OUTS, m_Outs);
 	DDX_Control(pDX, IDC_RED, m_Red);
-	DDX_Control(pDX, IDC_RED2, m_TransRedMain);
-	DDX_Control(pDX, IDC_RED3, m_TransRedPanel);
 	DDX_Control(pDX, IDC_GREEN, m_Green);
-	DDX_Control(pDX, IDC_GREEN2, m_TransGreenMain);
-	DDX_Control(pDX, IDC_GREEN3, m_TransGreenPanel);
 	DDX_Control(pDX, IDC_BLUE, m_Blue);
-	DDX_Control(pDX, IDC_BLUE2, m_TransBlueMain);
-	DDX_Control(pDX, IDC_BLUE3, m_TransBluePanel);
 	DDX_Control(pDX, IDC_CLEAR_HEIGHT, m_ClearHeight);
 	DDX_Control(pDX, IDC_CLEAR_WIDTH, m_ClearWidth);
 	DDX_Control(pDX, IDC_CLEAR_X, m_ClearX);
@@ -231,6 +222,9 @@ BEGIN_MESSAGE_MAP(CBitmapCutterDlg, CDialog)
 	ON_BN_CLICKED(IDC_REMOVE_DRAW, OnRemoveDraw)
 	ON_BN_CLICKED(IDC_PIC_INS, OnPicIns)
 	ON_BN_CLICKED(IDC_BUTTON_FILE_SETTINGS, OnButtonFileSettings)
+	ON_BN_CLICKED(IDC_BGTYPE_STRETCHED, OnBgtypeStretched)
+	ON_BN_CLICKED(IDC_BGTYPE_FIXED, OnBgtypeFixed)
+	ON_BN_CLICKED(IDC_BGTYPE_TILED, OnBgtypeTiled)
 	ON_BN_CLICKED(IDC_OUTS, OnUpdateInOut)
 	ON_BN_CLICKED(IDC_HOVER, OnUpdateInOut)
 	ON_BN_CLICKED(IDC_CANCEL, OnCancel)
@@ -246,9 +240,7 @@ BEGIN_MESSAGE_MAP(CBitmapCutterDlg, CDialog)
 	ON_EN_CHANGE(IDC_LINEWIDTH, OnUpdateXY)
 	ON_EN_CHANGE(IDC_GREEN, OnUpdateRGB)
 	ON_EN_CHANGE(IDC_BLUE, OnUpdateRGB)
-	ON_BN_CLICKED(IDC_BGTYPE_STRETCHED, OnBgtypeStretched)
-	ON_BN_CLICKED(IDC_BGTYPE_FIXED, OnBgtypeFixed)
-	ON_BN_CLICKED(IDC_BGTYPE_TILED, OnBgtypeTiled)
+	ON_BN_CLICKED(IDC_SAVESKINDEF, OnSaveskindef)
 	//}}AFX_MSG_MAP
 	ON_MESSAGE(MB_BITMAP_CUTTER_MSG, OnArrowKey)
 END_MESSAGE_MAP()
@@ -968,19 +960,8 @@ void CBitmapCutterDlg::OnApply()
 	m_Blue.GetWindowText(val);
 	if (val != "") m_nBlue = atoi(val);
 
-	m_TransRedMain.GetWindowText(val);
-	if (val != "") m_nTransRedMain = atoi(val);
-	m_TransGreenMain.GetWindowText(val);
-	if (val != "") m_nTransGreenMain = atoi(val);
-	m_TransBlueMain.GetWindowText(val);
-	if (val != "") m_nTransBlueMain = atoi(val);
-
-	m_TransRedPanel.GetWindowText(val);
-	if (val != "") m_nTransRedPanel = atoi(val);
-	m_TransGreenPanel.GetWindowText(val);
-	if (val != "") m_nTransGreenPanel = atoi(val);
-	m_TransBluePanel.GetWindowText(val);
-	if (val != "") m_nTransBluePanel = atoi(val);
+	m_TransMain.GetWindowText(m_sTransMain);
+	m_TransPanel.GetWindowText(m_sTransPanel);
 
 	Invalidate(TRUE);
 	m_Applied = TRUE;
@@ -1018,7 +999,7 @@ void CBitmapCutterDlg::OnButtonDest()
 		OnButtonFileOuts();
 	if (m_sFileHovers != "") 
 		OnButtonFileHovers();
-	if (m_sFileSettings != "")
+	if ("" == m_sFileSettings)
 		OnButtonFileSettings();
 	
 	CreateTest();
@@ -1421,44 +1402,23 @@ void CBitmapCutterDlg::ReadReg() {
 	} else {
 		m_Blue.SetWindowText(numToString(m_nBlue));
 	}
-
-	m_nTransRedMain = reg.Read("TransRedMain",254);
-	if (m_nTransRedMain == -1) {
-		m_TransRedMain.SetWindowText("");
+	m_sTransMain = reg.ReadCString("TransRedMain","");
+	if (m_sTransMain.GetLength()) {
+		m_sTransMain += ",";
+		m_sTransMain += reg.ReadCString("TransGreenMain","0");
+		m_sTransMain += ",";
+		m_sTransMain += reg.ReadCString("TransBlueMain","0");
+		m_sTransPanel = reg.ReadCString("TransRedPanel","0");
+		m_sTransPanel += ",";
+		m_sTransPanel += reg.ReadCString("TransGreenPanel","0");
+		m_sTransPanel += ",";
+		m_sTransPanel += reg.ReadCString("TransBluePanel","0");
 	} else {
-		m_TransRedMain.SetWindowText(numToString(m_nTransRedMain));
+		m_sTransMain = reg.ReadCString("ColorTransparentMain","254,0,0");
+		m_sTransPanel = reg.ReadCString("ColorTransparentPanel","253,0,0");
 	}
-	m_nTransGreenMain = reg.Read("TransGreenMain",-1);
-	if (m_nTransGreenMain == -1) {
-		m_TransGreenMain.SetWindowText("");
-	} else {
-		m_TransGreenMain.SetWindowText(numToString(m_nTransGreenMain));
-	}
-	m_nTransBlueMain = reg.Read("TransBlueMain",-1);
-	if (m_nTransBlueMain == -1) {
-		m_TransBlueMain.SetWindowText("");
-	} else {
-		m_TransBlueMain.SetWindowText(numToString(m_nTransBlueMain));
-	}
-
-	m_nTransRedPanel = reg.Read("TransRedPanel",253);
-	if (m_nTransRedPanel == -1) {
-		m_TransRedPanel.SetWindowText("");
-	} else {
-		m_TransRedPanel.SetWindowText(numToString(m_nTransRedPanel));
-	}
-	m_nTransGreenPanel = reg.Read("TransGreenPanel",-1);
-	if (m_nTransGreenPanel == -1) {
-		m_TransGreenPanel.SetWindowText("");
-	} else {
-		m_TransGreenPanel.SetWindowText(numToString(m_nTransGreenPanel));
-	}
-	m_nTransBluePanel = reg.Read("TransBluePanel",-1);
-	if (m_nTransBluePanel == -1) {
-		m_TransBluePanel.SetWindowText("");
-	} else {
-		m_TransBluePanel.SetWindowText(numToString(m_nTransBluePanel));
-	}
+	m_TransMain.SetWindowText(m_sTransMain);
+	m_TransPanel.SetWindowText(m_sTransPanel);
 	
 
 	m_RGB = reg.Read("RGB", 0);
@@ -1604,14 +1564,25 @@ void CBitmapCutterDlg::StoreReg() {
 	// but first read custom settins from m_FileSettings
 	// then allow custom settings to be overriden by 
 	// stuff below, just in case.
+
+	// first get settings from original, in case there's any 
+	// extras. Also for case when saving skindef only button pressed;
+	// when it doesn't write button panel settings
+
+	file = m_sDest + "\\" + MB_SKIN_DEF;
+	RegistryKey regOrig(file);
+	regOrig.ReadFile(); // read original settings
 	
 	RegistryKey regCustom(m_sFileSettings);
 	if (m_sFileSettings != "") {
 		regCustom.ReadFile();
 	}
 
-	file = m_sDest + "\\" + MB_SKIN_DEF;
 	RegistryKey reg(file);	
+
+	reg.Copy(regOrig); // copy orig settings, Copy converts "L ", "S " to new
+						// format. This may not do much good for instance
+						// ControBoxH/W are read in but get overridden below
 		
 	if (m_sFileSettings != "") {
 
@@ -1645,49 +1616,11 @@ void CBitmapCutterDlg::StoreReg() {
 		m_nBlue = atoi(msg);
 	reg.Write("Blue",m_nBlue);
 
-	m_TransRedMain.GetWindowText(msg);
-	if (msg == "")
-		m_nTransRedMain = -1;
-	else
-		m_nTransRedMain = atoi(msg);
-	reg.Write("TransRedMain",m_nTransRedMain);
+	m_TransMain.GetWindowText(m_sTransMain);
+	reg.Write("ColorTransparentMain",m_sTransMain);
 
-	m_TransGreenMain.GetWindowText(msg);
-	if (msg == "")
-		m_nTransGreenMain = -1;
-	else
-		m_nTransGreenMain = atoi(msg);
-	reg.Write("TransGreenMain",m_nTransGreenMain);
-
-	m_TransBlueMain.GetWindowText(msg);
-	if (msg == "")
-		m_nTransBlueMain = -1;
-	else
-		m_nTransBlueMain = atoi(msg);
-	reg.Write("TransBlueMain",m_nTransBlueMain);
-
-	m_TransRedPanel.GetWindowText(msg);
-	if (msg == "")
-		m_nTransRedPanel = -1;
-	else
-		m_nTransRedPanel = atoi(msg);
-	reg.Write("TransRedPanel",m_nTransRedPanel);
-
-	m_TransGreenPanel.GetWindowText(msg);
-	if (msg == "")
-		m_nTransGreenPanel = -1;
-	else
-		m_nTransGreenPanel = atoi(msg);
-	reg.Write("TransGreenPanel",m_nTransGreenPanel);
-
-	m_TransBluePanel.GetWindowText(msg);
-	if (msg == "")
-		m_nTransBluePanel = -1;
-	else
-		m_nTransBluePanel = atoi(msg);
-	reg.Write("TransBluePanel",m_nTransBluePanel);
-
-
+	m_TransPanel.GetWindowText(m_sTransPanel);
+	reg.Write("ColorTransparentPanel",m_sTransPanel);
 	
 	m_RGB = m_Other.GetCheck();
 	reg.Write("RGB", m_RGB);
@@ -2825,5 +2758,11 @@ void CBitmapCutterDlg::OnBgtypeTiled()
 {
 	m_BgType = BGTILED;
 	EnableDisable();
+	
+}
+
+void CBitmapCutterDlg::OnSaveskindef() 
+{
+	StoreReg();
 	
 }
