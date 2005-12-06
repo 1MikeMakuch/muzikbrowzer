@@ -100,7 +100,7 @@ LINK32=link.exe
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MTd /W3 /GX /Z7 /Od /I "../util" /I "../TestHarness" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /FD /GZ /c
 # SUBTRACT BASE CPP /YX /Yc /Yu
-# ADD CPP /nologo /MTd /W3 /GX /Z7 /Od /I "../util" /I "../TestHarness" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /FD /GZ /c
+# ADD CPP /nologo /MTd /W3 /GX /Z7 /Od /I "../util" /I "../TestHarness" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /FR /FD /GZ /c
 # SUBTRACT CPP /YX /Yc /Yu
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
@@ -145,10 +145,6 @@ SOURCE=.\mydiffDlg.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\Process.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\SourceLine.cpp
 # End Source File
 # Begin Source File
@@ -179,10 +175,6 @@ SOURCE=.\mydiff.h
 # Begin Source File
 
 SOURCE=.\mydiffDlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\Process.h
 # End Source File
 # Begin Source File
 

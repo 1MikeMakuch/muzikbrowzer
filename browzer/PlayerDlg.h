@@ -96,7 +96,7 @@ public:
 
     void OnControlSelChange();
     BOOL OnControlClick();
-    void OnDelete();
+    BOOL OnDelete();
     void OnPageUp();
     void OnPageDown();
     void OnNextSong();
@@ -134,7 +134,8 @@ private:
 	Irman m_irman;
 	CString m_AlbumArt;
 	UINT m_AdjustLibrary;
-	BOOL m_LibraryDragging;
+	BOOL m_LibDrag;
+	CRect m_LibDragRect;
 public:
     MBConfig m_Config;
 private:
@@ -154,6 +155,7 @@ private:
 		m_SearchEditRect,
 		m_SearchGoRect,
 		m_SearchCancelRect,
+		m_SearchStatusRect,
 		m_LibraryRect;
 
 	CString m_CurrentTitleDesc;
@@ -231,11 +233,14 @@ private:
 	CPoint m_LastSized;
 	HANDLE m_hMutex;
 	BOOL m_QuickPlay;
-	BOOL m_SearchResults;
+	BOOL m_ShowSearchPanel;
+	BOOL m_LastShowSearchPanel;
+	BOOL m_SearchCleared;
 	RegistryKey m_reg;
 // Dialog Data
 	//{{AFX_DATA(CPlayerDlg)
 	enum { IDD = IDD_PLAYER_DIALOG };
+	CColorStatic	m_SearchStatus;
 	CButtonST	m_SearchClear;
 	CButtonST	m_SearchCancel;
 	CButtonST	m_SearchGo;

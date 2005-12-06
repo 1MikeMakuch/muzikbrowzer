@@ -154,6 +154,10 @@ SOURCE=.\MyString.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\Process.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\Registry.cpp
 # End Source File
 # Begin Source File
@@ -212,6 +216,10 @@ SOURCE=.\MyLog.h
 # Begin Source File
 
 SOURCE=.\MyString.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\Process.h
 # End Source File
 # Begin Source File
 

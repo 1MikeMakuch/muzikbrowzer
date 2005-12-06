@@ -119,7 +119,8 @@ public:
     //  arg2    TRUE will use the color, FALSE remove transparency
     //  ret     TRUE if successful
     //  =======================================================================
-    BOOL SetTransparentColor (COLORREF main, COLORREF panel, BOOL bTrans = TRUE);
+    BOOL SetTransparentColor (const COLORREF main, const COLORREF panel, 
+		const BOOL bTrans = TRUE);
 
 // Dialog Data
 	//{{AFX_DATA(CDialogSK)
@@ -135,7 +136,7 @@ public:
     virtual BOOL OnInitDialog();
 	//}}AFX_VIRTUAL
 	
-	BOOL EraseBkgndNC(CDC *cdc) ;
+	BOOL EraseBkgndNC() ;
 
 // Implementation
 protected:
@@ -155,13 +156,15 @@ protected:
 public:
 	BOOL m_Need2Erase;
 
-private:
+protected:
 	void Init();    
 	BOOL m_bEasyMove;
 	CBitmap * m_bmBackground;
 	CBitmap * m_bmFrame;
 	COLORREF m_Panel;
 	BOOL m_UseSkin;
+	BOOL m_bPlayer;
+	int m_FrameBorder;
 
 };
 

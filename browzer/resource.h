@@ -76,6 +76,7 @@
 #define IDB_OBM_DNARROW                 260
 #define IDB_OBM_SCRLBTN                 261
 #define IDB_OBM_SCRLBG                  262
+#define IDD_TESTCANCELDLG               264
 #define IDC_VOLUME_BUTTON               1000
 #define IDC_STOP_BUTTON                 1001
 #define IDC_PLAY_BUTTON                 1002
@@ -104,6 +105,7 @@
 #define IDC_LIBRARY_VERSION_LABEL       1017
 #define IDC_ASYNC_VERSION_LABEL         1017
 #define IDC_CURRENT_TITLE               1017
+#define IDC_SEARCH_STATUS               1017
 #define IDC_MASTER_SLIDER               1018
 #define IDC_CODEC_LIST                  1018
 #define IDC_PCM_SLIDER                  1019
@@ -217,6 +219,7 @@
 #define IDC_PLAYLIST_RENAME             1186
 #define IDC_BUTTON_MINIMIZE             1187
 #define IDC_SKIN_DELETE                 1187
+#define IDC_PLAYLIST_CLOSE              1187
 #define IDC_BUTTON_MAXIMIZE             1188
 #define IDC_BUTTON_EXIT                 1189
 #define IDC_BUTTON_STOP                 1190
@@ -297,7 +300,6 @@
 #define IDC_COLOR_STATUS_INLR           1222
 #define IDC_COLOR_STATUS_OUTUL          1223
 #define IDC_COLOR_STATUS_OUTLR          1224
-#define IDC_COLOR_TX_BUTTONS            1227
 #define IDC_IRUP                        1500
 #define IDC_IRDOWN                      1501
 #define IDC_IRLEFT                      1502
@@ -442,11 +444,12 @@
 #define ID_DELETE_FROM_PL               32828
 #define ID_SEARCH                       32829
 
+#define IDS_UNKNOWN_ERROR               5000
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        263
+#define _APS_NEXT_RESOURCE_VALUE        265
 #define _APS_NEXT_COMMAND_VALUE         32830
 #define _APS_NEXT_CONTROL_VALUE         2050
 #define _APS_NEXT_SYMED_VALUE           101

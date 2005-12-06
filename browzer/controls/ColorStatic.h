@@ -54,10 +54,8 @@ public:
 	void SetBkColor(COLORREF crBkColor = 0xffffffff);
 	COLORREF GetBkColor();
 	
-	void SetTransparent(COLORREF trans) {
-		m_crTrans = trans;
-		m_DoTrans = TRUE;
-	}
+	void SetTransparent(CBitmap * bmp, const CRect & srcrect,
+		const COLORREF trans);
 
 	void SetShadowDark(COLORREF clr = 0) {
 		m_ClrShadowDark = clr;
@@ -77,7 +75,7 @@ public:
 	static const short GetVersionI();
 	static const char* GetVersionC();
 
-    void setText(CString text, const BOOL center=FALSE);
+    void setText(CString text, const int justify=DT_LEFT);
     void getText(CString &);
 	void changeFont(LPLOGFONT lplf);
 	void changeFont(CFont * f);
@@ -102,6 +100,7 @@ protected:
 	void SetItemWidth();
 	
 private:
+	int m_Justify;
 	UINT m_nTimerId;
 
 	COLORREF m_crTextColor;
@@ -147,12 +146,16 @@ private:
 
 	CString tmp;
 	CString m_desc ;
-	BOOL m_center;
 	int m_TickerX, m_TickerY, m_TickerXStep, m_TickerTime;
 	time_t m_TickerDelay;
 	BOOL m_TickerIt,m_NeedTicker, m_Ticking;
 	CTime m_TickerStart, m_TimeTmp;
 	BOOL m_WordWrap;
+
+	CBitmap m_bmpBg;
+	CDC m_dcBg;
+	BOOL m_BgSet;
+	CBitmap * m_bmpOldBg;
 
 public:
 	int m_HCenter;

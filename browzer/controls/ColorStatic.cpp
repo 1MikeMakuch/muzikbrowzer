@@ -72,7 +72,7 @@ CColorStatic::CColorStatic()
 
 #define TICKERLEFTBORDER 4
 	m_TickerX = TICKERLEFTBORDER;
-	m_TickerY = 0;
+	m_TickerY = 2; // 2 for 3d border
 	m_TickerXStep = 3;
 	m_TickerTime = 100;
 	m_NeedTicker = FALSE;
@@ -84,6 +84,9 @@ CColorStatic::CColorStatic()
 	m_DoTrans = FALSE;
 
 	m_WordWrap = FALSE;
+	m_Justify = DT_LEFT;
+	m_BgSet = FALSE;
+	m_bmpOldBg = NULL;
 
 } // End of CColorStatic
 
@@ -91,6 +94,9 @@ CColorStatic::CColorStatic()
 CColorStatic::~CColorStatic()
 {
 	m_font.DeleteObject();
+	if (m_bmpOldBg)
+		m_dcBg.SelectObject(m_bmpOldBg);
+	m_dcBg.DeleteDC();
 
 } // End of ~CColorStatic
 
@@ -153,6 +159,8 @@ void CColorStatic::SetColors(
 	m_crOutUL = outUL;
 	m_crOutLR = outLR;
 	m_3d = threeD;
+	m_BgSet = FALSE;
+
 }
 void CColorStatic::SetTextColor(COLORREF crTextColor)
 {
@@ -374,31 +382,43 @@ public:
 
 #define TICKSPACES "                              "
 void CColorStatic::OnPaint() {
+//	if ("searchstatus" == m_desc)
+//		logger.ods("CCS::OnPaint");
 
 	GetClientRect(m_Rect);
 	CPaintDC pDC(this);
 
-	CRect rect(m_Rect);
+	CRect rectInner(m_Rect);
+	CRect rectOut(m_Rect);
+	CRect rectIn(m_Rect);
+
+	if (m_3d) { // This works correctly!
+		rectIn.DeflateRect(1,1);
+		rectInner = rectIn;
+		rectInner.DeflateRect(1,0);
+		//rectInner.OffsetRect(1,1);
+		rectInner.right += 2;
+		rectInner.top++;
+		rectInner.bottom++;
+	}
+
 	CDC dc;
 	dc.CreateCompatibleDC(NULL);
 	CBitmap bmp;
-	bmp.CreateCompatibleBitmap(&pDC,m_Rect.Width(),m_Rect.Height());
+	bmp.CreateCompatibleBitmap(&pDC,rectInner.Width(),rectInner.Height());
 	CBitmap *oldbmp = dc.SelectObject(&bmp);
 	
-	dc.FillSolidRect(&m_Rect, m_crBkColor  );
+	dc.FillSolidRect(&rectOut, m_crBkColor  );
 	if (m_3d) {
-
-		dc.Draw3dRect(rect, m_crOutUL, m_crOutLR);
-		rect.DeflateRect(1,1);
-		dc.Draw3dRect(rect, m_crInUL, m_crInLR);
-		rect.DeflateRect(1,1);
+		pDC.Draw3dRect(rectOut, m_crOutUL, m_crOutLR);
+		pDC.Draw3dRect(rectIn, m_crInUL, m_crInLR);
 	}
 
     if (m_text.GetLength()) {
 		CFont * oldfont = dc.SelectObject(&m_font);
 		CSize cs = dc.GetTextExtent(m_text);
 
-		if (cs.cx > m_Rect.Width()) {
+		if (cs.cx > rectInner.Width()) {
 			m_NeedTicker = TRUE;
 		} else {
 			m_NeedTicker = FALSE;
@@ -421,19 +441,27 @@ void CColorStatic::OnPaint() {
 			}
 		}
 		dc.SetTextColor(m_crTextColor);
-		dc.SetBkMode(TRANSPARENT);
+		if (!m_DoTrans)
+			dc.SetBkColor(m_crBkColor);
+		dc.SetBkMode(OPAQUE);
 		if (m_Ticking) {
 			m_text2 = m_text + TICKSPACES + m_text;
 		} else {
 			m_text2 = m_text;
-			if (m_center && !m_NeedTicker) {
-				m_TickerX = (m_Rect.Width() - cs.cx) / 2;
+			if (DT_CENTER == m_Justify && !m_NeedTicker) {
+				m_TickerX = (rectInner.Width() - cs.cx) / 2;
+			} else if(DT_RIGHT == m_Justify && !m_NeedTicker) {
+				m_TickerX = rectInner.Width() - cs.cx;
+				if (m_TickerX < 0)
+					m_TickerX = 0;
 			}
 		}
 		if (m_WordWrap) {
-			dc.DrawText(m_text2,rect, DT_LEFT | DT_WORDBREAK);
+			dc.DrawText(m_text2,rectInner, DT_LEFT | DT_WORDBREAK);
 		} else {
 			dc.TextOut (m_TickerX,m_TickerY,m_text2);
+			if ("searchstatus" == m_desc)
+				logger.ods("CCS::OnPaint TextOut");
 		}
 		dc.SelectObject(oldfont);
 	} else {
@@ -442,19 +470,76 @@ void CColorStatic::OnPaint() {
 			KillTimer(MB_TICKER_TIMER_ID);
 		}
 	}
+
 	if (m_DoTrans) {
-		dc.SelectObject(oldbmp);
-		MBUtil::BmpToDC(&pDC,bmp,0,0,m_Rect.Width(),m_Rect.Height(),
-			m_Rect.Width(),m_Rect.Height(),LO_FIXED,TRUE,m_crTrans,0);
+		if (m_BgSet) { // if bg isn't set yet we don't want to paint anything
+						// so that the bg grab in SetTransparent will work!
+
+			// Create a fresh dc for the transparent paint SRCAND op.
+			// doing BmpToDc directly to pDC resulted in the previous
+			// stuff being left on the pDC.
+			dc.SelectObject(oldbmp);
+			CDC dc2;
+			dc2.CreateCompatibleDC(&pDC);
+			CBitmap bmp2;
+			bmp2.CreateCompatibleBitmap(&pDC,rectOut.Width(),rectOut.Height());
+			CBitmap *oldBmp2 = (CBitmap*)dc2.SelectObject(&bmp2);
+
+			dc2.BitBlt(0,0,rectOut.Width(),rectOut.Height(),
+				&m_dcBg,0,0,SRCCOPY);
+			MBUtil::BmpToDC(&dc2,bmp,0,0,rectOut.Width(),rectOut.Height(),
+				rectOut.Width(),rectOut.Height(),LO_FIXED,TRUE,m_crTrans,0);
+			pDC.BitBlt(rectOut.left,rectOut.top,rectOut.Width(),rectOut.Height(),
+				&dc2,0,0,SRCCOPY);
+			dc2.SelectObject(oldBmp2);
+			bmp2.DeleteObject();
+			dc.DeleteDC();
+		}
 	} else {
-		pDC.BitBlt(m_Rect.left,m_Rect.top,m_Rect.Width(),m_Rect.Height(),
-			&dc,m_Rect.left,m_Rect.top,SRCCOPY);
+		pDC.BitBlt(rectInner.left,rectInner.top,rectInner.Width(),rectInner.Height(),
+			&dc,rectInner.left,rectInner.top,SRCCOPY);
 		dc.SelectObject(oldbmp);
 	}
+
 }
+void CColorStatic::SetTransparent(CBitmap * bmp, const CRect & srcRect, 
+								  const COLORREF trans) {
+	m_crTrans = trans;
+	m_DoTrans = TRUE;
+	m_BgSet = TRUE;
+	GetClientRect(m_Rect);
+	CDC dc;
+	dc.CreateCompatibleDC(NULL);
+	CBitmap * oldbmp = (CBitmap*)dc.SelectObject(bmp);
+
+	CDC * cdc = GetDC();
+
+	if (m_bmpOldBg) {
+		m_dcBg.SelectObject(m_bmpOldBg);
+		m_dcBg.DeleteDC();
+	}
+	m_bmpBg.DeleteObject();
+
+	m_dcBg.CreateCompatibleDC(&dc);
+	m_bmpBg.CreateCompatibleBitmap(cdc,m_Rect.Width(),m_Rect.Height());
+	ReleaseDC(cdc);
+	
+	m_bmpOldBg = (CBitmap*)m_dcBg.SelectObject(&m_bmpBg);
+
+	m_dcBg.BitBlt(0,0,m_Rect.Width(),m_Rect.Height(),
+		&dc,srcRect.left,srcRect.top,SRCCOPY);
+
+//	m_dcBg.SelectObject(m_bmpOldBg);
+//	FileUtil::BmpLog(m_bmpBg,"Bg");
+//	m_bmpOldBg = (CBitmap*)m_dcBg.SelectObject(&m_bmpBg);
+
+	dc.SelectObject(oldbmp);
+
+}
+
 void
-CColorStatic::setText(CString text, const BOOL center) {
-	m_center = center;
+CColorStatic::setText(CString text, const int justify) {
+	m_Justify = justify;
     m_text = text;
 	//SetItemWidth();
 	// Don't do this cause it allows the control to somehow

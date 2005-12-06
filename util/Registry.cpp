@@ -289,9 +289,9 @@ unsigned long RegistryKey::Read( const TCHAR* value, unsigned long deflt ) const
 			if (val.Left(2) == "L " || val.Left(2) == "S ")
 				val = val.Right(val.GetLength()-2);
 
-			// if it's a key starting with "Color" and the value has 2
+			// if it's a key containing "Color" and the value has 2
 			// commas surrounded by non white space, it must be an rgb! Argh!
-			if (key.Left(5) == "Color" 
+			if (key.Find("Color") > -1
 				&& MBUtil::RgbTriple((LPCTSTR)val,retVal))
 				return retVal;
 		}

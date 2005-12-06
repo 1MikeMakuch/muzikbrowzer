@@ -371,6 +371,10 @@ void
 CConfigFiles::setRunAtStartup() {
     // use this one CSIDL_STARTUP
 
+	IMalloc *m;
+	SHGetMalloc(&m);
+	if (!m) return;
+
     LPITEMIDLIST itemList;
     char path[MAX_PATH];
     if (SHGetSpecialFolderLocation(NULL, CSIDL_STARTUP, &itemList) !=
@@ -379,6 +383,7 @@ CConfigFiles::setRunAtStartup() {
         return;
     }
     if (!SHGetPathFromIDList(itemList,path)) {
+		m->Free(itemList);
         MBMessageBox("","Cannot get special folder path");
         return;
     }
@@ -391,6 +396,7 @@ CConfigFiles::setRunAtStartup() {
         char shortCutTarget[MAX_PATH+1];
         DWORD r = GetModuleFileName(NULL, shortCutTarget, MAX_PATH);
         if (r == 0) {
+			m->Free(itemList);
             MBMessageBox("","GetModuleFileName failed!");
             return;
         }
@@ -466,6 +472,7 @@ CConfigFiles::setRunAtStartup() {
             //MBMessageBox ("",msg);
         }
     }
+	m->Free(itemList);
 }
 
 

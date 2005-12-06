@@ -84,7 +84,7 @@ BOOL About::OnInitDialog()
 	m_EasterEgg.MoveWindow(x,y,erect.Width(),erect.Height(),TRUE);
 //	OutputDebugString("EE @ " + numToString(x)+" "+numToString(y)+
 //		" "+numToString(xspan)+" "+numToString(yspan)+"\r\n");
-	
+
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
 }

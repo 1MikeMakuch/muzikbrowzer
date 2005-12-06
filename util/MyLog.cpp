@@ -130,6 +130,18 @@ MyLog::ods(CString &  m0) {
 	mx += "\r\n";
 	OutputDebugString(mx);
 }
+void
+MyLog::odsRect(const CString & name, const CRect & rect) {
+	CString m(name);
+	m += " L:";
+	m += numToString(rect.left) + " T:";
+	m += numToString(rect.top) + " W:";
+	m += numToString(rect.Width()) + " H:";
+	m += numToString(rect.Height());
+	logger.ods(m);
+	return;
+}
+
 
 void
 MyLog::log(char * m1, char * m2,char*m3,char*m4,char*m5,char*m6) {

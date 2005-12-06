@@ -155,22 +155,38 @@ BOOL
 CSong::Contains(const CString & keyword) {
 	CString kw(keyword);
 	kw.MakeLower();
-   POSITION pos;
     CString key;
     CString val;
-    for( pos = _obj.GetStartPosition(); pos != NULL; ) {
-        _obj.GetNextAssoc(pos, key, val);
+
+	if (_obj.Lookup("TIT2",val)) {
 		val.MakeLower();
-		if ("TCON" == key || "TPE1" == key || "TALB" == key || "TIT2" == key)
-			if (-1 < val.Find(kw))
-				return TRUE;
-    }
+		if (-1 < val.Find(kw))
+			return TRUE;
+	}
+	if (_obj.Lookup("TALB",val)) {
+		val.MakeLower();
+		if (-1 < val.Find(kw))
+			return TRUE;
+	}
+	if (_obj.Lookup("TPE1",val)) {
+		val.MakeLower();
+		if (-1 < val.Find(kw))
+			return TRUE;
+	}
+	if (_obj.Lookup("TCON",val)) {
+		val.MakeLower();
+		if (-1 < val.Find(kw))
+			return TRUE;
+	}
+
 	return FALSE;
+
 }
 
 /////////////////////////////////////////////////////////////////////////////////
 
-MusicLib::MusicLib(InitDlg *id): _id(id), m_totalMp3s(0)
+MusicLib::MusicLib(InitDlg *id): _id(id), m_totalMp3s(0),
+	m_Searching(FALSE)
 {
 //	init();
 }
@@ -1023,6 +1039,7 @@ MusicLib::clearPlaylist() {
 CString
 MusicLib::scanDirectories(const CStringList & directories,
 						  InitDlg * initDlg, BOOL scanNew, BOOL bAdd) {
+	SearchClear();
     CStringList mp3Files,mp3Extensions;
     CString good_results, error_results;
     _id = initDlg;
@@ -1438,6 +1455,7 @@ MusicLib::writeSongToFile(Song song) {
 
 int
 MusicLib::garbageCollect(InitDlg * dialog) {
+	SearchClear();
 	if (m_SongLib.m_garbagecollector < MB_GARBAGE_INTERVAL) {
 		return 0;
 	}
@@ -1487,29 +1505,33 @@ MusicLib::garbageCollect(InitDlg * dialog) {
 }
 void
 MusicLib::SearchSetup() {
+	if (m_Searching)
+		return;
+	m_Searching = TRUE;
 	m_SaveLib = m_SongLib;
 }
 void
 MusicLib::SearchCancel() {
 	m_SongLib = m_SaveLib;
+	m_Searching = FALSE;
 	IgetLibraryCounts();
 }
 void
 MusicLib::SearchClear() {
+	if (!m_Searching)
+		return;
+	m_Searching = FALSE;
 	m_SongLib = m_SaveLib;
 	IgetLibraryCounts();
 }
 int
 MusicLib::Search(const CString keywords) {
-	MSongLib results;
-	results.init(TRUE);
-	results.setDbLocation(m_SongLib.getDbLocation());
-
 	CString word;
 	int found = 0;
 	int n = String::delCount(keywords," ");
 	for(int i = 1 ; i <= n ; i++) {
 		word = String::field(keywords," ",i);
+		MSongLib results;
 		results.init(TRUE);
 		found = iSearch(word, m_SongLib, results);
 		if (found) {
@@ -1875,6 +1897,7 @@ MusicLib::shufflePlaylist() {
 }
 void
 MusicLib::modifyID3(Song oldSong, Song newSong) {
+	SearchClear();
     CString oldGenre, oldArtist, oldAlbum, oldTitle, oldYear, oldTrack;
     CString newGenre, newArtist, newAlbum, newTitle, newYear, newTrack;
     oldGenre = oldSong->getId3("TCON",0);
@@ -2003,6 +2026,7 @@ MusicLib::modifyID3(Song oldSong, Song newSong) {
 	writeDb();
 	dialog->EndDialog(0);
 	delete dialog;
+	// playlists are now filename only
 	//modifyPlaylists(oldSong, newSong);
     return;
 }
@@ -2098,7 +2122,6 @@ MusicLib::movePlaylistUp(int plcurrent, int element) {
 }
 CString
 MusicLib::getLibraryCounts() {
-	logger.ods("getLibCounts");
 	if (m_libCounts.GetLength())
 		return m_libCounts;
 	else
@@ -2106,7 +2129,6 @@ MusicLib::getLibraryCounts() {
 }
 CString
 MusicLib::IgetLibraryCounts() {
-	logger.ods("IgetLibCounts");
 	int genrecount, artistcount, albumcount, songcount;
 	genrecount = artistcount = albumcount = songcount = 0;
 	MList genreList = m_SongLib.genreList();

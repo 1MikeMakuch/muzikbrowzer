@@ -602,10 +602,11 @@ void CButtonST::PaintBk(CDC* pDC)
 		m_pbmpOldBk = m_dcBk.SelectObject(&m_bmpBk);
 		m_dcBk.BitBlt(0, 0, rect.Width(), rect.Height(), &clDC, 
 			rect1.left, rect1.top, SRCCOPY);
-//		if (logit) {
-//			FileUtil::BmpLog(m_dcBk.m_hDC,"CB-PBk",
-//				rect.Width(), rect.Height(),0,0);
-//		}
+		if (logit) {
+			m_dcBk.SelectObject(m_pbmpOldBk);
+			FileUtil::BmpLog(m_bmpBk,"CB-PBk");
+			m_pbmpOldBk = m_dcBk.SelectObject(&m_bmpBk);
+		}
 	} // if
 
 	pDC->BitBlt(0, 0, rect.Width(), rect.Height(), &m_dcBk, 0, 0, SRCCOPY);
@@ -1806,15 +1807,29 @@ DWORD CButtonST::SetDefaultColors(BOOL bRepaint)
 //		BTNST_INVALIDINDEX
 //			Invalid color index.
 //
+//	COLORREF
+//	The COLORREF value is a 32-bit value used to specify an RGB color. 
+//	
+//	Remarks
+//	When specifying an explicit RGB color, the COLORREF value has the following hexadecimal form: 
+//	
+//	0x00bbggrr 
+//	 
+//	The low-order byte contains a value for the relative intensity of red; the second byte contains a value for green; and the third byte contains a value for blue. The high-order byte must be zero. The maximum value for a single byte is 0xFF. 
+
+
 DWORD CButtonST::SetColors(COLORREF crFgIn,COLORREF crBgIn,
-						   COLORREF crFgOut,COLORREF crBgOut)
+						   COLORREF crFgOut,COLORREF crBgOut,
+						   COLORREF crFgFoc,COLORREF crBgFoc)
 {
+	if (0xff000000 == crFgFoc) crFgFoc = crFgIn;
+	if (0xff000000 == crBgFoc) crBgFoc = crBgIn;
 	SetColor(BTNST_COLOR_BK_IN,crBgIn);
 	SetColor(BTNST_COLOR_FG_IN,crFgIn);
 	SetColor(BTNST_COLOR_BK_OUT,crBgOut);
 	SetColor(BTNST_COLOR_FG_OUT,crFgOut);
-	SetColor(BTNST_COLOR_BK_FOCUS,crBgIn);
-	SetColor(BTNST_COLOR_FG_FOCUS,crFgIn);
+	SetColor(BTNST_COLOR_BK_FOCUS,crBgFoc);
+	SetColor(BTNST_COLOR_FG_FOCUS,crFgFoc);
 	return BTNST_OK;
 }
 DWORD CButtonST::SetColor(BYTE byColorIndex, COLORREF crColor, BOOL bRepaint)
@@ -2152,9 +2167,9 @@ void CButtonST::DrawTransparent(BOOL bRepaint)
 	if (bRepaint) Invalidate();
 } // End of DrawTransparent
 
-DWORD CButtonST::SetBk(CDC* pDC)
+DWORD CButtonST::SetBk(CBitmap * bmp)
 {
-	if (m_bDrawTransparent && pDC)
+	if (m_bDrawTransparent && bmp)
 	{
 		// Restore old bitmap (if any)
 		if (m_dcBk.m_hDC != NULL && m_pbmpOldBk != NULL)
@@ -2172,11 +2187,26 @@ DWORD CButtonST::SetBk(CDC* pDC)
 
 		GetWindowRect(rect1);
 		GetParent()->ScreenToClient(rect1);
+		CDC dc;
+		dc.CreateCompatibleDC(NULL);
 
-		m_dcBk.CreateCompatibleDC(pDC);
-		m_bmpBk.CreateCompatibleBitmap(pDC, rect.Width(), rect.Height());
+//		FileUtil::BmpLog(*bmp,"BG");
+		CBitmap *oldbmp = dc.SelectObject(bmp);
+		CDC * cdc = GetDC();
+
+		m_dcBk.CreateCompatibleDC(NULL);
+		m_bmpBk.CreateCompatibleBitmap(cdc, rect.Width(), rect.Height());
+		ReleaseDC(cdc);
 		m_pbmpOldBk = m_dcBk.SelectObject(&m_bmpBk);
-		m_dcBk.BitBlt(0, 0, rect.Width(), rect.Height(), pDC, rect1.left, rect1.top, SRCCOPY);
+		m_dcBk.BitBlt(0, 0, rect.Width(), rect.Height(), 
+			&dc, rect1.left, rect1.top, SRCCOPY);
+
+		dc.SelectObject(oldbmp);
+
+//		m_dcBk.SelectObject(m_pbmpOldBk);
+//		FileUtil::BmpLog(m_bmpBk,"bBG");
+		m_pbmpOldBk = m_dcBk.SelectObject(&m_bmpBk);
+
 
 		return BTNST_OK;
 	} // if

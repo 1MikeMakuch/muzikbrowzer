@@ -31,6 +31,7 @@ class MyLog {
         CString location() { return _pathfile; }
 		void ods(CString &);
 		void ods(char * msg);
+		void odsRect(const CString & name, const CRect & rect);
 	private:
 		BOOL m_ready;
 		CFile _file;

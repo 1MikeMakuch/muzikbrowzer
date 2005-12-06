@@ -24,11 +24,13 @@ static lpfnSetLayeredWindowAttributes g_pSetLayeredWindowAttributes;
 //  Function pointer for lyering API in User32.dll
 //  ===========================================================================
 
-CDialogSK::CDialogSK(CWnd* pParent /*=NULL*/) :m_NumBitmapToCRect(0)
+CDialogSK::CDialogSK(CWnd* pParent /*=NULL*/) :m_NumBitmapToCRect(0),
+	m_bPlayer(FALSE)
 {
     //{{AFX_DATA_INIT(CBkDialogST)
     // NOTE: the ClassWizard will add member initialization here
     //}}AFX_DATA_INIT
+	m_FrameBorder = 0;
     Init();
 }
 
@@ -86,7 +88,8 @@ CDialogSK::SetTransparent (BYTE bAlpha)
 
 
 BOOL
-CDialogSK::SetTransparentColor (COLORREF main, COLORREF panel, BOOL bTrans)
+CDialogSK::SetTransparentColor (const COLORREF main, const COLORREF panel, 
+								const BOOL bTrans)
 {
 	m_Panel = panel;
 
@@ -263,7 +266,7 @@ void CDialogSK::make(CDC * wDC) {
 	GetWindowRect(wrect);
 	ScreenToClient(wrect);
 	GetClientRect(crect);
-	int frameborder = (wrect.Width() - crect.Width()) / 2;
+	m_FrameBorder = (wrect.Width() - crect.Width()) / 2;
 
 	m_bmFrame = new CBitmap();
 	m_bmFrame->CreateCompatibleBitmap(wDC, wrect.Width(), wrect.Height());
@@ -271,7 +274,7 @@ void CDialogSK::make(CDC * wDC) {
 
 	for (i = 0 ; i < m_NumBitmapToCRect; i++) {
 		bmcr = m_BitmapToCRect[i];
-		MBUtil::BmpToDC(&dc, bmcr, (i>0)*TRUE, m_Panel, (i>0)*frameborder);
+		MBUtil::BmpToDC(&dc, bmcr, (i>0)*TRUE, m_Panel, (i>0)*m_FrameBorder);
 	}		
 	dc.SelectObject(oldbm);
 
@@ -289,7 +292,7 @@ void CDialogSK::make(CDC * wDC) {
 	dc2.CreateCompatibleDC(NULL);
 	CBitmap * oldbm2 = (CBitmap*) dc2.SelectObject(m_bmBackground);
 	dc2.BitBlt(0,0,crect.Width(),crect.Height(),
-		&dc,frameborder,frameborder, SRCCOPY);
+		&dc,m_FrameBorder,m_FrameBorder, SRCCOPY);
 	dc2.SelectObject(oldbm2);
 	dc.SelectObject(oldbm);
 
@@ -305,9 +308,10 @@ void CDialogSK::make(CDC * wDC) {
 // is all I could find.
 BOOL CDialogSK::OnEraseBkgnd(CDC* pDC) 
 {
-	if (!m_Need2Erase) {
-		return TRUE;
-	}
+
+//	if (!m_Need2Erase) {
+//		return TRUE;
+//	}
 	if (!m_UseSkin)
 		CDialog::OnEraseBkgnd(pDC);
 	else {
@@ -316,22 +320,49 @@ BOOL CDialogSK::OnEraseBkgnd(CDC* pDC)
 		CDC dc;
 		dc.CreateCompatibleDC(pDC);
 		CBitmap * old = dc.SelectObject(m_bmBackground);
+		
 		pDC->BitBlt(0,0,rect.Width(),rect.Height(), &dc, 0, 0, SRCCOPY);
+
 		dc.SelectObject(old);
-		m_Need2Erase = FALSE;
 	}
+	//m_Need2Erase = FALSE;
 	return TRUE;
 }
-BOOL CDialogSK::EraseBkgndNC(CDC *pDC) {
-	if (m_UseSkin) {
-		CRect rect;
-		GetWindowRect(rect);
-		CDC dc;
-		dc.CreateCompatibleDC(NULL);
-		CBitmap * old = dc.SelectObject(m_bmFrame);
-		pDC->BitBlt(0,0,rect.Width(),rect.Height(), &dc, 0, 0, SRCCOPY);
-		dc.SelectObject(old);
-	}
+BOOL CDialogSK::EraseBkgndNC() {
+	CRect wrect;
+	GetWindowRect(wrect);
+	CRect lrect,trect,rrect,brect;
+
+	lrect=wrect;trect=wrect;rrect=wrect;brect=wrect;
+	STC(lrect);STC(trect);STC(rrect);STC(brect);
+	CRectMove(lrect,0,0);
+	CRectMove(trect,0,0);
+	CRectMove(rrect,0,0);
+	CRectMove(brect,0,0);
+	lrect.right = lrect.left + m_FrameBorder;
+	trect.bottom = trect.top + m_FrameBorder;
+	rrect.left = rrect.right - m_FrameBorder;
+	brect.top = brect.bottom - m_FrameBorder;
+
+	CDC* pDC= GetWindowDC();
+
+
+	CDC dc;
+	dc.CreateCompatibleDC(NULL);
+	CBitmap * old = dc.SelectObject(m_bmFrame);
+	pDC->BitBlt(lrect.left,lrect.top,lrect.Width(),lrect.Height(),
+		&dc,lrect.left,lrect.top,SRCCOPY);
+	pDC->BitBlt(trect.left,trect.top,trect.Width(),trect.Height(),
+		&dc,trect.left,trect.top,SRCCOPY);
+	pDC->BitBlt(rrect.left,rrect.top,rrect.Width(),rrect.Height(),
+		&dc,rrect.left,rrect.top,SRCCOPY);
+	pDC->BitBlt(brect.left,brect.top,brect.Width(),brect.Height(),
+		&dc,brect.left,brect.top,SRCCOPY);
+
+	dc.SelectObject(old);
+	ReleaseDC(pDC);
+
+
 	return TRUE;
 }
 
@@ -353,23 +384,12 @@ CDialogSK::EnableEasyMove(BOOL pEnable)
     m_bEasyMove = pEnable;
 }
 
-//void
-//CDialogSK::SetStyle(LayOutStyle style)
-//{
-//    m_loStyle = style;
-//    if(m_loStyle == LO_RESIZE /* && m_hBitmap */)
-//    {
-//        SetWindowPos(0, 0, 0, m_dwWidth, m_dwHeight, SWP_NOMOVE | SWP_NOREPOSITION );
-//    }
-//}
 void
 CDialogSK::OnNcPaint() {
 	if (!m_UseSkin)
 		CDialog::OnNcPaint();
 	else {
-		CDC* pdc= GetWindowDC();
-		EraseBkgndNC(pdc);//, BitmapToCRect * bmcr)
-		ReleaseDC(pdc);	
+		EraseBkgndNC();//, BitmapToCRect * bmcr)
 	}
 	return;
 }

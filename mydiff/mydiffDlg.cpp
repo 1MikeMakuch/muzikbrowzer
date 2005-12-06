@@ -9,6 +9,7 @@
 #include "MyString.h"
 #include "TestHarness.h"
 #include "direct.h"
+#include "resource.h"
 
 
 #define LOGOWNER

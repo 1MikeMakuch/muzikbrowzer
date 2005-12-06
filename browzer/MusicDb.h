@@ -403,6 +403,7 @@ class MusicLib
 //        void exportLibrary();
 		MSongLib m_SongLib;
 	private:
+		BOOL m_Searching;
 		MSongLib m_SaveLib;
 		PicCache m_picCache;
         CString m_dir;

@@ -41,6 +41,7 @@ LoadPlaylistDlg::LoadPlaylistDlg(PlayerCallbacks * pcb,
 {
 	//{{AFX_DATA_INIT(LoadPlaylistDlg)
 	//}}AFX_DATA_INIT
+	m_bPlayer = FALSE;
 	m_Resizing = FALSE;	
 	m_AdjustLibrary = FALSE;
 	m_LibraryDragging = FALSE;
@@ -53,16 +54,20 @@ LoadPlaylistDlg::LoadPlaylistDlg(PlayerCallbacks * pcb,
 
 	MBCONFIG_READ_SKIN_DEFS_POBJ(m_parentcallbacks->mbconfig(),m_reg);
 }
+LoadPlaylistDlg::~LoadPlaylistDlg() {
+	delete m_Control;
+}
 
 
 void LoadPlaylistDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogSK::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(LoadPlaylistDlg)
+	DDX_Control(pDX, IDC_PLAYLIST_CLOSE, m_Close);
 	DDX_Control(pDX, IDC_LPD_TITLE, m_TitleLabel);
 	DDX_Control(pDX, IDC_PLAYLIST_DELETE, m_Delete);
 	DDX_Control(pDX, IDC_PLAYLIST_LOAD, m_Load);
-	DDX_Control(pDX, IDC_PLAYLIST_CANCEL, m_Exit);
+	DDX_Control(pDX, IDCANCEL, m_Exit);
 	DDX_Control(pDX, IDC_PLAYLIST_UP, m_Up);
 	DDX_Control(pDX, IDC_PLAYLIST_DOWN, m_Down);
 	DDX_Control(pDX, IDC_PLAYLIST_SAVE, m_Save);
@@ -88,9 +93,10 @@ BEGIN_MESSAGE_MAP(LoadPlaylistDlg, CDialogSK)
 	ON_BN_CLICKED(IDC_PLAYLIST_SAVE, OnPlaylistSave)
 	ON_BN_CLICKED(IDC_PLAYLIST_DELETE, OnDeletePlaylist)
 	ON_BN_CLICKED(IDC_PLAYLIST_RENAME, OnRenamePlaylist)
+	ON_BN_CLICKED(IDC_PLAYLIST_CLOSE, OnCancel)
 	ON_LBN_KILLFOCUS(IDC_PLAYLIST_SONGS, OnKillfocusPlaylistSongs)
 	ON_LBN_SELCHANGE(IDC_PLAYLIST_SONGS, OnSelchangePlaylistSongs)
-	ON_BN_CLICKED(IDC_CANCEL, OnCancel)
+//	ON_BN_CLICKED(IDCANCEL, OnCancel)
 	ON_WM_SETCURSOR()
 	ON_WM_NCMOUSEMOVE()
 	ON_WM_LBUTTONUP()
@@ -105,6 +111,7 @@ BEGIN_MESSAGE_MAP(LoadPlaylistDlg, CDialogSK)
 	ON_WM_SETCURSOR()
 	ON_MESSAGE(MB_LISTMOVEUP, OnMovePlaylistUp)
 	ON_MESSAGE(MB_LISTMOVEDN, OnMovePlaylistDn)
+
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -114,9 +121,12 @@ BOOL LoadPlaylistDlg::OnInitDialog()
 
 	m_Need2Erase = TRUE;
 	CDialogSK::OnInitDialog();
+	m_LastDragRect = CRect(0,0,0,0);
 
 	if (m_IsEditor) { 
 		m_TitleLabel.ShowWindow(SW_HIDE);
+		m_Close.ShowWindow(SW_HIDE);
+		ModifyStyle(0,WS_CAPTION | WS_SYSMENU,0);
 	} else {
 		ModifyStyle(WS_CAPTION,0,0); // delete the title bar
 	}
@@ -128,9 +138,8 @@ BOOL LoadPlaylistDlg::OnInitDialog()
 	m_parentcallbacks->mbconfig()->getRegistry("LoadPlaylistWidth", iwidth, MB_MIN_WIDTH);
 	m_parentcallbacks->mbconfig()->getRegistry("LoadPlaylistHeight", iheight, MB_MIN_HEIGHT);
 
-	COLORREF crTransMain,crTransPanel;
-	MBCONFIG_READ_TRANS_COLORS(m_reg,crTransMain,crTransPanel);
-	SetTransparentColor(crTransMain,crTransPanel); 
+	MBCONFIG_READ_TRANS_COLORS(m_reg,m_crTransMain,m_crTransPanel);
+	SetTransparentColor(m_crTransMain,m_crTransPanel); 
 
 	COLORREF crColHdrInUL,crColHdrInLR,crColHdrOutUL,crColHdrOutLR;
 	COLORREF crDataInUL,crDataInLR,crDataOutUL,crDataOutLR;
@@ -146,13 +155,17 @@ BOOL LoadPlaylistDlg::OnInitDialog()
 		crStatusInUL,crStatusInLR,crStatusOutUL,crStatusOutLR);
 	
 	COLORREF crOtherFg,crOtherBg,
+		crButtonsFgOut,  crButtonsBgOut,
 		crButtonsFgHover,crButtonsBgHover,
-		crButtonsFgOut,  crButtonsBgOut;
+		crButtonsFgIn,crButtonsBgIn;
+	BOOL OtherFlat,OtherBorder;
 
-	MBCONFIG_READ_COLOR_BUTTONS(m_reg,
+	MBCONFIG_READ_OTHER_COLORS(m_reg,
 		crOtherFg,crOtherBg,
+		crButtonsFgOut,  crButtonsBgOut,
 		crButtonsFgHover,crButtonsBgHover,
-		crButtonsFgOut,  crButtonsBgOut);
+		crButtonsFgIn,crButtonsBgIn,
+		OtherFlat,OtherBorder);
 
 	BOOL threeDDataWindows	= m_reg.Read(MB3DDATA,0);
 	BOOL threeDColHdrs		= m_reg.Read(MB3DCOLHDRS,0);
@@ -213,17 +226,33 @@ BOOL LoadPlaylistDlg::OnInitDialog()
 		m_NamesLabel.initFont();
 		m_SongsLabel.initFont();
 	} else {
-		m_TitleLabel.setText("Playlist Chooser");
+		m_TitleLabel.setText("Playlist Loader");
 		m_TitleLabel.SetColors(crOtherFg,crOtherBg);
-		m_TitleLabel.SetTransparent(crTransPanel);
+//		m_TitleLabel.SetTransparent(cdc, m_crTransPanel);
 
-		m_Delete.SetColors(crButtonsFgHover,crButtonsBgHover,crButtonsFgOut,crButtonsBgOut);
-		m_Load.SetColors(crButtonsFgHover,crButtonsBgHover,crButtonsFgOut,crButtonsBgOut);
-		m_Exit.SetColors(crButtonsFgHover,crButtonsBgHover,crButtonsFgOut,crButtonsBgOut);
-		m_Up.SetColors(crButtonsFgHover,crButtonsBgHover,crButtonsFgOut,crButtonsBgOut);
-		m_Down.SetColors(crButtonsFgHover,crButtonsBgHover,crButtonsFgOut,crButtonsBgOut);
-		m_Save.SetColors(crButtonsFgHover,crButtonsBgHover,crButtonsFgOut,crButtonsBgOut);
-		m_Rename.SetColors(crButtonsFgHover,crButtonsBgHover,crButtonsFgOut,crButtonsBgOut);
+		m_Delete.SetFlat(OtherFlat);
+		m_Load.SetFlat(OtherFlat);
+		m_Exit.SetFlat(OtherFlat);
+		m_Up.SetFlat(OtherFlat);
+		m_Down.SetFlat(OtherFlat);
+		m_Save.SetFlat(OtherFlat);
+		m_Rename.SetFlat(OtherFlat);
+
+		m_Delete.DrawBorder(OtherBorder);
+		m_Load.DrawBorder(OtherBorder);
+		m_Exit.DrawBorder(OtherBorder);
+		m_Up.DrawBorder(OtherBorder);
+		m_Down.DrawBorder(OtherBorder);
+		m_Save.DrawBorder(OtherBorder);
+		m_Rename.DrawBorder(OtherBorder);
+
+		m_Delete.SetColors(crButtonsFgHover,crButtonsBgHover,crButtonsFgOut,crButtonsBgOut,crButtonsFgIn,crButtonsBgIn);
+		m_Load.SetColors(crButtonsFgHover,crButtonsBgHover,crButtonsFgOut,crButtonsBgOut,crButtonsFgIn,crButtonsBgIn);
+		m_Exit.SetColors(crButtonsFgHover,crButtonsBgHover,crButtonsFgOut,crButtonsBgOut,crButtonsFgIn,crButtonsBgIn);
+		m_Up.SetColors(crButtonsFgHover,crButtonsBgHover,crButtonsFgOut,crButtonsBgOut,crButtonsFgIn,crButtonsBgIn);
+		m_Down.SetColors(crButtonsFgHover,crButtonsBgHover,crButtonsFgOut,crButtonsBgOut,crButtonsFgIn,crButtonsBgIn);
+		m_Save.SetColors(crButtonsFgHover,crButtonsBgHover,crButtonsFgOut,crButtonsBgOut,crButtonsFgIn,crButtonsBgIn);
+		m_Rename.SetColors(crButtonsFgHover,crButtonsBgHover,crButtonsFgOut,crButtonsBgOut,crButtonsFgIn,crButtonsBgIn);
 
 		m_PlaylistSongs.initFont();
 		m_PlaylistNames.initFont();
@@ -268,16 +297,33 @@ BOOL LoadPlaylistDlg::OnInitDialog()
 			threeDDataWindows,crDataInUL,crDataInLR,crDataOutUL,crDataOutLR);
 
 		m_PlaylistNames.SetBitmaps(cdc, 
-			m_parentcallbacks->mbconfig()->getSkin(MB_SKIN_SCROLLUPARROW),crTransPanel,
-			m_parentcallbacks->mbconfig()->getSkin(MB_SKIN_SCROLLDOWNARROW),crTransPanel,
-			m_parentcallbacks->mbconfig()->getSkin(MB_SKIN_SCROLLBUTTON),crTransPanel,
-			m_parentcallbacks->mbconfig()->getSkin(MB_SKIN_SCROLLBACKGROUND),crTransPanel);
+			m_parentcallbacks->mbconfig()->getSkin(MB_SKIN_SCROLLUPARROW),
+				m_crTransPanel,
+			m_parentcallbacks->mbconfig()->getSkin(MB_SKIN_SCROLLDOWNARROW),
+				m_crTransPanel,
+			m_parentcallbacks->mbconfig()->getSkin(MB_SKIN_SCROLLBUTTON),
+				m_crTransPanel,
+			m_parentcallbacks->mbconfig()->getSkin(MB_SKIN_SCROLLBACKGROUND),
+				m_crTransPanel);
 		
 		m_PlaylistSongs.SetBitmaps(cdc, 
-			m_parentcallbacks->mbconfig()->getSkin(MB_SKIN_SCROLLUPARROW),crTransPanel,
-			m_parentcallbacks->mbconfig()->getSkin(MB_SKIN_SCROLLDOWNARROW),crTransPanel,
-			m_parentcallbacks->mbconfig()->getSkin(MB_SKIN_SCROLLBUTTON),crTransPanel,
-			m_parentcallbacks->mbconfig()->getSkin(MB_SKIN_SCROLLBACKGROUND),crTransPanel);
+			m_parentcallbacks->mbconfig()->getSkin(MB_SKIN_SCROLLUPARROW),
+				m_crTransPanel,
+			m_parentcallbacks->mbconfig()->getSkin(MB_SKIN_SCROLLDOWNARROW),
+				m_crTransPanel,
+			m_parentcallbacks->mbconfig()->getSkin(MB_SKIN_SCROLLBUTTON),
+				m_crTransPanel,
+			m_parentcallbacks->mbconfig()->getSkin(MB_SKIN_SCROLLBACKGROUND),
+				m_crTransPanel);
+
+		m_Close.SetBitmaps(
+			m_parentcallbacks->mbconfig()->getSkin(MB_SKIN_BUTTONEXITIN),	
+				m_crTransPanel,	
+			m_parentcallbacks->mbconfig()->getSkin(MB_SKIN_BUTTONEXITHOVER),	
+				m_crTransPanel,	
+			m_parentcallbacks->mbconfig()->getSkin(MB_SKIN_BUTTONEXITOUT),		
+				m_crTransPanel);
+
 	}
 	ReleaseDC(cdc);
 	
@@ -311,6 +357,7 @@ BOOL LoadPlaylistDlg::OnInitDialog()
 	m_PlaylistNames.invalidate();
 
 	m_PlaylistSongs.m_reorder = TRUE;
+	m_PlaylistNames.SetFocus();
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
@@ -359,12 +406,12 @@ void LoadPlaylistDlg::OnSelchangePlaylistNames()
 			m_Save.EnableWindow(FALSE);
 			sel = m_PlaylistNames.SelectString(-1,name); // -1 for all
 			m_PlaylistNames.SetCurSel(sel);
-			logger.ods(CString("LPD cursel " + numToString(sel)));
+//			logger.ods(CString("LPD cursel " + numToString(sel)));
 		} else {  // Answer was yes, (Ok)
 			name = m_LastName;
 			sel = m_PlaylistNames.SelectString(-1,name); // -1 for all
 			m_PlaylistNames.SetCurSel(sel);
-			logger.ods(CString("LPD cursel " + numToString(sel)));
+//			logger.ods(CString("LPD cursel " + numToString(sel)));
 		}
 	}
 	int pos,size,total,duration;
@@ -624,19 +671,24 @@ void LoadPlaylistDlg::OnSizing(UINT fwSide, LPRECT pRect)
 void LoadPlaylistDlg::OnSize(UINT nType, int cx, int cy) 
 {
 	CDialogSK::OnSize(nType, cx, cy);
+	m_Need2Erase = TRUE;
 	resetControls();
+	UpdateWindow();
 //	UpdateGripPos();
 }
 void LoadPlaylistDlg::resetControls() {
+//	int counter=0;
+//	logger.ods("resetControls "+numToString(counter++));
 	if (!IsWindow(m_hWnd)) return;
 	if (!IsWindow(m_PlaylistNames.m_hWnd)) return;
 
-	CRect titlerect,clientrect,namesrect,songsrect,
+	CRect titlerect,closerect,clientrect,namesrect,songsrect,
 		deleterect,loadrect,gaasrect,exitrect,
 		nameslabelrect,songslabelrect,
 		uprect,downrect,saverect,wrect,renamerect;
 	GetClientRect(clientrect);
 	GetWindowRect(wrect);
+	m_SysBarHeight = wrect.Height() - clientrect.Height();
 	ScreenToClient(wrect);
 	m_Delete.GetClientRect(deleterect);
 	m_Load.GetClientRect(loadrect);
@@ -647,24 +699,33 @@ void LoadPlaylistDlg::resetControls() {
 	m_Save.GetClientRect(saverect);
 	m_Rename.GetClientRect(renamerect);
 	m_TitleLabel.GetClientRect(titlerect);
+	m_Close.GetClientRect(closerect);
+	m_Close.SetAlign(CButtonST::ST_ALIGN_OVERLAP,TRUE);
+	m_Close.DrawTransparent(TRUE);
 
 	int border = m_parentcallbacks->mbconfig()->getDlgBorderWidth();
 	int borderpanel = m_reg.Read("BorderPanel",5);
 	int borderhorz = m_parentcallbacks->mbconfig()->getDlgBorderHorz();
 	int bordervert = m_parentcallbacks->mbconfig()->getDlgBorderVert();
-
-	clientrect.DeflateRect(border,border,border,border);
-
+	
+	CRectMove(closerect,clientrect.Width() - (closerect.Width() + border),
+		border);
+	
 	CString txt; m_TitleLabel.getText(txt);
 	CSize ts = m_TitleLabel.GetSize(txt);txt += "xx";
 	titlerect.bottom = titlerect.top + ts.cy + 2;
 	titlerect.right = titlerect.left + ts.cx + 4;
 
-	CPoint tp((wrect.Width() / 2) - (titlerect.Width() / 2),wrect.top+borderpanel);
-	titlerect.OffsetRect(tp);
-	clientrect.top = titlerect.bottom + bordervert;
+	if (m_IsEditor) { 
+//		CPoint tp((wrect.Width() / 2) - (titlerect.Width() / 2),wrect.top+borderpanel);
+//		titlerect.OffsetRect(tp);
+		clientrect.top += bordervert;
+	} else {
+		clientrect.DeflateRect(border,border,border,border);
+		CPoint tp((wrect.Width() / 2) - (titlerect.Width() / 2),wrect.top+borderpanel);
+		titlerect.OffsetRect(tp);
+		clientrect.top = titlerect.bottom + bordervert;
 
-	if (!m_IsEditor) { 
 		LayOutStyle BackgroundMainType,BackgroundPanelType;
 		MBCONFIG_READ_BACKGROUND_TYPES(m_reg,BackgroundMainType,BackgroundPanelType);
 	
@@ -679,16 +740,24 @@ void LoadPlaylistDlg::resetControls() {
 			clientrect, BackgroundPanelType, CS("play panel"));
 		CDC * cdc = GetDC();
 		make(cdc);
-
+		ReleaseDC(cdc);
 		OnNcPaint() ;
-		OnEraseBkgnd(cdc); // force CDialogSK to paint background
+		EraseBkgndNC();//(cdc); // force CDialogSK to paint background
 		// This sends a WM_NCPAINT to repaint the resize frame
 		RedrawWindow(NULL,NULL, RDW_FRAME|RDW_INVALIDATE);
+		
+		// reset trans, this tells the ColorStatic to grab a new bg
+		//cdc = GetDC();
+		CRect trect;
+		m_TitleLabel.GetWindowRect(trect);
+		STC(trect);
+		m_TitleLabel.SetTransparent(m_bmBackground, trect, m_crTransPanel);
 
-		ReleaseDC(cdc);
+		clientrect.DeflateRect(borderpanel,borderpanel,borderpanel,borderpanel);
 	}
+//	logger.ods("resetControls "+numToString(counter++));
 
-	clientrect.DeflateRect(borderpanel,borderpanel,borderpanel,borderpanel);
+
 
 	int pct;// = int((double)100 * ((double)width / (double)dw));
 	int iwidth,iheight;
@@ -741,6 +810,7 @@ void LoadPlaylistDlg::resetControls() {
 	m_Save.MoveWindow(saverect);
 	m_Rename.MoveWindow(renamerect);
 	m_TitleLabel.MoveWindow(titlerect);
+	m_Close.MoveWindow(closerect);
 
 	int gaasheight = gaasrect.Height();
 	//gaasheight = 30;
@@ -751,7 +821,6 @@ void LoadPlaylistDlg::resetControls() {
 	m_GAAS.MoveWindow(gaasrect);
 
 	CSize s = m_NamesLabel.GetSize("Playlists");
-
 	nameslabelrect.top = clientrect.top;
 	nameslabelrect.bottom = nameslabelrect.top + s.cy + 4;
 	nameslabelrect.left = clientrect.left;
@@ -792,13 +861,14 @@ void LoadPlaylistDlg::resetControls() {
 	m_AdjustRect.bottom += 20;
 	m_AdjustInt.UnionRect(nameslabelrect,namesrect);
 
-	RedrawWindow();
+	m_Need2Erase = TRUE;
+	UpdateWindow();
 
 }
 
 HBRUSH LoadPlaylistDlg::OnCtlColor( CDC* pDC, CWnd* pWnd, UINT nCtlColor ) {
 
-	HBRUSH hbr = CDialogSK::OnCtlColor(pDC, pWnd, nCtlColor);
+	HBRUSH hbr = CDialog::OnCtlColor(pDC, pWnd, nCtlColor);
 
 	if (m_IsEditor)
 		return (HBRUSH)hbr;
@@ -868,9 +938,13 @@ LoadPlaylistDlg::OnNcHitTest( CPoint point ) {
 	br.TopLeft() = CPoint(br.BottomRight().x-20, br.BottomRight().y-20);
 	CPoint cpoint(point);
 	ScreenToClient(&cpoint);
+	CRect ur = br;
+	CRectMove(ur,r.BottomRight().x-20,r.TopLeft().y+20);
+	
 	
 	ClientToScreen(&r);
 	ClientToScreen(&br);
+	ClientToScreen(&ur);
 
 	UINT rv = CDialogSK::OnNcHitTest(point);
 	
@@ -878,9 +952,13 @@ LoadPlaylistDlg::OnNcHitTest( CPoint point ) {
 		return HTBOTTOMRIGHT;
 	} else if (m_AdjustRect.PtInRect(cpoint)) {
 		return HTSIZE;
-    } else {
-		return HTCAPTION;
-    } 
+	} else {
+		return rv;
+	} //else if (ur.PtInRect(point)) {
+//		return HTCLOSE;
+//    } else {
+//		return HTCAPTION;
+//    } 
 
 	return rv;
 }
@@ -926,7 +1004,7 @@ void LoadPlaylistDlg::OnNcLButtonUp(UINT nHitTest, CPoint point)
 		CDialogSK::OnNcLButtonUp(nHitTest, point);
 	}
 	m_AdjustLibrary = FALSE;
-	
+	UpdateWindow();	
 }
 void LoadPlaylistDlg::OnMouseMove(UINT nFlags, CPoint point) 
 {
@@ -936,14 +1014,12 @@ void LoadPlaylistDlg::OnMouseMove(UINT nFlags, CPoint point)
 
 void LoadPlaylistDlg::OnNcMouseMove(UINT nHitTest, CPoint point) 
 {
-	
+	static const SIZE rbs = {1,1};	
 	if (m_LibraryDragging) {
-//		CString msg = " mAL=" + numToString(m_AdjustLibrary);
-//		msg += "\r\n";
 		CPoint cpoint(point);
 		ScreenToClient(&cpoint);
 		CRect rect;
-		RedrawWindow();
+		UpdateWindow();
 
 		BOOL doit = TRUE;
 		if (m_AdjustLibrary) {
@@ -951,21 +1027,27 @@ void LoadPlaylistDlg::OnNcMouseMove(UINT nHitTest, CPoint point)
 			rect.right = cpoint.x;
 			if (rect.right == m_AdjustInt.right)
 				rect.right--;
-		} 
+		} else {
+			doit = FALSE;
+		}
 		if (doit) {
-			CDC * cdc = GetDC();
+			CDC * cdc = GetWindowDC();
+			if (m_IsEditor)
+				CRectMove(rect,0,m_SysBarHeight+1);
 			if (rect.Width() < m_MinNamesWidth)
 				rect.right = rect.left + m_MinNamesWidth;
 			if (rect.Width() > m_MaxNamesWidth)
 				rect.right = rect.left + m_MaxNamesWidth;
-			cdc->FrameRect(rect, &m_HatchBrush);
+			rect.top += 4;
+			rect.left = rect.right - 1;
+			cdc->DrawDragRect(rect,rbs,m_LastDragRect,rbs);
 			ReleaseDC(cdc);
+			m_LastDragRect = rect;
 		}
 	} else {
 		CDialogSK::OnNcMouseMove(nHitTest, point);
 	}
 }
-
 
 void
 LoadPlaylistDlg::AdjustLibraryWidths(CPoint &apoint) {
@@ -1004,10 +1086,6 @@ LoadPlaylistDlg::AdjustLibraryWidths(CPoint &apoint) {
 	songsrect.left = namesrect.right + 5;
 	songslabelrect.left = songsrect.left;
 
-//	ClientToScreen(namesrect);
-//	ClientToScreen(nameslabelrect);
-//	ClientToScreen(songsrect);
-//	ClientToScreen(songslabelrect);
 	m_PlaylistNames.MoveWindow(namesrect);
 	m_NamesLabel.MoveWindow(nameslabelrect);
 	m_PlaylistSongs.MoveWindow(songsrect);
@@ -1022,10 +1100,10 @@ LoadPlaylistDlg::AdjustLibraryWidths(CPoint &apoint) {
 	pct = int((double)100 * ((double)width / (double)dw));
 	m_parentcallbacks->mbconfig()->setRegistry("LoadPlaylistNamesWidthPct", pct);
 
-
-	OnNcPaint();
-	Invalidate();
-	RedrawWindow();
+	if (!m_IsEditor)
+		OnNcPaint();
+	m_Need2Erase = TRUE;
+	UpdateWindow();
 }
 // These 2 up/dn functions process msg from ExtendedListBox that
 // a move has occured. Since ELB handled moving the display

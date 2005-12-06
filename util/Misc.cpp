@@ -7,6 +7,8 @@ using namespace std;
 #include "TestHarness.h"
 #include "MyLog.h"
 #include "FileUtils.h"
+#include "resource.h"
+#include "Process.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -14,13 +16,39 @@ using namespace std;
 static char THIS_FILE[] = __FILE__;
 #endif
 
-CString MBFormatError(LONG e) {
+CString MBFormatErrorOld(LONG e) {
 	char msgBuf[ 512 ];
 	FormatMessage( FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
 		NULL, e, 0, msgBuf, sizeof( msgBuf ) / sizeof( char ), NULL );
 	CString msg(msgBuf);
 	return msg;
 }
+CString MBFormatError(LONG err)
+{
+	LPTSTR s;
+	if(::FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER 
+		| FORMAT_MESSAGE_FROM_SYSTEM,
+		NULL,err,0,(LPTSTR)&s,0,NULL) == 0)
+	{ /* failed */
+		// See if it is a known error code
+		CString fmt;                          
+		fmt.LoadString(IDS_UNKNOWN_ERROR);    
+		CString t;
+		t.Format(fmt, err, err);
+		return t;
+	} /* failed */ 	else { /* success */
+		LPTSTR p = _tcschr(s, _T('\r'));
+		if(p != NULL)
+		{ /* lose CRLF */
+			*p = _T('\0');
+		} /* lose CRLF */
+
+		CString Error = s; // copy to a CString
+		::LocalFree(s);
+		return Error;
+	} /* success */
+} // cvError
+
 
 
 CPoint crtopright(CRect & rect) {
@@ -44,7 +72,21 @@ CPoint crbottomleft(CRect & rect) {
 	return p;
 }
 
-
+void CRectMove(CRect & rect, const int x, const int y) {
+	int w,h;
+	w = rect.Width();
+	h = rect.Height();
+	rect.top = y;
+	rect.bottom = y + h;
+	rect.left = x;
+	rect.right = x + w;
+}
+void CRectWidth(CRect & rect, int newwidth) {
+	rect.right = rect.left + newwidth;
+}
+void CRectHeight(CRect & rect, int newheight) {
+	rect.bottom = rect.top + newheight;
+}
 
 //TEST(ConfigFileParser, ParseTest1)
 //{
@@ -222,11 +264,13 @@ TEST(MBUtilRgbTriple, test1)
 	CHECK(rgb == rgb2);
 
 }
+
 void MBUtil::BmpToDC(CDC* pDC, HBITMAP bmp, 
 	 const int dx, const int dy, const int dwidth, const int dheight,
 	 const int swidth, const int sheight, const LayOutStyle los,
 	 const BOOL doTrans, const COLORREF transcolor, const int offset)
 {
+//	FileUtil::BmpLog(bmp,"bmp");
 	CRect rect(dx,dy,dx+dwidth,dy+dheight);
 	BitmapToCRect bmcr(bmp, rect, los, swidth, sheight, "xxx");
 	MBUtil::BmpToDC(pDC, &bmcr, doTrans, transcolor, offset);
@@ -262,8 +306,11 @@ void MBUtil::BmpToDC(CDC* pDC, BitmapToCRect * bmcr,
 		hMask = MBUtil::CreateBitmapMask(bmcr->m_hBitmap, destwidth, destheight,
 			srcwidth, srcheight, bmcr->m_loStyle,bkcolor);
 
+//		if (1 == x)
+//			FileUtil::BmpLog(hMask,"mask");
 		BitmapToCRect bmcrTrans((HBITMAP)hMask, bmcr->m_rect, bmcr->m_loStyle, 
 			srcwidth,srcheight);
+		
 		MBUtil::CutAndTileBmp(pDC,&bmcrTrans,offset,SRCAND);
 		::DeleteObject(hMask);
 		BITBLTTYPE = SRCPAINT;
@@ -530,4 +577,52 @@ MBUtil::SecsToHMS(const int duration, int & hours, int & mins, int & secs,
 	mins = secs / 60;
 	secs = secs % 60;
 	sprintf(buf,"%02d:%02d:%02d",hours,mins,secs);
+}
+BOOL MBUtil::system(CWnd * cwnd, const CString & command, UINT msg2post) {
+#ifdef _DEBUG
+	logger.ods("MBUtil::system begin");
+
+	CString scriptname = "c:\\tmp\\MBUtilsystem_script.sh";
+	CFile script;
+	CFileException fileException;
+	if ( !script.Open( scriptname,
+        CFile::modeWrite | CFile::modeCreate | CFile::shareDenyNone,
+        &fileException ))
+	{
+        CString msg = "Unable to write script ";
+		msg += scriptname;
+			msg += "\r\n";
+		msg += MBFormatError(fileException.m_lOsError);
+		logger.ods("MBUtil::system error");
+		logger.ods(msg);
+        return FALSE;
+	}
+	
+
+	CString tmp ;
+
+	tmp += command;
+	OutputDebugString(tmp + "\r\n");
+
+    script.Write((LPCTSTR)tmp, tmp.GetLength());
+	script.Write("\n", 1);
+    script.Flush();
+	script.Close();
+
+	CString pcommand = "c:\\cygwin\\bin\\bash.exe --login ";
+	pcommand += "c:\\tmp\\MBUtilsystem_script.sh";
+
+     Process * p = new Process(pcommand, cwnd);
+     if(!p->run())
+	 { /* failed */
+		DWORD err = ::GetLastError();
+		CString errstr = MBFormatError(err);
+		OutputDebugString(errstr);
+		logger.ods("MBUtil::system error");
+		return FALSE;
+	 }
+	 logger.ods("MBUtil::system done");
+
+#endif
+	return TRUE;
 }

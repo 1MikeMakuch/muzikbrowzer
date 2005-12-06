@@ -85,10 +85,6 @@ LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
 # ADD LINK32 Version.lib config\Debug\config.lib ../3rdparty/ogg/libogg-1.0/win32/Debug/ogg_static_d.lib ../oggtagger/Debug/oggtagger.lib ../WmaEdit/Debug/WmaTagg.lib ../3rdparty/ogg/libvorbis-1.0/win32/Debug/vorbis_static_d.lib ../3rdparty/ogg/libvorbis-1.0/win32/Debug/vorbisfile_static_d.lib rpcrt4.lib ..\3rdparty/id3lib-3.8.2\libprj\Debug\id3libD.lib ..\3rdparty/id3lib-3.8.2\zlib\prj\Debug\zlibD.lib ..\TestHarness\Debug\TestHarness.lib Help\HtmlHelp.lib strmiids.lib config\Debug\config.lib controls\Debug\controls.lib ..\id3\id3libutils\Debug\id3utils.lib irman\Debug\irman.lib Serial\Debug\Serial.lib ..\util\Debug\util.lib dxguid.lib Quartz.lib ..\md5\Debug\md5.lib wmvcore.lib /nologo /subsystem:windows /incremental:no /debug /machine:I386 /nodefaultlib:"msvcrt" /nodefaultlib:"libcmt" /nodefaultlib:"nafxcw" /out:"Debug/muzikbrowzerD.exe" /pdbtype:sept /libpath:"..\3rdparty\WMFSDK9\lib"
 # SUBTRACT LINK32 /pdb:none
-# Begin Special Build Tool
-SOURCE="$(InputPath)"
-PostBuild_Cmds=del /Q c:\mkm\bmps\*.*
-# End Special Build Tool
 
 !ELSEIF  "$(CFG)" == "muzikbrowzer - Win32 DebugBC"
 

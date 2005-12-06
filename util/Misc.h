@@ -10,6 +10,9 @@ CPoint crtopright(CRect & rect);
 CPoint crtopleft(CRect & rect);
 CPoint crbottomright(CRect & rect);
 CPoint crbottomleft(CRect & rect);
+void CRectMove(CRect & rect, const int x, const int y);
+void CRectWidth(CRect & rect, int newwidth);
+void CRectHeight(CRect & rect, int newheight);
 
 class CObjectInt : public CObject
 {
@@ -78,6 +81,7 @@ public:
 
 	static void SecsToHMS(const int seconds, int & hours, int & mins, 
 		int & secs,	char * buf);
+	static BOOL system(CWnd * cwnd, const CString & command, UINT msg=0);
 };
 #define STC(_STC_ARG_) ScreenToClient(_STC_ARG_);
 #define CTS(_STC_ARG_) ClientToScreen(_STC_ARG_);

@@ -27,10 +27,12 @@ class LoadPlaylistDlg : public CDialogSK //, public CResizableGrip
 public:
 	LoadPlaylistDlg(/*CPlayerDlg *p, */ PlayerCallbacks * pcb,
 		CWnd* pParent = NULL, BOOL editor=FALSE);   // standard constructor
+	~LoadPlaylistDlg();
 
 // Dialog Data
 	//{{AFX_DATA(LoadPlaylistDlg)
 	enum { IDD = IDD_LOADPLAYLISTDLG };
+	CButtonST	m_Close;
 	CColorStatic	m_TitleLabel;
 	CButtonST	m_Delete;
 	CButtonST	m_Load;
@@ -73,7 +75,7 @@ protected:
 	afx_msg void OnSetfocusPlaylistNames();
 	virtual BOOL OnInitDialog();
 	afx_msg void OnSetfocusPlaylistSongs();
-	afx_msg void OnCancel();
+	virtual void OnCancel();
 	afx_msg void OnPlaylistOk();
 	afx_msg void OnPlaylistUp();
 	afx_msg void OnPlaylistDown();
@@ -120,6 +122,9 @@ private:
 //	MBConfig * m_Config;
 	PlayerCallbacks *m_parentcallbacks;	
 	PlayerCallbacks m_callbacks;	
+	COLORREF m_crTransMain,m_crTransPanel;
+	CRect m_LastDragRect;
+	int m_SysBarHeight;
 };
 
 //{{AFX_INSERT_LOCATION}}

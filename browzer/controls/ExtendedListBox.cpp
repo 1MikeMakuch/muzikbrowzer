@@ -176,9 +176,12 @@ void CExtendedListBox::DrawItem(LPDRAWITEMSTRUCT lpDIS)
         memdc.SetBkColor(crbg);
         memdc.SetTextColor(crtext);
 
+		CRect rect2(rect);
+		rect2.left++; // prevent from drawing on the 3d border
+		rect2.right--;
 		CFont * oldfont = memdc.SelectObject(&m_font);
         memdc.DrawText(data,
-            &rect,
+            &rect2,
             DT_NOPREFIX
             | DT_SINGLELINE
             | DT_LEFT
@@ -192,8 +195,10 @@ void CExtendedListBox::DrawItem(LPDRAWITEMSTRUCT lpDIS)
         } else {
             crbg = m_BkNormal;
         }
-        CBrush br(crbg);
-		memdc.FrameRect(&rect, &br);
+
+        CBrush brfr(crbg);
+		memdc.FillSolidRect(&rect, m_BkNormal);
+		memdc.FrameRect(&rect, &brfr);
     }
 
 
@@ -882,6 +887,8 @@ BOOL CExtendedListBox::OnEraseBkgnd(CDC* pDC)
 }
 void
 CExtendedListBox::invalidate() {
+	// this forces a complete redraw. Don't think I need it.
+	return;
 	SetWindowPos(NULL,0,0,0,0,
 		SWP_FRAMECHANGED|SWP_NOMOVE|SWP_NOSIZE|SWP_NOZORDER); 	
 //    if (m_UseColors == TRUE)
