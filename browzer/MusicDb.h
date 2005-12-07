@@ -59,11 +59,15 @@ class WmaTag;
 // through their music library.
 
 
+
 typedef CMapStringToString SongKeys;
+class CSong;
+typedef MPtr<CSong> Song;
 
 class CSong {
 	public:
 		CSong();
+		CSong(Song &);
 		~CSong();
 		void reference () { _refcnt++;}
 		void unreference();
@@ -79,8 +83,6 @@ class CSong {
 	private:
 		int _refcnt;
 };
-
-typedef MPtr<CSong> Song;
 
 typedef MPtrDLLNode<Song> PlaylistNode;
 typedef MPtrDLL<Song> Playlist;
@@ -317,92 +319,70 @@ class MusicLib
 		MusicLib(InitDlg *);
 		~MusicLib();
 
-        int addAlbumToPlaylist(const CString &, const CString &,
-			const CString &);
-        int addArtistToPlaylist(const CString &, const CString &);
-        int addGenreToPlaylist(const CString &);
-        UINT addSongToDb(int & ctr, Song &, const CString & file = "");
-        int addSongToPlaylist(const CString &, const CString &,
-			const CString &, const CString &);
-//        int addSongToPlaylist(int);
-        int addSongToPlaylist(const Song &);
-		int addFileToPlaylist(const CString & file);
-		BOOL apic(const CString & file, uchar *& rawdata, size_t & size);
-        int clearPlaylist();
-        Song createSongFromId3(ID3_Tag *);
-		Song createSongFromOgg(OggTag *);
-		Song createSongFromWma(WmaTag *);
-		Song createSongFromFile(const CString & mp3file);
-		Song createSongFromFile(const CString & mp3file,
-			CString & error_results, int & t1, int & t2, int & fc);
-        void deletePlaylist(const CString &);
-        int deleteSongFromPlaylist(PlaylistNode *p);
-        void dumpPL(int p);
-        int getAlbums(const CString &, const CString &, CExtendedListBox&, 
-			BOOL albumsortalpha=TRUE);
-        int getArtists(const CString &, CExtendedListBox&);
-        CString getDbLocation() { return m_dir; };
-        int getGenres(CExtendedListBox&);
-        int getGenres(CStringList&);
-//        ID3_Tag getId3(const CString & genre, const CString & artist,
-//			const CString & album, const CString & title);
-		Song getSong(const CString & genre, const CString & artist,
-			const CString & album, const CString & title);
-//        CString getId3(void * p, const CString &);
-        int getPlaylist(CExtendedListBox &);
-        int getPlaylistNames(CExtendedListBox &);
-		int getPlaylistNames(CStringList &);
-		void MovePlaylistsToDir();
-        int getSongs(const CString &, const CString &, const CString &,
-			CExtendedListBox&);
-		int getSongsInPlaylist(const CString & name, CStringArray & desc, 
-			CStringArray & plist, CDWordArray & tlenArray);
-		int getSongsInPlaylist(const CString & name, CExtendedListBox &);
-		CString getSongVal(const CString & key, const CString & genre,
-			const CString & artist, const CString & album,
-			const CString & song);
-        int getTotalMp3s() { return m_totalMp3s; }
-		CString getLibraryCounts();
-        int init();
-        int loadPlaylist(const CString & name, CString & errormsg);
-		// for converting to new m3u format
-		int loadOldPlaylist(const CString & name, CStringList & playlist);
-        void modifyID3(Song old, Song newSong);
-        void movePlaylistUp(int plc, int sel);
-        void movePlaylistDown(int plc, int sel);
-        Playlist _playlist;
-        void RandomizePlaylist();
-        void readDbLocation();
-        UINT readDb();
-		void savePlaylist(const CStringArray & list, const CString & file);
-        void savePlaylist(const CString &);
-		void savePlaylist(Playlist & playlist, const CString & file);
-		BOOL renamePlaylist(const CString src,const CString dest, BOOL overwrite=FALSE);
-        CString scanDirectories(const CStringList & dirs, InitDlg*,
-			BOOL scanNew, BOOL bAdd);
-        void searchForMp3s(CStringList & songs, const CString & genre,
-			const CString & artist, const CString & album,
-			const CString & song);
-        void searchForArtists(CStringList & songs, MList & artistList);
-		void searchForAlbums(CStringList & songs, MList & albumList);
-        void searchForSongs(CStringList & songs, MList & songList,
-			const CString & song = "");
-		void SearchSetup();
-		void SearchCancel();
-		int Search(const CString name);
-		int iSearch(const CString name, MSongLib & db, MSongLib & results);
-		void SearchClear();
-        void setDbLocation(const CString & loc);
-		int setSongVal(const CString & key, const CString & value, 
-			const CString & genrename,
-			const CString & artistname, const CString & albumname,
-			const CString & songname);
-        void shufflePlaylist();
-        UINT writeDb();
-		CString writeSongToFile(Song song);
-//        void exportLibrary();
-		MSongLib m_SongLib;
-	private:
+	Playlist	_playlist;
+	     int	addAlbumToPlaylist(const CString &, const CString &, const CString &);
+	     int	addArtistToPlaylist(const CString &, const CString &);
+	     int	addFileToPlaylist(const CString & file);
+	     int	addGenreToPlaylist(const CString &);
+	    UINT	addSongToDb(int & ctr, Song &, const CString & file = "");
+	     int	addSongToPlaylist(const CString &, const CString &, const CString &, const CString &);
+	     int	addSongToPlaylist(const Song &);
+	    BOOL	apic(const CString & file, uchar *& rawdata, size_t & size);
+	     int	clearPlaylist();
+	    Song	createSongFromFile(const CString & mp3file);
+	    Song	createSongFromFile(const CString & mp3file, CString & error_results, int & t1, int & t2, int & fc);
+	    Song	createSongFromId3(ID3_Tag *);
+	    Song	createSongFromOgg(OggTag *);
+	    Song	createSongFromWma(WmaTag *);
+	    void	deletePlaylist(const CString &);
+	     int	deleteSongFromPlaylist(PlaylistNode *p);
+	    void	dumpPL(int p);
+	     int	getAlbums(const CString &, const CString &, CExtendedListBox&, BOOL albumsortalpha=TRUE);
+	     int	getArtists(const CString &, CExtendedListBox&);
+	 CString	getDbLocation() { return m_dir; };
+	     int	getGenres(CExtendedListBox&);
+	     int	getGenres(CStringList&);
+	 CString	getLibraryCounts();
+	     int	getPlaylist(CExtendedListBox &);
+	     int	getPlaylistNames(CExtendedListBox &);
+	     int	getPlaylistNames(CStringList &);
+	    Song	getSong(const CString & genre, const CString & artist, const CString & album, const CString & title);
+	     int	getSongs(const CString &, const CString &, const CString &, CExtendedListBox&);
+	     int	getSongsInPlaylist(const CString & name, CExtendedListBox &);
+	     int	getSongsInPlaylist(const CString & name, CStringArray & desc, CStringArray & plist, CDWordArray & tlenArray);
+	 CString	getSongVal(const CString & key, const CString & genre, const CString & artist, const CString & album, const CString & song);
+	     int	getTotalMp3s() { return m_totalMp3s; }
+	     int	init();
+	     int	iSearch(const CString name, MSongLib & db, MSongLib & results);
+	     int	loadOldPlaylist(const CString & name, CStringList & playlist);
+	     int	loadPlaylist(const CString & name, CString & errormsg);
+	MSongLib	m_SongLib;
+	    void	modifyID3(Song old, Song newSong);
+	    void	movePlaylistDown(int plc, int sel);
+	    void	MovePlaylistsToDir();
+	    void	movePlaylistUp(int plc, int sel);
+	    void	RandomizePlaylist();
+	    UINT	readDb();
+	    void	readDbLocation();
+	    BOOL	renamePlaylist(const CString src,const CString dest, BOOL overwrite=FALSE);
+	    void	savePlaylist(const CString &);
+	    void	savePlaylist(const CStringArray & list, const CString & file);
+	    void	savePlaylist(Playlist & playlist, const CString & file);
+	 CString	scanDirectories(const CStringList & dirs, InitDlg*, BOOL scanNew, BOOL bAdd);
+	     int	Search(const CString name);
+	    void	SearchCancel();
+	    void	SearchClear();
+	    void	searchForAlbums(Playlist & songs, MList & albumList);
+	    void	searchForArtists(Playlist & songs, MList & artistList);
+	    void	searchForMp3s(Playlist & songs, const CString & genre, const CString & artist, const CString & album, const CString & song);
+	    void	searchForSongs(Playlist & songs, MList & songList,	   const	CString & song = "");
+	    void	SearchSetup();
+	    void	setDbLocation(const CString & loc);
+	     int	setSongVal(const CString & key, const CString & value, const CString & genrename, const CString & artistname, const CString & albumname, const CString & songname);
+	    void	shufflePlaylist();
+	    UINT	writeDb();
+	 CString	writeSongToFile(Song song);
+private:
 		BOOL m_Searching;
 		MSongLib m_SaveLib;
 		PicCache m_picCache;

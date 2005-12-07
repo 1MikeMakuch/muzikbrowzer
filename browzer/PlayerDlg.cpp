@@ -3165,7 +3165,6 @@ void CPlayerDlg::OnUserEditSong()
 	if (mWindowFlag > 4) {
 		return;
 	}
-
 	Song song = new CSong;
     if (mWindowFlag == 4) {
 	    int sel = m_Songs.GetCurSel();
@@ -3216,7 +3215,7 @@ void CPlayerDlg::OnUserEditSong()
         m_mlib.modifyID3(song, dialog->m_newSong);
         initDb();
 		DBLOCKED = FALSE;
-
+		_selectedGenre = "xyzzy";
 		OnSelchangeGenres();
 	}
 	delete dialog;    	

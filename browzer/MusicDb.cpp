@@ -73,6 +73,17 @@ TEST(CSongFunctions, CSong)
 CSong::CSong(): _refcnt(0) {
 
 }
+CSong::CSong(Song & src): _refcnt(0)  {
+    POSITION pos;
+    CString key;
+    CString val;
+    for( pos = src->_obj.GetStartPosition(); pos != NULL; ) {
+        src->_obj.GetNextAssoc(pos, key, val);
+        if (key.GetLength() && val.GetLength()) {
+            _obj.SetAt(key, (LPCTSTR)val);
+        }
+    }
+}
 
 CSong::~CSong() {
 #ifdef asdf
@@ -1919,11 +1930,11 @@ MusicLib::modifyID3(Song oldSong, Song newSong) {
 	dialog->ShowWindow(SW_SHOWNORMAL);
 	dialog->UpdateWindow();
 
-    CStringList songs;
+	Playlist songs;
     if (oldGenre == "") oldGenre = MBALL;
 	// old* vars need to be null to search as wildcard
     searchForMp3s(songs, oldGenre, oldArtist, oldAlbum, oldTitle);
-	int count = songs.GetCount();
+	int count = songs.size();
 	dialog->ProgressRange(0, count);
 
 	msg = "The following files will be modified.\r\nClick OK to continue or Cancel to abort.\r\n";
@@ -1943,13 +1954,13 @@ MusicLib::modifyID3(Song oldSong, Song newSong) {
 	msg += buf.p;
 	msg += "\r\n";
 
-    POSITION pos;
-    for (pos = songs.GetHeadPosition(); pos != NULL; ) {
-        CString file = songs.GetAt(pos);
-		msg += file;
+    for (PlaylistNode *p = songs.head();
+	  p != (PlaylistNode*)0; p = songs.next(p))
+    {
+        msg += p->_item->getId3("FILE");
 		msg += "\r\n";
-        songs.GetNext(pos);
-	}
+    }
+
 	dialog->EndDialog(0);
 	delete dialog;
 	int r = MBMessageBox("Notice", msg, TRUE, TRUE);
@@ -1966,14 +1977,16 @@ MusicLib::modifyID3(Song oldSong, Song newSong) {
 
 	CString result;
     int ctr = 1;
-    for (pos = songs.GetHeadPosition(); pos != NULL; ) {
-        CString file = songs.GetAt(pos);
+    for (p = songs.head();
+		p != (PlaylistNode*)0; p = songs.next(p))
+    {
+		CString file = p->_item->getId3("FILE");
 
         dialog->UpdateStatus(file);
         dialog->ProgressPos(ctr++);
 
 		int updateFlag = 0;
-		Song addsong = createSongFromFile(file);
+		Song addsong = new CSong(p->_item);
         if (newGenre != "" && newGenre != MBUNKNOWN) {
 			addsong->setId3(CS("TCON"), newGenre);
 			updateFlag = 1;
@@ -2000,7 +2013,7 @@ MusicLib::modifyID3(Song oldSong, Song newSong) {
         }
 
         if (updateFlag) {
-			Song delsong = createSongFromFile(file);
+			Song delsong = new CSong(p->_item);
 			CString oneresult = writeSongToFile(addsong);
 			if (oneresult.GetLength()) {
 				result += oneresult;
@@ -2015,7 +2028,6 @@ MusicLib::modifyID3(Song oldSong, Song newSong) {
 				m_SongLib.addSong(addsong);
 			}
         }
-        songs.GetNext(pos);
     }
 	if (result.GetLength()) {
 //		result += "\r\nYou'll need to re-scan";
@@ -2033,7 +2045,7 @@ MusicLib::modifyID3(Song oldSong, Song newSong) {
 
 
 void
-MusicLib::searchForMp3s(CStringList & songs, const CString & genrename_,
+MusicLib::searchForMp3s(Playlist & songs, const CString & genrename_,
 	const CString & artistname, const CString & albumname,
 	const CString & songname) {
 
@@ -2057,7 +2069,7 @@ MusicLib::searchForMp3s(CStringList & songs, const CString & genrename_,
 }
 
 void
-MusicLib::searchForArtists(CStringList & songs, MList & artistList) {
+MusicLib::searchForArtists(Playlist & songs, MList & artistList) {
 	MList::Iterator artistIter(artistList);
 	while (artistIter.more()) {
 		MRecord artist = artistIter.next();
@@ -2066,7 +2078,7 @@ MusicLib::searchForArtists(CStringList & songs, MList & artistList) {
 	}
 }
 void
-MusicLib::searchForAlbums(CStringList & songs, MList & albumList) {
+MusicLib::searchForAlbums(Playlist & songs, MList & albumList) {
 	MList::Iterator albumIter(albumList);
 	while (albumIter.more()) {
 		MRecord album = albumIter.next();
@@ -2075,16 +2087,16 @@ MusicLib::searchForAlbums(CStringList & songs, MList & albumList) {
 	}
 }
 void
-MusicLib::searchForSongs(CStringList & songs, MList & songList,
+MusicLib::searchForSongs(Playlist & songs, MList & songList,
 						 const CString & songname) {
 	if (songname != "") {
 		MRecord song = songList.record(songname);
-		songs.AddTail(song.lookupVal("FILE"));
+		songs.append(song.createSong());
 	} else {
 		MList::Iterator songIter(songList);
 		while (songIter.more()) {
 			MRecord song = songIter.next();
-			songs.AddTail(song.lookupVal("FILE"));
+			songs.append(song.createSong());
 		}
 	}
 }
@@ -3429,7 +3441,7 @@ MSongLib::addSong(Song & song) {
     genrename = song->getId3("TCON");
 	tlen = song->getId3("TLEN");
 
-	m_files.add(at, file,genrename,artistname,albumname,titlename);
+	m_files.add(at, file,genrename,artistname,albumname,titlename,tlen);
 
 	MList genreList(m_mem);
 	MList artistList = genreList.list(genrename);
@@ -3586,6 +3598,7 @@ MSongLib::removeSong(Song & song2remove) {
 			}
 		}
 	}
+	m_files.remove(filename);
 }
 void
 MSongLib::removeAlbum(const CString & genrename, const CString & artistname,
@@ -3662,7 +3675,7 @@ MSongLib::writeToFile() {
 	dump();
 #endif
 	m_dirty = 0;
-//	m_files.write();
+	m_files.write();
 //	m_files.removeAll();
 
 }
