@@ -2203,7 +2203,7 @@ DWORD CButtonST::SetBk(CBitmap * bmp)
 
 		dc.SelectObject(oldbmp);
 
-		m_dcBk.SelectObject(m_pbmpOldBk);
+//		m_dcBk.SelectObject(m_pbmpOldBk);
 //		FileUtil::BmpLog(m_bmpBk,"bBG");
 //		m_pbmpOldBk = m_dcBk.SelectObject(&m_bmpBk);
 

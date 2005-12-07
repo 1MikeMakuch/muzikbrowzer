@@ -102,7 +102,7 @@ LINK32=link.exe
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MTd /W3 /GX /Z7 /Od /I "../" /I "../3rdparty/ogg" /I "../3rdparty/ogg/libvorbis-1.0/include" /I "../3rdparty/ogg/libogg-1.0/include" /I "c:\DXSDK\include" /I "..\3rdparty/id3lib-3.8.2\include" /I "config" /I "controls" /I "../id3/id3libutils" /I "irman" /I "../util" /I "Serial" /D ID3LIB_LINKOPTION=1 /D "TEST_HARNESS" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_WIN32_DCOM" /FR /FD /c
 # SUBTRACT BASE CPP /YX /Yc /Yu
-# ADD CPP /nologo /MTd /W3 /GX /Z7 /Od /I "../" /I "../3rdparty/ogg" /I "../3rdparty/ogg/libvorbis-1.0/include" /I "../3rdparty/ogg/libogg-1.0/include" /I "c:\DXSDK\include" /I "..\3rdparty/id3lib-3.8.2\include" /I "config" /I "controls" /I "../id3/id3libutils" /I "irman" /I "../util" /I "Serial" /I "../WmaEdit" /I "../fractal" /D ID3LIB_LINKOPTION=1 /D "TEST_HARNESS" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_WIN32_DCOM" /FR /FD /c
+# ADD CPP /nologo /MTd /W3 /GX /Z7 /Od /I "../" /I "../3rdparty/ogg" /I "../3rdparty/ogg/libvorbis-1.0/include" /I "../3rdparty/ogg/libogg-1.0/include" /I "c:\DXSDK\include" /I "..\3rdparty/id3lib-3.8.2\include" /I "config" /I "controls" /I "../id3/id3libutils" /I "irman" /I "../util" /I "Serial" /I "../WmaEdit" /I "../fractal" /D ID3LIB_LINKOPTION=1 /D "TEST_HARNESS" /D "WIN32" /D "_DEBUG" /D "_DEBUGBC" /D "_WINDOWS" /D "_WIN32_DCOM" /FR /FD /c
 # SUBTRACT CPP /YX /Yc /Yu
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
