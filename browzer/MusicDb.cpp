@@ -235,6 +235,7 @@ MusicLib::init() {
 	m_SongLib.init(TRUE);
 	int r = readDb();
 	_id = 0;
+	m_libCounts = "";
 	return r;
 
 }
@@ -1187,6 +1188,7 @@ MusicLib::scanDirectories(const CStringList & directories,
 	results += tlen_methods_failed_count;
 	results += "\r\n";
 #endif
+	m_libCounts = "";
 	IgetLibraryCounts();
 
     return results;

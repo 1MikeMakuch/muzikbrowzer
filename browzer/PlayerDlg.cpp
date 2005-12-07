@@ -1674,7 +1674,7 @@ void CPlayerDlg::OnSearchDlg() {
 	m_Need2Erase = TRUE;
 	EraseBkgndNC();
 	ShowSearchDlg();
-	//PlayerStatusSet("");
+	PlayerStatusSet("");
 	//InvalidateRect(m_WindowRect);
 	RedrawWindow();
 
@@ -1693,7 +1693,7 @@ void CPlayerDlg::OnNoSearchDlg() {
 	_selectedAlbum = "";
 	_selectedSong = "";
 	initDb();
-	//PlayerStatusSet("");
+	PlayerStatusSet("");
 	m_SearchStatus.setText("",DT_RIGHT);
 	m_Genres.SetFocus();
 }
@@ -1724,7 +1724,7 @@ void CPlayerDlg::OnSearchGo() {
 		else 
 			msg += " songs";
 		msg += " found with '" + txt + "' ";
-		//PlayerStatusSet(msg);
+		PlayerStatusSet("");
 		m_SearchStatus.setText(msg,DT_RIGHT);
 	}
 	m_SearchEdit.SetFocus();
