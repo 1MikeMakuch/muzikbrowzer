@@ -150,6 +150,7 @@ ScanThread(LPVOID pParam) {
     ThreadParams *tp = (ThreadParams *)pParam;
 
 	ScanThread_done = 0;
+	//::Sleep(2000);
 	tp->m_result = (*tp->scanDirectories)(*(tp->m_dirs), 
 		tp->m_InitDialog, tp->m_scanNew, tp->m_bAdd);
     tp->m_InitDialog->SendUpdateStatus(4, "", 0,0); // EndDialog;
@@ -206,19 +207,21 @@ void CConfigFiles::dirScan(CStringList & mp3list) {
         dirs.AddTail(dir);
 		pcsl->GetNext(pos);
     }
-
-	InitDlg *m_InitDialog = new InitDlg(0,1);
-
     ThreadParams tp;
+	// Create worker thread
+	CWinThread * pThread = AfxBeginThread(ScanThread, &tp,
+		THREAD_PRIORITY_NORMAL, 0, CREATE_SUSPENDED);
+
+	InitDlg *m_InitDialog = new InitDlg(0,1, pThread);
+
     //tp.m_mlib = &m_PlayerDlg->m_mlib;
 	tp.scanDirectories = m_playercallbacks->scanDirectories;
     tp.m_dirs = &dirs;
     tp.m_InitDialog = m_InitDialog;
 	tp.m_scanNew = m_scanNew;
 	tp.m_bAdd = m_bAdd;
-    ScanThreadStart(tp);
 
-	m_InitDialog->DoModal();
+	m_InitDialog->DoModal(); // main thread handles dlg
 
     CString scaninfo = tp.m_result;
 

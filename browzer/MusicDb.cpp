@@ -1055,13 +1055,13 @@ MusicLib::scanDirectories(const CStringList & directories,
 	}
     
     POSITION pos;
-    int * abortflag = &(_id->m_Abort);
+    int * abortflag = &(InitDlg::m_Abort);
     _id->SendUpdateStatus(0, "Scanning directories for audio files", 0,0);
     for (pos = directories.GetHeadPosition(); pos != NULL; ) {
         scanDirectory(abortflag, mp3Files, directories.GetAt(pos), 
 			scanNew, bAdd);
         directories.GetNext(pos);
-        if (_id->m_Abort) {
+        if (InitDlg::m_Abort) {
             error_results += "Aborted by user.";
 			return error_results;
             break;
@@ -1088,7 +1088,7 @@ MusicLib::scanDirectories(const CStringList & directories,
     for (pos = mp3Files.GetHeadPosition(); pos != NULL; ) {
         CString mp3file = mp3Files.GetAt(pos);
         _id->SendUpdateStatus(3, "", ctr, 0);
-        if (_id->m_Abort) {
+        if (InitDlg::m_Abort) {
             error_results += "Aborted by user.";
             break;
         }

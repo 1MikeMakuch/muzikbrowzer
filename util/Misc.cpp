@@ -580,7 +580,7 @@ MBUtil::SecsToHMS(const int duration, int & hours, int & mins, int & secs,
 }
 BOOL MBUtil::system(CWnd * cwnd, const CString & command, UINT msg2post) {
 #ifdef _DEBUG
-	logger.ods("MBUtil::system begin");
+//	logger.ods("MBUtil::system begin");
 
 	CString scriptname = "c:\\tmp\\MBUtilsystem_script.sh";
 	CFile script;
@@ -593,8 +593,8 @@ BOOL MBUtil::system(CWnd * cwnd, const CString & command, UINT msg2post) {
 		msg += scriptname;
 			msg += "\r\n";
 		msg += MBFormatError(fileException.m_lOsError);
-		logger.ods("MBUtil::system error");
-		logger.ods(msg);
+//		logger.ods("MBUtil::system error");
+//		logger.ods(msg);
         return FALSE;
 	}
 	
@@ -618,10 +618,10 @@ BOOL MBUtil::system(CWnd * cwnd, const CString & command, UINT msg2post) {
 		DWORD err = ::GetLastError();
 		CString errstr = MBFormatError(err);
 		OutputDebugString(errstr);
-		logger.ods("MBUtil::system error");
+//		logger.ods("MBUtil::system error");
 		return FALSE;
 	 }
-	 logger.ods("MBUtil::system done");
+//	 logger.ods("MBUtil::system done");
 
 #endif
 	return TRUE;

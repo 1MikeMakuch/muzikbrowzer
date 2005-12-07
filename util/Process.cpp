@@ -7,13 +7,14 @@
 
 #include "stdafx.h"
 #include "process.h"
+#include "MyLog.h"
 
 #define dim(x) (sizeof(x) / sizeof((x)[0]))
 
 IMPLEMENT_MSG(UPM_FINISHED)
 IMPLEMENT_MSG(UPM_LINE)
 IMPLEMENT_MSG(UPM_PROCESS_HANDLE)
-
+
 /****************************************************************************
 *                                Process::run
 * Result: BOOL
@@ -26,6 +27,7 @@ IMPLEMENT_MSG(UPM_PROCESS_HANDLE)
 
 BOOL Process::run()
     {
+	logger.ods("Process::run begin");
      hreadFromChild = NULL;
      HANDLE hwriteToParent = NULL;
      HANDLE hwriteToParent2 = NULL;
@@ -124,6 +126,7 @@ BOOL Process::run()
 	 delete this;
 	 return FALSE;
 	} /* failed */
+	 logger.ods("Process::run done");
      return TRUE;
     } // Process::run
 
@@ -154,6 +157,7 @@ UINT Process::listener(LPVOID me)
 
 void Process::listener()
     {
+//	logger.ods("Process::listener begin");
      TCHAR buffer[MAX_LINE_LENGTH + 1];
 
      CString * line;
@@ -210,4 +214,5 @@ void Process::listener()
      target->PostMessage(UPM_FINISHED, status, (LPARAM)pid);
 
      delete this;
+//	 logger.ods("Process::listener done");
     } // Process::listener

@@ -15,14 +15,19 @@ static char THIS_FILE[] = __FILE__;
 /////////////////////////////////////////////////////////////////////////////
 // InitDlg dialog
 
+int InitDlg::m_Abort = 0;
 
-InitDlg::InitDlg(int cflag, int abortflag, CWnd* pParent /*=NULL*/)
-	: CDialog(InitDlg::IDD, pParent), m_Abort(0), m_abortflag(abortflag)
+InitDlg::InitDlg(int cflag, int abortflag, 
+				 CWinThread *pthread, CWnd* pParent /*=NULL*/)
+	: CDialog(InitDlg::IDD, pParent), m_abortflag(abortflag),
+	m_pThread(pthread)
 {
 	//{{AFX_DATA_INIT(InitDlg)
 	m_InitStatus = _T("");
 	m_InitLabel = _T("");
 	//}}AFX_DATA_INIT
+
+	InitDlg::m_Abort = 0;
 
 //	m_InitStatus = "reading music database";
     
@@ -69,7 +74,7 @@ InitDlg::UpdateStatus(CString & msg) {
 }
 void InitDlg::OnInitAbort() 
 {
-	m_Abort = 1;
+	InitDlg::m_Abort = 1;
 	
 }
 class MsgInts {
@@ -90,11 +95,7 @@ InitDlg::SendUpdateStatus(int flag, CString msg, int int1, int int2) {
         m->mint2 = int2;
         param = (LPARAM)m;
     }
-
-//    HWND hwnd = /*AfxGetMainWnd()->*/ m_hWnd;
-//    ::PostMessage(hwnd, INIT_DLG_MESSAGE, (WPARAM)flag, (LPARAM)param);
 	PostMessage(INIT_DLG_MESSAGE, (WPARAM)flag, (LPARAM)param);
-
 }
 
 void
@@ -148,7 +149,9 @@ BOOL InitDlg::OnInitDialog()
 	} else {
 		m_AbortButton.EnableWindow(FALSE);
 	}
-	
+	if (m_pThread)
+		m_pThread->ResumeThread();
+
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
 }

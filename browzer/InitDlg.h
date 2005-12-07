@@ -12,11 +12,13 @@
 /////////////////////////////////////////////////////////////////////////////
 // InitDlg dialog
 
+
 class InitDlg : public CDialog
 {
 // Construction
 public:
-	InitDlg(int cflag, int abortflag, CWnd* pParent = NULL);   // standard constructor
+	InitDlg(int cflag, int abortflag, CWinThread * pthread=NULL,
+		CWnd* pParent = NULL);   // standard constructor
 	void SetLabel(CString &);
 	void UpdateStatus(CString &);
     void SendUpdateStatus(int flag, CString, int i1, int i2);
@@ -33,7 +35,7 @@ public:
 	CString	m_InitLabel;
 	//}}AFX_DATA
 
-    int m_Abort;
+    static int m_Abort;
 
 
 // Overrides
@@ -57,6 +59,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 	int m_abortflag;
+	CWinThread * m_pThread;
 };
 
 //{{AFX_INSERT_LOCATION}}

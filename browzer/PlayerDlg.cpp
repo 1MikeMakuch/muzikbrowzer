@@ -355,7 +355,7 @@ BOOL CPlayerDlg::OnInitDialog()
 {
 
 #ifdef _DEBUG
-	MBUtil::system(this,"rm /cygdrive/c/mkm/bmps/*");
+//	MBUtil::system(this,"rm /cygdrive/c/mkm/bmps/*");
 	Sleep(1000);
 	logger.ods("system done and slept");
 #endif
