@@ -515,6 +515,7 @@ BOOL CConfigFiles::OnInitDialog()
 
     EnableDisableButtons(); 
 	m_LocDirModified = FALSE;
+	m_bAdd = FALSE;
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
@@ -611,6 +612,7 @@ void CConfigFiles::AddMusic(CStringList & mp3list) {
 		StoreReg2();
 		m_bAdd = TRUE;
 		dirScan(list);
+		m_bAdd = FALSE;
 	}
 }
 
