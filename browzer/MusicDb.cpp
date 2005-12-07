@@ -3432,8 +3432,8 @@ MSongLib::addSong(Song & song) {
 	// Now gonna manage it nicely, being used by loadplaylist et al
 	int at;
 	if (m_files.contains(file, at)) {
-		m_files.remove(at);
-//		return 0;
+//		m_files.remove(at);
+		return 0;
 	} 
 
 
