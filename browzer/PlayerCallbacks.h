@@ -29,6 +29,7 @@ public:
 		musiclib = NULL;
 		playerdlg = NULL;
 		dlg = NULL;
+		OnPaintCallback = NULL;
 	}
 
 	void (*redraw)();
@@ -44,6 +45,7 @@ public:
 	MusicLib * (*musiclib)();
 	CPlayerDlg * (*playerdlg)();
 	CDialog * (*dlg)();
+	void (*OnPaintCallback)();
 
 	CString (*scanDirectories)(const CStringList & directories,
 						  InitDlg * initDlg, BOOL scanNew, BOOL bAdd);

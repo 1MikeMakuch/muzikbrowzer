@@ -862,6 +862,14 @@ void LoadPlaylistDlg::resetControls() {
 	m_AdjustInt.UnionRect(nameslabelrect,namesrect);
 
 	m_Need2Erase = TRUE;
+	m_PlaylistNames.initBgDc();	
+	m_PlaylistSongs.initBgDc();	
+
+	m_PlaylistNames.invalidate();	
+	m_PlaylistSongs.invalidate();	
+
+	m_PlaylistNames.RedrawWindow();	
+	m_PlaylistSongs.RedrawWindow();	
 	UpdateWindow();
 
 }

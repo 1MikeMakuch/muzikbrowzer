@@ -18,6 +18,7 @@
 #include "MyDC.h"
 #include "GetSysColors.h"
 #include "PlayerCallbacks.h"
+#include "Misc.h"
 /////////////////////////////////////////////////////////////////////////////
 // Custom Listbox - containing colors
 
@@ -40,7 +41,10 @@ public:
 // Implementation
 //	virtual void MeasureItem(LPMEASUREITEMSTRUCT lpMIS);
 	virtual void DrawItem(LPDRAWITEMSTRUCT lpDIS);
-
+	virtual void DrawItem(CDC &pDC,
+		int idx, 
+		const CRect &rect,
+		BOOL selectedbit,BOOL focusbit);
 //	virtual int CompareItem(LPCOMPAREITEMSTRUCT lpCIS);
     int GetSelectedItemFromPoint(CPoint &);
     virtual int CompareItem( LPCOMPAREITEMSTRUCT lpCompareItemStruct );
@@ -64,7 +68,7 @@ public:
     void invalidate();
 	void alphaUp();
 	void alphaDown();
-	void Set3d(BOOL threeD) { m_3d = threeD; }
+	void Set3d(BOOL threeD);
 	void SetColors(COLORREF bknormal, COLORREF bkhigh, COLORREF bksel,
 		COLORREF txnormal, COLORREF txhigh, COLORREF txsel,
 		BOOL threeD=FALSE,
@@ -73,9 +77,7 @@ public:
 		COLORREF OuterUpperLeft = crBtnShadow,
 		COLORREF OuterLowerRight= crBtnHighLight
 		);
-	void DrawIt(BOOL flag) {
-		m_DrawIt = flag;
-	}
+	void initBgDc();
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CExtendedListBox)
 protected:
@@ -95,6 +97,8 @@ protected:
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 	afx_msg void OnSysKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
+	virtual void PreSubclassWindow();
+	afx_msg BOOL OnLbnSelchange();
 	//}}AFX_MSG
     DECLARE_MESSAGE_MAP();
 private:
@@ -117,6 +121,13 @@ private:
     CBitmap m_ScrollUpArrowBM;
     CBitmap m_ScrollDownArrowBM;
     CBitmap m_ScrollButtonBM;
+	
+	CBitmap m_bmpBg;
+	CBitmap* m_bmpOldBg;
+	CBitmap* m_bmpOldBgMem;
+	CBitmap m_bmpMem;
+	//CDC m_BgDC;
+	//CDC m_BgMemDC;
 
     HBITMAP m_ScrollUpArrowBMsave;
     HBITMAP m_ScrollDownArrowBMsave;

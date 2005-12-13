@@ -68,6 +68,7 @@ BOOL CPlayerApp::InitInstance()
 	//  the specific initialization routines you do not need.
 #ifdef _DEBUG
 	RunTestHarness();
+	//return FALSE;
 #endif
 
 

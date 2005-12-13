@@ -706,7 +706,7 @@ MusicLib::getGenres(CExtendedListBox & box) {
 	
 	while (genreIter.more()) {
 		MRecord genre = genreIter.next();
-		box.AddString(genre.label());
+		box.AddString(genre.label());;
 	}
 	return 0;
 }
@@ -862,7 +862,7 @@ MusicLib::getSongs(const CString & genrename,
 				  const CString & artistname,
 				  const CString & albumname,
 				  CExtendedListBox & box) {
-
+//	MBAutoTimer t("MusicLib::getSongs");
 	MList songList = m_SongLib.songList(genrename, artistname, albumname);
 	MList::Iterator songIter(songList);
     CObArray namenums;
@@ -1231,7 +1231,7 @@ MusicLib::scanDirectory(int * abortflag, CStringList &mp3Files,
         }
         bWorking = finder.FindNextFile();
         CString fname = finder.GetFileName();
-        if (!finder.IsDots()) {
+        if (fname.Left(1) != "." && !finder.IsDots()) {
             if (finder.IsDirectory()) {
                 CString newDir(directory);
 				if (newDir[newDir.GetLength()-1] != '\\') {
@@ -2154,19 +2154,22 @@ MusicLib::IgetLibraryCounts() {
 			MList artistList(genre);
 			MList::Iterator artistIter(artistList);
 			while (artistIter.more()) {
-				++artistcount;
 				MRecord artist = artistIter.next();
-				MList albumList(artist);
-				MList::Iterator albumIter(albumList);
-				while (albumIter.more()) {
-					++albumcount;
-					MRecord album = albumIter.next();
-					MList songList(album);
-					MList::Iterator songIter(songList);
-					while (songIter.more()) {
-						songIter.next();
-						++songcount;
+				if (artist.label() != MBALL) {
+					++artistcount;
+					MList albumList(artist);
+					MList::Iterator albumIter(albumList);
+					while (albumIter.more()) {
+						++albumcount;
+						MRecord album = albumIter.next();
+						MList songList(album);
+						MList::Iterator songIter(songList);
+						while (songIter.more()) {
+							songIter.next();
+							++songcount;
+						}
 					}
+
 				}
 			}
 		}
@@ -2431,6 +2434,8 @@ MMemory::addr(int p) {
 	if (p < m_next) {
 		return (void *) ((char*)m_space + p);
 	} else {
+		MBMessageBox("Warning", "Fatal error: MMemory::addr: "+numToString(p)+" "+numToString(m_next));
+		ASSERT(FALSE);
 		return NULL;
 	}
 }
@@ -2688,8 +2693,7 @@ MList::MList(MRecord & r) : m_mem(r.mem())
 	}
 }
 // A read only list?
-//MList::MList(const MRecord & r) : 
-//	m_memc(r.mem())
+//MList::MList(const MRecord & r) : m_mem(r.memRO())
 //{
 //	m_headstore = r.ptrIdx();
 //	int h = m_mem->readi(m_headstore);
@@ -2750,6 +2754,9 @@ MList::record(const CString & label, BOOL forcecreate) {
 	} else {
 		p = findOrPrepend(label);
 	}
+//	if (-1 == p) {
+//		return EmptyMRecord;
+//	}
 	MRecord r(m_mem, p);
 	return r;
 }
@@ -3699,20 +3706,20 @@ MSongLib::genreList() {
 MList
 MSongLib::artistList(const CString & genrename) {
 	MList genrelist = genreList();
-	MList artistlist = genrelist.list(genrename);
+	MList artistlist = genrelist.list(genrename, FALSE);
 	return artistlist;
 }
 MList
 MSongLib::albumList(const CString & genrename, const CString & artistname) {
 	MList artistlist = artistList(genrename);
-	MList albumlist = artistlist.list(artistname);
+	MList albumlist = artistlist.list(artistname, FALSE);
 	return albumlist;
 }
 MList
 MSongLib::songList(const CString & genrename, const CString & artistname,
 				   const CString & albumname) {
 	MList albumlist = albumList(genrename, artistname);
-	MList songlist = albumlist.list(albumname);
+	MList songlist = albumlist.list(albumname, FALSE);
 	return songlist;
 }
 MRecord

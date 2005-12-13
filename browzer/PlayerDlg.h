@@ -73,6 +73,7 @@ public:
 		_lastSelectedGenre,
 		_selectedArtist,
 		_lastSelectedArtist,
+		_lastSelectedAlbum,
 		_selectedAlbum,
         _selectedSong, 
 		_selectedPlaylistSong;
@@ -127,7 +128,11 @@ public:
 		m_Need2Erase = flag;
 	}
 private:
-	PlayerCallbacks m_callbacks;	
+	PlayerCallbacks m_callbacks;
+	PlayerCallbacks m_callbacksGenres;
+	PlayerCallbacks m_callbacksArtists;
+	PlayerCallbacks m_callbacksAlbums;
+	PlayerCallbacks m_callbacksSongs;
 	Controls m_BtnControls;
 	int m_PlaylistDuration;
 	CTransparentDialogDlg *_initdialog;
@@ -390,6 +395,10 @@ public:
 //	afx_msg void OnNcPaint( );
 	afx_msg void OnGetMinMaxInfo( MINMAXINFO FAR* lpMMI );
 	afx_msg void OnInitMenuPopup(CMenu *pPopupMenu, UINT nIndex,BOOL bSysMenu);
+	void UpdateGenres();
+	void UpdateArtists();
+	void UpdateAlbums();
+	void UpdateSongs();
 
 
 	DECLARE_MESSAGE_MAP()

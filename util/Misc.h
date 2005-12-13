@@ -3,6 +3,8 @@
 
 #include "stdafx.h"
 #include "ControlSK.h"
+#include <sys/types.h>
+#include <sys/timeb.h>
 
 CString MBFormatError(LONG e);
 
@@ -13,7 +15,8 @@ CPoint crbottomleft(CRect & rect);
 void CRectMove(CRect & rect, const int x, const int y);
 void CRectWidth(CRect & rect, int newwidth);
 void CRectHeight(CRect & rect, int newheight);
-
+CString CRect2String(const CRect & rect);
+CString RGB2CString(const COLORREF c);
 class CObjectInt : public CObject
 {
 	public:
@@ -83,6 +86,35 @@ public:
 		int & secs,	char * buf);
 	static BOOL system(CWnd * cwnd, const CString & command, UINT msg=0);
 };
+
+
+struct MBAutoTimerCtrS {
+	int counter;
+	LARGE_INTEGER duration;
+};
+typedef MBAutoTimerCtrS MBAutoTimerCtr;
+
+class MBAutoTimer {
+public:
+	MBAutoTimer(const CString & id);
+	~MBAutoTimer();
+protected:
+	CString m_id;
+	LARGE_INTEGER m_beg;
+	LARGE_INTEGER m_dur;
+	friend class MBAutoTimerI;
+};
+
+class MBAutoTimerI {
+public:
+	MBAutoTimerI();
+	~MBAutoTimerI();
+	void add(const MBAutoTimer * timer);
+private:
+	CMapStringToPtr m_MBAutoTimerHash;	
+};
+
+
 #define STC(_STC_ARG_) ScreenToClient(_STC_ARG_);
 #define CTS(_STC_ARG_) ClientToScreen(_STC_ARG_);
 #endif

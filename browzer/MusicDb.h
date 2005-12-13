@@ -158,6 +158,8 @@ class MRecord {
 		PMemory & m_mem;
 		int m_i;
 		PMemory & mem() { return (PMemory &) m_mem; }
+		// read only
+		//const PMemory & memRO() { return (PMemory &) m_mem; }
 		int ptrIdx();
 };
 
@@ -177,6 +179,7 @@ class MList {
 		int findOrPrepend(const CString & label);
 		MRecord record(const CString  &label, BOOL forcecreate = 0);
 		MList list(const CString  &label, BOOL forcecreate = 0);
+
 		int & head();
 		int count();
 
@@ -197,7 +200,7 @@ class MList {
 	protected:
 		int m_headstore;
 		PMemory & m_mem;
-//		const PMemory & m_memc;
+	private:
 };
 
 class MTags {

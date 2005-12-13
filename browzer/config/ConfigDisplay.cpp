@@ -53,7 +53,7 @@ IMPLEMENT_DYNCREATE(CConfigDisplay, CPropertyPage)
 CConfigDisplay::CConfigDisplay(CWnd * p, PlayerCallbacks * pcb) 
 		: CPropertyPage(CConfigDisplay::IDD),
     m_lplfTitles(0), m_lplfPanel(0), m_lplfColHdr(0), m_callbacks(pcb),
-	m_Modified(FALSE),m_SamplePlaylist(TRUE,"config",TRUE, &m_ConfigCallbacks)
+	m_Modified(FALSE),m_SamplePlaylist(TRUE,"SamplePlaylist",TRUE, &m_ConfigCallbacks)
 
 {
 	theConfigDisplay = this;
@@ -964,26 +964,13 @@ CConfigDisplay::setupSample() {
 	ScreenToClient(rectData);
 	
 	rectDataNew = rectColHdr;
-	rectDataNew.top = rectColHdr.bottom+2;
+	rectDataNew.top = rectColHdr.bottom;
 	rectDataNew.bottom = rectDataNew.top + rectData.Height();
-	rectDataNew.left += 2;
-	rectDataNew.right = (rectDataNew.left + rectColHdr.Width())-4;
-
-//	m_SamplePlaylist.SetPWnd(this);
-	m_SamplePlaylist.SetColors(m_vBkNormal,m_vBkHigh,m_vBkSel,
-		m_vTxNormal,m_vTxHigh,m_vTxSel,m_3dData,
-		m_vcrDataInUL,m_vcrDataInLR,m_vcrDataOutUL,m_vcrDataOutLR);
+	rectDataNew.right = (rectDataNew.left + rectColHdr.Width());
 
 	CDC * cdc = GetDC();
 	LPLOGFONT lplf = &m_samplelfTitles;
     m_SamplePlaylist.changeFont(lplf);
-	m_SamplePlaylist.SetBitmaps(cdc, 
-		getSkin(MB_SKIN_SCROLLUPARROW),crTransPanel,
-		getSkin(MB_SKIN_SCROLLDOWNARROW),crTransPanel,
-		getSkin(MB_SKIN_SCROLLBUTTON),crTransPanel,
-		getSkin(MB_SKIN_SCROLLBACKGROUND),crTransPanel);
-	ReleaseDC(cdc);
-
 
 	// Status 
 	CRect rectStatus,rectStatusNew;
@@ -1006,7 +993,6 @@ CConfigDisplay::setupSample() {
 		m_3dStatus);
 	m_SamplePanel.MoveWindow(rectStatusNew);
 
-
 	m_SamplePlaylist.ResetContent();
 	m_SamplePlaylist.AddString(" all");
 	m_SamplePlaylist.AddString("Little Twisty Big Fun Band");
@@ -1022,9 +1008,17 @@ CConfigDisplay::setupSample() {
 	m_SamplePlaylist.AddString("Did you get the memo on your TPS Report Cover sheet?");
 
 	m_SamplePlaylist.MoveWindow(rectDataNew);
-	m_SamplePlaylist.invalidate();
-	
-	
+	m_SamplePlaylist.SetBitmaps(cdc, 
+		getSkin(MB_SKIN_SCROLLUPARROW),crTransPanel,
+		getSkin(MB_SKIN_SCROLLDOWNARROW),crTransPanel,
+		getSkin(MB_SKIN_SCROLLBUTTON),crTransPanel,
+		getSkin(MB_SKIN_SCROLLBACKGROUND),crTransPanel);
+	m_SamplePlaylist.SetColors(m_vBkNormal,m_vBkHigh,m_vBkSel,
+		m_vTxNormal,m_vTxHigh,m_vTxSel,m_3dData,
+		m_vcrDataInUL,m_vcrDataInLR,m_vcrDataOutUL,m_vcrDataOutLR);
+
+	ReleaseDC(cdc);
+
 	CDIBSectionLite bmp;
 	bmp.Load(getSkin(MB_SKIN_BACKGROUNDLIBRARY));
 
@@ -1043,15 +1037,12 @@ CConfigDisplay::setupSample() {
 	MBUtil::BmpToDC(dc, &bmcr, TRUE, crTransPanel, 0);
 
 	ReleaseDC(dc);
-	
 	m_SampleColHdr.RedrawWindow();	
 	m_SamplePanel.RedrawWindow();
+	
+//	m_SamplePlaylist.initBgDc();		
+	m_SamplePlaylist.invalidate();
 	m_SamplePlaylist.RedrawWindow();
-
-//	m_SampleColHdr.ShowWindow(SW_HIDE);	
-//	m_SamplePanel.ShowWindow(SW_HIDE);
-//	m_SamplePlaylist.ShowWindow(SW_HIDE);
-
 
 	
 }
@@ -1467,6 +1458,7 @@ void CConfigDisplay::EnableDisable() {
 void CConfigDisplay::OnSelchangeSamplePlaylist() 
 {
 	int sel = m_SamplePlaylist.GetCurSel();
+	if (sel < 0) return;
 	CString text;
 	m_SamplePlaylist.GetText(sel,text);
 	m_SamplePanel.setText(text);

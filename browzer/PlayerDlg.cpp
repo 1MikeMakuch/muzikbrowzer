@@ -103,6 +103,15 @@ CPlayerDlg * getPlayer() {
 CDialog * getDialog() {
 	return thePlayer;
 }
+void UpdateArtists() {
+	thePlayer->UpdateArtists();
+}
+void UpdateAlbums() {
+	thePlayer->UpdateAlbums();
+}
+void UpdateSongs() {
+	thePlayer->UpdateSongs();
+}
 /////////////////////////////////////////////////////////////////////////////
 // CPlayerDlg dialog
 
@@ -117,10 +126,10 @@ CPlayerDlg::CPlayerDlg(CPlayerApp * theApp,
 	m_Control(new VirtualControl), m_Dialog(new VirtualDialog),
 	m_trialCounter(0),
 	m_InitDone(FALSE),
-	m_Genres(TRUE,"Genres",TRUE, &m_callbacks),
-	m_Artists(TRUE,"Artists",TRUE, &m_callbacks),
-	m_Albums(TRUE,"Albums",TRUE, &m_callbacks),
-	m_Songs(TRUE,"songs",TRUE, &m_callbacks),
+	m_Genres(TRUE,"Genres",TRUE, &m_callbacksGenres),
+	m_Artists(TRUE,"Artists",TRUE, &m_callbacksArtists),
+	m_Albums(TRUE,"Albums",TRUE, &m_callbacksAlbums),
+	m_Songs(TRUE,"songs",TRUE, &m_callbacksSongs),
 	m_Playlist(TRUE, "Playlist",TRUE, &m_callbacks),
 	m_Maximized(FALSE),
 	m_AdjustLibrary(0),
@@ -156,6 +165,14 @@ CPlayerDlg::CPlayerDlg(CPlayerApp * theApp,
 	m_callbacks.musiclib = &::musiclib;
 	m_callbacks.playerdlg = &::getPlayer;
 	m_callbacks.dlg = &::getDialog;
+
+	memcpy(&m_callbacksGenres,&m_callbacks,sizeof(m_callbacks));
+	memcpy(&m_callbacksArtists,&m_callbacks,sizeof(m_callbacks));
+	memcpy(&m_callbacksAlbums,&m_callbacks,sizeof(m_callbacks));
+	memcpy(&m_callbacksSongs,&m_callbacks,sizeof(m_callbacks));
+	m_callbacksArtists.OnPaintCallback = &::UpdateArtists;
+	m_callbacksAlbums.OnPaintCallback = &::UpdateAlbums;
+	m_callbacksSongs.OnPaintCallback = &::UpdateSongs;
 
 	irman().init(RegKeyIrman, IR_MESSAGE_NUMBER_OF, this);
 //	m_brush.CreateSolidBrush(RGB( 255, 0, 0));
@@ -1032,7 +1049,7 @@ CPlayerDlg::resetControls() {
 
 	SetTransparentColor(m_TransMain, m_TransPanel); // set red as the 
 	setFont();
-	setColors();
+//	setColors();
 
 	int border = m_Config.getDlgBorderWidth();
 	int borderpanel = m_reg.Read("BorderPanel",5);
@@ -1508,6 +1525,28 @@ CPlayerDlg::resetControls() {
 		m_Config.getSkin(MB_SKIN_SCROLLDOWNARROW),m_TransPanel,
 		m_Config.getSkin(MB_SKIN_SCROLLBUTTON),m_TransPanel,
 		m_Config.getSkin(MB_SKIN_SCROLLBACKGROUND),m_TransPanel);
+	setColors();
+	
+	m_Genres.invalidate();
+	m_Artists.invalidate();
+	m_Albums.invalidate();
+	m_Songs.invalidate();
+	m_Playlist.invalidate();
+
+	m_Genres.RedrawWindow();
+	m_Artists.RedrawWindow();
+	m_Songs.RedrawWindow();
+	m_Albums.RedrawWindow();
+	m_Playlist.RedrawWindow();
+
+	m_GenresLabel.RedrawWindow();
+	m_ArtistsLabel.RedrawWindow();
+	m_SongsLabel.RedrawWindow();
+	m_AlbumsLabel.RedrawWindow();
+	m_PlaylistLabel.RedrawWindow();
+
+	m_PositionLabel.RedrawWindow();
+	m_PlayerStatus.RedrawWindow();
 
 	m_PositionSlider.SizeToContent(this);
 	m_VolumeSlider.SizeToContent(this);
@@ -1971,7 +2010,7 @@ static void
 rememberSelections(CMapStringToString & map, CString sel,
                    CExtendedListBox & box) {
     CString val;
-    if (map.Lookup(sel, val) == 0 || box.SelectString(0, val) == LB_ERR) {
+    if (map.Lookup(sel, val) == 0 || box.SelectString(-1, val) == LB_ERR) {
         box.SetCurSel(0);
     }
 #ifdef asdf
@@ -1988,117 +2027,96 @@ rememberSelections(CMapStringToString & map, CString sel,
 
 void CPlayerDlg::OnSelchangeGenres() 
 {
-	static int lastsel = -1;
-	if (DBLOCKED) return;
-//	UpdateWindow();
-
-	int sel = m_Genres.GetCurSel();
-    if (sel < 0) return;
-	if (lastsel != sel) {
-		m_LastThingQueuedUp = "";
-	}
-	lastsel = sel;
-	_lastSelectedGenre = _selectedGenre;
-	m_Genres.GetText(sel, _selectedGenre);
-	if (_lastSelectedGenre != _selectedGenre) {
-		if (_selectedGenre == MBALL ) {
-			CWaitCursor c;
-			m_Artists.ResetContent();	
-			m_mlib.getArtists(_selectedGenre, m_Artists);
-		} else {
-			m_Artists.ResetContent();	
-			m_mlib.getArtists(_selectedGenre, m_Artists);
-		}
-	}
-//	m_Artists.SetCurSel(0);	
-    rememberSelections(m_GenreArtist, _selectedGenre, m_Artists);
-	OnSelchangeArtists();
-    m_Genres.invalidate();
-	if (_selectedGenre == MBALL) {
-		PlayerStatusTempSet(m_mlib.getLibraryCounts());
-	}
-
-
+	m_Artists.InvalidateRgn(NULL);
 }
-
 void CPlayerDlg::OnSelchangeArtists() 
+{
+	m_Albums.InvalidateRgn(NULL);
+}
+void CPlayerDlg::OnSelchangeAlbums() 
+{
+	m_Songs.InvalidateRgn(NULL);
+}
+void CPlayerDlg::OnSelchangeSongs() 
+{
+}
+void CPlayerDlg::UpdateArtists() // called by m_Artists::OnPaint
 {
 	static int lastsel = -1;
 	if (DBLOCKED) return;
-	int sel = m_Artists.GetCurSel();
-    if (sel < 0) return;
-	if (lastsel != sel) {
-		m_LastThingQueuedUp = "";
+	int sel = m_Genres.GetCurSel();
+	_lastSelectedGenre = _selectedGenre;
+	if (sel > -1)
+		m_Genres.GetText(sel, _selectedGenre);
+	if (_selectedGenre == MBALL) {
+		PlayerStatusTempSet(m_mlib.getLibraryCounts());
 	}
-	lastsel = sel;
-	_lastSelectedArtist = _selectedArtist;
-	m_Artists.GetText(sel,_selectedArtist);
-	m_GenreArtist.SetAt(_selectedGenre, _selectedArtist);
-// No good, same artist in 2 genres doesn't update albums & songs
-//	if (_lastSelectedArtist != _selectedArtist) {
-		if (_selectedArtist == MBALL ) {
-			CWaitCursor c;
-			m_Albums.ResetContent();	
-			m_mlib.getAlbums(_selectedGenre,
-				_selectedArtist, m_Albums, m_Config.AlbumSortAlpha());
-		} else {
-			m_Albums.ResetContent();	
-			m_mlib.getAlbums(_selectedGenre,
-				_selectedArtist, m_Albums, m_Config.AlbumSortAlpha());
-		}
-//	}
-    rememberSelections(m_ArtistAlbum, _selectedArtist, m_Albums);
-	OnSelchangeAlbums();
-    m_Artists.invalidate();
+	if (_lastSelectedGenre != _selectedGenre) {
+		CWaitCursor c;
+		m_Artists.ResetContent();	
+		m_mlib.getArtists(_selectedGenre, m_Artists);
+		rememberSelections(m_GenreArtist, _selectedGenre, m_Artists);
+		m_Artists.invalidate(); // send WM_PAINT to m_Albums
+		m_Albums.InvalidateRgn(NULL);
+	}
+	if (lastsel != sel)	m_LastThingQueuedUp = ""; lastsel = sel;
 }
+void CPlayerDlg::UpdateAlbums() // called by m_Albums::OnPaint
+{
 
-void CPlayerDlg::OnSelchangeAlbums() 
+	static int lastsel = -1;
+	if (DBLOCKED) return;
+	int sel = m_Artists.GetCurSel();
+	_lastSelectedArtist = _selectedArtist;
+	if (sel > -1)
+		m_Artists.GetText(sel,_selectedArtist);
+	m_GenreArtist.SetAt(_selectedGenre, _selectedArtist);
+	if (_lastSelectedGenre != _selectedGenre
+			|| _lastSelectedArtist != _selectedArtist) {
+		CWaitCursor c;
+		m_Albums.ResetContent();	
+		m_mlib.getAlbums(_selectedGenre,
+			_selectedArtist, m_Albums, m_Config.AlbumSortAlpha());
+		rememberSelections(m_ArtistAlbum, _selectedArtist, m_Albums);
+		m_Albums.invalidate();
+		m_Songs.InvalidateRgn(NULL);
+	}
+	if (lastsel != sel)	m_LastThingQueuedUp = ""; lastsel = sel;
+}
+void CPlayerDlg::UpdateSongs()
 {
 	static int lastsel = -1;
 	if (DBLOCKED) return;
 	int sel = m_Albums.GetCurSel();
-    if (sel < 0) return;
-	if (lastsel != sel) {
-		m_LastThingQueuedUp = "";
-	}
-	lastsel = sel;
-	m_Albums.GetText(sel,_selectedAlbum);
+	_lastSelectedAlbum = _selectedAlbum;
+	if (sel > -1)
+		m_Albums.GetText(sel,_selectedAlbum);
     m_ArtistAlbum.SetAt(_selectedArtist, _selectedAlbum);
-
-	m_Songs.ResetContent();	
-	m_mlib.getSongs(_selectedGenre,
-		_selectedArtist,
-		_selectedAlbum,m_Songs);
-//	m_Songs.SetCurSel(0);	
-	rememberSelections(m_AlbumSong, _selectedAlbum, m_Songs);
-    OnSelchangeSongs();
-//    PlayerStatusTempSet(_selectedAlbum);
-    m_Albums.invalidate();
-}
-
-void CPlayerDlg::OnSelchangeSongs() 
-{
-	static int lastsel = -1;
-	if (DBLOCKED) return;
-	static CString lastalbum;
-	int sel = m_Songs.GetCurSel();
-    if (sel < 0) return;
-	if (lastsel != sel) {
-		m_LastThingQueuedUp = "";
+	if (_lastSelectedGenre != _selectedGenre
+			|| _lastSelectedArtist != _selectedArtist
+			|| _lastSelectedAlbum != _selectedAlbum) {
+		m_Songs.ResetContent();	
+		m_mlib.getSongs(_selectedGenre,
+			_selectedArtist,
+			_selectedAlbum,m_Songs);
+		rememberSelections(m_AlbumSong, _selectedAlbum, m_Songs);
+		m_Songs.invalidate();
 	}
-	lastsel = sel;
-	m_Songs.GetText(sel,_selectedSong);
-    m_AlbumSong.SetAt(_selectedAlbum, _selectedSong);
 
-    m_Songs.invalidate();
+	sel = m_Songs.GetCurSel();
+	if (sel > -1)
+		m_Songs.GetText(sel,_selectedSong);
+	m_AlbumSong.SetAt(_selectedAlbum, _selectedSong);
 
-//	if (lastalbum != _selectedAlbum) {
+#pragma hack
+	if (_selectedSong.GetLength()) { // hack! not doing this check
+		// adds a song to the db!
 		Song song = m_mlib.getSong(_selectedGenre, _selectedArtist,
 			_selectedAlbum, _selectedSong);
 		CString file = song->getId3("FILE");
 		displayAlbumArt(file);
-//	}
-	lastalbum = _selectedAlbum;
+	}
+	if (lastsel != sel)	m_LastThingQueuedUp = ""; lastsel = sel;
 }
 
 void CPlayerDlg::OnSelchangePlaylist() 
@@ -2109,8 +2127,6 @@ void CPlayerDlg::OnSelchangePlaylist()
 		m_Playlist.GetText(sel,_selectedPlaylistSong);
 	}
     if (sel < 0) return;
-//	m_Playlist.GetText(sel,_selectedPlaylistSong);
-//    PlayerStatusTempSet(_selectedPlaylistSong);
     m_Playlist.invalidate();
 
 	CString file = m_mlib._playlist[sel]->getId3("FILE");
@@ -2272,7 +2288,11 @@ void CPlayerDlg::OnKillfocusVirtuals()
 	// Now that we have non virtual controls, need this
 	// to prevent misdirected actions from going to the
 	// most recent active virtual control.
-		m_Control->zero();
+
+	// but first repaint w losing focus
+	((CWnd*)m_Control->ptr())->InvalidateRgn(NULL);
+
+	m_Control->zero();
 	
 }
 void
@@ -2280,24 +2300,28 @@ CPlayerDlg::OnGenresFocus( ) {
 	*m_Control = (CExtendedListBox*)GetDlgItem(IDC_GENRES);
     PlayerStatusTempSet(_selectedGenre);
 	OnSelchangeGenres();
+	m_Genres.InvalidateRgn(NULL);
 }
 void
 CPlayerDlg::OnArtistsFocus() {
 	*m_Control = (CExtendedListBox*)GetDlgItem(IDC_ARTISTS);
     PlayerStatusTempSet(_selectedArtist);
 	OnSelchangeArtists();
+	m_Artists.InvalidateRgn(NULL);
 }
 void
 CPlayerDlg::OnAlbumsFocus() {
 	*m_Control = (CExtendedListBox*)GetDlgItem(IDC_ALBUMS);
     PlayerStatusTempSet(_selectedAlbum);
 	OnSelchangeAlbums();
+	m_Albums.InvalidateRgn(NULL);
 }
 void
 CPlayerDlg::OnSongsFocus() {
 	*m_Control = (CExtendedListBox*)GetDlgItem(IDC_SONGS);
     PlayerStatusTempSet(_selectedSong);
 	OnSelchangeSongs();
+	m_Songs.InvalidateRgn(NULL);
 }
 void
 CPlayerDlg::OnPlaylistFocus() {
@@ -2308,6 +2332,8 @@ CPlayerDlg::OnPlaylistFocus() {
 	}
     PlayerStatusTempSet(_selectedPlaylistSong);
 	OnSelchangePlaylist() ;
+	if (m_Playlist.GetCount() == 0)
+		m_Playlist.InvalidateRgn(NULL);;
 }
 BOOL
 CPlayerDlg::OnDelete() {
@@ -3625,6 +3651,8 @@ CPlayerDlg::AdjustLibraryWidths(CPoint &apoint) {
 			
 			pct = int((double)100 * ((double)p2->width / (double)dw));
 			m_Config.setRegistry("LibArtistsWidth", pct);
+			m_Genres.initBgDc();
+			m_Artists.initBgDc();
 			break;
 		case 2:
 			p1 = m_BtnControls.getObj(IDC_ARTISTS);
@@ -3644,6 +3672,8 @@ CPlayerDlg::AdjustLibraryWidths(CPoint &apoint) {
 			m_BtnControls.move(p2,p2->x,p2->y,p2->row,p2->col);
 			pct = int((double)100 * ((double)p2->width / (double)dw));
 			m_Config.setRegistry("LibAlbumsWidth", pct);
+			m_Artists.initBgDc();
+			m_Albums.initBgDc();
 			break;
 		case 3:
 			p1 = m_BtnControls.getObj(IDC_ALBUMS);
@@ -3661,6 +3691,8 @@ CPlayerDlg::AdjustLibraryWidths(CPoint &apoint) {
 			p2->width += dx;
 			p2->x -= dx;
 			m_BtnControls.move(p2,p2->x,p2->y,p2->row,p2->col);
+			m_Albums.initBgDc();
+			m_Songs.initBgDc();
 			break;
 		default:
 			break;
@@ -3669,6 +3701,7 @@ CPlayerDlg::AdjustLibraryWidths(CPoint &apoint) {
 	OnNcPaint();
 	Invalidate();
 	RedrawWindow();
+
 #ifdef asdf
 	m_Genres.Invalidate();
 	m_GenresLabel.Invalidate();
@@ -4195,6 +4228,7 @@ void CPlayerDlg::killAlbumArt() {
 	m_Picture.unload();
 }
 void CPlayerDlg::displayAlbumArt(const CString & file) {
+//	return;
 
 	if (""== file) {
 		killAlbumArt();

@@ -32,6 +32,7 @@ class MyLog {
 		void ods(CString &);
 		void ods(char * msg);
 		void odsRect(const CString & name, const CRect & rect);
+		void odsRGB(const COLORREF c);
 	private:
 		BOOL m_ready;
 		CFile _file;

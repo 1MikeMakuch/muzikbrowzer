@@ -71,7 +71,20 @@ CPoint crbottomleft(CRect & rect) {
 	p.y = rect.bottom;
 	return p;
 }
-
+CString CRect2String(const CRect & rect) {
+	CString m;
+	AutoBuf buf(1000);
+	sprintf(buf.p,"L:%4d T:%4d W:%4d H:%4d",
+		rect.left,rect.top,rect.Width(),rect.Height());
+	m = buf.p;
+	return m;
+}
+CString RGB2CString(const COLORREF c) {
+	CString cs = numToString(GetRValue(c));
+	cs += "," + numToString(GetGValue(c));
+	cs += "," + numToString(GetBValue(c));
+	return cs;
+}
 void CRectMove(CRect & rect, const int x, const int y) {
 	int w,h;
 	w = rect.Width();
@@ -626,3 +639,103 @@ BOOL MBUtil::system(CWnd * cwnd, const CString & command, UINT msg2post) {
 #endif
 	return TRUE;
 }
+#ifdef _DEBUG
+static MBAutoTimerI MBAUTOTIMER;
+
+MBAutoTimer::MBAutoTimer(const CString & id):m_id(id) {
+//	_ftime(&m_beg);
+	QueryPerformanceCounter(&m_beg);
+}
+MBAutoTimer::~MBAutoTimer() {
+	//_ftime(&m_end);
+	QueryPerformanceCounter(&m_dur);
+
+	m_dur.QuadPart -= m_beg.QuadPart;
+//	m_dur.QuadPart *= 1000 ; 
+
+	MBAUTOTIMER.add(this);
+}
+MBAutoTimerI::MBAutoTimerI(){}
+MBAutoTimerI::~MBAutoTimerI()
+{
+	AutoBuf buf(500);
+	CString id;
+	MBAutoTimerCtr * p;
+	LARGE_INTEGER liFreq;
+	POSITION pos;
+
+	QueryPerformanceFrequency(&liFreq);
+
+	CStringList idlist;
+
+	for (pos = MBAUTOTIMER.m_MBAutoTimerHash.GetStartPosition(); 
+			pos != NULL;) {
+		MBAUTOTIMER.m_MBAutoTimerHash.GetNextAssoc(pos,id,(void *&)p);
+		String::insertSort(idlist,id);
+	}
+	sprintf(buf.p,"MBAutoTimer:%-30s %-6s %-12s %-12s", 
+		"Method","calls","ticks","ticks/call");
+	logger.ods(buf.p);
+	for (pos = idlist.GetHeadPosition(); pos != NULL;) {
+		CString id = idlist.GetAt(pos);
+		if (MBAUTOTIMER.m_MBAutoTimerHash.Lookup(id,(void *&)p)) {
+			if (p) {
+//				duration.QuadPart = 
+//					(10000 * p->duration.QuadPart) / liFreq.QuadPart;
+				ULONG tpc = 
+					p->duration.QuadPart / p->counter;
+				ULONG d = p->duration.QuadPart;
+
+				sprintf(buf.p,"MBAutoTimer:%-30s %-6d %-12d %-12d", 
+					id,
+					p->counter,
+					d,
+					tpc);
+				logger.ods(buf.p);
+				delete p;
+			}
+		}
+		idlist.GetNext(pos);
+	}
+}
+void
+MBAutoTimerI::add(const MBAutoTimer * timer)
+{
+	MBAutoTimerCtr * p;
+
+	if (m_MBAutoTimerHash.Lookup(timer->m_id, (void *&)p)) {
+		p->counter++;
+		p->duration.QuadPart += timer->m_dur.QuadPart;
+	} else {
+		p = new MBAutoTimerCtr ;
+		p->counter = 1;
+		p->duration.QuadPart = timer->m_dur.QuadPart;
+		m_MBAutoTimerHash.SetAt(timer->m_id,p);
+	}
+}
+
+#ifdef asdf
+TEST(MBAutoTimer, test)
+{
+	AutoBuf buf(10);
+	int sleep = 50;
+	for (int i = 0 ; i < 11 ; ++i) {
+		sprintf(buf.p,"%s%03d","test ",i);
+		MBAutoTimer t(buf.p);
+		Sleep(i * sleep);
+	}
+	for (i = 0 ; i < 11 ; ++i) {
+		sprintf(buf.p,"%s%03d","test ",i);
+		MBAutoTimer t(buf.p);
+		Sleep(i * sleep);
+	}
+}
+#endif
+#else // if _DEBUG
+MBAutoTimer::MBAutoTimer(const CString & id):m_id(id){}
+MBAutoTimer::~MBAutoTimer() {}
+MBAutoTimerI::MBAutoTimerI(){}
+MBAutoTimerI::~MBAutoTimerI(){}
+void MBAutoTimerI::add(const MBAutoTimer * timer){}
+
+#endif

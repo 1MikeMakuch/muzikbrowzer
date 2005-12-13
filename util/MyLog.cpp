@@ -138,10 +138,17 @@ MyLog::odsRect(const CString & name, const CRect & rect) {
 	m += numToString(rect.top) + " W:";
 	m += numToString(rect.Width()) + " H:";
 	m += numToString(rect.Height());
-	logger.ods(m);
+	ods(m);
 	return;
 }
-
+void
+MyLog::odsRGB(const COLORREF c) {
+	CString t = "RGB: ";
+	t += numToString(GetRValue(c)) + ",";
+	t += numToString(GetGValue(c)) + ",";
+	t += numToString(GetBValue(c));
+	ods(t);
+}
 
 void
 MyLog::log(char * m1, char * m2,char*m3,char*m4,char*m5,char*m6) {
