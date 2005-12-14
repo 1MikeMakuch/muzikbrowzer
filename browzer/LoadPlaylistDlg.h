@@ -109,7 +109,7 @@ private:
 	BOOL m_Resizing;
 	void resetControls();
     void init();
-	CBrush m_brush,m_HatchBrush;
+	CBrush m_HatchBrush;
 	CRect m_AdjustRect,m_AdjustInt;
 	BOOL m_AdjustLibrary, m_LibraryDragging;
 	BOOL m_IsEditor;
@@ -125,6 +125,7 @@ private:
 	COLORREF m_crTransMain,m_crTransPanel;
 	CRect m_LastDragRect;
 	int m_SysBarHeight;
+	CMapStringToPtr m_CtlColors;
 };
 
 //{{AFX_INSERT_LOCATION}}

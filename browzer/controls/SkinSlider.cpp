@@ -6,6 +6,7 @@
 #include "FileUtils.h"
 #include "MyString.h"
 #include "MBGlobals.h"
+#include "MyDC.h"
 #include <stdlib.h>
 
 #ifdef _DEBUG
@@ -35,10 +36,8 @@ CMySliderCtrl::CMySliderCtrl(CWnd * parent) : m_pParent(parent)
 	m_Max = 0;
 	m_Pos = 0;
 	m_Dragging = FALSE;
-	m_dcBkCh.DeleteDC();
-	m_dcBkU.DeleteDC();
-	m_dcBkL.DeleteDC();
-	m_dcThumbBk.DeleteDC();
+
+	m_BgSet = FALSE;
 	m_bmpBkCh.DeleteObject();
 
 	m_csBitmaps[0].hBitmap = NULL;
@@ -51,10 +50,7 @@ CMySliderCtrl::CMySliderCtrl(CWnd * parent) : m_pParent(parent)
 	m_csBitmaps[3].hMask = NULL;
 };
 CMySliderCtrl::~CMySliderCtrl() {
-	m_dcBkCh.DeleteDC();
-	m_dcBkU.DeleteDC();
-	m_dcBkL.DeleteDC();
-	m_dcThumbBk.DeleteDC();
+
 	m_bmpBkCh.DeleteObject();
 
 	FreeResources();
@@ -173,11 +169,7 @@ void CMySliderCtrl::OnPaint() {
 	CPaintDC pDC(this);
 	PaintBk(&pDC);
 	DrawTheBitmap(&pDC, m_ChannelRect, 0);
-//	DrawTheBitmap(&pDC, m_UpperRect, 1);
-//	DrawTheBitmap(&pDC, m_LowerRect, 2);
 	DrawTheBitmap(&pDC, m_ThumbRect, 3);
-//	DrawTheBitmap(&pDC);
-//	DrawTheThumb(&pDC);
 }
 void CMySliderCtrl::FreeResources(BOOL bCheckForNULL)
 {
@@ -209,21 +201,19 @@ void CMySliderCtrl::PaintBk(CPaintDC* pDC)
 		return;
 	}
 
-	if (m_dcBkCh.m_hDC == NULL)
+	if (!m_BgSet)
 	{
-		m_dcBkCh.CreateCompatibleDC(pDC);
+		m_BgSet = TRUE;
+		m_bmpBkCh.DeleteObject();
 		m_bmpBkCh.CreateCompatibleBitmap(pDC, m_ChannelRect.Width(), m_ChannelRect.Height());
-		m_pbmpOldBkCh = m_dcBkCh.SelectObject(&m_bmpBkCh);
-		m_dcBkCh.BitBlt(0, 0, m_ChannelRect.Width(), m_ChannelRect.Height(), pDC, 
-			m_ChannelRect.left, m_ChannelRect.top, SRCCOPY);
-		m_dcBkCh.SelectObject(m_pbmpOldBkCh);
-
+		CBmpDC BmpBgDC(m_bmpBkCh);
+		BmpBgDC.BitBlt(0, 0, m_ChannelRect.Width(), m_ChannelRect.Height(), 
+			pDC, m_ChannelRect.left, m_ChannelRect.top, SRCCOPY);
 	} // if
 
-	m_pbmpOldBkCh = m_dcBkCh.SelectObject(&m_bmpBkCh);
-	pDC->BitBlt(m_ChannelRect.left,m_ChannelRect.top, m_ChannelRect.Width(), m_ChannelRect.Height(), &m_dcBkCh, 0, 0, SRCCOPY);
-	m_pbmpOldBkCh = m_dcBkCh.SelectObject(m_pbmpOldBkCh);
-
+	CBmpDC BmpBgDC(m_bmpBkCh);
+	pDC->BitBlt(m_ChannelRect.left,m_ChannelRect.top, m_ChannelRect.Width(), m_ChannelRect.Height(),
+		&BmpBgDC, 0, 0, SRCCOPY);
 
 } // End of PaintBk
 
@@ -252,31 +242,19 @@ void CMySliderCtrl::DrawTheBitmap(CPaintDC* pDC, CRect & rect, BYTE byIndex)
 } // End of DrawTheBitmap
 
 DWORD CMySliderCtrl::SetBitmaps(LPCTSTR sChannel, COLORREF crTransCh, 
-//								LPCTSTR sUpper, COLORREF crTransU, 
-//								LPCTSTR sLower, COLORREF crTransL, 
 							LPCTSTR sThumb, COLORREF crTransThumb)
 {
     HBITMAP    hChannel		= NULL;
-//	HBITMAP    hUpper		= NULL;
-//	HBITMAP    hLower		= NULL;
 	HBITMAP	   hThumb		= NULL;
     hChannel = (HBITMAP)::LoadImage(0, sChannel, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-//	hUpper = (HBITMAP)::LoadImage(0, sUpper, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-//	hLower = (HBITMAP)::LoadImage(0, sLower, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
 	hThumb = (HBITMAP)::LoadImage(0, sThumb, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
     return SetBitmaps(hChannel, crTransCh, 
-//		hUpper, crTransU, 
-//		hLower, crTransL, 
 		hThumb, crTransThumb);
 }
 DWORD CMySliderCtrl::SetBitmaps(int nChannel, COLORREF crTransCh, 
-//								int nUpper, COLORREF crTransU, 
-//								int nLower, COLORREF crTransL, 
 							int nThumb,	COLORREF crTransThumb)
 {
 	HBITMAP		hChannel		= NULL;
-//	HBITMAP		hUpper			= NULL;
-//	HBITMAP		hLower			= NULL;
 	HBITMAP		hThumb			= NULL;
 	HINSTANCE	hInstResource	= NULL;
 	
@@ -285,24 +263,19 @@ DWORD CMySliderCtrl::SetBitmaps(int nChannel, COLORREF crTransCh,
 
 	// Load bitmap In
 	hChannel = (HBITMAP)::LoadImage(hInstResource, MAKEINTRESOURCE(nChannel), IMAGE_BITMAP, 0, 0, 0);
-//	hUpper = (HBITMAP)::LoadImage(hInstResource, MAKEINTRESOURCE(nUpper), IMAGE_BITMAP, 0, 0, 0);
-//	hLower = (HBITMAP)::LoadImage(hInstResource, MAKEINTRESOURCE(nLower), IMAGE_BITMAP, 0, 0, 0);
 	hThumb = (HBITMAP)::LoadImage(hInstResource, MAKEINTRESOURCE(nThumb), IMAGE_BITMAP, 0, 0, 0);
 
 	return SetBitmaps(hChannel, crTransCh, 
-//		hUpper, crTransU, 
-//		hLower, crTransL, 
 		hThumb, crTransThumb);
 } // End of SetBitmaps
 
 
 DWORD CMySliderCtrl::SetBitmaps(HBITMAP hChannel, COLORREF crTransCh, 
-//								HBITMAP hUpper, COLORREF crTransU, 
-//								HBITMAP hLower, COLORREF crTransL, 
 							HBITMAP hThumb, COLORREF crTransThumb)
 {
 	int		nRetValue = 0;
 	BITMAP	csBitmapSize;
+	m_BgSet = FALSE;
 
 	// Free any loaded resource
 	FreeResources();
@@ -329,53 +302,6 @@ DWORD CMySliderCtrl::SetBitmaps(HBITMAP hChannel, COLORREF crTransCh,
 			return BTNST_FAILEDMASK;
 		} // if
 	}
-#ifdef asdf
-	if (hUpper)
-	{
-		m_csBitmaps[1].hBitmap = hUpper;
-		m_csBitmaps[1].crTransparent = crTransU;
-		// Get bitmap size
-		nRetValue = ::GetObject(hUpper, sizeof(csBitmapSize), &csBitmapSize);
-		if (nRetValue == 0)
-		{
-			FreeResources();
-			return BTNST_INVALIDRESOURCE;
-		} // if
-		m_csBitmaps[1].dwWidth = (DWORD)csBitmapSize.bmWidth;
-		m_csBitmaps[1].dwHeight = (DWORD)csBitmapSize.bmHeight;
-
-		// Create mask for bitmap In
-		m_csBitmaps[1].hMask = CreateBitmapMask(hUpper, m_csBitmaps[1].dwWidth, m_csBitmaps[1].dwHeight, crTransU);
-		if (m_csBitmaps[1].hMask == NULL)
-		{
-			FreeResources();
-			return BTNST_FAILEDMASK;
-		} // if
-	}
-
-	if (hLower)
-	{
-		m_csBitmaps[2].hBitmap = hLower;
-		m_csBitmaps[2].crTransparent = crTransL;
-		// Get bitmap size
-		nRetValue = ::GetObject(hLower, sizeof(csBitmapSize), &csBitmapSize);
-		if (nRetValue == 0)
-		{
-			FreeResources();
-			return BTNST_INVALIDRESOURCE;
-		} // if
-		m_csBitmaps[2].dwWidth = (DWORD)csBitmapSize.bmWidth;
-		m_csBitmaps[2].dwHeight = (DWORD)csBitmapSize.bmHeight;
-
-		// Create mask for bitmap In
-		m_csBitmaps[2].hMask = CreateBitmapMask(hLower, m_csBitmaps[2].dwWidth, m_csBitmaps[2].dwHeight, crTransL);
-		if (m_csBitmaps[2].hMask == NULL)
-		{
-			FreeResources();
-			return BTNST_FAILEDMASK;
-		} // if
-	}
-#endif
 	if (hThumb)
 	{
 		m_csBitmaps[3].hBitmap = hThumb;
@@ -429,13 +355,11 @@ HBITMAP CMySliderCtrl::CreateBitmapMask(HBITMAP hSourceBitmap,
 	crSaveBk = ::SetBkColor(hdcSrc, crTransColor);
 
 	::BitBlt(hdcDest, 0, 0, dwWidth, dwHeight, hdcSrc, 0, 0, SRCCOPY);
-//	FileUtil::BmpSave(hdcDest,"ssmask",dwWidth,dwHeight);
 
 	crSaveDestText = ::SetTextColor(hdcSrc, RGB(255, 255, 255));
 	::SetBkColor(hdcSrc,RGB(0, 0, 0));
 
 	::BitBlt(hdcSrc, 0, 0, dwWidth, dwHeight, hdcDest, 0, 0, SRCAND);
-//	FileUtil::BmpSave(hdcSrc,"ssmask",dwWidth,dwHeight);
 
 	SetTextColor(hdcDest, crSaveDestText);
 
@@ -457,10 +381,6 @@ void CMySliderCtrl::SizeToContent(CWnd * parent)
 
 	int channelWidth = m_csBitmaps[0].dwWidth;
 	int channelHeight = m_csBitmaps[0].dwHeight;
-//	int upperWidth = m_csBitmaps[1].dwWidth;
-//	int upperHeight = m_csBitmaps[1].dwHeight;
-//	int lowerWidth = m_csBitmaps[2].dwWidth;
-//	int lowerHeight = m_csBitmaps[2].dwHeight;
 	int thumbWidth = m_csBitmaps[3].dwWidth;
 	int thumbHeight = m_csBitmaps[3].dwHeight;
 	if (m_csBitmaps[0].hBitmap)

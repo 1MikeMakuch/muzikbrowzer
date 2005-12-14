@@ -260,9 +260,9 @@ private:
 	HCURSOR		m_hCursor;			// Handle to cursor
 	CToolTipCtrl m_ToolTip;			// Tooltip
 
-	CDC			m_dcBk;
+//	CDC			m_dcBk;
 	CBitmap		m_bmpBk;
-	CBitmap*	m_pbmpOldBk;
+	BOOL		m_BgSet;
 
 	BOOL		m_bAlwaysTrack;		// Always hilight button?
 	int			m_nCheck;			// Current value for checkbox

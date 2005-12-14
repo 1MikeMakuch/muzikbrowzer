@@ -56,6 +56,14 @@ LoadPlaylistDlg::LoadPlaylistDlg(PlayerCallbacks * pcb,
 }
 LoadPlaylistDlg::~LoadPlaylistDlg() {
 	delete m_Control;
+
+	POSITION pos;
+	HBRUSH hbr;
+	CString key;
+	for( pos = m_CtlColors.GetStartPosition(); pos != NULL; ) {
+		m_CtlColors.GetNextAssoc( pos, key, (void*&)hbr);
+		BOOL r = ::DeleteObject((HBRUSH)hbr);
+	}
 }
 
 
@@ -871,7 +879,14 @@ void LoadPlaylistDlg::resetControls() {
 	m_PlaylistNames.RedrawWindow();	
 	m_PlaylistSongs.RedrawWindow();	
 	UpdateWindow();
-
+	POSITION pos;
+	HBRUSH hbr;
+	CString key;
+	for( pos = m_CtlColors.GetStartPosition(); pos != NULL; ) {
+		m_CtlColors.GetNextAssoc( pos, key, (void*&)hbr);
+		BOOL r = ::DeleteObject((HBRUSH)hbr);
+	}
+	m_CtlColors.RemoveAll();
 }
 
 HBRUSH LoadPlaylistDlg::OnCtlColor( CDC* pDC, CWnd* pWnd, UINT nCtlColor ) {
@@ -924,12 +939,16 @@ HBRUSH LoadPlaylistDlg::OnCtlColor( CDC* pDC, CWnd* pWnd, UINT nCtlColor ) {
     pDC->SetBkColor(bkcolor);
     pDC->SetTextColor(txcolor);
 
-	m_brush.DeleteObject();
-    m_brush.CreateSolidBrush(bkcolor);
+	if (m_CtlColors.Lookup(numToString(bkcolor),(void *&)hbr) == 0) {
+		LOGBRUSH brush;
+		brush.lbColor = bkcolor;
+		brush.lbHatch = 0;
+		brush.lbStyle = 0;
+		hbr = CreateBrushIndirect(&brush);
+		m_CtlColors.SetAt(numToString(bkcolor),(void*)hbr);
+	}
 
-
-    return (HBRUSH)m_brush;
-
+    return (HBRUSH)hbr;
 
 }
 

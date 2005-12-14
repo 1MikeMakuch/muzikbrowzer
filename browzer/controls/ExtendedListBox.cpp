@@ -54,15 +54,15 @@ CExtendedListBox::CExtendedListBox(BOOL usecolors, CString desc, BOOL set
 	m_UseColors = TRUE;
     CListBox::CListBox();
 
-    m_ScrollUpArrowCDC.CreateCompatibleDC(NULL);
-    m_ScrollDownArrowCDC.CreateCompatibleDC(NULL);
-    m_ScrollButtonCDC.CreateCompatibleDC(NULL);
+//    m_ScrollUpArrowCDC.CreateCompatibleDC(NULL);
+//    m_ScrollDownArrowCDC.CreateCompatibleDC(NULL);
+//    m_ScrollButtonCDC.CreateCompatibleDC(NULL);
 	//m_ScrollSBgCDC.CreateCompatibleDC(NULL);
 
-	m_ScrollUpArrowBMsave = NULL;
-	m_ScrollDownArrowBMsave = NULL;
-	m_ScrollButtonBMsave = NULL;
-	m_ScrollSBgBMsave = NULL;
+//	m_ScrollUpArrowBMsave = NULL;
+//	m_ScrollDownArrowBMsave = NULL;
+//	m_ScrollButtonBMsave = NULL;
+//	m_ScrollSBgBMsave = NULL;
 
 	m_BkNormal = crbgNormal;
 	m_TxNormal = crtextNormal;
@@ -85,9 +85,9 @@ CExtendedListBox::CExtendedListBox(BOOL usecolors, CString desc, BOOL set
 }
 CExtendedListBox::~CExtendedListBox()
 {
-	::SelectObject(m_ScrollUpArrowCDC.m_hDC, m_ScrollUpArrowBMsave);
-	::SelectObject(m_ScrollDownArrowCDC.m_hDC,m_ScrollDownArrowBMsave);
-	::SelectObject(m_ScrollButtonCDC.m_hDC, m_ScrollButtonBMsave);
+//	::SelectObject(m_ScrollUpArrowCDC.m_hDC, m_ScrollUpArrowBMsave);
+//	::SelectObject(m_ScrollDownArrowCDC.m_hDC,m_ScrollDownArrowBMsave);
+//	::SelectObject(m_ScrollButtonCDC.m_hDC, m_ScrollButtonBMsave);
 	//::SelectObject(m_ScrollSBgCDC.m_hDC, m_ScrollSBgBMsave);
 	m_font.DeleteObject();
 	m_HatchBrush.DeleteObject();
@@ -152,6 +152,14 @@ void CExtendedListBox::initBgDc() {
 	m_bmpMem.CreateCompatibleBitmap(pDC,wrect.Width(),wrect.Height());
 
 	ReleaseDC(pDC);
+	POSITION pos;
+	HBRUSH hbr;
+	CString key;
+	for( pos = m_CtlColors.GetStartPosition(); pos != NULL; ) {
+		m_CtlColors.GetNextAssoc( pos, key, (void*&)hbr);
+		BOOL r = ::DeleteObject((HBRUSH)hbr);
+	}
+	m_CtlColors.RemoveAll();
 }
 void CExtendedListBox::OnPaint() 
 {
@@ -222,18 +230,6 @@ void CExtendedListBox::DrawItem(CDC &pDC,int idx, const CRect &rect,
     crbg = m_BkNormal;
     crtext = m_TxNormal;
 
-#ifdef asdf
-    if (!selectedbit) {
-        crbg = m_BkNormal;
-        crtext = m_TxNormal;
-    } else if (selectedbit && !focusbit) {
-        crbg = m_BkHigh;
-        crtext = m_TxHigh;
-    } else if (selectedbit && focusbit) {
-        crbg = m_BkSel;
-        crtext = m_TxSel;
-    }
-#endif
 	if (selectedbit) {
 		if (focusbit) {
 			crbg = m_BkSel;
@@ -414,26 +410,31 @@ void CExtendedListBox::DrawBorders()
 {
     if (m_UseColors == FALSE) return;
 	//Gets the Controls device context used for drawing
-	CDC *pDC=GetDC();
+	CDC *pDC=GetWindowDC();
 	
 	//Gets the size of the control's client area
-	CRect crect,wrect;
+#pragma hack // fix this to use wrect properly
+	CRect wrect;
 	GetWindowRect(wrect);STC(wrect);
-	GetClientRect(crect);
-	m_ClientRect = crect;
+	GetClientRect(m_ClientRect);
+	wrect.OffsetRect(2,2);
+//	if ("Genres" == m_id) {
+//		logger.ods(CRect2String(wrect));
+//		logger.ods(CRect2String(m_ClientRect));
+//	}
 
-	CRect rect(wrect);
 	if (m_3d) {
-		pDC->Draw3dRect(rect, m_crOuterUpperLeft, m_crOuterLowerRight);
-		rect.DeflateRect(1,1);
-		pDC->Draw3dRect(rect, m_crInnerUpperLeft, m_crInnerLowerRight);
-		rect.DeflateRect(1,1);
+		pDC->Draw3dRect(wrect, m_crOuterUpperLeft, m_crOuterLowerRight);
+		wrect.DeflateRect(1,1);
+		pDC->Draw3dRect(wrect, m_crInnerUpperLeft, m_crInnerLowerRight);
+		wrect.DeflateRect(1,1);
 	}
 
 	ReleaseDC(pDC); //Frees the DC
 
     if (m_HaveScroll == TRUE) {
-        m_ScrollBarBorderRect = rect;
+		//wrect.OffsetRect(-2,-2);
+        m_ScrollBarBorderRect = wrect;
         m_ScrollBarBorderRect.left = m_ScrollBarBorderRect.right - m_ScrollWidth;
 
         CRect innerRect  = m_ScrollBarBorderRect;
@@ -495,18 +496,21 @@ void CExtendedListBox::DrawScrollBg(CDC * pDC)
 void CExtendedListBox::DrawScrollArrows()
 {
     if (m_HaveScroll == FALSE) return;
-	CDC *pDC=GetDC();
+	CDC *pDC=GetWindowDC();
 	CRect rect;
 	GetClientRect(rect); //Gets the dimensions
 
+	CBmpDC UpDC(m_BmpUp);
+	CBmpDC DnDC(m_BmpDown);
+
     // BitBlt converts src white to foreground and src black to background color of the cdc.
     pDC->BitBlt(m_ScrollUpArrowRect.left,m_ScrollUpArrowRect.top, 
-		m_BmpUp.GetWidth(), m_BmpUp.GetHeight(), &m_ScrollUpArrowCDC, 0,0, SRCCOPY);
+		m_BmpUp.GetWidth(), m_BmpUp.GetHeight(), &UpDC, 0,0, SRCCOPY);
 
     // Draw the scroll down button
 
     pDC->BitBlt(m_ScrollDownArrowRect.left, m_ScrollDownArrowRect.top, 
-		m_BmpDown.GetWidth(), m_BmpDown.GetHeight(), &m_ScrollDownArrowCDC, 0,0, SRCCOPY);
+		m_BmpDown.GetWidth(), m_BmpDown.GetHeight(), &DnDC, 0,0, SRCCOPY);
     ReleaseDC(pDC);
 }
 
@@ -551,7 +555,9 @@ void CExtendedListBox::DrawScrollButton(BOOL calc, CPoint p)
     }
     m_ScrollButtonRect.bottom = m_ScrollButtonRect.top + m_ScrollButtonHeight;
 
-	CDC *pDC=GetDC();	
+	CBmpDC BtnDC(m_BmpButton);
+
+	CDC *pDC=GetWindowDC();	
 	CDC memdc;
 	memdc.CreateCompatibleDC(pDC);
 	CBitmap *oldBmp,bmp;
@@ -568,7 +574,7 @@ void CExtendedListBox::DrawScrollButton(BOOL calc, CPoint p)
 	memdc.BitBlt(m_ScrollButtonRect.left-m_ScrollBarBorderRect.left, 
 		m_ScrollButtonRect.top-m_ScrollBarBorderRect.top,
 		m_ScrollButtonRect.Width(), m_ScrollButtonRect.Height(), 
-		&m_ScrollButtonCDC, 0,0, SRCCOPY);
+		&BtnDC, 0,0, SRCCOPY);
 
 	pDC->BitBlt(m_ScrollBarBorderRect.left,m_ScrollBarBorderRect.top,
 		m_ScrollBarBorderRect.Width(), m_ScrollBarBorderRect.Height(), 
@@ -799,6 +805,7 @@ void CExtendedListBox::SetColors(COLORREF bknormal, COLORREF bkhigh, COLORREF bk
 	m_crOuterLowerRight = OuterLowerRight;
 	Set3d(threeD);
 	initBgDc();
+
 }
 
 HBRUSH CExtendedListBox::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor) 
@@ -807,9 +814,16 @@ HBRUSH CExtendedListBox::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 	
 	if (nCtlColor == CTLCOLOR_LISTBOX) {
 		pDC->SetBkColor(m_BkNormal);
-		m_brush.DeleteObject();
-		m_brush.CreateSolidBrush(m_BkNormal);
-		return (HBRUSH)m_brush;
+		if (m_CtlColors.Lookup(numToString(m_BkNormal),(void *&)hbr) == 0) {
+			LOGBRUSH brush;
+			brush.lbColor = m_BkNormal;
+			brush.lbHatch = 0;
+			brush.lbStyle = 0;
+			hbr = CreateBrushIndirect(&brush);
+			m_CtlColors.SetAt(numToString(m_BkNormal),(void*)hbr);
+		}
+
+		return (HBRUSH)hbr;
 	}
 	return hbr;
 }
@@ -819,12 +833,6 @@ DWORD CExtendedListBox::SetBitmaps(CDC * cdc,
 		LPCTSTR sBitmapButton, COLORREF crTransButton,
 		LPCTSTR sBitmapSBg, COLORREF crTransSBg
 		) {
-	if (NULL != m_ScrollUpArrowBMsave) {
-		::SelectObject(m_ScrollUpArrowCDC.m_hDC, (HBITMAP)m_ScrollUpArrowBMsave);
-		::SelectObject(m_ScrollDownArrowCDC.m_hDC,(HBITMAP)m_ScrollDownArrowBMsave);
-		::SelectObject(m_ScrollButtonCDC.m_hDC, (HBITMAP)m_ScrollButtonBMsave);
-		//::SelectObject(m_ScrollSBgCDC.m_hDC, (HBITMAP)m_ScrollSBgBMsave);
-	}
 	if (NULL == sBitmapUp) { // use stock windows like buttons
 		CBitmap bmp1,bmp2,bmp3,bmp4;
 		bmp1.LoadBitmap(IDB_OBM_UPARROW);
@@ -853,10 +861,6 @@ DWORD CExtendedListBox::SetBitmaps(CDC * cdc,
 	m_ScrollButtonHeight = __max(m_ScrollButtonHeight,m_BmpUp.GetHeight());
 	m_ScrollButtonHeight = __max(m_ScrollButtonHeight,m_BmpDown.GetHeight());
 	m_ScrollButtonHeight = __max(m_ScrollButtonHeight,m_BmpButton.GetHeight());
-
-	m_ScrollUpArrowBMsave = (HBITMAP)::SelectObject(m_ScrollUpArrowCDC.m_hDC, m_BmpUp);
-	m_ScrollDownArrowBMsave = (HBITMAP)::SelectObject(m_ScrollDownArrowCDC.m_hDC,m_BmpDown);
-	m_ScrollButtonBMsave = (HBITMAP)::SelectObject(m_ScrollButtonCDC.m_hDC, m_BmpButton);
 	
 	initBgDc();	
 	return 0;

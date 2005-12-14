@@ -23,7 +23,7 @@ static char THIS_FILE[] = __FILE__;
 CColorStatic::CColorStatic()
 {
 	first = 1;
-//	m_UseSkin = FALSE;
+
 	// Set default parent window and notification message
 	m_pParent = NULL;
 	m_nMsg = WM_USER;
@@ -86,7 +86,6 @@ CColorStatic::CColorStatic()
 	m_WordWrap = FALSE;
 	m_Justify = DT_LEFT;
 	m_BgSet = FALSE;
-	m_bmpOldBg = NULL;
 
 } // End of CColorStatic
 
@@ -94,9 +93,6 @@ CColorStatic::CColorStatic()
 CColorStatic::~CColorStatic()
 {
 	m_font.DeleteObject();
-	if (m_bmpOldBg)
-		m_dcBg.SelectObject(m_bmpOldBg);
-	m_dcBg.DeleteDC();
 
 } // End of ~CColorStatic
 
@@ -478,6 +474,9 @@ void CColorStatic::OnPaint() {
 			// Create a fresh dc for the transparent paint SRCAND op.
 			// doing BmpToDc directly to pDC resulted in the previous
 			// stuff being left on the pDC.
+
+			CBmpDC BmpSrcBgDC(m_bmpBg);
+
 			dc.SelectObject(oldbmp);
 			CDC dc2;
 			dc2.CreateCompatibleDC(&pDC);
@@ -486,7 +485,7 @@ void CColorStatic::OnPaint() {
 			CBitmap *oldBmp2 = (CBitmap*)dc2.SelectObject(&bmp2);
 
 			dc2.BitBlt(0,0,rectOut.Width(),rectOut.Height(),
-				&m_dcBg,0,0,SRCCOPY);
+				&BmpSrcBgDC,0,0,SRCCOPY);
 			MBUtil::BmpToDC(&dc2,bmp,0,0,rectOut.Width(),rectOut.Height(),
 				rectOut.Width(),rectOut.Height(),LO_FIXED,TRUE,m_crTrans,0);
 			pDC.BitBlt(rectOut.left,rectOut.top,rectOut.Width(),rectOut.Height(),
@@ -508,33 +507,18 @@ void CColorStatic::SetTransparent(CBitmap * bmp, const CRect & srcRect,
 	m_DoTrans = TRUE;
 	m_BgSet = TRUE;
 	GetClientRect(m_Rect);
-	CDC dc;
-	dc.CreateCompatibleDC(NULL);
-	CBitmap * oldbmp = (CBitmap*)dc.SelectObject(bmp);
 
-	CDC * cdc = GetDC();
-
-	if (m_bmpOldBg) {
-		m_dcBg.SelectObject(m_bmpOldBg);
-		m_dcBg.DeleteDC();
-	}
 	m_bmpBg.DeleteObject();
 
-	m_dcBg.CreateCompatibleDC(&dc);
+	CDC * cdc = GetDC();
 	m_bmpBg.CreateCompatibleBitmap(cdc,m_Rect.Width(),m_Rect.Height());
 	ReleaseDC(cdc);
-	
-	m_bmpOldBg = (CBitmap*)m_dcBg.SelectObject(&m_bmpBg);
 
-	m_dcBg.BitBlt(0,0,m_Rect.Width(),m_Rect.Height(),
-		&dc,srcRect.left,srcRect.top,SRCCOPY);
+	CBmpDC BmpSrcDC(*bmp);
+	CBmpDC BmpBgDC(m_bmpBg);
 
-//	m_dcBg.SelectObject(m_bmpOldBg);
-//	FileUtil::BmpLog(m_bmpBg,"Bg");
-//	m_bmpOldBg = (CBitmap*)m_dcBg.SelectObject(&m_bmpBg);
-
-	dc.SelectObject(oldbmp);
-
+	BmpBgDC.BitBlt(0,0,m_Rect.Width(),m_Rect.Height(),
+		&BmpSrcDC,srcRect.left,srcRect.top,SRCCOPY);
 }
 
 void

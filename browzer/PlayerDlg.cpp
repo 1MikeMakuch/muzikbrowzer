@@ -175,19 +175,30 @@ CPlayerDlg::CPlayerDlg(CPlayerApp * theApp,
 	m_callbacksSongs.OnPaintCallback = &::UpdateSongs;
 
 	irman().init(RegKeyIrman, IR_MESSAGE_NUMBER_OF, this);
-//	m_brush.CreateSolidBrush(RGB( 255, 0, 0));
+
 	m_HatchBrush.CreateHatchBrush(HS_CROSS,RGB(255,0,0));
 //	m_LogoButton.logit = TRUE;
 
 }
 CPlayerDlg::~CPlayerDlg() {
     //delete m_Config;
-    m_brush.DeleteObject();
+
 	m_HatchBrush.DeleteObject();
 	delete m_Control;
 	delete m_Dialog;
 	delete m_Player;
-//	CloseHandle(m_hMutex);
+
+    // When this DeleteObject is not done, I get one GDI leak (BoundsChecker)
+	// from the allocation in OnCtlColor.
+	// When this DeleteObject is done, I get one GDI error that the DC
+	// still contains non default object(s)
+	POSITION pos;
+	HBRUSH hbr;
+	CString key;
+	for( pos = m_CtlColors.GetStartPosition(); pos != NULL; ) {
+		m_CtlColors.GetNextAssoc( pos, key, (void*&)hbr);
+		BOOL r = ::DeleteObject((HBRUSH)hbr);
+	}
 }
 
 void CPlayerDlg::DoDataExchange(CDataExchange* pDX)
@@ -1551,9 +1562,6 @@ CPlayerDlg::resetControls() {
 	m_PositionSlider.SizeToContent(this);
 	m_VolumeSlider.SizeToContent(this);
 
-    m_brush.DeleteObject();
-    m_brush.CreateSolidBrush(m_Config.getColorBkNormal());
-
 	m_LogoButton.SetBk(m_bmBackground);
 	m_OptionsButton.SetBk(m_bmBackground);
 
@@ -1577,6 +1585,15 @@ CPlayerDlg::resetControls() {
 
 	//m_GenresLabel.RedrawWindow();
 	readConfig();
+
+	POSITION pos;
+	HBRUSH hbr;
+	CString key;
+	for( pos = m_CtlColors.GetStartPosition(); pos != NULL; ) {
+		m_CtlColors.GetNextAssoc( pos, key, (void*&)hbr);
+		BOOL r = ::DeleteObject((HBRUSH)hbr);
+	}
+	m_CtlColors.RemoveAll();
 }
 void
 CPlayerDlg::ShowSearchDlg() {
@@ -3913,11 +3930,16 @@ HBRUSH CPlayerDlg::OnCtlColor( CDC* pDC, CWnd* pWnd, UINT nCtlColor ) {
     pDC->SetBkColor(bkcolor);
     pDC->SetTextColor(txcolor);
 
-	m_brush.DeleteObject();
-    m_brush.CreateSolidBrush(bkcolor);
+	if (m_CtlColors.Lookup(numToString(bkcolor),(void *&)hbr) == 0) {
+		LOGBRUSH brush;
+		brush.lbColor = bkcolor;
+		brush.lbHatch = 0;
+		brush.lbStyle = 0;
+		hbr = CreateBrushIndirect(&brush);
+		m_CtlColors.SetAt(numToString(bkcolor),(void*)hbr);
+	}
 
-
-    return (HBRUSH)m_brush;
+    return (HBRUSH)hbr;
 
 
 }

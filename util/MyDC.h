@@ -25,6 +25,21 @@
 //
 // This class implements a memory Device Context which allows
 // flicker free drawing.
+#include "stdafx.h"
+
+class CBmpDC : public CDC {
+private:
+	HBITMAP m_hbmp;
+	HBITMAP m_holdbmp;
+public:
+	CBmpDC(HBITMAP bmp);
+	~CBmpDC();
+	void SelectOrig();
+	void BmpLog(const CString & name);
+
+};
+
+
  
 class CMemDC : public CDC {
 private:       

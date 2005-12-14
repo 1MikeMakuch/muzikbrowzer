@@ -96,17 +96,8 @@ private:
 	CRect m_UpperRect;
 	CRect m_LowerRect;
 
-	CDC			m_dcBkCh;
-	CDC			m_dcBkU;
-	CDC			m_dcBkL;
-	CDC			m_dcThumbBk;
+	BOOL		m_BgSet;
 	CBitmap		m_bmpBkCh;
-	CBitmap		m_bmpBkU;
-	CBitmap		m_bmpBkL;
-	CBitmap*	m_pbmpOldBkCh;
-	CBitmap*	m_pbmpOldBkU;
-	CBitmap*	m_pbmpOldBkL;
-	CBitmap*	m_pbmpOldThumbBk;
 	CWnd *		m_pParent;
 
 	typedef struct _STRUCT_BITMAPS

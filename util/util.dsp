@@ -146,6 +146,10 @@ SOURCE=.\MSocket.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\MyDC.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\MyLog.cpp
 # End Source File
 # Begin Source File
@@ -208,6 +212,10 @@ SOURCE=.\Misc.h
 # Begin Source File
 
 SOURCE=.\MSocket.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\MyDC.h
 # End Source File
 # Begin Source File
 

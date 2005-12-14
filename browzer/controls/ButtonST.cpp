@@ -4,6 +4,7 @@
 #include "MyString.h"
 #include "MBGLobals.h"
 #include "MyLog.h"
+#include "MyDC.h"
 
 #ifdef	BTNST_USE_SOUND
 #pragma comment(lib, "winmm.lib")
@@ -84,7 +85,7 @@ CButtonST::CButtonST(BOOL isbutton)
 
 	// Do not draw as a transparent button
 	m_bDrawTransparent = FALSE;
-	m_pbmpOldBk = NULL;
+//	m_pbmpOldBk = NULL;
 
 	// No URL defined
 	SetURL(NULL);
@@ -113,15 +114,11 @@ CButtonST::CButtonST(BOOL isbutton)
 #endif
 	m_HoverMsg = 0;
 	m_HoverCWnd = NULL;
+	m_BgSet = FALSE;
 } // End of CButtonST
 
 CButtonST::~CButtonST()
 {
-	// Restore old bitmap (if any)
-	if (m_dcBk.m_hDC && m_pbmpOldBk)
-	{
-		m_dcBk.SelectObject(m_pbmpOldBk);
-	} // if
 
 	FreeResources();
 
@@ -251,7 +248,6 @@ void CButtonST::OnSysColorChange()
 {
 	CButton::OnSysColorChange();
 
-	m_dcBk.DeleteDC();
 	m_bmpBk.DeleteObject();	
 	SetDefaultColors();
 } // End of OnSysColorChange
@@ -508,7 +504,6 @@ BOOL CButtonST::OnClicked()
 void CButtonST::DrawItem(LPDRAWITEMSTRUCT lpDIS)
 {
 	CDC*	pDC = CDC::FromHandle(lpDIS->hDC);
-
 	// Checkbox?
 	if (m_bIsCheckBox)
 	{
@@ -584,7 +579,7 @@ void CButtonST::DrawItem(LPDRAWITEMSTRUCT lpDIS)
 
 void CButtonST::PaintBk(CDC* pDC)
 {
-	CClientDC clDC(GetParent());
+//	CClientDC clDC(GetParent());
 	CRect rect;
 	CRect rect1;
 
@@ -592,25 +587,20 @@ void CButtonST::PaintBk(CDC* pDC)
 
 	GetWindowRect(rect1);
 	GetParent()->ScreenToClient(rect1);
-//	m_dcBk.DeleteDC();
-//	m_dcBk.m_hDC = NULL;
-//	m_bmpBk.DeleteObject();
-	if (m_dcBk.m_hDC == NULL)
-	{
-		m_dcBk.CreateCompatibleDC(&clDC);
-		m_bmpBk.CreateCompatibleBitmap(&clDC, rect.Width(), rect.Height());
-		m_pbmpOldBk = m_dcBk.SelectObject(&m_bmpBk);
-		m_dcBk.BitBlt(0, 0, rect.Width(), rect.Height(), &clDC, 
-			rect1.left, rect1.top, SRCCOPY);
-		if (logit) {
-			m_dcBk.SelectObject(m_pbmpOldBk);
-			FileUtil::BmpLog(m_bmpBk,"CB-PBk");
-			m_pbmpOldBk = m_dcBk.SelectObject(&m_bmpBk);
-		}
-	} // if
 
-	pDC->BitBlt(0, 0, rect.Width(), rect.Height(), &m_dcBk, 0, 0, SRCCOPY);
-} // End of PaintBk
+	if (!m_BgSet)
+	{
+		m_BgSet = TRUE;
+		m_bmpBk.CreateCompatibleBitmap(/*&clDC*/pDC, rect.Width(), rect.Height());
+		CBmpDC BgDC(m_bmpBk);
+		BgDC.BitBlt(0, 0, rect.Width(), rect.Height(), /*&clDC*/pDC, 
+			rect1.left, rect1.top, SRCCOPY);
+
+	}
+	CBmpDC BgDC(m_bmpBk);
+
+	pDC->BitBlt(0, 0, rect.Width(), rect.Height(), &BgDC, 0, 0, SRCCOPY);
+}
 
 HBITMAP CButtonST::CreateBitmapMask(HBITMAP hSourceBitmap, 
 				DWORD dwWidth, DWORD dwHeight, COLORREF crTransColor)
@@ -2154,14 +2144,7 @@ void CButtonST::DrawTransparent(BOOL bRepaint)
 {
 	m_bDrawTransparent = TRUE;
 
-	// Restore old bitmap (if any)
-	if (m_dcBk.m_hDC != NULL && m_pbmpOldBk != NULL)
-	{
-		m_dcBk.SelectObject(m_pbmpOldBk);
-	} // if
-
 	m_bmpBk.DeleteObject();
-	m_dcBk.DeleteDC();
 
 	// Repaint the button
 	if (bRepaint) Invalidate();
@@ -2171,14 +2154,9 @@ DWORD CButtonST::SetBk(CBitmap * bmp)
 {
 	if (m_bDrawTransparent && bmp)
 	{
-		// Restore old bitmap (if any)
-		if (m_dcBk.m_hDC != NULL && m_pbmpOldBk != NULL)
-		{
-			m_dcBk.SelectObject(m_pbmpOldBk);
-		} // if
+		m_BgSet = TRUE;
 
 		m_bmpBk.DeleteObject();
-		m_dcBk.DeleteDC();
 
 		CRect rect;
 		CRect rect1;
@@ -2187,25 +2165,16 @@ DWORD CButtonST::SetBk(CBitmap * bmp)
 
 		GetWindowRect(rect1);
 		GetParent()->ScreenToClient(rect1);
-		CDC dc;
-		dc.CreateCompatibleDC(NULL);
 
-//		FileUtil::BmpLog(*bmp,"BG");
-		CBitmap *oldbmp = dc.SelectObject(bmp);
 		CDC * cdc = GetDC();
-
-		m_dcBk.CreateCompatibleDC(NULL);
 		m_bmpBk.CreateCompatibleBitmap(cdc, rect.Width(), rect.Height());
 		ReleaseDC(cdc);
-		m_pbmpOldBk = m_dcBk.SelectObject(&m_bmpBk);
-		m_dcBk.BitBlt(0, 0, rect.Width(), rect.Height(), 
-			&dc, rect1.left, rect1.top, SRCCOPY);
-
-		dc.SelectObject(oldbmp);
-
-//		m_dcBk.SelectObject(m_pbmpOldBk);
-//		FileUtil::BmpLog(m_bmpBk,"bBG");
-//		m_pbmpOldBk = m_dcBk.SelectObject(&m_bmpBk);
+		
+		CBmpDC BmpSrcDC(*bmp);
+		CBmpDC BmpBgDC(m_bmpBk);
+		BmpBgDC.BitBlt(0, 0, rect.Width(), rect.Height(), 
+			&BmpSrcDC, rect1.left, rect1.top, SRCCOPY);
+//		BmpBgDC.BmpLog("CBtnStSetBk");
 
 		return BTNST_OK;
 	} // if

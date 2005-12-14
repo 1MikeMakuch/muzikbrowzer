@@ -118,26 +118,11 @@ private:
     UINT m_ScrollHitPos;
     BOOL m_Capture;
     BOOL m_HaveScroll;
-    CBitmap m_ScrollUpArrowBM;
-    CBitmap m_ScrollDownArrowBM;
-    CBitmap m_ScrollButtonBM;
-	
+
 	CBitmap m_bmpBg;
 	CBitmap* m_bmpOldBg;
 	CBitmap* m_bmpOldBgMem;
 	CBitmap m_bmpMem;
-	//CDC m_BgDC;
-	//CDC m_BgMemDC;
-
-    HBITMAP m_ScrollUpArrowBMsave;
-    HBITMAP m_ScrollDownArrowBMsave;
-    HBITMAP m_ScrollButtonBMsave;
-	HBITMAP m_ScrollSBgBMsave;
-
-    CDC m_ScrollUpArrowCDC;
-    CDC m_ScrollDownArrowCDC;
-    CDC m_ScrollButtonCDC;
-	CDC m_ScrollSBgCDC;
 
     CRect m_ScrollButtonRect;
     CRect m_ScrollBarBorderRect;
@@ -150,7 +135,7 @@ private:
     UINT m_ScrollRange;
     BOOL m_UseColors;
 	CFont m_font;
-	CBrush m_brush;
+	CMapStringToPtr m_CtlColors;
 	int m_Count;
 	int m_ItemsPerPage;
 	int m_ScrollButtonDelta;

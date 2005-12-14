@@ -153,9 +153,9 @@ private:
 	BOOL m_WordWrap;
 
 	CBitmap m_bmpBg;
-	CDC m_dcBg;
+
 	BOOL m_BgSet;
-	CBitmap * m_bmpOldBg;
+
 
 public:
 	int m_HCenter;

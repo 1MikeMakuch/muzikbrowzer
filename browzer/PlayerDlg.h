@@ -215,7 +215,7 @@ private:
 
     BOOL m_LButtonDown;
     CPoint m_deltaPoint;
-    CBrush m_brush,m_HatchBrush;
+    CBrush m_HatchBrush;
 	int m_LibHeight;
 
 
@@ -242,6 +242,7 @@ private:
 	BOOL m_LastShowSearchPanel;
 	BOOL m_SearchCleared;
 	RegistryKey m_reg;
+	CMapStringToPtr m_CtlColors;
 // Dialog Data
 	//{{AFX_DATA(CPlayerDlg)
 	enum { IDD = IDD_PLAYER_DIALOG };

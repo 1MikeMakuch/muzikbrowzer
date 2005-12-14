@@ -39,17 +39,17 @@ void PictureStatic::OnPaint()
 {
 //	OutputDebugString("CPictureStatic::OnPaint\r\n");
 
-	CPaintDC paintdc(this);
-    CDC * cdc = GetDC();
-    if (cdc == NULL) {
-        return;
-    }
+	CPaintDC cdc(this);
+//    CDC * cdc = GetDC();
+//    if (cdc == NULL) {
+//        return;
+//    }
     CRect rect;
     GetClientRect(rect);
 //	blank();
 
 	if (m_ploaded)
-		m_Picture->Draw(cdc);
+		m_Picture->Draw(&cdc);
 
 //    CRgn Region;
 //    Region.CreateRectRgn(rect.left, rect.top, rect.right, rect.bottom);
@@ -57,7 +57,7 @@ void PictureStatic::OnPaint()
 
 //    Region.DeleteObject();
 //    cdc->SelectClipRgn(NULL);
-    ReleaseDC(cdc);
+//    ReleaseDC(cdc);
 	
 	// Do not call CStatic::OnPaint() for painting messages
 }
