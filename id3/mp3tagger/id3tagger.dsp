@@ -44,7 +44,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /Yu"stdafx.h" /FD /c
-# ADD CPP /nologo /MT /W3 /GX /O2 /I "..\..\3rdparty\id3lib-3.8.2\include" /I "..\id3libutils" /I "..\..\util" /I "..\..\browzer\controls" /I "..\..\browzer" /D ID3LIB_LINKOPTION=1 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /FR /FD /c
+# ADD CPP /nologo /MT /W3 /GX /Zi /O2 /I "..\..\3rdparty\id3lib-3.8.2\include" /I "..\id3libutils" /I "..\..\util" /I "..\..\browzer\controls" /I "..\..\browzer" /D ID3LIB_LINKOPTION=1 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /FR /FD /c
 # SUBTRACT CPP /YX /Yc /Yu
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
@@ -72,7 +72,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /Yu"stdafx.h" /FD /GZ /c
-# ADD CPP /nologo /MTd /w /W0 /Gi /GX /Zd /Od /I "..\\" /I "..\..\3rdparty\id3lib-3.8.2\include" /I "..\id3libutils" /I "..\..\util" /I "..\..\browzer\controls" /I "..\..\browzer" /D ID3LIB_LINKOPTION=1 /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /FR /FD /GZ /c
+# ADD CPP /nologo /MTd /w /W0 /Gi /GX /Zi /Od /I "..\\" /I "..\..\3rdparty\id3lib-3.8.2\include" /I "..\id3libutils" /I "..\..\util" /I "..\..\browzer\controls" /I "..\..\browzer" /D ID3LIB_LINKOPTION=1 /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /FR /FD /GZ /c
 # SUBTRACT CPP /YX /Yc /Yu
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
@@ -83,7 +83,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 ..\..\3rdparty\id3lib-3.8.2\libprj\Debug\id3libD.lib ..\..\3rdparty\id3lib-3.8.2\zlib\prj\Debug\zlibD.lib ..\..\util\Debug\util.lib ..\..\TestHarness\Debug\TestHarness.lib ..\id3libutils\Debug\id3utils.lib ..\..\browzer\controls\Debug\controls.lib /nologo /subsystem:windows /debug /machine:I386 /out:"Debug/mp3tagger.exe" /pdbtype:sept
+# ADD LINK32 ..\..\3rdparty\id3lib-3.8.2\libprj\Debug\id3libD.lib ..\..\3rdparty\id3lib-3.8.2\zlib\prj\Debug\zlibD.lib ..\..\util\Debug\util.lib ..\..\TestHarness\Debug\TestHarness.lib ..\id3libutils\Debug\id3utils.lib ..\..\browzer\controls\Debug\controls.lib /nologo /subsystem:windows /incremental:no /debug /machine:I386 /out:"Debug/mp3tagger.exe" /pdbtype:sept
 
 !ELSEIF  "$(CFG)" == "id3tagger - Win32 DebugBC"
 
@@ -101,7 +101,7 @@ LINK32=link.exe
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MTd /W3 /Gm /Gi /GX /ZI /Od /I "..\\" /I "..\..\3rdparty\id3lib-3.8.2\include" /I "..\id3libutils" /I "..\..\util" /I "..\..\browzer\controls" /I "..\..\browzer" /D ID3LIB_LINKOPTION=1 /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /FR /FD /GZ /c
 # SUBTRACT BASE CPP /YX /Yc /Yu
-# ADD CPP /nologo /MTd /W3 /Gm /Gi /GX /ZI /Od /I "..\\" /I "..\..\3rdparty\id3lib-3.8.2\include" /I "..\id3libutils" /I "..\..\util" /I "..\..\browzer\controls" /I "..\..\browzer" /D ID3LIB_LINKOPTION=1 /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /FR /FD /GZ /c
+# ADD CPP /nologo /MTd /W3 /Gm /Gi /GX /Zi /Od /I "..\\" /I "..\..\3rdparty\id3lib-3.8.2\include" /I "..\id3libutils" /I "..\..\util" /I "..\..\browzer\controls" /I "..\..\browzer" /D ID3LIB_LINKOPTION=1 /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /FR /FD /GZ /c
 # SUBTRACT CPP /YX /Yc /Yu
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32

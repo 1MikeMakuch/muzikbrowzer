@@ -42,7 +42,7 @@ RSC=rc.exe
 # PROP Intermediate_Dir "Release"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /YX /FD /c
-# ADD CPP /nologo /MT /W3 /GX /O2 /I "." /I "../3rdparty/ogg/libogg-1.0/include" /I "../3rdparty/ogg/libvorbis-1.0/include" /I "../" /I "../util" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /FD /c
+# ADD CPP /nologo /MT /W3 /GX /Zi /O2 /I "." /I "../3rdparty/ogg/libogg-1.0/include" /I "../3rdparty/ogg/libvorbis-1.0/include" /I "../" /I "../util" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /FR /FD /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x409 /d "NDEBUG" /d "_AFXDLL"
 # ADD RSC /l 0x409 /d "NDEBUG"
@@ -66,7 +66,7 @@ LIB32=link.exe -lib
 # PROP Intermediate_Dir "Debug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /YX /FD /GZ /c
-# ADD CPP /nologo /MTd /W3 /GX /Z7 /Od /I "." /I "../3rdparty/ogg/libogg-1.0/include" /I "../3rdparty/ogg/libvorbis-1.0/include" /I "../" /I "../util" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /FD /GZ /c
+# ADD CPP /nologo /MTd /W3 /GX /Zi /Od /I "." /I "../3rdparty/ogg/libogg-1.0/include" /I "../3rdparty/ogg/libvorbis-1.0/include" /I "../" /I "../util" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /FR /FD /GZ /c
 # SUBTRACT CPP /X /YX
 # ADD BASE RSC /l 0x409 /d "_DEBUG" /d "_AFXDLL"
 # ADD RSC /l 0x409 /d "_DEBUG"
@@ -91,7 +91,7 @@ LIB32=link.exe -lib
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MTd /W3 /GX /Z7 /Od /I "." /I "../3rdparty/ogg/libogg-1.0/include" /I "../3rdparty/ogg/libvorbis-1.0/include" /I "../" /I "../util" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /FD /GZ /c
 # SUBTRACT BASE CPP /X /YX
-# ADD CPP /nologo /MTd /W3 /GX /Z7 /Od /I "." /I "../3rdparty/ogg/libogg-1.0/include" /I "../3rdparty/ogg/libvorbis-1.0/include" /I "../" /I "../util" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /FD /GZ /c
+# ADD CPP /nologo /MTd /W3 /GX /Zi /Od /I "." /I "../3rdparty/ogg/libogg-1.0/include" /I "../3rdparty/ogg/libvorbis-1.0/include" /I "../" /I "../util" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /FR /FD /GZ /c
 # SUBTRACT CPP /X /YX
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
