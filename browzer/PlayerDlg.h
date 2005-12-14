@@ -374,9 +374,9 @@ public:
 //	afx_msg LRESULT OnMusicScanNew(UINT wParam, LONG lParam);
 
 	afx_msg void OnSkinPic(UINT wParam);
-	afx_msg void OnMusicAdd(UINT wParam);
-	afx_msg void OnMusicScan(UINT wParam);
-	afx_msg void OnMusicScanNew(UINT wParam);
+	afx_msg void OnMusicAdd();
+	afx_msg void OnMusicScan();
+	afx_msg void OnMusicScanNew();
 
 	afx_msg void OnGenresFocus();
 	afx_msg void OnArtistsFocus();

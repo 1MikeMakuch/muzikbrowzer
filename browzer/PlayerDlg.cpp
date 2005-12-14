@@ -3821,20 +3821,20 @@ CPlayerDlg::OnSkinPic(UINT wParam) {
 //	return 0;
 }
 void
-CPlayerDlg::OnMusicAdd(UINT wParam) {
+CPlayerDlg::OnMusicAdd() {
 	OnSearchClear();
 	CStringList mp3list;
 	m_Config.AddMusic(mp3list);
 //	return 0;
 }
 void 
-CPlayerDlg::OnMusicScan(UINT wParam) {
+CPlayerDlg::OnMusicScan() {
 	OnSearchClear();
 	m_Config.Scan();
 //	return 0;
 }
 void
-CPlayerDlg::OnMusicScanNew(UINT wParam) {
+CPlayerDlg::OnMusicScanNew() {
 	OnSearchClear();
 	m_Config.Scan(TRUE);
 //	return 0;
