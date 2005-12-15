@@ -1843,6 +1843,7 @@ CPlayerDlg::initDb() {
 	m_Artists.SetCurSel(0);
 	m_Albums.SetCurSel(0);
 	OnSelchangeGenres() ;
+	m_Genres.invalidate();
 
 
 	//	IRReaderStart();
