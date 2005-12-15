@@ -841,7 +841,7 @@ MusicLib::getAlbums(const CString & genrename, const CString & artistname,
 			if (year != "") {
 				iyear = atoi((LPCTSTR)year);
 			}
-			NameNum * nn = new NameNum(album.label(), iyear);
+			NameNum * nn = new NameNum(album.label(), iyear, firstSong.i());
 			namenums.Add(nn);
 		}
 	}
@@ -853,6 +853,7 @@ MusicLib::getAlbums(const CString & genrename, const CString & artistname,
     int i;
     for (i = 0 ; i < namenums.GetSize(); ++i) {
         box.AddString(((NameNum*)namenums[i])->m_name);
+		box.SetItemData(i, ((NameNum*)namenums[i])->m_p);
         delete (NameNum*)namenums[i];
     }
 	return 0;

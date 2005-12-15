@@ -77,6 +77,10 @@ void PlayerStatusSet(CString text) {
 void PlayerStatusTempSet(CString text) {
 	thePlayer->PlayerStatusTempSet(text);
 }
+void SetSelected(const CString text, DWORD data)
+{
+	thePlayer->SetSelected(text, data);
+}
 void PlayerUpdateWindow() {
 	thePlayer->UpdateWindow();
 }
@@ -173,6 +177,10 @@ CPlayerDlg::CPlayerDlg(CPlayerApp * theApp,
 	m_callbacksArtists.OnPaintCallback = &::UpdateArtists;
 	m_callbacksAlbums.OnPaintCallback = &::UpdateAlbums;
 	m_callbacksSongs.OnPaintCallback = &::UpdateSongs;
+	m_callbacksSongs.SetSelected = &::SetSelected;
+	m_callbacksAlbums.SetSelected = &::SetSelected;
+	m_callbacksSongs.statustempset = NULL;
+	m_callbacksAlbums.statustempset = NULL;
 
 	irman().init(RegKeyIrman, IR_MESSAGE_NUMBER_OF, this);
 
@@ -3401,6 +3409,19 @@ CPlayerDlg::PlayerStatusClear() {
 	PlayerStatusSet("");
 }
 void
+CPlayerDlg::SetSelected(const CString text, DWORD itemData) {
+	CString msg(text);
+	if (itemData && MBALL == _selectedArtist) {
+		Song song = new CSong;
+		song = m_mlib.m_SongLib.getSong(itemData);
+		msg += " by ";
+		msg += song->getId3("TPE1");
+		msg += " in ";
+		msg += song->getId3("TCON");
+	}
+	PlayerStatusTempSet(msg);
+}
+void
 CPlayerDlg::PlayerStatusSet(LPCTSTR lpmsg) {
 	CString msg(lpmsg);
 	PlayerStatusSet(msg);
@@ -3434,7 +3455,9 @@ CPlayerDlg::PlayerStatusRevert() {
 
     CTime t = CTime::GetCurrentTime();
     if (t.GetTime() > (m_PlayerStatusTime.GetTime() + PLAYER_STATUS_DELAY)) {
-		m_PlayerStatus.setText(m_PlayerStatusSave);
+		if (m_PlayerStatusSave.GetLength()) {
+			m_PlayerStatus.setText(m_PlayerStatusSave);
+		}
 		StopStatusTimer();
 	}
 	return;

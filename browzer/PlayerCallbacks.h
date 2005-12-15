@@ -10,6 +10,7 @@
 class MBConfig;
 class MusicLib;
 class CPlayerDlg;
+class CExtendedListBox;
 
 class PlayerCallbacks {
 public:
@@ -30,6 +31,7 @@ public:
 		playerdlg = NULL;
 		dlg = NULL;
 		OnPaintCallback = NULL;
+		SetSelected = NULL;
 	}
 
 	void (*redraw)();
@@ -46,6 +48,7 @@ public:
 	CPlayerDlg * (*playerdlg)();
 	CDialog * (*dlg)();
 	void (*OnPaintCallback)();
+	void (*SetSelected)(const CString text, DWORD data);
 
 	CString (*scanDirectories)(const CStringList & directories,
 						  InitDlg * initDlg, BOOL scanNew, BOOL bAdd);

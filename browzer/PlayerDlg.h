@@ -106,6 +106,7 @@ public:
 	void setColors();
     MBConfig & config() { return m_Config; }
 	MBConfig * pconfig() { return &m_Config; }
+	void SetSelected(const CString text, DWORD data);
     void PlayerStatusSet(CString &);
 	void PlayerStatusClear();
 	void PlayerStatusSet(LPCTSTR);

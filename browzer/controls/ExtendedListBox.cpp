@@ -248,9 +248,12 @@ void CExtendedListBox::DrawItem(CDC &pDC,int idx, const CRect &rect,
     if (size && 0 <= idx && idx < size) {
         GetText(idx, data); 
     }
-	if (selectedbit && focusbit && m_SetStatus && m_parentcallbacks
-			&& m_parentcallbacks->statustempset) {
-		(*m_parentcallbacks->statustempset)(data);
+	if (selectedbit && focusbit && m_SetStatus && m_parentcallbacks) {
+		if (m_parentcallbacks->statustempset) {
+			(*m_parentcallbacks->statustempset)(data);
+		} else if (m_parentcallbacks->SetSelected) {
+			(*m_parentcallbacks->SetSelected)(data,GetItemData(idx));
+		}
 	}
 
 	CRect irect(rect);
