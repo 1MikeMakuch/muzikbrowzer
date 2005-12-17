@@ -107,14 +107,14 @@ CPlayerDlg * getPlayer() {
 CDialog * getDialog() {
 	return thePlayer;
 }
-void UpdateArtists() {
-	thePlayer->UpdateArtists();
+BOOL UpdateArtists() {
+	return thePlayer->UpdateArtists();
 }
-void UpdateAlbums() {
-	thePlayer->UpdateAlbums();
+BOOL UpdateAlbums() {
+	return thePlayer->UpdateAlbums();
 }
-void UpdateSongs() {
-	thePlayer->UpdateSongs();
+BOOL UpdateSongs() {
+	return thePlayer->UpdateSongs();
 }
 /////////////////////////////////////////////////////////////////////////////
 // CPlayerDlg dialog
@@ -343,6 +343,9 @@ BEGIN_MESSAGE_MAP(CPlayerDlg, CDialogClassImpl)
 	ON_WM_RBUTTONUP()
 	//}}AFX_MSG_MAP
 	//ON_WM_NCPAINT()
+	ON_COMMAND(ID_640X480,	On640x480)
+	ON_COMMAND(ID_800X600,	On800x600)
+	ON_COMMAND(ID_1024X768,	On1024x768)
 	ON_COMMAND(ID_MENU_ADD, OnMusicAdd)
 	ON_COMMAND(ID_MENU_SCAN, OnMusicScan)
 	ON_COMMAND(ID_MENU_SCANNEW, OnMusicScanNew)
@@ -997,6 +1000,35 @@ CPlayerDlg::setColors() {
 
 
 }
+void
+CPlayerDlg::On640x480() {
+	CRect rect;
+	GetWindowRect(rect);
+	rect.right = rect.left + 640;
+	rect.bottom = rect.top + 480;
+	MoveWindow(rect);
+	resetControls();
+}
+void
+CPlayerDlg::On800x600() {
+	CRect rect;
+	GetWindowRect(rect);
+	rect.right = rect.left + 800;
+	rect.bottom = rect.top + 600;
+	MoveWindow(rect);
+	resetControls();
+}
+void
+CPlayerDlg::On1024x768() {
+	CRect rect;
+	GetWindowRect(rect);
+	rect.right = rect.left + 1024;
+	rect.bottom = rect.top + 768;
+	MoveWindow(rect);
+	resetControls();
+}
+
+
 void
 CPlayerDlg::resetControls() {
 
@@ -2075,10 +2107,11 @@ void CPlayerDlg::OnSelchangeAlbums()
 void CPlayerDlg::OnSelchangeSongs() 
 {
 }
-void CPlayerDlg::UpdateArtists() // called by m_Artists::OnPaint
+BOOL CPlayerDlg::UpdateArtists() // called by m_Artists::OnPaint
 {
+	BOOL updated = FALSE;
 	static int lastsel = -1;
-	if (DBLOCKED) return;
+	if (DBLOCKED) return updated;
 	int sel = m_Genres.GetCurSel();
 	_lastSelectedGenre = _selectedGenre;
 	if (sel > -1)
@@ -2088,20 +2121,24 @@ void CPlayerDlg::UpdateArtists() // called by m_Artists::OnPaint
 	}
 	if (TRUE == m_UpdateNeeded[0] || _lastSelectedGenre != _selectedGenre) {
 		m_UpdateNeeded[0] = FALSE;
-		logger.ods("	UpdateArtists");
+//		logger.ods("	UpdateArtists");
 		CWaitCursor c;
 		m_Artists.ResetContent();	
 		m_mlib.getArtists(_selectedGenre, m_Artists);
 		rememberSelections(m_GenreArtist, _selectedGenre, m_Artists);
 		m_Albums.invalidate();
 		m_Artists.invalidate();
+		updated = TRUE; // TRUE so ELB won't finish OnPainting cause it's
+						// about to do the actual OnPaint due to the invalidate()
 	}
 	if (lastsel != sel)	m_LastThingQueuedUp = ""; lastsel = sel;
+	return updated;
 }
-void CPlayerDlg::UpdateAlbums() // called by m_Albums::OnPaint
+BOOL CPlayerDlg::UpdateAlbums() // called by m_Albums::OnPaint
 {
+	BOOL updated = FALSE;
 	static int lastsel = -1;
-	if (DBLOCKED) return;
+	if (DBLOCKED) return updated;
 	int sel = m_Artists.GetCurSel();
 	_lastSelectedArtist = _selectedArtist;
 	if (sel > -1)
@@ -2110,7 +2147,7 @@ void CPlayerDlg::UpdateAlbums() // called by m_Albums::OnPaint
 	if (TRUE == m_UpdateNeeded[1] || _lastSelectedGenre != _selectedGenre
 			|| _lastSelectedArtist != _selectedArtist) {
 		m_UpdateNeeded[1] = FALSE;
-		logger.ods("	UpdateAlbums");
+//		logger.ods("	UpdateAlbums");
 		CWaitCursor c;
 		m_Albums.ResetContent();	
 		m_mlib.getAlbums(_selectedGenre,
@@ -2118,13 +2155,16 @@ void CPlayerDlg::UpdateAlbums() // called by m_Albums::OnPaint
 		rememberSelections(m_ArtistAlbum, _selectedArtist, m_Albums);
 		m_Songs.invalidate();
 		m_Albums.invalidate();
+		updated = TRUE;
 	}
 	if (lastsel != sel)	m_LastThingQueuedUp = ""; lastsel = sel;
+	return updated;
 }
-void CPlayerDlg::UpdateSongs()
+BOOL CPlayerDlg::UpdateSongs()
 {
+	BOOL updated = FALSE;
 	static int lastsel = -1;
-	if (DBLOCKED) return;
+	if (DBLOCKED) return updated;
 	int sel = m_Albums.GetCurSel();
 	_lastSelectedAlbum = _selectedAlbum;
 	if (sel > -1)
@@ -2134,13 +2174,15 @@ void CPlayerDlg::UpdateSongs()
 			|| _lastSelectedArtist != _selectedArtist
 			|| _lastSelectedAlbum != _selectedAlbum) {
 		m_UpdateNeeded[2] = FALSE;
-		logger.ods("	UpdateSongs");
+//		logger.ods("	UpdateSongs");
 		m_Songs.ResetContent();	
 		m_mlib.getSongs(_selectedGenre,
 			_selectedArtist,
 			_selectedAlbum,m_Songs);
 		rememberSelections(m_AlbumSong, _selectedAlbum, m_Songs);
 		m_Songs.invalidate();
+		updated = TRUE;
+		return updated; // No need to throw the album art up yet
 	}
 
 	sel = m_Songs.GetCurSel();
@@ -2157,6 +2199,7 @@ void CPlayerDlg::UpdateSongs()
 		displayAlbumArt(file);
 	}
 	if (lastsel != sel)	m_LastThingQueuedUp = ""; lastsel = sel;
+	return updated;
 }
 
 void CPlayerDlg::OnSelchangePlaylist() 
@@ -3821,6 +3864,17 @@ void CPlayerDlg::OnButtonMenu()
 		}
 		if (needscheck) {
 			skinmenu->CheckMenuItem(needscheck, MF_CHECKED | MF_BYCOMMAND);
+		}
+
+		CRect rect; GetWindowRect(rect);
+		CMenu * sizemenu = popup->GetSubMenu(5);
+		ASSERT(sizemenu != NULL);
+		if (rect.Width() == 640 && rect.Height() == 480) {
+			sizemenu->CheckMenuItem(ID_640X480, MF_CHECKED | MF_BYCOMMAND);
+		} else if (rect.Width() == 800 && rect.Height() == 600) {
+			sizemenu->CheckMenuItem(ID_800X600, MF_CHECKED | MF_BYCOMMAND);
+		} else if (rect.Width() == 1024 && rect.Height() == 768) {
+			sizemenu->CheckMenuItem(ID_1024X768, MF_CHECKED | MF_BYCOMMAND);
 		}
 
         popup->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON,

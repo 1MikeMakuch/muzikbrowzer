@@ -446,13 +446,16 @@
 #define ID_QUICK_PLAY                   32827
 #define ID_DELETE_FROM_PL               32828
 #define ID_SEARCH                       32829
+#define ID_640X480                      32832
+#define ID_800X600                      32833
+#define ID_1024X768                     32834
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        266
-#define _APS_NEXT_COMMAND_VALUE         32830
+#define _APS_NEXT_COMMAND_VALUE         32835
 #define _APS_NEXT_CONTROL_VALUE         2052
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

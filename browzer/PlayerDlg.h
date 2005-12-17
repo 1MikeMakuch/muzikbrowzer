@@ -379,6 +379,9 @@ public:
 	afx_msg void OnMusicAdd();
 	afx_msg void OnMusicScan();
 	afx_msg void OnMusicScanNew();
+	afx_msg void On640x480();
+	afx_msg void On800x600();
+	afx_msg void On1024x768();
 
 	afx_msg void OnGenresFocus();
 	afx_msg void OnArtistsFocus();
@@ -398,10 +401,10 @@ public:
 //	afx_msg void OnNcPaint( );
 	afx_msg void OnGetMinMaxInfo( MINMAXINFO FAR* lpMMI );
 	afx_msg void OnInitMenuPopup(CMenu *pPopupMenu, UINT nIndex,BOOL bSysMenu);
-	void UpdateGenres();
-	void UpdateArtists();
-	void UpdateAlbums();
-	void UpdateSongs();
+	BOOL UpdateGenres();
+	BOOL UpdateArtists();
+	BOOL UpdateAlbums();
+	BOOL UpdateSongs();
 
 
 	DECLARE_MESSAGE_MAP()

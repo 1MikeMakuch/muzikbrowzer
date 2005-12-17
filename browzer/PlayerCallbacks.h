@@ -47,7 +47,7 @@ public:
 	MusicLib * (*musiclib)();
 	CPlayerDlg * (*playerdlg)();
 	CDialog * (*dlg)();
-	void (*OnPaintCallback)();
+	BOOL (*OnPaintCallback)();
 	void (*SetSelected)(const CString text, DWORD data);
 
 	CString (*scanDirectories)(const CStringList & directories,

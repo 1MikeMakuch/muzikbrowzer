@@ -163,11 +163,20 @@ void CExtendedListBox::initBgDc() {
 }
 void CExtendedListBox::OnPaint() 
 {
+	// For some reason I found this CPaintDC needed to be declared
+	// before the OnPaintCallback call
 	CPaintDC dc(this); // device context for painting
-	logger.ods("ELB::OnPaint:"+m_id);
+//	logger.ods("ELB::OnPaint:"+m_id);
 	if (m_parentcallbacks
 			&& m_parentcallbacks->OnPaintCallback) {
-		(*m_parentcallbacks->OnPaintCallback)();
+		if ((*m_parentcallbacks->OnPaintCallback)()) {
+//			logger.ods("ELB::NoPaint:"+m_id);
+			// Don't paint yet. Update[Artists,Albums,Songs] just
+			// called our invalidate so we're about to do the actual OnPaint
+			// Next time in here the OnPaintCallback will return FALSE
+			// so we'll do the paint.
+			return;
+		}
 	}
 	int size = GetCount();
 
