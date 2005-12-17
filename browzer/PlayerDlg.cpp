@@ -3127,6 +3127,7 @@ CPlayerDlg::calcDuration() {
 	for(i = 0 ; i < size ; ++i) {
 		duration = 0;
 		CString sDuration = m_mlib._playlist[i]->getId3("TLEN");
+		logger.ods("Duration "+sDuration);
 		if (sDuration != "") {
 			// TLEN is in milliseconds
 			int millis = atoi((LPCTSTR)sDuration);
@@ -3136,15 +3137,15 @@ CPlayerDlg::calcDuration() {
 		}
 		totduration += duration;
 	}
-	m_PlaylistDuration = duration;
+	m_PlaylistDuration = totduration;
 	CString msg = "Playlist";
 	if (size) {
 		msg += ": ";
 		AutoBuf buf(100);
 		int h,m,s;
-		MBUtil::SecsToHMS(duration,h,m,s,buf.p);
+		MBUtil::SecsToHMS(totduration,h,m,s,buf.p);
 		msg += numToString(size);
-		msg += ", duration:";
+		msg += ", ";
 		msg += buf.p;
 	}
 	m_PlaylistLabel.setText(msg);
