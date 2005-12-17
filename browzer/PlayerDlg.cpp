@@ -2038,14 +2038,19 @@ void CPlayerDlg::OnAbout()
 void CPlayerDlg::OnControlSelChange() {
     if (m_Control->ptr() == &m_Genres) {
         OnSelchangeGenres();
+		m_Genres.invalidate();
     } else if (m_Control->ptr() == &m_Artists) {
         OnSelchangeArtists();
+		m_Artists.invalidate();
     } else if (m_Control->ptr() == &m_Albums) {
         OnSelchangeAlbums();
+		m_Albums.invalidate();
     } else if (m_Control->ptr() == &m_Songs) {
         OnSelchangeSongs();
+		m_Songs.invalidate();
     } else if (m_Control->ptr() == &m_Playlist) {
         OnSelchangePlaylist();
+		m_Playlist.invalidate();
     }
 }
 

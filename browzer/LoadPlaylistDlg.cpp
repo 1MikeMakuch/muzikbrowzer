@@ -507,6 +507,7 @@ void LoadPlaylistDlg::OnSetfocusPlaylistSongs()
 //    m_PlaylistSongs.SetCurSel(0);
 	OnSelchangePlaylistSongs();
 	m_Delete.SetTooltipText("Delete selected song from playlist");
+	m_PlaylistSongs.SetCurSel(0);
 	m_PlaylistSongs.invalidate();
 }
 
