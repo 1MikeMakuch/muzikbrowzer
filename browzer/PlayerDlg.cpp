@@ -187,6 +187,9 @@ CPlayerDlg::CPlayerDlg(CPlayerApp * theApp,
 	m_HatchBrush.CreateHatchBrush(HS_CROSS,RGB(255,0,0));
 //	m_LogoButton.logit = TRUE;
 
+	m_UpdateNeeded[0] = FALSE;
+	m_UpdateNeeded[1] = FALSE;
+	m_UpdateNeeded[2] = FALSE;
 }
 CPlayerDlg::~CPlayerDlg() {
     //delete m_Config;
@@ -2053,15 +2056,21 @@ rememberSelections(CMapStringToString & map, CString sel,
 
 void CPlayerDlg::OnSelchangeGenres() 
 {
-	m_Artists.InvalidateRgn(NULL);
+	m_UpdateNeeded[0] = TRUE;
+	m_UpdateNeeded[1] = TRUE;
+	m_UpdateNeeded[2] = TRUE;
+	m_Artists.invalidate();
 }
 void CPlayerDlg::OnSelchangeArtists() 
 {
-	m_Albums.InvalidateRgn(NULL);
+	m_UpdateNeeded[1] = TRUE;
+	m_UpdateNeeded[2] = TRUE;
+	m_Albums.invalidate();
 }
 void CPlayerDlg::OnSelchangeAlbums() 
 {
-	m_Songs.InvalidateRgn(NULL);
+	m_UpdateNeeded[2] = TRUE;
+	m_Songs.invalidate();
 }
 void CPlayerDlg::OnSelchangeSongs() 
 {
@@ -2077,19 +2086,20 @@ void CPlayerDlg::UpdateArtists() // called by m_Artists::OnPaint
 	if (_selectedGenre == MBALL) {
 		PlayerStatusTempSet(m_mlib.getLibraryCounts());
 	}
-	if (_lastSelectedGenre != _selectedGenre) {
+	if (TRUE == m_UpdateNeeded[0] || _lastSelectedGenre != _selectedGenre) {
+		m_UpdateNeeded[0] = FALSE;
+		logger.ods("	UpdateArtists");
 		CWaitCursor c;
 		m_Artists.ResetContent();	
 		m_mlib.getArtists(_selectedGenre, m_Artists);
 		rememberSelections(m_GenreArtist, _selectedGenre, m_Artists);
-		m_Artists.invalidate(); // send WM_PAINT to m_Albums
-		m_Albums.InvalidateRgn(NULL);
+		m_Albums.invalidate();
+		m_Artists.invalidate();
 	}
 	if (lastsel != sel)	m_LastThingQueuedUp = ""; lastsel = sel;
 }
 void CPlayerDlg::UpdateAlbums() // called by m_Albums::OnPaint
 {
-
 	static int lastsel = -1;
 	if (DBLOCKED) return;
 	int sel = m_Artists.GetCurSel();
@@ -2097,15 +2107,17 @@ void CPlayerDlg::UpdateAlbums() // called by m_Albums::OnPaint
 	if (sel > -1)
 		m_Artists.GetText(sel,_selectedArtist);
 	m_GenreArtist.SetAt(_selectedGenre, _selectedArtist);
-	if (_lastSelectedGenre != _selectedGenre
+	if (TRUE == m_UpdateNeeded[1] || _lastSelectedGenre != _selectedGenre
 			|| _lastSelectedArtist != _selectedArtist) {
+		m_UpdateNeeded[1] = FALSE;
+		logger.ods("	UpdateAlbums");
 		CWaitCursor c;
 		m_Albums.ResetContent();	
 		m_mlib.getAlbums(_selectedGenre,
 			_selectedArtist, m_Albums, m_Config.AlbumSortAlpha());
 		rememberSelections(m_ArtistAlbum, _selectedArtist, m_Albums);
+		m_Songs.invalidate();
 		m_Albums.invalidate();
-		m_Songs.InvalidateRgn(NULL);
 	}
 	if (lastsel != sel)	m_LastThingQueuedUp = ""; lastsel = sel;
 }
@@ -2118,9 +2130,11 @@ void CPlayerDlg::UpdateSongs()
 	if (sel > -1)
 		m_Albums.GetText(sel,_selectedAlbum);
     m_ArtistAlbum.SetAt(_selectedArtist, _selectedAlbum);
-	if (_lastSelectedGenre != _selectedGenre
+	if (TRUE == m_UpdateNeeded[2] || _lastSelectedGenre != _selectedGenre
 			|| _lastSelectedArtist != _selectedArtist
 			|| _lastSelectedAlbum != _selectedAlbum) {
+		m_UpdateNeeded[2] = FALSE;
+		logger.ods("	UpdateSongs");
 		m_Songs.ResetContent();	
 		m_mlib.getSongs(_selectedGenre,
 			_selectedArtist,
@@ -2158,7 +2172,58 @@ void CPlayerDlg::OnSelchangePlaylist()
 	CString file = m_mlib._playlist[sel]->getId3("FILE");
 	displayAlbumArt(file);
 }
+void CPlayerDlg::OnKillfocusVirtuals() 
+{
+	// Now that we have non virtual controls, need this
+	// to prevent misdirected actions from going to the
+	// most recent active virtual control.
 
+	// but first repaint w losing focus
+	((CWnd*)m_Control->ptr())->InvalidateRgn(NULL);
+
+	m_Control->zero();
+	
+}
+void
+CPlayerDlg::OnGenresFocus( ) {
+	*m_Control = (CExtendedListBox*)GetDlgItem(IDC_GENRES);
+    PlayerStatusTempSet(_selectedGenre);
+	//OnSelchangeGenres();
+	m_Genres.InvalidateRgn(NULL);
+}
+void
+CPlayerDlg::OnArtistsFocus() {
+	*m_Control = (CExtendedListBox*)GetDlgItem(IDC_ARTISTS);
+    PlayerStatusTempSet(_selectedArtist);
+	//OnSelchangeArtists();
+	m_Artists.InvalidateRgn(NULL);
+}
+void
+CPlayerDlg::OnAlbumsFocus() {
+	*m_Control = (CExtendedListBox*)GetDlgItem(IDC_ALBUMS);
+    PlayerStatusTempSet(_selectedAlbum);
+	//OnSelchangeAlbums();
+	m_Albums.InvalidateRgn(NULL);
+}
+void
+CPlayerDlg::OnSongsFocus() {
+	*m_Control = (CExtendedListBox*)GetDlgItem(IDC_SONGS);
+    PlayerStatusTempSet(_selectedSong);
+	//OnSelchangeSongs();
+	m_Songs.InvalidateRgn(NULL);
+}
+void
+CPlayerDlg::OnPlaylistFocus() {
+	*m_Control = (CExtendedListBox*)GetDlgItem(IDC_PLAYLIST);
+	int sel = m_Playlist.GetCurSel();
+	if (sel > -1) {
+		m_Playlist.GetText(sel,_selectedPlaylistSong);
+	}
+    PlayerStatusTempSet(_selectedPlaylistSong);
+	OnSelchangePlaylist() ;
+	if (m_Playlist.GetCount() == 0)
+		m_Playlist.InvalidateRgn(NULL);;
+}
 void CPlayerDlg::updatePlaylist(const BOOL save) {
 	m_Playlist.ResetContent();
 	m_mlib.getPlaylist(m_Playlist);
@@ -2309,58 +2374,7 @@ void CPlayerDlg::OnMenuButton()
         OnMenuHelp();
     }
 }
-void CPlayerDlg::OnKillfocusVirtuals() 
-{
-	// Now that we have non virtual controls, need this
-	// to prevent misdirected actions from going to the
-	// most recent active virtual control.
 
-	// but first repaint w losing focus
-	((CWnd*)m_Control->ptr())->InvalidateRgn(NULL);
-
-	m_Control->zero();
-	
-}
-void
-CPlayerDlg::OnGenresFocus( ) {
-	*m_Control = (CExtendedListBox*)GetDlgItem(IDC_GENRES);
-    PlayerStatusTempSet(_selectedGenre);
-	OnSelchangeGenres();
-	m_Genres.InvalidateRgn(NULL);
-}
-void
-CPlayerDlg::OnArtistsFocus() {
-	*m_Control = (CExtendedListBox*)GetDlgItem(IDC_ARTISTS);
-    PlayerStatusTempSet(_selectedArtist);
-	OnSelchangeArtists();
-	m_Artists.InvalidateRgn(NULL);
-}
-void
-CPlayerDlg::OnAlbumsFocus() {
-	*m_Control = (CExtendedListBox*)GetDlgItem(IDC_ALBUMS);
-    PlayerStatusTempSet(_selectedAlbum);
-	OnSelchangeAlbums();
-	m_Albums.InvalidateRgn(NULL);
-}
-void
-CPlayerDlg::OnSongsFocus() {
-	*m_Control = (CExtendedListBox*)GetDlgItem(IDC_SONGS);
-    PlayerStatusTempSet(_selectedSong);
-	OnSelchangeSongs();
-	m_Songs.InvalidateRgn(NULL);
-}
-void
-CPlayerDlg::OnPlaylistFocus() {
-	*m_Control = (CExtendedListBox*)GetDlgItem(IDC_PLAYLIST);
-	int sel = m_Playlist.GetCurSel();
-	if (sel > -1) {
-		m_Playlist.GetText(sel,_selectedPlaylistSong);
-	}
-    PlayerStatusTempSet(_selectedPlaylistSong);
-	OnSelchangePlaylist() ;
-	if (m_Playlist.GetCount() == 0)
-		m_Playlist.InvalidateRgn(NULL);;
-}
 BOOL
 CPlayerDlg::OnDelete() {
     if (m_Control->ptr() == &m_Playlist) {

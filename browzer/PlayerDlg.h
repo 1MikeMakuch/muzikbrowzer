@@ -244,6 +244,7 @@ private:
 	BOOL m_SearchCleared;
 	RegistryKey m_reg;
 	CMapStringToPtr m_CtlColors;
+	BOOL m_UpdateNeeded[3];
 // Dialog Data
 	//{{AFX_DATA(CPlayerDlg)
 	enum { IDD = IDD_PLAYER_DIALOG };

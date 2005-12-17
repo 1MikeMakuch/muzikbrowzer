@@ -275,6 +275,13 @@ String::last(const CString & string, const char ch) {
 	}
 	return pos;
 }
+CString
+String::stripws(const CString & string) {
+	CString news = String::replace(string,""," ");
+	news = String::replace(news,"","	");
+	return news;
+}
+
 AutoBuf::AutoBuf(int size) {
     p = new char[size];
 	memset(p, 0, size-1);

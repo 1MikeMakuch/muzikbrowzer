@@ -1347,6 +1347,18 @@ MusicLib::createSongFromFile(const CString & mp3file,
 
 	return song;
 }
+void
+MusicLib::NormalizeTagField(CString & tag) {
+	if ("" == tag) {
+		tag = MBUNKNOWN;
+		return;
+	}
+	CString tmp = String::stripws(tag);
+	if (tmp.GetLength())
+		return;
+	tag = MBUNKNOWN;
+	return;
+}
 
 CString
 MusicLib::writeSongToFile(Song song) {
@@ -1605,6 +1617,12 @@ MusicLib::createSongFromId3(ID3_Tag * id3) {
 
     CString cgenre = Genre_normalize(genre);
     Song song = new CSong;
+	
+	NormalizeTagField(cgenre);
+	NormalizeTagField(artist);
+	NormalizeTagField(album);
+	NormalizeTagField(title);
+
     song->setId3("TCON", (LPCTSTR)cgenre);
     song->setId3("TPE1", artist);
     song->setId3("TALB", album);
@@ -1630,6 +1648,12 @@ MusicLib::createSongFromOgg(OggTag * ogg) {
 	track = ogg->getVal("tracknumber");
 
     CString cgenre = Genre_normalize(genre);
+
+	NormalizeTagField(cgenre);
+	NormalizeTagField(artist);
+	NormalizeTagField(album);
+	NormalizeTagField(title);
+
     song->setId3("TCON", (LPCTSTR)cgenre);
     song->setId3("TPE1", artist);
     song->setId3("TALB", album);
@@ -1672,6 +1696,12 @@ MusicLib::createSongFromWma(WmaTag * wma) {
 	}
 
     CString cgenre = Genre_normalize(genre);
+
+	NormalizeTagField(cgenre);
+	NormalizeTagField(artist);
+	NormalizeTagField(album);
+	NormalizeTagField(title);
+
     song->setId3("TCON", (LPCTSTR)cgenre);
     song->setId3("TPE1", artist);
     song->setId3("TALB", album);

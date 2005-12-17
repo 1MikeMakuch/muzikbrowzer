@@ -101,14 +101,14 @@ BEGIN_MESSAGE_MAP(LoadPlaylistDlg, CDialogSK)
 	ON_BN_CLICKED(IDC_PLAYLIST_SAVE, OnPlaylistSave)
 	ON_BN_CLICKED(IDC_PLAYLIST_DELETE, OnDeletePlaylist)
 	ON_BN_CLICKED(IDC_PLAYLIST_RENAME, OnRenamePlaylist)
-	ON_BN_CLICKED(IDC_PLAYLIST_CLOSE, OnCancel)
 	ON_LBN_KILLFOCUS(IDC_PLAYLIST_SONGS, OnKillfocusPlaylistSongs)
 	ON_LBN_SELCHANGE(IDC_PLAYLIST_SONGS, OnSelchangePlaylistSongs)
-//	ON_BN_CLICKED(IDCANCEL, OnCancel)
-	ON_WM_SETCURSOR()
 	ON_WM_NCMOUSEMOVE()
 	ON_WM_LBUTTONUP()
 	ON_WM_MOUSEMOVE()
+	ON_WM_SETCURSOR()
+	ON_BN_CLICKED(IDC_PLAYLIST_CLOSE, OnCancel)
+	ON_LBN_KILLFOCUS(IDC_PLAYLIST_NAMES, OnKillfocusPlaylistNames)
 	//}}AFX_MSG_MAP
 	ON_WM_NCLBUTTONDOWN()
 	ON_WM_NCLBUTTONUP()
@@ -467,6 +467,14 @@ void LoadPlaylistDlg::OnSelchangePlaylistSongs()
 		m_GAAS.setText(name);
 	m_PlaylistSongs.invalidate();
 }
+void LoadPlaylistDlg::OnKillfocusPlaylistNames() 
+{
+	m_PlaylistNames.invalidate();
+}
+void LoadPlaylistDlg::OnKillfocusPlaylistSongs() 
+{
+	m_PlaylistSongs.invalidate();
+}
 
 void LoadPlaylistDlg::OnSetfocusPlaylistNames() 
 {
@@ -485,6 +493,7 @@ void LoadPlaylistDlg::OnSetfocusPlaylistNames()
 	m_Down.EnableWindow(FALSE);
 	m_Delete.SetTooltipText("Delete selected playlist");
 	//OnSelchangePlaylistNames();
+	m_PlaylistNames.invalidate();
 }
 
 void LoadPlaylistDlg::OnSetfocusPlaylistSongs() 
@@ -498,6 +507,7 @@ void LoadPlaylistDlg::OnSetfocusPlaylistSongs()
 //    m_PlaylistSongs.SetCurSel(0);
 	OnSelchangePlaylistSongs();
 	m_Delete.SetTooltipText("Delete selected song from playlist");
+	m_PlaylistSongs.invalidate();
 }
 
 
@@ -634,11 +644,6 @@ void LoadPlaylistDlg::OnDeltaposSpin1(NMHDR* pNMHDR, LRESULT* pResult)
 	*pResult = 0;
 }
 
-void LoadPlaylistDlg::OnKillfocusPlaylistSongs() 
-{
-
-
-}
 
 
 void LoadPlaylistDlg::OnSizing(UINT fwSide, LPRECT pRect) 
@@ -1317,3 +1322,4 @@ BOOL LoadPlaylistDlg::PreTranslateMessage(MSG* pMsg)
     }
     return CDialog::PreTranslateMessage(pMsg);
 }
+

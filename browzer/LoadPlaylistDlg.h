@@ -82,7 +82,6 @@ protected:
 	afx_msg void OnPlaylistSave();
 	afx_msg void OnDeletePlaylist();
 	afx_msg void OnRenamePlaylist();
-
 	afx_msg void OnDeltaposSpin1(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnKillfocusPlaylistSongs();
 	afx_msg void OnSelchangePlaylistSongs();
@@ -96,6 +95,7 @@ protected:
 	afx_msg void OnNcLButtonDown(UINT, CPoint);
 	afx_msg void OnNcLButtonUp(UINT, CPoint);
 	afx_msg BOOL OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message);
+	afx_msg void OnKillfocusPlaylistNames();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 	afx_msg LRESULT OnMovePlaylistUp(UINT wParam, LONG lParam=0);

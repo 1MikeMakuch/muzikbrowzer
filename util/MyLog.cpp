@@ -118,20 +118,25 @@ MyLog::log(const CString &m1, const CString &m2,
 }
 void
 MyLog::ods(char *  m0) {
+#ifdef _DEBUG
 	CString m1(m0);
 	ods(m1);
+#endif
 }
 void
 MyLog::ods(CString &  m0) {
+#ifdef _DEBUG
     CString mx;
     CTime t = CTime::GetCurrentTime();
     mx = t.Format("%Y%m%d:%H%M%S ");
     mx += m0 ; 
 	mx += "\r\n";
 	OutputDebugString(mx);
+#endif
 }
 void
 MyLog::odsRect(const CString & name, const CRect & rect) {
+#ifdef _DEBUG
 	CString m(name);
 	m += " L:";
 	m += numToString(rect.left) + " T:";
@@ -140,14 +145,17 @@ MyLog::odsRect(const CString & name, const CRect & rect) {
 	m += numToString(rect.Height());
 	ods(m);
 	return;
+#endif
 }
 void
 MyLog::odsRGB(const COLORREF c) {
+#ifdef _DEBUG
 	CString t = "RGB: ";
 	t += numToString(GetRValue(c)) + ",";
 	t += numToString(GetGValue(c)) + ",";
 	t += numToString(GetBValue(c));
 	ods(t);
+#endif
 }
 
 void

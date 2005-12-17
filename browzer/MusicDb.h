@@ -364,6 +364,7 @@ class MusicLib
 	    void	movePlaylistDown(int plc, int sel);
 	    void	MovePlaylistsToDir();
 	    void	movePlaylistUp(int plc, int sel);
+		void	NormalizeTagField(CString & tag);
 	    void	RandomizePlaylist();
 	    UINT	readDb();
 	    void	readDbLocation();

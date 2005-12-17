@@ -164,7 +164,7 @@ void CExtendedListBox::initBgDc() {
 void CExtendedListBox::OnPaint() 
 {
 	CPaintDC dc(this); // device context for painting
-//	logger.ods("ELB::OnPaint:"+m_id);
+	logger.ods("ELB::OnPaint:"+m_id);
 	if (m_parentcallbacks
 			&& m_parentcallbacks->OnPaintCallback) {
 		(*m_parentcallbacks->OnPaintCallback)();
@@ -925,6 +925,7 @@ void
 CExtendedListBox::invalidate() {
 	SetWindowPos(NULL,0,0,0,0,
 		SWP_FRAMECHANGED|SWP_NOMOVE|SWP_NOSIZE|SWP_NOZORDER); 	
+	InvalidateRgn(NULL);
 
 
 //	RedrawWindow(0,0,RDW_FRAME|RDW_INVALIDATE|RDW_UPDATENOW);
