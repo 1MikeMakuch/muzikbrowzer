@@ -611,11 +611,10 @@ WmaTag::WmaTag() {}
 WmaTag::WmaTag(const CString & file) : m_file(file) {
 	read(file);
 }
-
 CString
-WmaTag::read(const CString & file) {
-	logger.log("WmaTag::read:",file);
-	CString error="WmaTag::read error ";
+WmaTag::readTimex(const CString & file) {
+	logger.log("WmaTag::readTime:",file);
+	CString error="WmaTag::readTime error ";
 	CString out;
 
 	WORD				wStreamNum			= 0;
@@ -624,16 +623,19 @@ WmaTag::read(const CString & file) {
 
     IWMMetadataEditor   * pEditor           = NULL;
     IWMHeaderInfo*      pHeaderInfo         = NULL;
+    IWMHeaderInfo3*      pHeaderInfo3         = NULL;
 
-    WCHAR               * pwszAttribName    = NULL;
+    WCHAR               *pwszAttribName    = NULL;
     WORD                wAttribNameLen      = 0;
     WMT_ATTR_DATATYPE   wAttribType;
     BYTE                * pbAttribValue     = NULL;
     WORD                wAttribValueLen     = 0;
+	WORD				pwCount;
 
 	char buf[500];
 	strcpy(buf,(LPCTSTR)file);
     LPTSTR				ptszInFile			= buf;;
+	CString duration;
 
 
     do
@@ -646,26 +648,72 @@ WmaTag::read(const CString & file) {
             break;
         }
 #endif
-        hr = EditorOpenFile( pwszInFile, &pEditor, &pHeaderInfo, NULL );
+        hr = EditorOpenFile( pwszInFile, &pEditor, NULL, &pHeaderInfo3);
         if(FAILED( hr ) )
         {
 			out = "EditorOpenFile";
             break;
         }
 
-        WORD wAttributeCount = 0;
+			pwszAttribName = new WCHAR[ 20 ];
+			wcscat( pwszAttribName, L"Duration" );
 
-        hr = pHeaderInfo->GetAttributeCount( wStreamNum, &wAttributeCount );
-        if(FAILED( hr ) )
-        {
-            _stprintf(buf, _T( "WMA:GetAttributeCount failed for stream = %d ( hr=0x%08x ).\n" ), 
-                wStreamNum, hr );
-			logger.log(buf);
-			out = buf;
-            break;
-        }
+            hr = pHeaderInfo3->GetAttributeIndices(wStreamNum,
+                                                   pwszAttribName,
+												   NULL,
+												   NULL,
+												   &pwCount);
 
-        for( WORD wAttribIndex = 0; wAttribIndex < wAttributeCount; wAttribIndex++ )
+            if( FAILED( hr ) )
+            {
+                _stprintf(buf, _T( "WMA:GetAttributeIndices failed for Duration ( hr=0x%08x ).\n" ), 
+										hr );
+				switch (hr) {
+				case S_OK:
+					out = "S_OK";
+					break;
+				case NS_E_SDK_BUFFERTOOSMALL:
+					out = "NS_E_SDK_BUFFERTOOSMALL";
+					break;
+				case NS_E_INVALID_REQUEST:
+					out = "NS_E_INVALID_REQUEST";
+					break;
+				case E_POINTER:
+					out = "E_POINTER";
+					break;
+				}
+				logger.log(buf);
+				out = buf;
+                break;
+            }
+
+			if (pwCount < 1) {
+				_stprintf(buf, _T( "WMA:GetAttributeIndices failed for pwCount = %d ( hr=0x%08x ).\n" ), 
+										pwCount, hr );
+				logger.log(buf);
+				out = buf;
+                break;
+            }
+
+
+			WORD * pwIndices = new WORD[pwCount];
+
+            hr = pHeaderInfo3->GetAttributeIndices(wStreamNum,
+                                                   pwszAttribName,
+												   NULL,
+												   pwIndices,
+												   &pwCount);
+
+            if( FAILED( hr ) )
+            {
+                _stprintf(buf, _T( "WMA:GetAttributeIndices failed for 2nd Duration ( hr=0x%08x ).\n" ), 
+                    hr );
+				logger.log(buf);
+				out = buf;
+                break;
+            }
+
+		for( WORD wAttribIndex = 0; wAttribIndex < pwCount; wAttribIndex++ )
         {
             SAFE_ARRAYDELETE( pwszAttribName );
             SAFE_ARRAYDELETE( pbAttribValue );
@@ -731,6 +779,168 @@ WmaTag::read(const CString & file) {
             }
 
 			setVal(key, val);
+			logger.ods(CString("wma readTime:" + key + " " + val));
+
+        }
+
+        
+        hr = pEditor->Close();
+        if( FAILED( hr ) )
+        {
+            _stprintf(buf, _T( "WMA:Could not close the file %ws ( hr=0x%08x ).\n" ), pwszInFile, hr );
+			logger.log(buf);
+            break;
+        }
+    }
+    while( FALSE );
+    
+    SAFE_RELEASE( pHeaderInfo );
+    SAFE_RELEASE( pEditor );
+
+    SAFE_ARRAYDELETE( pwszAttribName );
+    SAFE_ARRAYDELETE( pbAttribValue );
+
+//	if (out != "") {
+//		return CString(error + out);
+//	} else {
+//		return "";
+//	}
+	return duration;
+}
+
+
+
+
+CString
+WmaTag::read(const CString & file, const BOOL durationOnly) {
+	logger.log("WmaTag::read:",file);
+	CString error="WmaTag::read error ";
+	CString out;
+
+	WORD				wStreamNum			= 0;
+	WCHAR				* pwszInFile		= (WCHAR*)(LPCTSTR)file;
+    HRESULT             hr                  = S_OK;
+
+    IWMMetadataEditor   * pEditor           = NULL;
+    IWMHeaderInfo*      pHeaderInfo         = NULL;
+	IWMHeaderInfo3*      pHeaderInfo3         = NULL;
+
+    WCHAR               * pwszAttribName    = NULL;
+    WORD                wAttribNameLen      = 0;
+    WMT_ATTR_DATATYPE   wAttribType;
+    BYTE                * pbAttribValue     = NULL;
+    DWORD                wAttribValueLen     = 0;
+	WORD				pwLangIndex			= 0;
+
+	char buf[500];
+	strcpy(buf,(LPCTSTR)file);
+    LPTSTR				ptszInFile			= buf;;
+
+	CString val;
+    do
+    {
+#ifndef UNICODE
+        hr = ConvertMBtoWC( ptszInFile, &pwszInFile );
+        if( FAILED( hr ) )
+        {
+			out = "ConvertMBtoWC";
+            break;
+        }
+#endif
+        hr = EditorOpenFile( pwszInFile, &pEditor, NULL, &pHeaderInfo3);
+        if(FAILED( hr ) )
+        {
+			out = "EditorOpenFile";
+            break;
+        }
+
+        WORD wAttributeCount = 0;
+
+        hr = pHeaderInfo3->GetAttributeCountEx( wStreamNum, &wAttributeCount );
+        if(FAILED( hr ) )
+        {
+            _stprintf(buf, _T( "WMA:GetAttributeCount failed for stream = %d ( hr=0x%08x ).\n" ), 
+                wStreamNum, hr );
+			logger.log(buf);
+			out = buf;
+            break;
+        }
+
+        for( WORD wAttribIndex = 0; wAttribIndex < wAttributeCount; wAttribIndex++ )
+        {
+            SAFE_ARRAYDELETE( pwszAttribName );
+            SAFE_ARRAYDELETE( pbAttribValue );
+
+            hr = pHeaderInfo3->GetAttributeByIndexEx(
+												   wStreamNum,
+												   wAttribIndex,
+                                                   pwszAttribName,
+                                                   &wAttribNameLen,
+                                                   &wAttribType,
+												   &pwLangIndex,
+                                                   pbAttribValue,
+                                                   &wAttribValueLen );
+            if( FAILED( hr ) )
+            {
+                _stprintf(buf, _T( "WMA:GetAttributeByIndex failed for index = %d ( hr=0x%08x ).\n" ), 
+                    wAttribIndex, hr );
+				logger.log(buf);
+				out = buf;
+                break;
+            }
+
+            pwszAttribName = new WCHAR[ wAttribNameLen ];
+            if( NULL == pwszAttribName )
+            {
+                hr = E_OUTOFMEMORY;
+                break;
+            }
+
+            pbAttribValue = new BYTE[ wAttribValueLen ];
+            if( NULL == pbAttribValue )
+            {
+                hr = E_OUTOFMEMORY;
+                break;
+            }
+
+            hr = pHeaderInfo3->GetAttributeByIndexEx(
+												   wStreamNum,
+												   wAttribIndex,
+                                                   pwszAttribName,
+                                                   &wAttribNameLen,
+                                                   &wAttribType,
+												   &pwLangIndex,
+                                                   pbAttribValue,
+                                                   &wAttribValueLen );
+            if( FAILED( hr ) )
+            {
+                _stprintf(buf, _T( "WMA:GetAttributeByIndex failed for index = %d ( hr=0x%08x ).\n" ), 
+                    wAttribIndex, hr );
+				logger.log(buf);
+				out = buf;
+                break;
+            }
+			CString key = pwszAttribName;
+
+            hr = PrintAttributeString( wAttribIndex, 
+                                 wStreamNum, 
+                                 pwszAttribName, 
+                                 wAttribType, 
+                                 0, 
+                                 pbAttribValue, 
+                                 wAttribValueLen, val);
+            if( FAILED( hr ) )
+            {
+				out = "PrintAttributeString";
+                break;
+            }
+
+			if (durationOnly) {
+				if ("Duration" == key)
+					break;
+			} else {
+				setVal(key, val);
+			}
 
         }
         
@@ -749,13 +959,15 @@ WmaTag::read(const CString & file) {
 
     SAFE_ARRAYDELETE( pwszAttribName );
     SAFE_ARRAYDELETE( pbAttribValue );
+	SAFE_ARRAYDELETE(pwszInFile );
 
-	if (out != "") {
-		return CString(error + out);
-	} else {
-		return "";
-	}
+//	if (out != "") {
+//		return CString(error + out);
+//	} else {
+		return val;
+//	}
 }
+
 
 
 CString

@@ -1304,6 +1304,7 @@ MusicLib::createSongFromFile(const CString & mp3file,
 			error_results += buf.p;
 		}
 
+#ifdef asdf
 		// If TLEN is set use it
 		tlen = song->getId3((CString)"TLEN");
 
@@ -1325,8 +1326,15 @@ MusicLib::createSongFromFile(const CString & mp3file,
 				tlen_methods_failed_count++;
 			}
 		}
+#endif
 		delete id3;
+		WmaTag wma; // WMASDK does a better job of calcing duration
+		CString tlen = wma.read(mp3file,TRUE);
 		if (tlen.GetLength()) {
+			float d = atof(tlen);
+			d = d / 10000;
+			int d2 = (int)d;
+			tlen= numToString(d2);
 			song->setId3("TLEN", tlen);
 		}
 	} else if (fext == "ogg") {

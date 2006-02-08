@@ -12,7 +12,7 @@ class WmaTag {
 		WmaTag(const CString & file);
 		~WmaTag() {}
 
-		CString read(const CString & file);
+		CString read(const CString & file, const BOOL durOnly=FALSE);
 
 		CString getComments();
 		CString getInfo();
@@ -22,6 +22,7 @@ class WmaTag {
 		CString getVal(const CString & key);
 		void setVal(const CString & key, const CString & val);
 		long getTime() { return m_time; }
+		CString readTimex(const CString &);
 
 		CString write();
 		BOOL exists(const CString &key);

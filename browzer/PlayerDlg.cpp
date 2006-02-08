@@ -4630,6 +4630,10 @@ void CPlayerDlg::OnPositionChangeWmp(double oldPosition, double newPosition)
 	
 }
 
+
+// In event of these errors, stop MB from continuing so the user
+// can see which file has a problem. 
+
 void CPlayerDlg::OnMediaErrorWmp(LPDISPATCH pMediaObject) 
 {
 	// TODO: Add your control notification handler code here
