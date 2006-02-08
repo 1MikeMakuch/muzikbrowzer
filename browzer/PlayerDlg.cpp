@@ -3114,7 +3114,7 @@ void CPlayerDlg::PlayLoop() {
 			CString msg;
             if (good && m_Player->InputOpen(file) && Play()) {
 //				Play();
-				adjustVolume();
+//				adjustVolume();
 				good = 1;
 				displayAlbumArt(file);
 			} else {
@@ -4440,7 +4440,7 @@ void CPlayerDlg::killAlbumArt() {
 	m_Picture.unload();
 }
 void CPlayerDlg::displayAlbumArt(const CString & file) {
-	return;
+//	return;
 
 	if (""== file) {
 		killAlbumArt();
