@@ -859,6 +859,15 @@ MusicLib::getAlbums(const CString & genrename, const CString & artistname,
 	return 0;
 }
 int
+MusicLib::getSongCount() {
+	return m_SongLib.m_files.getLength();
+}
+CString
+MusicLib::getSongFileName(const int i) {
+	return m_SongLib.m_files.getAt(i);
+}
+
+int
 MusicLib::getSongs(const CString & genrename,
 				  const CString & artistname,
 				  const CString & albumname,
@@ -949,6 +958,8 @@ MusicLib::addFileToPlaylist(const CString & file) {
 		Song addsong = createSongFromFile(file);
 		if (addsong->GetCount()) {
 			addSongToPlaylist(addsong);
+			CString x;int y;
+			addSongToDb(y,addsong,x);
 			return 1;
 		} 
 	}
@@ -3473,7 +3484,7 @@ MSongLib::addSong(Song & song) {
 //		m_files.remove(at);
 		return 0;
 	} 
-
+	m_dirty = 1;
 
 	artistname = song->getId3("TPE1");
 	albumname = song->getId3("TALB");

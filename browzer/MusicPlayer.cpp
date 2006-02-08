@@ -93,7 +93,7 @@ MusicPlayer::isStopped() {
 	return m_MP->isStopped();
 }
 
-int
+long
 MusicPlayer::GetFileDuration() {
 
     return m_MP->GetFileDuration();

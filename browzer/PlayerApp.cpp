@@ -61,6 +61,8 @@ BOOL CPlayerApp::InitInstance()
 //		AfxMessageBox(IDP_SOCKETS_INIT_FAILED);
 //		return FALSE;
 //	}
+	// For WMP Control
+	AfxEnableControlContainer();
 
 	// Standard initialization
 	// If you are not using these features and wish to reduce the size

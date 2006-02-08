@@ -246,3 +246,54 @@ TEST(FileUtil, BmpLog)
 	::DeleteDC(hdcD);
 }
 #endif
+
+CString
+FileUtil::FileToString(const CString file) {
+	CString string;
+	CFile myFile;
+	CFileException fileException;
+    int count1 = 0;
+    int count3 = 0;
+
+	if ( !myFile.Open( file,
+        CFile::modeRead,
+        &fileException ))
+	{
+        CString msg = "Unable to read ";
+		msg += file;
+		msg += "\r\n";
+        return msg;
+	}
+    if (myFile.GetLength()) {
+        AutoBuf buf(myFile.GetLength()+1);
+        myFile.Read(buf.p, myFile.GetLength());
+		buf.p[myFile.GetLength()] = 0;
+		string = buf.p;
+		myFile.Close();
+	}
+	return string;
+}
+BOOL
+FileUtil::StringToFile(const CString & string, const CString & file) {
+	CFile cfile;
+	CFileException e;
+    BOOL r = cfile.Open(file, 
+        CFile::modeCreate
+        |CFile::modeWrite
+        |CFile::shareDenyNone,
+        &e);
+	if (0 == r)
+		return r;
+	cfile.Write(string,string.GetLength());
+	cfile.Flush();
+	return TRUE;
+}
+TEST(FileUtilFileToString,StringToFile)
+{
+	CString s = "123";
+	CString f = "c:\\Temp\\FileUtilTest";
+	BOOL r = FileUtil::StringToFile(s,f);
+	CHECK(TRUE == r);
+	CString s2 = FileUtil::FileToString(f);
+	CHECK(s2 == s);
+}

@@ -1,4 +1,3 @@
-
 #include "StdAfx.h"
 #include "MBGlobals.h"
 #include "ExtendedListBox.h"

@@ -30,7 +30,7 @@ public:
 	BOOL isPlaying();
 	BOOL isStopped();
 	HRESULT HandleGraphEvent(void) { return m_MP->HandleGraphEvent();}
-	int GetFileDuration();
+	long GetFileDuration();
 	long ReadMediaPosition(void);
 	void ReadMediaPosition(long &, long &, long &);
 private:

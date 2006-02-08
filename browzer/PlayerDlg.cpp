@@ -44,12 +44,15 @@
 #include "SkinDefs.h"
 #include "DIBSectionLite.h"
 #include "GetTextField.h"
+#include "MusicPlayerWMP.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
 #endif
+
+MyLog CheckEmLog;
 
 // This DBLOCKED global used to prevent access to the _selected*'s vars
 // while the db is being updated and before the _selected*'s
@@ -144,14 +147,15 @@ CPlayerDlg::CPlayerDlg(CPlayerApp * theApp,
 	m_QuickPlay(FALSE),
 	m_ShowSearchPanel(FALSE),
 	m_SearchCleared(TRUE),
-	m_LastShowSearchPanel(FALSE)
+	m_LastShowSearchPanel(FALSE),
+	m_PlayLoopTimerId(0)
 {
 	//{{AFX_DATA_INIT(CPlayerDlg)
 	//}}AFX_DATA_INIT
 	// Note that LoadIcon does not require a subsequent DestroyIcon in Win32
 		m_bPlayer=TRUE;
     m_Playlist.m_reorder = TRUE;
-	m_hIcon = AfxGetApp()->LoadIcon(IDI_MBLOGO);
+	m_hIcon = AfxGetApp()->LoadIcon(IDI_ICON_V2);
 //    m_hIcon = AfxGetApp()->LoadIcon(IDI_MBLOGO3232);
 	thePlayer = this;
 	
@@ -190,6 +194,7 @@ CPlayerDlg::CPlayerDlg(CPlayerApp * theApp,
 	m_UpdateNeeded[0] = FALSE;
 	m_UpdateNeeded[1] = FALSE;
 	m_UpdateNeeded[2] = FALSE;
+	m_CheckingEm = FALSE;
 }
 CPlayerDlg::~CPlayerDlg() {
     //delete m_Config;
@@ -256,6 +261,7 @@ void CPlayerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_PICTURE_CTRL,              m_Picture);
 	DDX_Control(pDX, IDC_VOLUME_SLIDER,             m_VolumeSlider);
 	DDX_Control(pDX, IDC_POSITION_SLIDER,			m_PositionSlider);
+	DDX_Control(pDX, IDC_WMP, m_WMP);
 	//}}AFX_DATA_MAP
 }
 
@@ -278,6 +284,7 @@ BEGIN_MESSAGE_MAP(CPlayerDlg, CDialogClassImpl)
 	ON_LBN_DBLCLK(IDC_GENRES,				OnDblclkGenres)
 	ON_BN_CLICKED(IDC_MENU_BUTTON,			OnMenuButton)
 	ON_COMMAND(ID_MENU_OPTIONS,				OnMenuOptions)
+	ON_COMMAND(ID_MENU_CHECKEM,				OnMenuCheckem)
 	ON_BN_CLICKED(IDC_SEARCH_GO,				OnSearchGo)
 	ON_COMMAND(ID_SEARCH,					OnSearchDlg)
 	ON_BN_CLICKED(IDC_SEARCH_CANCEL,		OnNoSearchDlg)
@@ -404,14 +411,20 @@ BOOL CPlayerDlg::OnInitDialog()
 #endif
 #endif
 
+//	CRect wmprect(0,0,0,0);
+//	m_WMP.Create(NULL,
+//		WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN 
+//		,wmprect,this, IDC_WMP);
+//	m_WMP.SetEnabled(TRUE);
+//	CString wmpstatus = m_WMP.GetStatus();
+
     *m_Dialog = this;
 	m_mlib.readDbLocation();
     CString lpath = m_mlib.getDbLocation();
-	lpath += "\\";
-	lpath += MUZIKBROWZER;
-	lpath += ".log";
+	CString lfile = lpath + "\\" + MUZIKBROWZER;
+	lfile += ".log";
 	
-    logger.open(lpath);
+    logger.open(lfile);
 	logger.log(CS("muzikbrowzer version: ") + CS(MUZIKBROWZER_VERSION));
 
 	logger.ods("Begin InitDialog");
@@ -529,7 +542,7 @@ BOOL CPlayerDlg::OnInitDialog()
 	m_VolumeSlider.SetRange(0,50);
 
     // instanciate a Player
-	m_Player = new MusicPlayer(this, lpath);
+	m_Player = new MusicPlayerWMP(&m_WMP, lpath);
 	m_Player->init();
 
     // sets title in taskbar
@@ -2706,7 +2719,32 @@ CPlayerDlg::OnPostMyIdle(UINT wParam, LONG lParam) {
     PlayerStatusRevert();
     return 0;
 }
-
+void CPlayerDlg::OnMenuCheckem() {
+	OnMenuClearplaylist();
+	m_CheckSongCount = m_mlib.getSongCount();
+	m_CheckGoodCount = 0;
+	m_CheckBadCount = 0;
+	m_CheckSongCounter = 0;
+	if (0 == m_CheckSongCount) {
+		m_CheckingEm = -1;
+		return;
+	}
+	m_mlib.readDbLocation();
+    CString lpath = m_mlib.getDbLocation();
+	lpath += "\\";
+	lpath += MUZIKBROWZER;
+	lpath += "-Check";
+	lpath += ".log";
+    CheckEmLog.open(lpath);
+	CheckEmLog.log(CS("muzikbrowzer version: ") + CS(MUZIKBROWZER_VERSION));
+	CheckEmLog.log("Checking all files for playability");
+	logger.log("Checking all files for playability");
+	logger.log("see "+lpath);
+	m_CheckingEm = TRUE;
+	CString first = m_mlib.getSongFileName(m_CheckSongCounter);
+	m_mlib.addFileToPlaylist(first);
+	updatePlaylist();	
+}
 // Configuration dlg
 void CPlayerDlg::OnMenuOptions() {
 	//    IRReaderStop();
@@ -3027,6 +3065,7 @@ CPlayerDlg::recordTLEN() {
 }
 
 void CPlayerDlg::PlayLoop() {
+	AutoLog alog("PlayLoop()##################################################");
     static int first = 1;
 	static int trialCounter = 0;
     int good = 0;
@@ -3040,6 +3079,11 @@ void CPlayerDlg::PlayLoop() {
 				recordTLEN();
 				resetPosition();
 				InputClose();
+// this prevents repeat!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// this prevents repeat!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// this prevents repeat!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// this prevents repeat!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//				return;
             }
             m_PlaylistCurrent++;
             if (m_PlaylistCurrent+1 > m_mlib._playlist.size() 
@@ -3085,27 +3129,73 @@ void CPlayerDlg::PlayLoop() {
 				CurrentTitleSet(msg);
 				UpdateWindow();
 				logger.log(msg);
-				SetTimer(MB_PLAYLOOP_TIMER_ID, 1000, NULL);
-				break;
+				if (!m_CheckingEm) {
+					m_PlayLoopTimerId = SetTimer(MB_PLAYLOOP_TIMER_ID, 1000, NULL);
+					break;
+				}
 			}
-
-//            msg = m_mlib._playlist[m_PlaylistCurrent]->getId3("TPE1");
-//            msg += " / ";
-//            msg += m_mlib._playlist[m_PlaylistCurrent]->getId3("TALB");
-//            msg += " / ";
-            msg = m_mlib._playlist[m_PlaylistCurrent]->getId3("TIT2");
-			msg += " by ";
-			msg += m_mlib._playlist[m_PlaylistCurrent]->getId3("TPE1");
-			msg += " on ";
-			msg += m_mlib._playlist[m_PlaylistCurrent]->getId3("TALB");
-			msg += " in ";
-			msg += m_mlib._playlist[m_PlaylistCurrent]->getId3("TCON");
-            CurrentTitleSet(msg);
-			if (m_Config.trialMode() == 1) {
-				PlayerStatusTempSet("Trial Mode. Set Password in Configuration.");
+			if (m_CheckingEm) {
+				if (good) {
+					m_CheckGoodCount++;
+				} else {
+					m_CheckBadCount++;
+					CheckEmLog.log("Unable to play:"+file);
+				}
+				m_Playlist.ResetContent();
+				//m_mlib.getPlaylist(m_Playlist);
+				CString msg = "Checking:" +numToString(1+m_CheckSongCounter)
+					+"/"+numToString(m_CheckSongCount);
+				m_Playlist.AddString(msg);
+				msg = "Good:" + numToString(m_CheckGoodCount);
+				m_Playlist.AddString(msg);
+				msg = "Bad:" + numToString(m_CheckBadCount);
+				m_Playlist.AddString(msg);
+				msg = file;
+				m_Playlist.AddString(msg);
+				m_Playlist.invalidate();
+				m_CheckSongCounter++;
+				if (m_CheckSongCounter < m_CheckSongCount) {
+					CString file = m_mlib.getSongFileName(m_CheckSongCounter);
+					PlayerStatusSet(file);
+					m_mlib._playlist.reset();
+					m_PlaylistCurrent = -1;
+					Stop();
+					InputClose();
+					m_mlib.addFileToPlaylist(file);
+					m_PlayLoopTimerId = SetTimer(MB_PLAYLOOP_TIMER_ID, 1000, NULL);
+					//good = 0;
+				} else {
+					m_mlib._playlist.reset();
+					m_PlaylistCurrent = -1;
+					Stop();
+					InputClose();
+					PlayerStatusSet("Check Em done, see "+CheckEmLog._pathfile);
+					m_CheckingEm = FALSE;
+					CString msg = 
+						"Total:" + numToString(m_CheckSongCount) + ", "
+						+ "Good:" + numToString(m_CheckGoodCount) + ", "
+						+ "Bad:" + numToString(m_CheckBadCount) + " "
+						+ "Check Em Done";
+					CheckEmLog.log(msg);
+					CheckEmLog.close();
+					logger.log(msg);
+					msg = FileUtil::FileToString(CheckEmLog._pathfile);
+					MBMessageBox("Check Em results",msg,TRUE,FALSE);
+				}
+			} else if (good) {
+				msg = m_mlib._playlist[m_PlaylistCurrent]->getId3("TIT2");
+				msg += " by ";
+				msg += m_mlib._playlist[m_PlaylistCurrent]->getId3("TPE1");
+				msg += " on ";
+				msg += m_mlib._playlist[m_PlaylistCurrent]->getId3("TALB");
+				msg += " in ";
+				msg += m_mlib._playlist[m_PlaylistCurrent]->getId3("TCON");
+				CurrentTitleSet(msg);
+				if (m_Config.trialMode() == 1) {
+					PlayerStatusTempSet("Trial Mode. Set Password in Configuration.");
+				}
+				UpdateWindow();
 			}
-            UpdateWindow();
-
         } else {
 			if (m_Player->isStopped() && m_QuickPlay) {
 				m_QuickPlay = FALSE;
@@ -4252,6 +4342,7 @@ void CPlayerDlg::OnTimer(UINT nIDEvent)
 {
 	switch(nIDEvent) {
 	case MB_PLAYLOOP_TIMER_ID:
+		KillTimer(m_PlayLoopTimerId);
 		PostMessage(WM_PLAYLOOP, (WPARAM)0, (LPARAM)0);
 		break;
 	case MB_SEEK_TIMER_ID:
@@ -4349,7 +4440,7 @@ void CPlayerDlg::killAlbumArt() {
 	m_Picture.unload();
 }
 void CPlayerDlg::displayAlbumArt(const CString & file) {
-//	return;
+	return;
 
 	if (""== file) {
 		killAlbumArt();
@@ -4513,3 +4604,61 @@ void CPlayerDlg::OnInitMenuPopup(CMenu *pSysMenu,
 
 }
 
+
+BEGIN_EVENTSINK_MAP(CPlayerDlg, CDialogClassImpl)
+    //{{AFX_EVENTSINK_MAP(CPlayerDlg)
+	ON_EVENT(CPlayerDlg, IDC_WMP, 5101 /* PlayStateChange */, OnPlayStateChangeWmp, VTS_I4)
+	ON_EVENT(CPlayerDlg, IDC_WMP, 5202 /* PositionChange */, OnPositionChangeWmp, VTS_R8 VTS_R8)
+	ON_EVENT(CPlayerDlg, IDC_WMP, 5821 /* MediaError */, OnMediaErrorWmp, VTS_DISPATCH)
+	ON_EVENT(CPlayerDlg, IDC_WMP, 5501 /* Error */, OnErrorWmp, VTS_NONE)
+	ON_EVENT(CPlayerDlg, IDC_WMP, 5601 /* Warning */, OnWarningWmp, VTS_I4 VTS_I4 VTS_BSTR)
+	//}}AFX_EVENTSINK_MAP
+END_EVENTSINK_MAP()
+
+void CPlayerDlg::OnPlayStateChangeWmp(long NewState) 
+{
+	logger.ods("OnPlayStateChangeWmp:"+numToString(NewState));
+	if (8 == NewState) {
+		KillTimer(m_PlayLoopTimerId);
+		m_PlayLoopTimerId = SetTimer(MB_PLAYLOOP_TIMER_ID, 1, NULL);
+	}
+}
+
+void CPlayerDlg::OnPositionChangeWmp(double oldPosition, double newPosition) 
+{
+
+	
+}
+
+void CPlayerDlg::OnMediaErrorWmp(LPDISPATCH pMediaObject) 
+{
+	// TODO: Add your control notification handler code here
+	logger.log("Media Error Wmp");
+	//OnPlayStateChangeWmp(0);
+	Stop();
+	InputClose();
+	//PlayLoop();
+	
+}
+
+void CPlayerDlg::OnErrorWmp() 
+{
+	// TODO: Add your control notification handler code here
+	logger.log("Error Wmp");
+	//OnPlayStateChangeWmp(0);
+	Stop();
+	InputClose();
+	//PlayLoop();
+	
+}
+
+void CPlayerDlg::OnWarningWmp(long WarningType, long Param, LPCTSTR Description) 
+{
+	// TODO: Add your control notification handler code here
+	logger.log("Warning Wmp");
+	//OnPlayStateChangeWmp(0);
+	Stop();
+	InputClose();
+	//PlayLoop();
+	
+}

@@ -1,5 +1,8 @@
 // mfcplayerDlg.h : header file
 //
+//{{AFX_INCLUDES()
+#include "wmpplayer4.h"
+//}}AFX_INCLUDES
 
 #if !defined(AFX_PLAYERDLG_H__FCF45C46_7793_11D2_9317_0020AFF7E192__INCLUDED_)
 #define AFX_PLAYERDLG_H__FCF45C46_7793_11D2_9317_0020AFF7E192__INCLUDED_
@@ -38,7 +41,7 @@ class VirtualControl;
 class VirtualDialog;
 class CMenuDialog;
 class CTransparentDialogDlg;
-
+class MusicPlayerWMP;
 
 class CPlayerDlg;
 
@@ -62,7 +65,7 @@ class CPlayerDlg : public CDialogClassImpl
 {
 // Construction
 public:
-    MusicPlayer *m_Player;
+    MusicPlayerWMP *m_Player;
 
 //	CPlayerDlg(CPlayerApp *, CTransparentDialogDlg *, CWnd* pParent = NULL);	// standard constructor
 	CPlayerDlg(CPlayerApp *, CWnd* pParent = NULL);	// standard constructor
@@ -227,6 +230,7 @@ private:
 	REFERENCE_TIME m_timerid;
 	REFERENCE_TIME m_StatusTimerId;
 	REFERENCE_TIME m_VolumeTimerId;
+	REFERENCE_TIME m_PlayLoopTimerId;
 
 	CString m_HelpMsg;
 	BOOL m_InitDone;
@@ -287,6 +291,7 @@ private:
  	PictureStatic	m_Picture;
 	CMySliderCtrl	m_VolumeSlider;
 	CMySliderCtrl	m_PositionSlider;
+	CWMPPlayer4	m_WMP;
 	//}}AFX_DATA
 
 	// ClassWizard generated virtual function overrides
@@ -322,6 +327,7 @@ public:
 	afx_msg void OnDblclkGenres();
 	afx_msg void OnMenuButton();
 	afx_msg void OnMenuOptions();
+	afx_msg void OnMenuCheckem();
 	afx_msg void OnSearchGo();
 	afx_msg void OnSearchDlg();
 	afx_msg void OnNoSearchDlg();
@@ -359,6 +365,12 @@ public:
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg void OnLogoButton();
 	afx_msg void OnKillfocusVirtuals();
+	afx_msg void OnPlayStateChangeWmp(long NewState);
+	afx_msg void OnPositionChangeWmp(double oldPosition, double newPosition);
+	afx_msg void OnMediaErrorWmp(LPDISPATCH pMediaObject);
+	afx_msg void OnErrorWmp();
+	afx_msg void OnWarningWmp(long WarningType, long Param, LPCTSTR Description);
+	DECLARE_EVENTSINK_MAP()
 	//}}AFX_MSG
 	afx_msg void OnCaptureChanged(CWnd *pWnd);
 	afx_msg LRESULT OnGraphNotify(UINT wParam, LONG lParam);
@@ -401,10 +413,17 @@ public:
 //	afx_msg void OnNcPaint( );
 	afx_msg void OnGetMinMaxInfo( MINMAXINFO FAR* lpMMI );
 	afx_msg void OnInitMenuPopup(CMenu *pPopupMenu, UINT nIndex,BOOL bSysMenu);
+public:
 	BOOL UpdateGenres();
 	BOOL UpdateArtists();
 	BOOL UpdateAlbums();
 	BOOL UpdateSongs();
+protected:
+	BOOL m_CheckingEm;
+	int m_CheckSongCount;
+	int m_CheckSongCounter;
+	int m_CheckGoodCount;
+	int m_CheckBadCount;
 
 
 	DECLARE_MESSAGE_MAP()

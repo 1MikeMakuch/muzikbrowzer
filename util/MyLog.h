@@ -33,10 +33,11 @@ class MyLog {
 		void ods(char * msg);
 		void odsRect(const CString & name, const CRect & rect);
 		void odsRGB(const COLORREF c);
+		CString _pathfile;
 	private:
 		BOOL m_ready;
 		CFile _file;
-        CString _pathfile;
+
 };
 
 class AutoLog {

@@ -78,6 +78,7 @@
 #define IDB_OBM_SCRLBG                  262
 #define IDD_TESTCANCELDLG               264
 #define IDD_DIALOG2                     265
+#define IDI_ICON_V2                     268
 #define IDC_VOLUME_BUTTON               1000
 #define IDC_STOP_BUTTON                 1001
 #define IDC_PLAY_BUTTON                 1002
@@ -404,6 +405,7 @@
 #define IDC_SAMPLE_GROUP                2048
 #define IDC_SEARCH_TEXT                 2049
 #define IDC_LIST6                       2051
+#define IDC_WMP                         2052
 #define IDS_UNKNOWN_ERROR               5000
 #define IDC_BUTTON_LOGO                 12052
 #define ID_XXX                          32775
@@ -449,14 +451,15 @@
 #define ID_640X480                      32832
 #define ID_800X600                      32833
 #define ID_1024X768                     32834
+#define ID_MENU_CHECKEM                 32835
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        266
-#define _APS_NEXT_COMMAND_VALUE         32835
-#define _APS_NEXT_CONTROL_VALUE         2052
+#define _APS_NEXT_RESOURCE_VALUE        269
+#define _APS_NEXT_COMMAND_VALUE         32836
+#define _APS_NEXT_CONTROL_VALUE         2053
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

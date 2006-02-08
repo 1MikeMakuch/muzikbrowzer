@@ -27,6 +27,8 @@ IMediaEventEx *pME = NULL;
 //IBasicVideo   *pBV = NULL;
 //IVideoWindow  *pVW = NULL;
 IBasicAudio   *pBA = NULL;
+IBaseFilter * pAsfFilter = NULL;
+IFileSourceFilter * pAsfSource = NULL;
 
 FILTER_STATE g_psCurrent=State_Stopped;
 

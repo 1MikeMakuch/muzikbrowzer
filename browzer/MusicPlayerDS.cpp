@@ -55,12 +55,7 @@ MusicPlayerDS::init()
 	logger.log(GetVersion());
 	
     // Initialize DirectShow and query for needed interfaces
-    HRESULT hr = InitDirectShow();
-    if(FAILED(hr))
-    {
-		LogError(hr, "DS init");
-        return FALSE;
-    }
+
 #ifdef _DEBUG
 	CString dslogfile = m_logpath;
 	dslogfile += "\\directshow.log";
@@ -82,6 +77,12 @@ MusicPlayerDS::init()
 		m_logfile = m_logcfile.m_hFile;
 	}
 #endif
+    HRESULT hr = InitDirectShow();
+    if(FAILED(hr))
+    {
+		LogError(hr, "DS init");
+        return FALSE;
+    }
 
     return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -102,17 +103,34 @@ HRESULT MusicPlayerDS::PrepareMedia(LPTSTR lpszMovie)
 	CString msg = "Playing ";
 	msg += lpszMovie;
 	logger.log(msg);
-    hr = pGB->RenderFile(T2W(lpszMovie), NULL);
-    if (FAILED(hr)) {
+
+	hr = pGB->RenderFile(T2W(lpszMovie), NULL);
+	if (FAILED(hr)) {
 		LogError(hr, "PrepareMedia, RenderFile");
-        return hr;
-    }
+
+		hr = pGB->AddFilter(pAsfFilter,A2CW("WMAsfReader"));
+		if (FAILED(hr)) {LogError(hr, "PrepareMedia, AddFilter");return hr;}
+		hr = pAsfFilter->QueryInterface(IID_IFileSourceFilter,(void **)&pAsfSource);
+		if (FAILED(hr)) {LogError(hr, "PrepareMedia, QueryInterface");return hr;}
+
+		hr = pAsfSource->Load(T2COLE(lpszMovie),NULL);
+		if (FAILED(hr)) {LogError(hr, "PrepareMedia, Load");return hr;}
+
+		IPin * pAsfPin;
+		hr = pAsfFilter->FindPin(L"Raw Audio 0", &pAsfPin);
+		if (FAILED(hr)) {LogError(hr, "PrepareMedia, FindPin");return hr;}
+
+		hr = pGB->Render(pAsfPin);
+		if (FAILED(hr)) {LogError(hr, "PrepareMedia, Render");return hr;}
+	}
+	
 	// Have the graph signal event via window callbacks
 	hr = pME->SetNotifyWindow((OAHWND)m_PlayerDlg->m_hWnd, WM_GRAPHNOTIFY, 0);
 //		Returns S_OK if successful or E_INVALIDARG if the hwnd ;
 	if (hr != S_OK) {
 		LogError(hr, "PrepareMedia, SetNotifyWindow");
 	}
+	EnumFilters (pGB);
 
 	return hr;
 }
@@ -224,6 +242,7 @@ void MusicPlayerDS::Stop()
 
 HRESULT MusicPlayerDS::InitDirectShow(void)
 {
+	USES_CONVERSION;
     HRESULT hr = S_OK;
 
     g_bAudioOnly = TRUE;
@@ -235,6 +254,9 @@ HRESULT MusicPlayerDS::InitDirectShow(void)
     JIF(pGB->QueryInterface(IID_IMediaEventEx,  (void **)&pME));
 	JIF(pGB->QueryInterface(IID_IBasicAudio,    (void **)&pBA));
 
+	JIF(CoCreateInstance(CLSID_WMAsfReader,NULL,
+		CLSCTX_INPROC,IID_IBaseFilter,(void **)&pAsfFilter));
+	
 	if (m_logfile)
 		pGB->SetLogFile(m_logfile);
 
@@ -260,6 +282,8 @@ HRESULT MusicPlayerDS::FreeDirectShow(void)
     SAFE_RELEASE(pME);
 	SAFE_RELEASE(pBA);
     SAFE_RELEASE(pGB);
+	SAFE_RELEASE(pAsfFilter);
+	SAFE_RELEASE(pAsfSource);
 
     return hr;
 }
@@ -355,7 +379,7 @@ HRESULT MusicPlayerDS::DisplayFileDuration(void)
 
     return hr;
 }
-int MusicPlayerDS::GetFileDuration(void)
+long MusicPlayerDS::GetFileDuration(void)
 {
     HRESULT hr;
 
@@ -507,10 +531,6 @@ void MusicPlayerDS::ReadMediaPosition(long & positionseconds,
     positionseconds = (unsigned long) (rtNow         / 10000000);
 	durationseconds = (unsigned long) (g_rtTotalTime / 10000000);
 
-	if (m_SongStarted) {
-		m_SongStarted = FALSE;
-		EnumFilters (pGB);
-	}
 	return;
 }
 

@@ -36,6 +36,8 @@ extern IMediaEventEx *pME;
 //extern IBasicVideo   *pBV;
 extern IBasicAudio   *pBA;
 //extern IVideoWindow  *pVW;
+extern IBaseFilter * pAsfFilter;
+extern IFileSourceFilter * pAsfSource;
 
 extern FILTER_STATE g_psCurrent;
 extern BOOL g_bLooping, g_bAudioOnly, g_bPlayThrough;

@@ -16,6 +16,8 @@ public:
 	static BOOL BmpSave(HBITMAP, CString);
 	static void BmpLog(HDC, CString, int width, int height, int x=0, int y=0);
 	static void BmpLog(HBITMAP, CString);
+	static CString FileToString(const CString file);
+	static BOOL StringToFile(const CString & string, const CString & file);
 };
 
 #endif

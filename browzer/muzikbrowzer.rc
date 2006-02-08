@@ -65,8 +65,7 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_MBLOGO              ICON    DISCARDABLE     "res\\app_icon1_iconwkshp.ico"
-IDI_MBLOGO3             ICON    DISCARDABLE     "res\\mblogo3.ico"
+IDI_ICON_V2             ICON    DISCARDABLE     "res\\IconV2_01.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -98,7 +97,7 @@ IDD_PLAYER_DIALOG DIALOGEX 0, 0, 402, 281
 STYLE WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | WS_CLIPSIBLINGS | 
     WS_CLIPCHILDREN | WS_CAPTION | WS_THICKFRAME
 EXSTYLE WS_EX_APPWINDOW
-FONT 8, "MS Sans Serif", 0, 0, 0x1
+FONT 8, "MS Sans Serif"
 BEGIN
     LISTBOX         IDC_GENRES,22,183,79,46,LBS_SORT | LBS_OWNERDRAWFIXED | 
                     LBS_HASSTRINGS | LBS_NOINTEGRALHEIGHT | NOT WS_BORDER | 
@@ -141,7 +140,7 @@ BEGIN
     PUSHBUTTON      "",IDC_BUTTON_MAXIMIZE,361,22,10,9,BS_FLAT | NOT 
                     WS_TABSTOP
     PUSHBUTTON      "",IDC_BUTTON_EXIT,377,3,10,9,BS_FLAT | NOT WS_TABSTOP
-    LTEXT           "",IDC_PLAYER_STATUS,257,243,105,10,SS_NOPREFIX | 
+    LTEXT           "",IDC_PLAYER_STATUS,155,242,105,10,SS_NOPREFIX | 
                     SS_CENTERIMAGE | NOT WS_GROUP
     CONTROL         "",IDC_POSITION_LABEL,"Static",SS_SIMPLE | 
                     SS_CENTERIMAGE,5,264,20,10
@@ -158,6 +157,8 @@ BEGIN
                     BS_FLAT | NOT WS_TABSTOP
     RTEXT           "",IDC_SEARCH_STATUS,275,148,105,10,SS_NOPREFIX | 
                     SS_CENTERIMAGE | NOT WS_GROUP
+    CONTROL         "",IDC_WMP,"{6BF52A52-394A-11D3-B153-00C04F79FAA6}",NOT 
+                    WS_VISIBLE,373,262,1,1
 END
 
 IDD_INIT_DIALOG DIALOG DISCARDABLE  0, 0, 337, 96
@@ -893,6 +894,7 @@ BEGIN
         MENUITEM "&Help",                       ID_MENU_HELP
         MENUITEM "&About",                      IDD_ABOUT
         MENUITEM "E&xit",                       ID_MENU_EXIT
+        MENUITEM "Check 'em",                   ID_MENU_CHECKEM
     END
 END
 
@@ -986,6 +988,22 @@ BEGIN
 0x3932, "\000" 
     IDC_BORDER_WIDTH, 0x403, 3, 0
 0x3033, "\000" 
+    0
+END
+
+IDD_PLAYER_DIALOG DLGINIT
+BEGIN
+    IDC_WMP, 0x376, 178, 0
+0x0000, 0x0000, 0x0300, 0x0000, 0x0008, 0x0002, 0x0000, 0x0000, 0x0005, 
+0x0000, 0x0000, 0x0000, 0x3ff0, 0x0003, 0x0000, 0x0000, 0x0005, 0x0000, 
+0x0000, 0x0000, 0x0000, 0x0008, 0x0002, 0x0000, 0x0000, 0x0003, 0x0001, 
+0x0000, 0x000b, 0x0000, 0x0003, 0x0000, 0x0000, 0x000b, 0xffff, 0x0008, 
+0x0002, 0x0000, 0x0000, 0x0003, 0x0064, 0x0000, 0x000b, 0x0000, 0x0008, 
+0x0014, 0x0000, 0x0069, 0x006e, 0x0076, 0x0069, 0x0073, 0x0069, 0x0062, 
+0x006c, 0x0065, 0x0000, 0x000b, 0x0000, 0x000b, 0x0000, 0x000b, 0xffff, 
+0x000b, 0x0000, 0x000b, 0x0000, 0x0008, 0x0002, 0x0000, 0x0000, 0x0008, 
+0x0002, 0x0000, 0x0000, 0x0008, 0x0002, 0x0000, 0x0000, 0x0008, 0x0002, 
+0x0000, 0x0000, 0x000b, 0xffff, 0x0035, 0x0000, 0x0035, 0x0000, 
     0
 END
 
