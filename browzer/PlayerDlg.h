@@ -1,4 +1,4 @@
-// mfcplayerDlg.h : header file
+// PlayerDlg.h : header file
 //
 //{{AFX_INCLUDES()
 #include "wmpplayer4.h"
@@ -66,6 +66,7 @@ class CPlayerDlg : public CDialogClassImpl
 // Construction
 public:
     MusicPlayerWMP *m_Player;
+//	MusicPlayer *m_Player;
 
 //	CPlayerDlg(CPlayerApp *, CTransparentDialogDlg *, CWnd* pParent = NULL);	// standard constructor
 	CPlayerDlg(CPlayerApp *, CWnd* pParent = NULL);	// standard constructor
@@ -371,6 +372,7 @@ public:
 	afx_msg void OnErrorWmp();
 	afx_msg void OnWarningWmp(long WarningType, long Param, LPCTSTR Description);
 	DECLARE_EVENTSINK_MAP()
+
 	//}}AFX_MSG
 	afx_msg void OnCaptureChanged(CWnd *pWnd);
 	afx_msg LRESULT OnGraphNotify(UINT wParam, LONG lParam);

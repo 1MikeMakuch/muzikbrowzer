@@ -405,7 +405,8 @@
 #define IDC_SAMPLE_GROUP                2048
 #define IDC_SEARCH_TEXT                 2049
 #define IDC_LIST6                       2051
-#define IDC_WMP                         2052
+#define IDC_OCX1                        2053
+#define IDC_WMP                         2053
 #define IDS_UNKNOWN_ERROR               5000
 #define IDC_BUTTON_LOGO                 12052
 #define ID_XXX                          32775
@@ -457,9 +458,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        269
+#define _APS_NEXT_RESOURCE_VALUE        270
 #define _APS_NEXT_COMMAND_VALUE         32836
-#define _APS_NEXT_CONTROL_VALUE         2053
+#define _APS_NEXT_CONTROL_VALUE         2054
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

@@ -162,18 +162,6 @@ Package=<4>
 
 ###############################################################################
 
-Project: "XGetoptTest"=..\..\samples\XGetopt\XGetoptTest.dsp - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
 Project: "bitmaptest"=..\..\bitmaptest\bitmaptest.dsp - Package Owner=<4>
 
 Package=<5>
@@ -379,9 +367,6 @@ Package=<4>
     End Project Dependency
     Begin Project Dependency
     Project_Dep_Name BitmapCutter
-    End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name Wmp
     End Project Dependency
 }}}
 

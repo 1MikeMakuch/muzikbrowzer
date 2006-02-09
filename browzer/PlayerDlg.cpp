@@ -1,8 +1,6 @@
 
-
-
-
 // PlayerDlg.cpp : implementation file
+
 
 #include "stdafx.h"
 #define THE_PLAYER
@@ -216,6 +214,7 @@ CPlayerDlg::~CPlayerDlg() {
 		BOOL r = ::DeleteObject((HBRUSH)hbr);
 	}
 }
+
 
 void CPlayerDlg::DoDataExchange(CDataExchange* pDX)
 {
@@ -543,6 +542,7 @@ BOOL CPlayerDlg::OnInitDialog()
 
     // instanciate a Player
 	m_Player = new MusicPlayerWMP(&m_WMP, lpath);
+//	m_Player = new MusicPlayer(this, lpath);
 	m_Player->init();
 
     // sets title in taskbar
