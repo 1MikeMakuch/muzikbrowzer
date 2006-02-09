@@ -1,0 +1,346 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#endif //_WIN32\r\n"
+    "#include ""res\\BitmapCutter.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""         // Standard components\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON    DISCARDABLE     "res\\BitmapCutter.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_BITMAPCUTTER_DIALOG DIALOGEX 0, 0, 525, 447
+STYLE WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CAPTION | 
+    WS_SYSMENU | WS_THICKFRAME
+EXSTYLE WS_EX_APPWINDOW
+CAPTION "BitmapCutter"
+FONT 8, "MS Sans Serif"
+BEGIN
+    PUSHBUTTON      "Save To",IDC_BUTTON_DEST,5,5,72,15
+    PUSHBUTTON      "Choose *Ins.bmp",IDC_BUTTON_FILE_INS,4,62,72,15
+    PUSHBUTTON      "Choose *Outs.bmp",IDC_BUTTON_FILE_OUTS,4,24,72,15
+    PUSHBUTTON      "Choose *Hovers.bmp",IDC_BUTTON_FILE_HOVERS,4,43,72,15
+    PUSHBUTTON      "Re-read .bmp",IDC_REREAD,4,100,47,16
+    PUSHBUTTON      "Zero",IDC_ZERO,54,100,21,15
+    PUSHBUTTON      "Draw lines",IDC_DRAW,79,100,51,16
+    PUSHBUTTON      "Remove Lines",IDC_REMOVE_DRAW,133,100,51,16
+    PUSHBUTTON      "Save .bmp with lines drawn",IDC_DRAWSAVE,188,100,95,16
+    CONTROL         "Ins",IDC_INS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,287,
+                    100,23,8
+    CONTROL         "Outs",IDC_OUTS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    315,100,28,8
+    CONTROL         "Hovers",IDC_HOVER,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    347,100,36,8
+    PUSHBUTTON      "Split and Save",IDC_SAVE,386,100,60,16
+    CONTROL         "Black and White",IDC_BLACK_WHITE,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,52,123,69,10
+    CONTROL         "RGB",IDC_OTHER,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    126,123,31,10
+    EDITTEXT        IDC_RED,159,121,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_GREEN,183,121,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_BLUE,208,121,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_LINEWIDTH,274,120,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_STOP_X,44,231,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_STOP_Y,68,231,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_STOP_WIDTH,94,231,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_STOP_HEIGHT,120,231,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_PLAY_X,44,247,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_PLAY_Y,68,247,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_PLAY_WIDTH,94,247,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_PLAY_HEIGHT,120,247,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_PAUSE_X,44,263,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_PAUSE_Y,68,263,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_PAUSE_WIDTH,94,263,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_PAUSE_HEIGHT,120,263,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_REVERSE_X,44,279,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_REVERSE_Y,68,279,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_REVERSE_WIDTH,94,279,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_REVERSE_HEIGHT,120,279,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_FORWARD_X,44,295,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_FORWARD_Y,68,295,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_FORWARD_WIDTH,94,295,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_FORWARD_HEIGHT,120,295,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_RANDOM_X,44,311,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_RANDOM_Y,68,311,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_RANDOM_WIDTH,94,311,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_RANDOM_HEIGHT,120,311,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_SHUFFLE_X,44,327,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_SHUFFLE_Y,68,327,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_SHUFFLE_WIDTH,94,327,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_SHUFFLE_HEIGHT,120,327,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_CLEAR_X,44,343,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_CLEAR_Y,68,343,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_CLEAR_WIDTH,94,343,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_CLEAR_HEIGHT,120,343,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_LOAD_X,44,359,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_LOAD_Y,68,359,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_LOAD_WIDTH,94,359,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_LOAD_HEIGHT,120,359,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_SAVE_X,44,375,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_SAVE_Y,68,375,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_SAVE_WIDTH,94,375,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_SAVE_HEIGHT,120,375,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_VOLUME_X,44,391,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_VOLUME_Y,68,391,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_VOLUME_WIDTH,94,391,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_VOLUME_HEIGHT,120,391,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_PROGRESS_X,44,406,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_PROGRESS_Y,68,406,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_PROGRESS_WIDTH,94,406,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_PROGRESS_HEIGHT,120,406,21,12,ES_AUTOHSCROLL
+    PUSHBUTTON      "Ok",IDC_CANCEL,0,425,28,15
+    CONTROL         "",IDC_PIC_INS,"Static",SS_BITMAP | WS_TABSTOP,150,277,
+                    15,13
+    LTEXT           "",IDC_BMPSIZE_INS,179,261,40,14,WS_BORDER
+    LTEXT           "Line color(s)",IDC_STATIC,4,124,42,9
+    LTEXT           "Line width",IDC_STATIC,236,121,34,9
+    LTEXT           "Stop",IDC_STATIC_STOP,10,231,22,8
+    LTEXT           "Play",IDC_STATIC_PLAY,10,247,22,8
+    LTEXT           "Pause",IDC_STATIC_PAUSE,10,263,22,8
+    LTEXT           "Reverse",IDC_STATIC_REVERSE,10,279,27,8
+    LTEXT           "Forward",IDC_STATIC_FORWARD,10,295,25,8
+    LTEXT           "Random",IDC_STATIC_RANDOM,10,311,27,8
+    LTEXT           "Shuffle",IDC_STATIC_SHUFFLE,10,327,22,8
+    LTEXT           "Clear",IDC_STATIC_CLEAR,10,343,22,8
+    LTEXT           "Load",IDC_STATIC_LOAD,10,359,22,8
+    LTEXT           "Save",IDC_STATIC_SAVE,10,375,22,8
+    LTEXT           "Volume",IDC_STATIC_VOLUME,10,391,27,8
+    LTEXT           "X",IDC_STATIC,53,158,8,8
+    LTEXT           "Y",IDC_STATIC,78,158,8,8
+    LTEXT           "Width",IDC_STATIC,95,158,21,8
+    LTEXT           "Height",IDC_STATIC,123,158,22,8
+    LTEXT           "Progress",IDC_STATIC_PROGRESS,10,406,28,8
+    CONTROL         "",IDC_PIC_OUTS,"Static",SS_BITMAP,154,173,15,13
+    CONTROL         "",IDC_PIC_HOVERS,"Static",SS_BITMAP,292,175,15,13
+    LTEXT           "Ins",IDC_INS_LABEL,150,264,16,11,NOT WS_GROUP
+    LTEXT           "Outs",IDC_OUTS_LABEL,154,160,19,11,NOT WS_GROUP
+    LTEXT           "Hovers",IDC_HOVERS_LABEL,292,161,23,11,NOT WS_GROUP
+    LTEXT           "",IDC_BMPSIZE_OUTS,184,154,40,14,WS_BORDER
+    LTEXT           "",IDC_BMPSIZE_HOVERS,322,154,40,14,WS_BORDER
+    CONTROL         "",IDC_PIC_TEST,"Static",SS_BITMAP,289,279,15,13
+    LTEXT           "Test",IDC_TEST_LABEL,290,258,23,9,NOT WS_GROUP
+    PUSHBUTTON      "",IDC_BUTTON1,329,260,6,6
+    PUSHBUTTON      "",IDC_BUTTON2,339,269,6,6
+    PUSHBUTTON      "",IDC_BUTTON3,348,277,6,6
+    PUSHBUTTON      "",IDC_BUTTON4,357,286,6,6
+    PUSHBUTTON      "",IDC_BUTTON5,367,294,6,6
+    PUSHBUTTON      "",IDC_BUTTON6,376,303,6,6
+    PUSHBUTTON      "",IDC_BUTTON7,385,312,6,6
+    PUSHBUTTON      "",IDC_BUTTON8,395,320,6,6
+    PUSHBUTTON      "",IDC_BUTTON9,404,329,6,6
+    PUSHBUTTON      "",IDC_BUTTON10,413,338,6,6
+    LTEXT           "",IDC_TVOLUME,407,261,12,36
+    LTEXT           "",IDC_TPROGRESS,417,270,12,36
+    LTEXT           "Trans Clear RGB",IDC_STATIC,4,139,63,9
+    LTEXT           "Trans layer RGB",IDC_STATIC,157,138,54,9
+    EDITTEXT        IDC_MENU_X,44,170,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_MENU_Y,69,170,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_MENU_WIDTH,94,170,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_MENU_HEIGHT,120,170,21,12,ES_AUTOHSCROLL
+    LTEXT           "Menu",IDC_STATIC_MENU,13,170,22,8
+    EDITTEXT        IDC_MUSIC_X,44,185,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_MUSIC_Y,68,185,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_MUSIC_WIDTH,94,185,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_MUSIC_HEIGHT,120,185,21,12,ES_AUTOHSCROLL
+    LTEXT           "Music",IDC_STATIC_MUSIC,11,185,22,8
+    EDITTEXT        IDC_PICTURES_X,44,200,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_PICTURES_Y,69,200,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_PICTURES_WIDTH,94,200,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_PICTURES_HEIGHT,120,200,21,12,ES_AUTOHSCROLL
+    LTEXT           "Pictures",IDC_STATIC_PICTURES,9,200,26,8
+    EDITTEXT        IDC_VIDEO_X,44,216,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_VIDEO_Y,69,216,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_VIDEO_WIDTH,94,216,21,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_VIDEO_HEIGHT,120,216,21,12,ES_AUTOHSCROLL
+    LTEXT           "Video",IDC_STATIC_VIDEO,9,216,22,8
+    PUSHBUTTON      "",IDC_BUTTON11,422,347,6,6
+    PUSHBUTTON      "",IDC_BUTTON12,432,355,6,6
+    PUSHBUTTON      "",IDC_BUTTON13,441,364,6,6
+    PUSHBUTTON      "",IDC_BUTTON14,450,373,6,6
+    LTEXT           "Background Type",IDC_STATIC,311,120,59,9
+    CONTROL         "Stretched",IDC_BGTYPE_STRETCHED,"Button",
+                    BS_AUTORADIOBUTTON,308,135,44,10
+    CONTROL         "Tiled",IDC_BGTYPE_TILED,"Button",BS_AUTORADIOBUTTON,357,
+                    135,30,10
+    CONTROL         "Fixed",IDC_BGTYPE_FIXED,"Button",BS_AUTORADIOBUTTON,394,
+                    134,32,10
+    PUSHBUTTON      "Choose Settings",IDC_BUTTON_FILE_SETTINGS,3,82,72,15
+    EDITTEXT        IDC_DESTDIR,81,4,256,17,ES_AUTOHSCROLL | ES_READONLY
+    EDITTEXT        IDC_FILE_OUTS,81,23,256,17,ES_AUTOHSCROLL | ES_READONLY
+    EDITTEXT        IDC_FILE_HOVERS,81,42,256,17,ES_AUTOHSCROLL | 
+                    ES_READONLY
+    EDITTEXT        IDC_FILE_INS,81,61,256,17,ES_AUTOHSCROLL | ES_READONLY
+    EDITTEXT        IDC_FILE_SETTINGS,81,80,256,17,ES_AUTOHSCROLL | 
+                    ES_READONLY
+    EDITTEXT        IDC_CLR_BTN_FG_HOV,425,5,45,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_CLR_BTN_BG_HOV,425,20,45,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_CLR_BTN_FG_OUT,425,35,45,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_CLR_BTN_BG_OUT,425,50,45,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_CLR_OTHER_BG,425,80,45,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_CLR_OTHER_FG,425,65,45,12,ES_AUTOHSCROLL
+    LTEXT           "Btns Fg Hover",IDC_STATIC,372,6,48,10
+    LTEXT           "Btns Bg Hover",IDC_STATIC,372,22,48,10
+    LTEXT           "Btns Fg Out",IDC_STATIC,372,36,48,10
+    LTEXT           "Btns Bg Out",IDC_STATIC,372,52,48,8
+    LTEXT           "Labels Fg",IDC_STATIC,372,67,48,10
+    LTEXT           "Labels Bg",IDC_STATIC,372,81,48,10
+    GROUPBOX        "Other",IDC_STATIC,341,0,134,95
+    LTEXT           "Colors",IDC_STATIC,346,9,19,8
+    EDITTEXT        IDC_CLR_TRANSMAIN,67,136,45,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_CLR_TRANSPANEL,218,137,45,12,ES_AUTOHSCROLL
+    PUSHBUTTON      "Save Skin Def only",IDC_SAVESKINDEF,33,425,73,15
+END
+
+
+#ifndef _MAC
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904B0"
+        BEGIN
+            VALUE "CompanyName", "\0"
+            VALUE "FileDescription", "BitmapCutter MFC Application\0"
+            VALUE "FileVersion", "1, 0, 0, 1\0"
+            VALUE "InternalName", "BitmapCutter\0"
+            VALUE "LegalCopyright", "Copyright (C) 2005\0"
+            VALUE "LegalTrademarks", "\0"
+            VALUE "OriginalFilename", "BitmapCutter.EXE\0"
+            VALUE "ProductName", "BitmapCutter Application\0"
+            VALUE "ProductVersion", "1, 0, 0, 1\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+#endif    // !_MAC
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_BITMAPCUTTER_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 518
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 440
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#endif //_WIN32
+#include "res\BitmapCutter.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"         // Standard components
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
