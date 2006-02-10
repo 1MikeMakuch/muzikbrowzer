@@ -36,7 +36,7 @@ VirtualControl::operator = (CButton * p) {
     m_Ptr = (void*) p;
 }
 void
-VirtualControl::operator = (CMenuDialog * p) {
+VirtualControl::operator = (RMenuDlg * p) {
     zero();
     m_MenuDialog = p;
     m_Ptr = (void*) p;
@@ -143,7 +143,7 @@ VirtualDialog::operator = (LoadPlaylistDlg * p) {
     m_Ptr = (void*) p;
 }
 void
-VirtualDialog::operator = (CMenuDialog *p) {
+VirtualDialog::operator = (RMenuDlg *p) {
 	zero();
 	m_MenuDlg = p;
 	m_Ptr = (void*)p;

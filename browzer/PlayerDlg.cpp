@@ -2394,7 +2394,7 @@ void CPlayerDlg::OnMenuButton()
 {
     int r = -1;
     if (m_MenuDlg == 0) {
-        m_MenuDlg = new CMenuDialog (this);
+        m_MenuDlg = new RMenuDlg (this, &m_callbacks);
         *m_Dialog = m_MenuDlg;
 	    r = m_MenuDlg->DoModal();
 	    delete m_MenuDlg;

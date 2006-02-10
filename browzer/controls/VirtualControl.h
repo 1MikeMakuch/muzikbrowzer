@@ -2,14 +2,14 @@
 #define _VIRTUALCONTROL_H_
 
 #include "stdafx.h"
-#include "MenuDialog.h"
+#include "RMenuDlg.h"
 #include "ExtendedListBox.h"
 //#include "MBMessageBox.h"
 
 class MBMessageBoxImpl;
 class CPlayerDlg;
 class LoadPlaylistDlg;
-class CMenuDialog;
+class RMenuDlg;
 
 class VirtualControl {
 	friend class VirtualDialog;
@@ -19,7 +19,7 @@ class VirtualControl {
         void operator = (CComboBox*);
         void operator = (CExtendedListBox*);
         void operator = (CButton*);
-		void operator = (CMenuDialog*);
+		void operator = (RMenuDlg*);
 		void operator = (MBMessageBoxImpl *);
 		void operator = (CEdit*);
         void up(int);
@@ -34,7 +34,7 @@ class VirtualControl {
 		CComboBox * m_Combo;
         CExtendedListBox * m_List;
         CButton * m_Button;
-        CMenuDialog * m_MenuDialog;
+        RMenuDlg * m_MenuDialog;
 		MBMessageBoxImpl * m_MBox;
 		CEdit * m_Edit;
         void * m_Ptr;
@@ -51,7 +51,7 @@ class VirtualDialog {
         void operator = (CPlayerDlg*);
         void operator = (LoadPlaylistDlg*);
         void operator = (MBMessageBoxImpl*);
-        void operator = (CMenuDialog*);
+        void operator = (RMenuDlg*);
         void OnControlSelChange();
         void PrevDlgCtrl();
         void NextDlgCtrl();
@@ -69,7 +69,7 @@ class VirtualDialog {
         CPlayerDlg * m_PlayerDlg;
         LoadPlaylistDlg * m_LoadPlaylistDlg;
         MBMessageBoxImpl * m_MBoxDlg;
-		CMenuDialog * m_MenuDlg;
+		RMenuDlg * m_MenuDlg;
         void * m_Ptr;
 
         void zero();

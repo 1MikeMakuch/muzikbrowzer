@@ -39,7 +39,7 @@
 
 class VirtualControl;
 class VirtualDialog;
-class CMenuDialog;
+class RMenuDlg;
 class CTransparentDialogDlg;
 class MusicPlayerWMP;
 
@@ -174,7 +174,7 @@ private:
 	CStringList m_Skins;
     CString m_PlayerStatusSave;
     CTime m_PlayerStatusTime;
-    CMenuDialog * m_MenuDlg;
+    RMenuDlg * m_MenuDlg;
     BOOL m_StopFlag;
 	BOOL m_PauseFlag;
     int m_PlaylistCurrent;
