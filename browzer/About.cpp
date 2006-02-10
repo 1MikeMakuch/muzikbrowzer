@@ -93,8 +93,8 @@ BOOL About::OnInitDialog()
 
 void About::OnEasteregg() 
 {
-//	MBMessageBox("", "Congratulations.", FALSE);
-	FractalDlg dlg(m_rect);
-	dlg.DoModal();
+	MBMessageBox("", "Congratulations. You found the easter egg.", FALSE);
+//	FractalDlg dlg(m_rect);
+//	dlg.DoModal();
 	
 }

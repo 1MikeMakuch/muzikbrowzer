@@ -42,16 +42,16 @@ void CMenuDialog::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CMenuDialog, CDialog)
 	//{{AFX_MSG_MAP(CMenuDialog)
-	ON_BN_CLICKED(IDC_PMENUEXIT, OnMenuExit)
-    ON_BN_CLICKED(IDC_PMENUSHUFFLEPLAYLIST, OnMenuShuffleplaylist)
-    ON_BN_CLICKED(IDC_PMENURANDOMIZEPLAYLIST, OnMenuRandomizePlaylist)
     ON_BN_CLICKED(IDC_PMENUCLEARPLAYLIST, OnMenuClearplaylist)
-	ON_BN_CLICKED(IDC_PMENUSAVEPLAYLIST, OnMenuSavePlaylist)
+	ON_BN_CLICKED(IDC_PMENUEXIT, OnMenuExit)
     ON_BN_CLICKED(IDC_PMENULOADPLAYLIST, OnMenuLoadplaylist)
 	ON_BN_CLICKED(IDC_PMENUPAUSE, OnMenuPause)
 	ON_BN_CLICKED(IDC_PMENUPLAY, OnMenuPlay)
+    ON_BN_CLICKED(IDC_PMENUSHUFFLEPLAYLIST, OnMenuShuffleplaylist)
 	ON_BN_CLICKED(IDC_PMENUSTOP, OnMenuStop)
 	ON_BN_CLICKED(IDC_PMENUHELP, OnMenuHelp)
+    ON_BN_CLICKED(IDC_PMENURANDOMIZEPLAYLIST, OnMenuRandomizePlaylist)
+	ON_BN_CLICKED(IDC_PMENUSAVEPLAYLIST, OnMenuSavePlaylist)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -114,4 +114,24 @@ void CMenuDialog::OnControlClick() {
 }
 void CMenuDialog::OnExit() {
 	EndDialog(0);
+}
+
+BOOL CMenuDialog::OnInitDialog() 
+{
+	CDialog::OnInitDialog();
+	
+	CRect rect,prect;
+	m_pParentWnd->GetWindowRect(prect);
+	GetWindowRect(rect);
+	int x = (prect.right - prect.left) / 2;
+	x -= (rect.Width() / 2);
+	int y = (prect.bottom - prect.top) / 2;
+	y -= (rect.Height() / 2);
+	x += prect.left;
+	y += prect.top;
+	MoveWindow(x,y,rect.Width(),rect.Height());
+
+	
+	return TRUE;  // return TRUE unless you set the focus to a control
+	              // EXCEPTION: OCX Property Pages should return FALSE
 }

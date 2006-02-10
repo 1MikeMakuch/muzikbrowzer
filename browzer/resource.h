@@ -405,7 +405,6 @@
 #define IDC_SAMPLE_GROUP                2048
 #define IDC_SEARCH_TEXT                 2049
 #define IDC_LIST6                       2051
-#define IDC_OCX1                        2053
 #define IDC_WMP                         2053
 #define IDS_UNKNOWN_ERROR               5000
 #define IDC_BUTTON_LOGO                 12052
@@ -449,10 +448,7 @@
 #define ID_QUICK_PLAY                   32827
 #define ID_DELETE_FROM_PL               32828
 #define ID_SEARCH                       32829
-#define ID_640X480                      32832
-#define ID_800X600                      32833
 #define ID_1024X768                     32834
-#define ID_MENU_CHECKEM                 32835
 
 // Next default values for new objects
 // 

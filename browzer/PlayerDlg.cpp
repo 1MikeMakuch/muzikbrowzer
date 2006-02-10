@@ -283,7 +283,7 @@ BEGIN_MESSAGE_MAP(CPlayerDlg, CDialogClassImpl)
 	ON_LBN_DBLCLK(IDC_GENRES,				OnDblclkGenres)
 	ON_BN_CLICKED(IDC_MENU_BUTTON,			OnMenuButton)
 	ON_COMMAND(ID_MENU_OPTIONS,				OnMenuOptions)
-	ON_COMMAND(ID_MENU_CHECKEM,				OnMenuCheckem)
+//	ON_COMMAND(ID_MENU_CHECKEM,				OnMenuCheckem)
 	ON_BN_CLICKED(IDC_SEARCH_GO,				OnSearchGo)
 	ON_COMMAND(ID_SEARCH,					OnSearchDlg)
 	ON_BN_CLICKED(IDC_SEARCH_CANCEL,		OnNoSearchDlg)
@@ -349,9 +349,9 @@ BEGIN_MESSAGE_MAP(CPlayerDlg, CDialogClassImpl)
 	ON_WM_RBUTTONUP()
 	//}}AFX_MSG_MAP
 	//ON_WM_NCPAINT()
-	ON_COMMAND(ID_640X480,	On640x480)
-	ON_COMMAND(ID_800X600,	On800x600)
-	ON_COMMAND(ID_1024X768,	On1024x768)
+//	ON_COMMAND(ID_640X480,	On640x480)
+//	ON_COMMAND(ID_800X600,	On800x600)
+//	ON_COMMAND(ID_1024X768,	On1024x768)
 	ON_COMMAND(ID_MENU_ADD, OnMusicAdd)
 	ON_COMMAND(ID_MENU_SCAN, OnMusicScan)
 	ON_COMMAND(ID_MENU_SCANNEW, OnMusicScanNew)
@@ -3962,16 +3962,16 @@ void CPlayerDlg::OnButtonMenu()
 			skinmenu->CheckMenuItem(needscheck, MF_CHECKED | MF_BYCOMMAND);
 		}
 
-		CRect rect; GetWindowRect(rect);
-		CMenu * sizemenu = popup->GetSubMenu(5);
-		ASSERT(sizemenu != NULL);
-		if (rect.Width() == 640 && rect.Height() == 480) {
-			sizemenu->CheckMenuItem(ID_640X480, MF_CHECKED | MF_BYCOMMAND);
-		} else if (rect.Width() == 800 && rect.Height() == 600) {
-			sizemenu->CheckMenuItem(ID_800X600, MF_CHECKED | MF_BYCOMMAND);
-		} else if (rect.Width() == 1024 && rect.Height() == 768) {
-			sizemenu->CheckMenuItem(ID_1024X768, MF_CHECKED | MF_BYCOMMAND);
-		}
+//		CRect rect; GetWindowRect(rect);
+//		CMenu * sizemenu = popup->GetSubMenu(5);
+//		ASSERT(sizemenu != NULL);
+//		if (rect.Width() == 640 && rect.Height() == 480) {
+//			sizemenu->CheckMenuItem(ID_640X480, MF_CHECKED | MF_BYCOMMAND);
+//		} else if (rect.Width() == 800 && rect.Height() == 600) {
+//			sizemenu->CheckMenuItem(ID_800X600, MF_CHECKED | MF_BYCOMMAND);
+//		} else if (rect.Width() == 1024 && rect.Height() == 768) {
+//			sizemenu->CheckMenuItem(ID_1024X768, MF_CHECKED | MF_BYCOMMAND);
+//		}
 
         popup->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON,
 			crbottomleft(button).x,
@@ -4665,3 +4665,4 @@ void CPlayerDlg::OnWarningWmp(long WarningType, long Param, LPCTSTR Description)
 	//PlayLoop();
 	
 }
+

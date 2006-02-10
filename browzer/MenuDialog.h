@@ -66,6 +66,7 @@ protected:
 	afx_msg void OnMenuHelp();
 	afx_msg void OnMenuRandomizePlaylist();
 	afx_msg void OnMenuSavePlaylist();
+	virtual BOOL OnInitDialog();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 public:

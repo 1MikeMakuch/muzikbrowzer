@@ -883,18 +883,10 @@ BEGIN
         MENUITEM "&Playlist editor",            ID_MENU_EDITPL
         MENUITEM "&Settings",                   ID_MENU_OPTIONS
         MENUITEM SEPARATOR
-        POPUP "Size"
-        BEGIN
-            MENUITEM "640X480",                     ID_640X480
-            MENUITEM "800X600",                     ID_800X600
-            MENUITEM "1024X768",                    ID_1024X768
-        END
-        MENUITEM SEPARATOR
         MENUITEM "S&earch",                     ID_SEARCH
         MENUITEM "&Help",                       ID_MENU_HELP
         MENUITEM "&About",                      IDD_ABOUT
         MENUITEM "E&xit",                       ID_MENU_EXIT
-        MENUITEM "Check 'em",                   ID_MENU_CHECKEM
     END
 END
 
