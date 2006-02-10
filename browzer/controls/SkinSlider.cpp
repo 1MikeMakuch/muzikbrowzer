@@ -71,47 +71,50 @@ int CMySliderCtrl::GetPos() {
 }
 
 void CMySliderCtrl::SetPos(CPoint & point) {
+	int ipoint;
 	if (m_Orientation == VERTICAL) {
-		double ratio = (double)((double)((point.y - m_ChannelRect.top)+1) 
-			/ (double)(m_ChannelRect.bottom));
+		ipoint = point.y;
+	} else {
+		ipoint = point.x;
+	}
+	double ratio = (double)((double)((ipoint - m_ChannelMin)+1) 
+		/ (double)(m_ChannelMax));
+	if (m_Orientation == VERTICAL) {
 		m_Pos = m_Span - int((double)(m_Span) * ratio);
 	} else {
-		double ratio = (double)((double)((point.x - m_ChannelRect.left)+1) 
-			/ (double)(m_ChannelRect.right));
-		m_Pos = /*m_Span + */int((double)(m_Span) * ratio);
+		m_Pos = int((double)(m_Span) * ratio);
 	}
+
 	SetPos(m_Pos, TRUE);
 }
 void CMySliderCtrl::SetPos(int pos, BOOL sendmsg) {
 	if (pos < m_Min) pos = m_Min;
 	if (pos > m_Max) pos = m_Max;
 	m_Pos = pos;
+	double ratio ;
 	if (m_Orientation == VERTICAL) {
-		double ratio = (double)((double)((m_Span - m_Pos)+1) 
+		ratio = (double)((double)((m_Span - m_Pos)+1) 
 			/ (double)(m_Span));
-		int y = int(((double)m_RectSpan * ratio)) + m_ChannelRect.top;
-		int h = m_ThumbRect.Height();
-		y -= h/2;
-		if ((m_ChannelRect.bottom - y) < h) {
-			y = m_ChannelRect.bottom - h;
-		}
-		if (y < (m_ChannelRect.top + 3))
-			y = m_ChannelRect.top;
+	} else {
+		ratio = (double)((double)((m_Pos)+1) 
+			/ (double)(m_Span));
+	}
+
+	int y = int(((double)m_RectSpan * ratio)) + m_ChannelMin;
+	int h = m_ThumbSpan;
+	y -= h/2;
+	if ((m_ChannelMax - y) < h) {
+		y = m_ChannelMax - h;
+	}
+	if (y < (m_ChannelMin + 3))
+		y = m_ChannelMin;
+
+	if (m_Orientation == VERTICAL) {
 		m_ThumbRect.top = y;
 		m_ThumbRect.bottom = y + h;
 	} else {
-		double ratio = (double)((double)((m_Pos)+1) 
-			/ (double)(m_Span));
-		int x = int(((double)m_RectSpan * ratio)) + m_ChannelRect.left;
-		int w = m_ThumbRect.Width();
-		x -= w / 2;
-		if ((m_ChannelRect.right - x) < w) {
-			x = m_ChannelRect.right - (w+1);
-		}
-		if (x < (m_ChannelRect.left + 3))
-			x = m_ChannelRect.left;
-		m_ThumbRect.left = x;
-		m_ThumbRect.right  = x + w;
+		m_ThumbRect.left = y;
+		m_ThumbRect.right  = y + h;
 	}
 
 	Invalidate(TRUE);
@@ -423,8 +426,14 @@ void CMySliderCtrl::SizeToContent(CWnd * parent)
 
 	if (m_Orientation == VERTICAL) {
 		m_RectSpan = m_ChannelRect.Height();
+		m_ChannelMin = m_ChannelRect.top;
+		m_ChannelMax = m_ChannelRect.bottom;
+		m_ThumbSpan = m_ThumbRect.Height();
 	} else {
 		m_RectSpan = m_ChannelRect.Width();
+		m_ChannelMin = m_ChannelRect.left;
+		m_ChannelMax = m_ChannelRect.right;
+		m_ThumbSpan = m_ThumbRect.Width();
 	}
 
 

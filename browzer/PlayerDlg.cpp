@@ -272,8 +272,8 @@ BEGIN_MESSAGE_MAP(CPlayerDlg, CDialogClassImpl)
 	ON_BN_CLICKED(IDC_PLAY_BUTTON,			OnPlayButton)
 	ON_BN_CLICKED(IDC_OPEN_FILE_BUTTON,		OnOpenFileButton)
 	ON_BN_CLICKED(IDC_STOP_BUTTON,			OnStopButton)
-	ON_WM_HSCROLL()
-	ON_WM_VSCROLL()
+//	ON_WM_HSCROLL()
+//	ON_WM_VSCROLL()
 	ON_BN_CLICKED(IDD_ABOUT,				OnAbout)
 	ON_LBN_SELCHANGE(IDC_ARTISTS,			OnSelchangeArtists)
 	ON_LBN_SELCHANGE(IDC_ALBUMS,			OnSelchangeAlbums)
@@ -1416,7 +1416,7 @@ CPlayerDlg::resetControls() {
 		bordervert;
 
 	p = m_BtnControls.getObj(IDC_POSITION_LABEL);
-	CSize s = m_PositionLabel.GetSize("00:00/00:00");
+	CSize s = m_PositionLabel.GetSize("00:00  /  00:00");
 	p->width = s.cx;
 	p->height = statusheight;
 	x = border + borderpanel; 
@@ -2007,6 +2007,7 @@ void CPlayerDlg::OnOpenUrlButton()
 	delete dialog;
 }
 #endif
+#ifdef asdf
 void CPlayerDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
 {
 OnHScroll(nSBCode, nPos, pScrollBar) ;
@@ -2024,8 +2025,7 @@ void CPlayerDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 				break;
 		}
 		CDialogClassImpl::OnHScroll(nSBCode, nPos, pScrollBar);
-	} else 
-	if (pScrollBar->m_hWnd == m_VolumeSlider.m_hWnd) {
+	} else if (pScrollBar->m_hWnd == m_VolumeSlider.m_hWnd) {
 		switch (nSBCode) {
 			case SB_ENDSCROLL: 
 				adjustVolume();
@@ -2039,7 +2039,7 @@ void CPlayerDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 		CDialogClassImpl::OnVScroll(nSBCode, nPos, pScrollBar);
 	}
 }
-
+#endif
 void CPlayerDlg::OnAbout() 
 {
 		CRect rect;
@@ -4626,8 +4626,7 @@ void CPlayerDlg::OnPlayStateChangeWmp(long NewState)
 
 void CPlayerDlg::OnPositionChangeWmp(double oldPosition, double newPosition) 
 {
-
-	
+	updatePositionLabel();
 }
 
 

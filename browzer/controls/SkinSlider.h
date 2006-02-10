@@ -90,6 +90,9 @@ private:
 	int m_Span;
 	int m_Pos;
 	int m_RectSpan;
+	int m_ChannelMin;
+	int m_ChannelMax;
+	int m_ThumbSpan;
 	CRect m_ThumbRect;
 	CRect m_ClientRect;
 	CRect m_ChannelRect;

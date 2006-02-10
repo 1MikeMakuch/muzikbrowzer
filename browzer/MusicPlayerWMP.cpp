@@ -117,9 +117,11 @@ MusicPlayerWMP::ReadMediaPosition(long & pos, long & dur, long & pct)
 	else
 		pct = 0;
 }
+
 int
 MusicPlayerWMP::Seek(long pos, BOOL /*endpos*/) {
-	m_MP->GetControls().SetCurrentPosition(pos);
+	double newpos = (GetFileDuration() * pos) / 100;
+	m_MP->GetControls().SetCurrentPosition(newpos);
 	return 0;
 }
 int

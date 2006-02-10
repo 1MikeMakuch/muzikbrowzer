@@ -365,9 +365,6 @@ Package=<4>
     Begin Project Dependency
     Project_Dep_Name WmaTagg
     End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name BitmapCutter
-    End Project Dependency
 }}}
 
 ###############################################################################
