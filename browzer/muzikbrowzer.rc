@@ -869,15 +869,35 @@ IDR_MENU2 MENU DISCARDABLE
 BEGIN
     POPUP ""
     BEGIN
-        POPUP "&Music"
+        POPUP "Music Library"
         BEGIN
-            MENUITEM "&Add",                        ID_MENU_ADD
-            MENUITEM "&Scan",                       ID_MENU_SCAN
-            MENUITEM "S&can for new",               ID_MENU_SCANNEW
+            MENUITEM "Add music",                   ID_MENU_ADD
+            POPUP "Scan "
+            BEGIN
+                MENUITEM "Complete Rebuild",            ID_MENU_SCAN
+                MENUITEM "Scan disk for new music",     ID_MENU_SCANNEW
+            END
         END
         POPUP "S&kin"
         BEGIN
             MENUITEM SEPARATOR
+        END
+        POPUP "Player"
+        BEGIN
+            MENUITEM "Stop\tAlt+S",                 ID__PLAYER_STOP
+            MENUITEM "Play\tAlt+P",                 ID__PLAYER_PLAY
+            MENUITEM "Pause\tAlt+A",                ID__PLAYER_PAUSE
+            MENUITEM "Previous Song\tAlt+I",        ID__PLAYER_PREVIOUSSONG
+            MENUITEM "Next Song\tAlt+N",            ID__PLAYER_NEXTSONG
+            MENUITEM "Randomize\tAlt+D",            ID__PLAYER_RANDOMIZE
+            MENUITEM "Shuffle\tAlt+H",              ID__PLAYER_SHUFFLE
+            MENUITEM "Clear\tAlt+C",                ID__PLAYER_CLEAR
+            MENUITEM "Load\tAlt+L",                 ID__PLAYER_LOAD
+            MENUITEM "Save\tAlt+V",                 ID__PLAYER_SAVE
+            MENUITEM "Volume Up\tAlt+U",            ID__PLAYER_VOLUMEUP
+            MENUITEM "Volume Down\tAlt+O",          ID__PLAYER_VOLUMEDOWN
+            MENUITEM "Fast Forward\tAlt+F",         ID__PLAYER_FASTFORWARD
+            MENUITEM "Reverse\tAlt+E",              ID__PLAYER_REVERSESKIP
         END
         MENUITEM "&Playlist editor",            ID_MENU_EDITPL
         MENUITEM "&Settings",                   ID_MENU_OPTIONS
@@ -897,6 +917,7 @@ END
 
 IDC_CURSOR2             CURSOR  DISCARDABLE     "res\\cursor2.cur"
 IDC_CURSOR3             CURSOR  DISCARDABLE     "res\\cursor3.cur"
+IDC_CURSOR4             CURSOR  DISCARDABLE     "res\\cursor4.cur"
 
 /////////////////////////////////////////////////////////////////////////////
 //

@@ -347,6 +347,20 @@ BEGIN_MESSAGE_MAP(CPlayerDlg, CDialogClassImpl)
 	ON_WM_COMPAREITEM()
 	ON_WM_RBUTTONDOWN()
 	ON_WM_RBUTTONUP()
+	ON_COMMAND(ID__PLAYER_STOP,				OnMenuStop)
+	ON_COMMAND(ID__PLAYER_PLAY,				OnMenuPlay)
+	ON_COMMAND(ID__PLAYER_PAUSE,			OnMenuPause)
+	ON_COMMAND(ID__PLAYER_PREVIOUSSONG,		OnPreviousSong)
+	ON_COMMAND(ID__PLAYER_NEXTSONG,			OnNextSong)
+	ON_COMMAND(ID__PLAYER_RANDOMIZE,		OnMenuRandomizePlaylist)
+	ON_COMMAND(ID__PLAYER_SHUFFLE,			OnMenuShuffleplaylist)
+	ON_COMMAND(ID__PLAYER_CLEAR,			OnMenuClearplaylist)
+	ON_COMMAND(ID__PLAYER_LOAD,				OnMenuLoadplaylist)
+	ON_COMMAND(ID__PLAYER_SAVE,				OnMenuSaveplaylist)
+	ON_COMMAND(ID__PLAYER_VOLUMEUP,			OnVolUp)
+	ON_COMMAND(ID__PLAYER_VOLUMEDOWN,		OnVolDown)
+	ON_COMMAND(ID__PLAYER_FASTFORWARD,		OnFastForward)
+	ON_COMMAND(ID__PLAYER_REVERSESKIP,		OnReverse)
 	//}}AFX_MSG_MAP
 	//ON_WM_NCPAINT()
 //	ON_COMMAND(ID_640X480,	On640x480)
@@ -1919,10 +1933,24 @@ void CPlayerDlg::OnSysCommand(UINT nID, LPARAM lParam)
 		CDialogClassImpl::OnSysCommand(nID, lParam);
 		RedrawWindow();
 	} else if (SC_KEYMENU == nID) {
-		if ('M' == lParam || 'm' == lParam) {
-			OnButtonMenu() ; // menu
-		} else if ('r' == lParam || 'R' == lParam) {
-			OnMenuButton();  // remote control menu
+		switch(lParam) {
+		case 'm': case 'M': 
+			OnButtonMenu(); break;
+		case 'r': case 'R':  OnMenuButton();	break;
+		case 's': case 'S': Stop();				break;
+		case 'p': case 'P': Play();				break;
+		case 'a': case 'A': Pause();			break;
+		case 'i': case 'I': OnPreviousSong();	break;
+		case 'n': case 'N': OnNextSong();		break;
+		case 'd': case 'D': OnMenuRandomizePlaylist();	break;
+		case 'h': case 'H': OnMenuShuffleplaylist();	break;
+		case 'c': case 'C': OnMenuClearplaylist();		break;
+		case 'l': case 'L': OnMenuLoadplaylist();		break;
+		case 'v': case 'V': OnMenuSaveplaylist();		break;
+		case 'u': case 'U': OnVolUp();			break;
+		case 'o': case 'O': OnVolDown();		break;
+		case 'f': case 'F': OnFastForward();	break;
+		case 'e': case 'E': OnReverse();		break;
 		}
     } else {
 		CDialogClassImpl::OnSysCommand(nID, lParam);

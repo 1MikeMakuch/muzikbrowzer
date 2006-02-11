@@ -394,7 +394,7 @@ void LoadPlaylistDlg::OnSelchangePlaylistNames()
 	if (name != m_LastName) {
 		if (m_Modified) {
 			CString tmp = "You have made changes to your \"";
-			tmp += name + "\" playlist.\r\nDo you wish to first save it?";
+			tmp += m_LastName + "\" playlist.\r\nDo you wish to first save it?";
 			int ok = MBMessageBox("Confirmation", tmp, TRUE, TRUE);
 			if (0 != ok) {
 				reload = FALSE;

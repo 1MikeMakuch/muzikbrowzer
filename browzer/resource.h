@@ -79,6 +79,7 @@
 #define IDD_TESTCANCELDLG               264
 #define IDD_DIALOG2                     265
 #define IDI_ICON_V2                     268
+#define IDC_CURSOR4                     270
 #define IDC_VOLUME_BUTTON               1000
 #define IDC_STOP_BUTTON                 1001
 #define IDC_PLAY_BUTTON                 1002
@@ -448,14 +449,27 @@
 #define ID_QUICK_PLAY                   32827
 #define ID_DELETE_FROM_PL               32828
 #define ID_SEARCH                       32829
-#define ID_1024X768                     32834
+#define ID__PLAYER_STOP                 32842
+#define ID__PLAYER_PLAY                 32843
+#define ID__PLAYER_PAUSE                32844
+#define ID__PLAYER_PREVIOUSSONG         32845
+#define ID__PLAYER_NEXTSONG             32846
+#define ID__PLAYER_RANDOMIZE            32847
+#define ID__PLAYER_SHUFFLE              32848
+#define ID__PLAYER_CLEAR                32849
+#define ID__PLAYER_LOAD                 32850
+#define ID__PLAYER_SAVE                 32851
+#define ID__PLAYER_VOLUMEUP             32852
+#define ID__PLAYER_VOLUMEDOWN           32853
+#define ID__PLAYER_FASTFORWARD          32854
+#define ID__PLAYER_REVERSESKIP          32855
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        270
-#define _APS_NEXT_COMMAND_VALUE         32836
+#define _APS_NEXT_RESOURCE_VALUE        271
+#define _APS_NEXT_COMMAND_VALUE         32856
 #define _APS_NEXT_CONTROL_VALUE         2054
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
