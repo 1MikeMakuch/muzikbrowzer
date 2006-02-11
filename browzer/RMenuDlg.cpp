@@ -95,19 +95,6 @@ BOOL RMenuDlg::OnInitDialog()
 	MBCONFIG_READ_TRANS_COLORS(m_reg,m_crTransMain,m_crTransPanel);
 	SetTransparentColor(m_crTransMain,m_crTransPanel); 
 
-	COLORREF crColHdrInUL,crColHdrInLR,crColHdrOutUL,crColHdrOutLR;
-	COLORREF crDataInUL,crDataInLR,crDataOutUL,crDataOutLR;
-	COLORREF crStatusInUL,crStatusInLR,crStatusOutUL,crStatusOutLR;
-
-	MBCONFIG_READ_COLOR_3D(m_reg,MB3DCOLHDRCOLOR,
-		crColHdrInUL,crColHdrInLR,crColHdrOutUL,crColHdrOutLR);
-	
-	MBCONFIG_READ_COLOR_3D(m_reg,MB3DDATACOLOR,
-		crDataInUL,crDataInLR,crDataOutUL,crDataOutLR);
-	
-	MBCONFIG_READ_COLOR_3D(m_reg,MB3DSTATUSCOLOR,
-		crStatusInUL,crStatusInLR,crStatusOutUL,crStatusOutLR);
-	
 	COLORREF crOtherFg,crOtherBg,
 		crButtonsFgOut,  crButtonsBgOut,
 		crButtonsFgHover,crButtonsBgHover,
@@ -121,18 +108,6 @@ BOOL RMenuDlg::OnInitDialog()
 		crButtonsFgIn,crButtonsBgIn,
 		OtherFlat,OtherBorder);
 
-	BOOL threeDDataWindows	= m_reg.Read(MB3DDATA,0);
-	BOOL threeDColHdrs		= m_reg.Read(MB3DCOLHDRS,0);
-	BOOL threeDStatus		= m_reg.Read(MB3DSTATUS,0);
-
-	COLORREF crColHdrFg,crColHdrBg;
-	crColHdrFg = m_parentcallbacks->mbconfig()->getColorTxColHdr();
-	crColHdrBg = m_parentcallbacks->mbconfig()->getColorBkColHdr();
-
-#define _LABEL_COLORS_ crColHdrFg,crColHdrBg,\
-	crColHdrInUL,crColHdrInLR,crColHdrOutUL,crColHdrOutLR,\
-	threeDColHdrs
-
 	CRect wrect;
 	GetWindowRect(wrect);
 
@@ -141,8 +116,19 @@ BOOL RMenuDlg::OnInitDialog()
 	int borderhorz = m_parentcallbacks->mbconfig()->getDlgBorderHorz();
 	int bordervert = m_parentcallbacks->mbconfig()->getDlgBorderVert();
 
-	CRect exitrect;
-	m_Exit.GetWindowRect(exitrect);
+	CDC * cdc = GetDC();
+	LPLOGFONT lplf = m_parentcallbacks->mbconfig()->getColHdrFont();
+	m_bfont.CreateFontIndirect(lplf);
+
+
+	CFont * oldfont = cdc->SelectObject(&m_bfont);
+	CSize s = cdc->GetTextExtent("Randomize");
+	cdc->SelectObject(oldfont);
+
+	CRect exitrect(0,0,0,0);
+	exitrect.right = s.cx + 15;
+	exitrect.bottom = s.cy + 10;
+//	m_Exit.GetWindowRect(exitrect);
 	int edge = (border * 2) + (borderpanel * 2);
 	int cwidth = exitrect.Width() + edge;
 	int cheight = (exitrect.Height() * 10) + (bordervert * 10) + edge;
@@ -168,13 +154,15 @@ BOOL RMenuDlg::OnInitDialog()
 		wrect, BackgroundMainType, CS("frame"));
 	SetBitmap(m_parentcallbacks->mbconfig()->getSkin(MB_SKIN_BACKGROUNDPLAYLIST),
 		clientrect, BackgroundPanelType, CS("play panel"));
-	CDC * cdc = GetDC();
+
 	make(cdc);
-	ReleaseDC(cdc);
+	
 	OnNcPaint() ;
 	EraseBkgndNC();//(cdc); // force CDialogSK to paint background
 	// This sends a WM_NCPAINT to repaint the resize frame
 	RedrawWindow(NULL,NULL, RDW_FRAME|RDW_INVALIDATE);
+
+	ReleaseDC(cdc);
 
 	CButtonST *button[10];
 	button[0] = &m_Exit;
@@ -190,14 +178,15 @@ BOOL RMenuDlg::OnInitDialog()
 	int i;
 	int x = border + borderpanel;
 	x -= 3;
-	int y = x;
+	int y = x + bordervert;
 	for(i = 0 ; i < 10 ; i++) {
-		button[i]->SetFlat(FALSE);
-		button[i]->DrawBorder(TRUE);
+		button[i]->SetFlat(OtherFlat);
+		button[i]->DrawBorder(OtherBorder);
 		button[i]->SetColors(crButtonsFgHover,crButtonsBgHover,
 			crButtonsFgOut,crButtonsBgOut,
 			crButtonsFgIn,crButtonsBgIn);
 		button[i]->MoveWindow(x,y,exitrect.Width(),exitrect.Height());
+		button[i]->SetFont(&m_bfont);
 		y += bordervert + exitrect.Height();
 	}
 	

@@ -113,6 +113,7 @@ private:
 	PlayerCallbacks m_callbacks;	
 	COLORREF m_crTransMain,m_crTransPanel;
 	int m_SysBarHeight ;
+	CFont m_bfont;
 
 };
 
