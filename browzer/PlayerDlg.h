@@ -42,8 +42,8 @@ class VirtualDialog;
 class RMenuDlg;
 class CTransparentDialogDlg;
 class MusicPlayerWMP;
-
 class CPlayerDlg;
+class LoadPlaylistDlg;
 
 #ifdef THE_PLAYER
 CPlayerDlg * thePlayer = 0;
@@ -175,6 +175,7 @@ private:
     CString m_PlayerStatusSave;
     CTime m_PlayerStatusTime;
     RMenuDlg * m_MenuDlg;
+	LoadPlaylistDlg * m_LoadPlaylistDlg;
     BOOL m_StopFlag;
 	BOOL m_PauseFlag;
     int m_PlaylistCurrent;
@@ -426,7 +427,6 @@ protected:
 	int m_CheckSongCounter;
 	int m_CheckGoodCount;
 	int m_CheckBadCount;
-
 
 	DECLARE_MESSAGE_MAP()
 

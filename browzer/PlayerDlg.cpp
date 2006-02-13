@@ -146,7 +146,8 @@ CPlayerDlg::CPlayerDlg(CPlayerApp * theApp,
 	m_ShowSearchPanel(FALSE),
 	m_SearchCleared(TRUE),
 	m_LastShowSearchPanel(FALSE),
-	m_PlayLoopTimerId(0)
+	m_PlayLoopTimerId(0),
+	m_LoadPlaylistDlg(0)
 {
 	//{{AFX_DATA_INIT(CPlayerDlg)
 	//}}AFX_DATA_INIT
@@ -183,8 +184,6 @@ CPlayerDlg::CPlayerDlg(CPlayerApp * theApp,
 	m_callbacksAlbums.SetSelected = &::SetSelected;
 	m_callbacksSongs.statustempset = NULL;
 	m_callbacksAlbums.statustempset = NULL;
-
-	irman().init(RegKeyIrman, IR_MESSAGE_NUMBER_OF, this);
 
 	m_HatchBrush.CreateHatchBrush(HS_CROSS,RGB(255,0,0));
 //	m_LogoButton.logit = TRUE;
@@ -603,8 +602,6 @@ BOOL CPlayerDlg::OnInitDialog()
 
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);		// Set small ic
-
-	irman().Open();
 
 	//ShowBetaWarning();
 	StartStatusTimer();
@@ -1061,6 +1058,10 @@ CPlayerDlg::resetControls() {
 
 	static BOOL firsttime = TRUE;
 	CWaitCursor c;
+
+	irman().Close();
+	irman().init(RegKeyIrman, IR_MESSAGE_NUMBER_OF, this);
+	irman().Open();
 
 	m_Skins.RemoveAll();
 	m_Config.getSkins(m_Skins);
@@ -2630,8 +2631,6 @@ CPlayerDlg::OnPlayloop(UINT wParam, LONG lParam) {
 int
 CPlayerDlg::HandleIRMessage(int key) {
 
-//    EndScreenSaver();
-
 	int wakeitup = 1;
     switch (key) {
 	case IR_MESSAGE_UP: {
@@ -2703,6 +2702,22 @@ CPlayerDlg::HandleIRMessage(int key) {
         m_Dialog->control().alphaDown();
 		m_Dialog->OnControlSelChange();
 		break;}
+	case IR_MESSAGE_RANDOM: {
+		OnMenuRandomizePlaylist();
+		break;}
+	case IR_MESSAGE_SHUFFLE: {
+		OnMenuShuffleplaylist();
+		break;}
+	case IR_MESSAGE_CLEAR: {
+		OnMenuClearplaylist();
+		break;}
+	case IR_MESSAGE_LOAD: {
+		OnMenuLoadplaylist();
+		break;}
+	case IR_MESSAGE_SAVE: {
+		SetSavePlaylistFlag(FALSE);
+		OnMenuSaveplaylist();
+		break;}
 	default:
 		wakeitup = 0;
 	}
@@ -2719,12 +2734,11 @@ CPlayerDlg::HandleIRMessage(int key) {
 
 afx_msg LRESULT
 CPlayerDlg::OnSerialMsg (WPARAM wParam, LPARAM lParam) {
+
 	int key;
 	BOOL more = TRUE;
-	while (more) {
-		more = irman().HandleSerialMsg(wParam, lParam, key);
-		HandleIRMessage(key);
-	}
+	irman().HandleSerialMsg(wParam, lParam, key);
+	HandleIRMessage(key);
 	return 0;
 }
 
@@ -2888,23 +2902,25 @@ void CPlayerDlg::OnExit()
     }
 }
 void CPlayerDlg::OnMenuEditPlaylist() {
-    LoadPlaylistDlg * m_LoadPlaylistDlg 
-        = new LoadPlaylistDlg (&m_callbacks, this, TRUE);
-    *m_Dialog = m_LoadPlaylistDlg;
-	int r = m_LoadPlaylistDlg->DoModal();
-	delete m_LoadPlaylistDlg;
-	m_LoadPlaylistDlg = 0;
-    *m_Dialog = this;
+	if (0 == m_LoadPlaylistDlg) {
+		m_LoadPlaylistDlg = new LoadPlaylistDlg (&m_callbacks, this, TRUE);
+		*m_Dialog = m_LoadPlaylistDlg;
+		int r = m_LoadPlaylistDlg->DoModal();
+		delete m_LoadPlaylistDlg;
+		m_LoadPlaylistDlg = 0;
+		*m_Dialog = this;
+	}
 }
 void CPlayerDlg::OnMenuLoadplaylist() 
 {
-    LoadPlaylistDlg * m_LoadPlaylistDlg 
-        = new LoadPlaylistDlg (&m_callbacks, this, FALSE);
-    *m_Dialog = m_LoadPlaylistDlg;
-	int r = m_LoadPlaylistDlg->DoModal();
-	delete m_LoadPlaylistDlg;
-	m_LoadPlaylistDlg = 0;
-    *m_Dialog = this;
+	if (0 == m_LoadPlaylistDlg) {
+		m_LoadPlaylistDlg = new LoadPlaylistDlg (&m_callbacks, this, FALSE);
+		*m_Dialog = m_LoadPlaylistDlg;
+		int r = m_LoadPlaylistDlg->DoModal();
+		delete m_LoadPlaylistDlg;
+		m_LoadPlaylistDlg = 0;
+		*m_Dialog = this;
+	}
 }
 
 void CPlayerDlg::OnMenuSaveplaylist() 

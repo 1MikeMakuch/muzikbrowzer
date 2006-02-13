@@ -72,6 +72,16 @@ public:
 	CString	m_IRAlphaDownStatus;
 	CString	m_IRAlphaUpDesc;
 	CString	m_IRAlphaUpStatus;
+	CString	m_IRRandomDesc;
+	CString	m_IRRandomStatus;
+	CString	m_IRSaveDesc;
+	CString	m_IRSaveStatus;
+	CString	m_IRShuffleDesc;
+	CString	m_IRShuffleStatus;
+	CString	m_IRLoadDesc;
+	CString	m_IRLoadStatus;
+	CString	m_IRClearDesc;
+	CString	m_IRClearStatus;
 	//}}AFX_DATA
 
 
@@ -104,6 +114,8 @@ protected:
 	afx_msg void OnIrcom8();
 	afx_msg void OnKillfocusIrdelay();
 	afx_msg void OnIrnone();
+	afx_msg void OnIrhelpbutton();
+	afx_msg void OnSetfocusIrdelay();
 	//}}AFX_MSG
 	afx_msg void OnRecordButton(UINT nID );
 	afx_msg LRESULT OnSerialMsg (WPARAM wParam, LPARAM lParam);
@@ -114,6 +126,8 @@ protected:
 private:
 	bool m_irrecording;
 	bool m_irtesting;
+	int m_lastkey;
+	int m_keycount;
 };
 
 //{{AFX_INSERT_LOCATION}}

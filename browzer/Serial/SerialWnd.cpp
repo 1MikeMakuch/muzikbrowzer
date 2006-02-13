@@ -25,7 +25,7 @@
 //#include <tchar.h>
 //#include <windows.h>
 #include "StdAfx.h"
-
+#include "MyLog.h"
 
 //////////////////////////////////////////////////////////////////////
 // Include module headerfile
@@ -127,5 +127,6 @@ LONG CSerialWnd::Close (void)
 void CSerialWnd::OnEvent (EEvent eEvent, EError eError)
 {
 	// Post message to the client window
+//	logger.ods("CSerialWnd::OnEvent");
 	::PostMessage(m_hwndDest,m_nComMsg,MAKEWPARAM(eEvent,eError),LPARAM(m_lParam));
 }

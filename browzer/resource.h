@@ -324,6 +324,11 @@
 #define IDC_IRREVERSE                   1518
 #define IDC_IRALPHAUP                   1519
 #define IDC_IRALPHADOWN                 1520
+#define IDC_IRRANDOM                    1521
+#define IDC_IRSHUFFLE                   1522
+#define IDC_IRCLEAR                     1523
+#define IDC_IRLOAD                      1524
+#define IDC_IRSAVE                      1525
 #define IDC_IRUP_DESC                   1600
 #define IDC_IRDOWN_DESC                 1601
 #define IDC_IRLEFT_DESC                 1602
@@ -345,6 +350,11 @@
 #define IDC_IRREVERSE_DESC              1618
 #define IDC_IRALPHAUP_DESC              1619
 #define IDC_IRALPHADOWN_DESC            1620
+#define IDC_IRRANDOM_DESC               1621
+#define IDC_IRSHUFFLE_DESC              1622
+#define IDC_IRCLEAR_DESC                1623
+#define IDC_IRLOAD_DESC                 1624
+#define IDC_IRSAVE_DESC                 1625
 #define IDC_IRUP_STATUS                 1700
 #define IDC_IRDOWN_STATUS               1701
 #define IDC_IRLEFT_STATUS               1702
@@ -366,6 +376,11 @@
 #define IDC_IRREVERSE_STATUS            1718
 #define IDC_IRALPHAUP_STATUS            1719
 #define IDC_IRALPHADOWN_STATUS          1720
+#define IDC_IRRANDOM_STATUS             1721
+#define IDC_IRSHUFFLE_STATUS            1722
+#define IDC_IRCLEAR_STATUS              1723
+#define IDC_IRLOAD_STATUS               1724
+#define IDC_IRSAVE_STATUS               1725
 #define IDC_MESSAGEBOX_OK               2001
 #define IDC_CP_FIRSTNAME                2002
 #define IDC_MESSAGEBOX_CANCEL           2002
@@ -407,6 +422,7 @@
 #define IDC_SEARCH_TEXT                 2049
 #define IDC_LIST6                       2051
 #define IDC_WMP                         2053
+#define IDC_IRHELPBUTTON                2054
 #define IDS_UNKNOWN_ERROR               5000
 #define IDC_BUTTON_LOGO                 12052
 #define ID_XXX                          32775
@@ -470,7 +486,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        271
 #define _APS_NEXT_COMMAND_VALUE         32856
-#define _APS_NEXT_CONTROL_VALUE         2054
+#define _APS_NEXT_CONTROL_VALUE         2055
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

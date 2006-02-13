@@ -84,7 +84,7 @@ class Irman {
 		}
 		CString getKeyDesc(int key) {
 			CString s;
-			if (strlen(keyCodes[key].desc)) {
+			if (0 <= key && key <= numKeys && strlen(keyCodes[key].desc)) {
 				s = keyCodes[key].desc;
 			}
 			return s;
@@ -167,7 +167,9 @@ class Irman {
         BOOL PowerOff( )	;
 
         // Discard any characters in the COM port buffers
+	public:
         BOOL Flush( );
+	private:
 		int lookup(KeyCode);
 
         // Time to wait from reading one key ro the next
@@ -188,6 +190,8 @@ class Irman {
         DWORD iBytesRead;
         char sBuffer[ 128 ];
 		IrmanCallback m_irmanCallback;
+		DWORD m_lasttick;
+		int m_lastcode;
 };
 
 #ifdef THE_IRMAN

@@ -8,6 +8,7 @@
 #include "ConfigIrman.h"
 #include "Registry.h"
 #include "MyString.h"
+#include "MBMessageBox.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -16,7 +17,7 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 #define IDC_IRRECORD_FIRST IDC_IRUP
-#define IDC_IRRECORD_LAST IDC_IRALPHADOWN
+#define IDC_IRRECORD_LAST IDC_IRSAVE
 #define IDC_IRRECORD_STATUS_FIRST IDC_IRUP_STATUS
 #define IDC_IRRECORD_DESC_FIRST IDC_IRUP_DESC
 
@@ -29,7 +30,8 @@ IMPLEMENT_DYNCREATE(CConfigIrman, CPropertyPage)
 
 CConfigIrman::CConfigIrman(CWnd * p) :
     CPropertyPage(CConfigIrman::IDD), /* m_PlayerDlg(p), */
-    m_irrecording(FALSE), m_irtesting(FALSE), m_delay(100)
+    m_irrecording(FALSE), m_irtesting(FALSE), m_delay(100),m_lastkey(-1),
+	m_keycount(0)
 {
     //{{AFX_DATA_INIT(CConfigIrman)
 	m_IRComPortStatus = _T("");
@@ -76,6 +78,16 @@ CConfigIrman::CConfigIrman(CWnd * p) :
 	m_IRAlphaDownStatus = _T("");
 	m_IRAlphaUpDesc = _T("");
 	m_IRAlphaUpStatus = _T("");
+	m_IRRandomDesc = _T("");
+	m_IRRandomStatus = _T("");
+	m_IRSaveDesc = _T("");
+	m_IRSaveStatus = _T("");
+	m_IRShuffleDesc = _T("");
+	m_IRShuffleStatus = _T("");
+	m_IRLoadDesc = _T("");
+	m_IRLoadStatus = _T("");
+	m_IRClearDesc = _T("");
+	m_IRClearStatus = _T("");
 	//}}AFX_DATA_INIT
 }
 
@@ -133,6 +145,16 @@ void CConfigIrman::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_IRALPHADOWN_STATUS, m_IRAlphaDownStatus);
 	DDX_Text(pDX, IDC_IRALPHAUP_DESC, m_IRAlphaUpDesc);
 	DDX_Text(pDX, IDC_IRALPHAUP_STATUS, m_IRAlphaUpStatus);
+	DDX_Text(pDX, IDC_IRRANDOM_DESC, m_IRRandomDesc);
+	DDX_Text(pDX, IDC_IRRANDOM_STATUS, m_IRRandomStatus);
+	DDX_Text(pDX, IDC_IRSAVE_DESC, m_IRSaveDesc);
+	DDX_Text(pDX, IDC_IRSAVE_STATUS, m_IRSaveStatus);
+	DDX_Text(pDX, IDC_IRSHUFFLE_DESC, m_IRShuffleDesc);
+	DDX_Text(pDX, IDC_IRSHUFFLE_STATUS, m_IRShuffleStatus);
+	DDX_Text(pDX, IDC_IRLOAD_DESC, m_IRLoadDesc);
+	DDX_Text(pDX, IDC_IRLOAD_STATUS, m_IRLoadStatus);
+	DDX_Text(pDX, IDC_IRCLEAR_DESC, m_IRClearDesc);
+	DDX_Text(pDX, IDC_IRCLEAR_STATUS, m_IRClearStatus);
 	//}}AFX_DATA_MAP
 }
 
@@ -152,6 +174,8 @@ BEGIN_MESSAGE_MAP(CConfigIrman, CPropertyPage)
 	ON_BN_CLICKED(IDC_IRCOM8, OnIrcom8)
 	ON_EN_KILLFOCUS(IDC_IRDELAY, OnKillfocusIrdelay)
 	ON_BN_CLICKED(IDC_IRNONE, OnIrnone)
+	ON_BN_CLICKED(IDC_IRHELPBUTTON, OnIrhelpbutton)
+	ON_EN_SETFOCUS(IDC_IRDELAY, OnSetfocusIrdelay)
 	//}}AFX_MSG_MAP
 	ON_COMMAND_RANGE(IDC_IRRECORD_FIRST, IDC_IRRECORD_LAST, OnRecordButton)
 //    ON_MESSAGE(IR_MESSAGE, OnIRMessage)
@@ -316,6 +340,8 @@ void CConfigIrman::OnIrinitialize()
 
 		return;
 	}
+	GetDlgItem(IDC_IRTEST_STATUS)->SetWindowText("");
+	m_keycount = 0;
 //	m_IRComPortStatus = "Ok";
 	UpdateData(FALSE);
 	EnableDisableDialog();
@@ -411,11 +437,21 @@ void CConfigIrman::OnKillfocusIrdelay()
 int
 CConfigIrman::HandleIRMessage(int key) {
 
+	if (!m_irtesting) {
+		return 0;
+	}
 	if (0 <= key && key < irman().numOfKeys()) {
 		CWnd * functionButton = GetDlgItem(IDC_IRRECORD_FIRST + key);
+		if (key == m_lastkey) {
+			m_keycount++;
+		} else {
+			m_keycount = 1;
+		}
+		m_lastkey = key;
 		CString caption;
 		functionButton->GetWindowText(caption);
 		CWnd * status = GetDlgItem(IDC_IRTEST_STATUS);
+		caption += ":" + numToString(m_keycount);
 		status->SetWindowText(caption);
 	}
 
@@ -471,3 +507,45 @@ void CConfigIrman::OnCancel()
 	CPropertyPage::OnCancel();
 }
 
+
+
+void CConfigIrman::OnIrhelpbutton() 
+{
+	CString msg;
+	msg += "Select the COM port your IRman is plugged into.\r\n";
+	msg += "Click \"Initialize\". You should get an \"OK\" \r\n";
+	msg += "in the status.\r\n";
+	msg += "\r\n";
+	msg += "Click \"Record\".  Click \"Up\".\r\n";
+	msg += "Now press the UP button on your remote control\r\n";
+	msg += "and the code window should display the code\r\n";
+	msg += "read by Irman.  Repeat for all remaining control\r\n";
+	msg += "buttons.\r\n";
+	msg += "\r\n";
+	msg += "Click \"Test\".  Now click various buttons on your\r\n";
+	msg += "remote control and you should see the correct\r\n";
+	msg += "description displayed in the Read Window.  Eash\r\n";
+	msg += "press of a button on your remote control should\r\n";
+	msg += "increment the Read count by 1.\r\n";
+	msg += "\r\n";
+	msg += "Some remote controls send more than one signal per\r\n";
+	msg += "button press. In this case the Read count will\r\n";
+	msg += "increment by more than 1 each time.\r\n";
+	msg += "\r\n";
+	msg += "The Key Suppress parameter allows Muzikbrowzer to\r\n";
+	msg += "ignore the extra signals sent by your remote\r\n";
+	msg += "control. Successive signals received within this\r\n";
+	msg += "time parameter will be ignored.\r\n";
+	msg += "\r\n";
+	msg += "The Key Suppress value should be as low as possible\r\n";
+	msg += "without producing Read increments greater than 1.\r\n";
+
+	MBMessageBox("IRMan Help",msg,FALSE,FALSE);
+	
+}
+
+void CConfigIrman::OnSetfocusIrdelay() 
+{
+	OnIrinitialize() ;
+	
+}

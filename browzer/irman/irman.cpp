@@ -416,89 +416,59 @@ Irman::HandleSerialMsg(WPARAM wParam, LPARAM lParam, int & returnCode) {
 
 	BOOL more = FALSE;
 	returnCode = -1;
-//	CString msg;
-	int localcode = -1;
+	CString msg;
 
-	//		const CSerialMFC::EEvent eEvent = CSerialMFC::EEvent(LOWORD(wParam));
-	//		const CSerialMFC::EError eError = CSerialMFC::EError(HIWORD(wParam));
-			char buf[100];
-	//
-	//		switch (eEvent)
-	//		{
-	//		case CSerialMFC::EEventRecv: {
-			DWORD bytesRead;
-			KeyCode key;
-			do
-			{
-				// Read data from the COM-port
-				bytesRead = 0;
-				m_serial.Read(key.code, sizeof(key.code), &bytesRead);
-				if (bytesRead) {
-					unsigned int i; unsigned char ch;
-					CString received;
-					for (i = 0 ; i < bytesRead; ++i) {
-						ch = key.code[i];
-						sprintf(buf, "%02x ", ch);
-						received += buf;
-					}
-//					msg << CS("R:") << bytesRead << CS(" ")
-//						<< received << CS(" ");
-					if (bytesRead == IRMAN_CODE_LENGTH) {
-						localcode = lookup(key);
-						if (localcode != -1) {
-							CString desc = getKeyDesc(localcode);
-							mCIQ->append(localcode,GetTickCount());
-//							msg += desc + " queued up";
-						} else {
-//							msg += "unknown sequence";
-						}
-					} else if (m_OKreceived == 0 && bytesRead == 2
-							&& key.code[0] == 'O' && key.code[1] == 'K') {
-						m_OKreceived = 1;
-						m_ready = TRUE;
-//						msg += "OK";
-					}
-//					msg += "\r\n";
-//					OutputDebugString(msg);
-				}
-			} while (bytesRead == sizeof(key.code));
-			//			break;
-			//		}
-			//		default:
-			//			sprintf(buf,"%d", eEvent);
-			//			CString msg = "eEvent: ";
-			//			msg += buf;
-			//			OutputDebugString(msg);
-			//		}
+	DWORD tick = 0;
+	int code = -1;
+	char buf[100];
 
-	static DWORD lasttick = 0;
-	static int lastcode = 0;
-	static int ctr = 0;
-	static DWORD tick = 0;
-	static int code = 0;
-	
-	while(mCIQ->length()) {
-		lastcode = code; lasttick = tick;
-		code = mCIQ->getCode();
-		tick = mCIQ->getTick();
-		mCIQ->removeHead();
-		if (code == lastcode) {
-			++ctr;
-		} else {
-			ctr = 1;
+	DWORD bytesRead;
+	KeyCode key;
+//	do {
+		// Read data from the COM-port
+		bytesRead = 0;
+		m_serial.Read(key.code, sizeof(key.code), &bytesRead);
+		if (bytesRead) {
+			unsigned int i; unsigned char ch;
+			CString received;
+			for (i = 0 ; i < bytesRead; ++i) {
+				ch = key.code[i];
+				sprintf(buf, "%02x ", ch);
+				received += buf;
+			}
+			if (bytesRead == IRMAN_CODE_LENGTH) {
+				code = lookup(key);
+			} else if (m_OKreceived == 0 && bytesRead == 2
+					&& key.code[0] == 'O' && key.code[1] == 'K') {
+				m_OKreceived = 1;
+				m_ready = TRUE;
+			}
 		}
-		if (ctr >= interKeyDelay) {
-			returnCode = code;
-			ctr = 0;
-//			msg = "Invoking ";
-//			msg += getKeyDesc(code);
-//			msg += "\r\n";
-//			OutputDebugString(msg);
-			break;
-		}
+//	} while (bytesRead == sizeof(key.code));
+
+
+	tick = GetTickCount();
+	if ((-1 != code && -1 != m_lastcode 
+		&& m_lastcode != code)
+		|| (tick - m_lasttick) > interKeyDelay) {
+		returnCode = code;
+		m_lastcode = code;
+		m_lasttick = tick;
 	}
 
-	return (mCIQ->length() > 0);
+//	if (returnCode != -1) {
+//	char b[200];
+//	sprintf(b,"lc:%2d:%-9s c:%2d:%-9s ikd:%4d rc:%2d tc:%d",
+//		m_lastcode,		getKeyDesc(m_lastcode),
+//		code,			getKeyDesc(code),
+//		interKeyDelay,	returnCode,
+//		tick - m_lasttick);
+//	logger.ods(b);
+//	}
+	
+	return 0;
+
+//	return (mCIQ->length() > 0);
 }
 
 int

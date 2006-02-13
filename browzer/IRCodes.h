@@ -22,6 +22,11 @@
 #define IR_MESSAGE_REVERSE   	18
 #define IR_MESSAGE_ALPHAUP		19
 #define IR_MESSAGE_ALPHADOWN	20
-#define IR_MESSAGE_NUMBER_OF	21
+#define IR_MESSAGE_RANDOM       21
+#define IR_MESSAGE_SHUFFLE      22
+#define IR_MESSAGE_CLEAR        23
+#define IR_MESSAGE_LOAD         24
+#define IR_MESSAGE_SAVE         25
+#define IR_MESSAGE_NUMBER_OF	26
 
 #endif
