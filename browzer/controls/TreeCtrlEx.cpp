@@ -472,6 +472,13 @@ void CTreeCtrlEx::OnKeyDown( UINT nChar, UINT nRepCnt, UINT nFlags )
 		CTreeCtrl::OnKeyDown( nChar, nRepCnt, nFlags );
 }
 
+CString CTreeCtrlEx::getItemText(HTREEITEM htree) {
+	CString text = GetItemText(htree);
+	if (text.Left(1) == '(') {
+		text = text.Mid(1,3);
+	}
+	return text;
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // I want clicking on an item with the right mouse button to select the item,
@@ -868,3 +875,4 @@ HTREEITEM GetTreeItemFromData(CTreeCtrl& treeCtrl, DWORD dwData, HTREEITEM hStar
 	}
 	return NULL;
 }
+

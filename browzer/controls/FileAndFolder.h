@@ -32,13 +32,12 @@ protected:
   static int m_nRefCount;
 };
 
-class CFileAndFolder : 
-	public CDialog
+class CFileAndFolder : public CDialog
 	
 {
 // Construction
 public:
-	CFileAndFolder(CWnd* pParent = NULL);   // standard constructor
+	CFileAndFolder(CWnd* pParent, CString dflt = "");   // standard constructor
 	void SetShowFiles(BOOL bFiles) ;
 	void GetPaths(CStringList &);
 	void setMsg(const CString &);
@@ -99,6 +98,7 @@ protected:
 	static int CompareByFilenameNoCase(CString& element1, CString& element2);
 	CString GetFullPath(HTREEITEM htree);
 	void resizeControls();
+	void ShowDefault();
 
 // all below from CResizableGrip
 private:
@@ -115,11 +115,13 @@ private:
 
 	CString m_msg;
 	CString m_title;
+	CString m_default;
 
 protected:
 	BOOL InitGrip();
 	void UpdateGripPos();
 	void ShowSizeGrip(BOOL bShow = TRUE);	// show or hide the size grip
+	CSystemImageList m_SystemImageList;
 
 
 

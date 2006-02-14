@@ -728,3 +728,31 @@ TEST(StringinsertSortTest, StringinsertSort)
     }
 	CHECK(lastone < string);
 }
+CString
+String::upDir(const CString & string) {
+	int n = String::delCount(string,"\\");
+	int i;
+	CString newstring;
+	for(i = 1; i < n ; i++) {
+		if (newstring.GetLength()) {
+			newstring += "\\";
+		}
+		newstring += String::field(string,"\\",i);
+	}
+	return newstring;
+}
+TEST(StringUpDir, StringUpDirTest)
+{
+	CString string = "c:\\one\\two";
+	CString newstring = String::upDir(string);
+	CHECK(newstring == "c:\\one");
+	string = "\\";
+	newstring = String::upDir(string);
+	CHECK(newstring = "");
+	string = "abc";
+	newstring = String::upDir(string);
+	CHECK(newstring = "");
+	string = "";
+	newstring = String::upDir(string);
+	CHECK(newstring = "");
+}

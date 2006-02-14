@@ -59,14 +59,15 @@ int CSystemImageList::m_nRefCount=0;
 // CFileAndFolder dialog
 
 
-CFileAndFolder::CFileAndFolder(CWnd* pParent /*=NULL*/)
-	: CDialog(CFileAndFolder::IDD, pParent)
+CFileAndFolder::CFileAndFolder(CWnd* pParent, CString dflt)
+	: CDialog(CFileAndFolder::IDD, pParent), m_default(dflt)
 {
 	//{{AFX_DATA_INIT(CFileAndFolder)
 		// NOTE: the ClassWizard will add member initialization here
 	//}}AFX_DATA_INIT
 	m_bShowFiles = TRUE;
 	m_Tree.setp(this);
+
 	m_sizeGrip.cx = GetSystemMetrics(SM_CXVSCROLL);
 	m_sizeGrip.cy = GetSystemMetrics(SM_CYHSCROLL);
 }
@@ -97,16 +98,9 @@ BOOL CFileAndFolder::OnInitDialog()
 //	m_Tree.SubclassDlgItem(IDC_TREE, this);
 	CDialog::OnInitDialog();
 
-	
-	
-//	HTREEITEM hTreeItem = m_Tree.InsertItem("first item");
-//	HTREEITEM hTreeItem2 = m_Tree.InsertItem("2nd item", hTreeItem);
-//	HTREEITEM hTreeItem3 = m_Tree.InsertItem("3rd item", hTreeItem2);
-//	m_Tree.InsertItem("4th item", hTreeItem);
-//	m_Tree.InsertItem("5th item", hTreeItem);
-
-	
+	m_Tree.SetImageList(&m_SystemImageList.GetImageList(), TVSIL_NORMAL);	
 	OnViewRefresh();
+	ShowDefault();
 	InitGrip();
 	ShowSizeGrip(TRUE);
 	m_Msg.SetWindowText(m_msg);
@@ -115,12 +109,29 @@ BOOL CFileAndFolder::OnInitDialog()
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
 }
+void
+CFileAndFolder::ShowDefault() {
+	if (m_default.GetLength() == 0) {
+		return;
+	}
+	CString drive = m_default.Left(3);
+	HTREEITEM htree = m_Tree.GetNextItem(TVI_ROOT, TVGN_ROOT);
+	while (htree) {
+		CString idrive = m_Tree.getItemText(htree);
+		if (idrive.CompareNoCase(drive) == 0) {
+			DisplayPath(drive, htree);
+			m_Tree.Expand(htree,TVE_EXPAND);
+			return;
+		}
+		htree = m_Tree.GetNextItem(htree, TVGN_NEXT);
+	}
+}
 CString CFileAndFolder::GetFullPath(HTREEITEM htree) {
 	CString path,tmp;
-	path = m_Tree.GetItemText(htree);
+	path = m_Tree.getItemText(htree);
 	HTREEITEM hParent = m_Tree.GetParentItem(htree);
 	while (hParent) {
-		tmp = m_Tree.GetItemText(hParent);
+		tmp = m_Tree.getItemText(hParent);
 		if (tmp.GetAt(tmp.GetLength()-1) == _T('\\')) {
 			path = tmp + path;
 		} else {
@@ -189,7 +200,7 @@ void CFileAndFolder::DisplayDrives(HTREEITEM hParent, BOOL bUseSetRedraw)
     {
       CString sDrive,desc;
       sDrive.Format(_T("%c:\\"), i + _T('A'));
-#ifdef notworkingsomaybeatalatertime
+//#ifdef notworkingsomaybeatalatertime
 	  char volname[100];
 	  char fsname[100];
 	  DWORD sn,maxcl,flags;
@@ -199,12 +210,13 @@ void CFileAndFolder::DisplayDrives(HTREEITEM hParent, BOOL bUseSetRedraw)
 		  sDrive,volname,99,&sn,&maxcl,&flags,fsname,99);
 	
 	  if (volname) {
-		  desc = volname + CString("(") + sDrive + ")";
+//		  desc = volname + CString(" (") + sDrive + ")";
+		  desc = CString("(") + sDrive + ") " + volname;
 	  } else 
 		  desc = sDrive;
-#endif
+//#endif
 
-      InsertFileItem(sDrive, sDrive, hParent);
+      InsertFileItem(desc, sDrive, hParent);
     }
     dwMask <<= 1;
   }
@@ -225,13 +237,16 @@ HTREEITEM CFileAndFolder::InsertFileItem(const CString& sFile,
   }
 
   //Add the actual item
-  CString sTemp(sFile);
+	CString sTemp(sFile);
 	TV_INSERTSTRUCT tvis;
-  ZeroMemory(&tvis, sizeof(TV_INSERTSTRUCT));
+	ZeroMemory(&tvis, sizeof(TV_INSERTSTRUCT));
+
 	tvis.hParent = hParent;
 	tvis.hInsertAfter = TVI_LAST;
-	tvis.item.mask = TVIF_CHILDREN | TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_TEXT;
+	tvis.item.mask = TVIF_CHILDREN | TVIF_IMAGE | TVIF_SELECTEDIMAGE 
+		| TVIF_TEXT;
 	tvis.item.pszText = sTemp.GetBuffer(sTemp.GetLength());
+	tvis.item.cchTextMax = sTemp.GetLength();
 	tvis.item.iImage = nIconIndex;
 	tvis.item.iSelectedImage = nSelIconIndex;
 	tvis.item.cChildren = HasGotSubEntries(sPath);
@@ -452,7 +467,7 @@ CString CFileAndFolder::ItemToPath(HTREEITEM hItem)
   HTREEITEM hParent = hItem;
   while (hParent)
   {
-    CString sItem = m_Tree.GetItemText(hParent);
+    CString sItem = m_Tree.getItemText(hParent);
     int nLength = sItem.GetLength();
 	if (nLength == 0) {
 		return sPath;

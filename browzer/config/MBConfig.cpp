@@ -207,8 +207,8 @@ const CString MBConfig::getCurrentSkin() {
 //MBConfig::getGenreWidthPct() {
 //	return m_Display->getGenreWidthPct();
 //}
-void MBConfig::AddMusic(CStringList & list) {
-	m_Files->AddMusic(list);
+void MBConfig::AddMusic() {
+	m_Files->AddMusic();
 }
 void MBConfig::Scan(BOOL fornew) {
 	m_Files->Scan(fornew);

@@ -65,6 +65,7 @@ public:
 // Implementation
 public:
 	virtual ~CTreeCtrlEx() {}
+	CString getItemText(HTREEITEM htree);
 
 	// Generated message map functions
 protected:
@@ -81,6 +82,7 @@ protected:
 	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
 	afx_msg void OnTimer(UINT nIDEvent);
 	//}}AFX_MSG
+
 
 	DECLARE_MESSAGE_MAP()
 };

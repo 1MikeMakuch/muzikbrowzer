@@ -86,18 +86,29 @@ void CConfigFiles::OnDiradd()
 	CString dflt;
 	if (s <  0)
 		s = 0;
-	if (m_MP3DirList.GetCount())
-		m_MP3DirList.GetText(s, dflt);
+	if (s = m_MP3DirList.GetCount()) {
+		m_MP3DirList.GetText(s-1, dflt);
+		dflt = String::upDir(dflt);
+	}
 
-	CFolderDialog dialog(dflt);
+	CFileAndFolder dialog(this, dflt);
+	dialog.setTitle("Add folders");
+	dialog.setMsg("Select folder(s) to be scanned.");
 
 	int ret;
 	ret = dialog.DoModal();
 	if (ret == IDOK) {
         // a file was selected
-		CString path = dialog.GetPathName();
-        m_MP3DirList.AddString(path);
-		m_slMP3DirList.AddTail(path);
+		CStringList list;
+		dialog.GetPaths(list);
+		POSITION pos;
+		for(pos = list.GetHeadPosition(); pos != NULL;) {
+			CString path = list.GetNext(pos);
+			if (path.GetLength())
+				m_MP3DirList.AddString(path);
+				m_slMP3DirList.AddTail(path);
+		}
+
         EnableDisableButtons(); 
         UpdateData(FALSE);
 		SetModified(TRUE);
@@ -593,9 +604,14 @@ void CConfigFiles::OnCancel()
 
 
 
-void CConfigFiles::AddMusic(CStringList & mp3list) {
+void CConfigFiles::AddMusic() {
+	CString dflt;
 
-	CFileAndFolder dialog;
+	dflt = m_slMP3DirList.GetTail();
+	dflt = String::upDir(dflt);
+
+	CFileAndFolder dialog(this, dflt);
+
 	dialog.setTitle("Add music to muzikbrowzer library");
 	dialog.setMsg("Select file(s)/folder(s) to be added.");
 	int ret;

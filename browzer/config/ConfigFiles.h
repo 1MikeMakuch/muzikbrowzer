@@ -89,7 +89,7 @@ public:
     void setDefaults();
 	BOOL AlbumSortAlpha();
 	CString mbdir() { return m_path; };
-	void AddMusic(CStringList & list);
+	void AddMusic();
 	void Scan(BOOL fornew);
 
 

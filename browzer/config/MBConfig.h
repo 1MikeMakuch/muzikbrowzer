@@ -127,7 +127,7 @@ public:
 	int getPanelWidth() ;
 	void ReadReg(RegistryKey &);
 
-	void AddMusic(CStringList &);
+	void AddMusic();
 	void Scan(BOOL fornew=FALSE);
 };
 

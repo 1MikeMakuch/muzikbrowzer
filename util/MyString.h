@@ -55,6 +55,7 @@ class String {
 	static int last(const CString & string, const char ch);
 	static void insertSort(CStringList &list, const CString &string);
 	static CString stripws(const CString & string);
+	static CString upDir(const CString & string);
 
 
 };

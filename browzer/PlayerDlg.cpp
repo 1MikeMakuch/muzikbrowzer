@@ -4056,8 +4056,7 @@ CPlayerDlg::OnSkinPic(UINT wParam) {
 void
 CPlayerDlg::OnMusicAdd() {
 	OnSearchClear();
-	CStringList mp3list;
-	m_Config.AddMusic(mp3list);
+	m_Config.AddMusic();
 //	return 0;
 }
 void 
