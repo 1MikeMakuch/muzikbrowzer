@@ -1524,20 +1524,22 @@ MusicLib::garbageCollect(InitDlg * dialog) {
 			MList::Iterator artistIter(artistList);
 			while (artistIter.more()) {
 				MRecord artist = artistIter.next();
-				MList albumList = m_SongLib.albumList(genre.label(),
-					artist.label());
-				MList::Iterator albumIter(albumList);
-				while (albumIter.more()) {
-					if (dialog) dialog->ProgressPos(ctr);
-					MRecord album = albumIter.next();
-					MList songList = m_SongLib.songList(genre.label(),
-						artist.label(), album.label());
-					MList::Iterator songIter(songList);
-					while (songIter.more()) {
-						MRecord songr = songIter.next();
-						Song song = songr.createSong();
-						newSongLib.addSong(song);
-						++ctr;
+				if (artist.label() != MBALL) {
+					MList albumList = m_SongLib.albumList(genre.label(),
+						artist.label());
+					MList::Iterator albumIter(albumList);
+					while (albumIter.more()) {
+						if (dialog) dialog->ProgressPos(ctr);
+						MRecord album = albumIter.next();
+						MList songList = m_SongLib.songList(genre.label(),
+							artist.label(), album.label());
+						MList::Iterator songIter(songList);
+						while (songIter.more()) {
+							MRecord songr = songIter.next();
+							Song song = songr.createSong();
+							newSongLib.addSong(song);
+							++ctr;
+						}
 					}
 				}
 			}
