@@ -472,6 +472,9 @@ BOOL CPlayerDlg::OnInitDialog()
 	_initdialog->ShowWindow(SW_SHOWNORMAL /* CWinApp::m_nCmdShow */);
 	_initdialog->UpdateWindow();
 
+	::PlaySound("muzikbrowzer.wav",NULL,SND_ASYNC | SND_FILENAME | SND_NODEFAULT
+		| SND_NOWAIT);
+
 // App mutex
 	CString amemsg,ammsg;
 	

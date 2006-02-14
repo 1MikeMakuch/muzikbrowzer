@@ -24,6 +24,7 @@ LicenseFile=mb_license.txt
 
 [Files]
 Source: "..\Release\muzikbrowzer.exe"; DestDir: "{app}"; CopyMode: alwaysoverwrite
+Source: "..\res\muzikbrowzer.wav"; DestDir: "{app}"; CopyMode: alwaysoverwrite
 
 Source: "..\Help\muzikbrowzer.chm"; DestDir: "{app}"; CopyMode: alwaysoverwrite
 
