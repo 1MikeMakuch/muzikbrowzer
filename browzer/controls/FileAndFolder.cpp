@@ -87,6 +87,7 @@ BEGIN_MESSAGE_MAP(CFileAndFolder, CDialog)
 	ON_MESSAGE(MB_TV_MSG, OnItemexpanding)
 	ON_WM_SIZE()
 	ON_WM_SIZING()
+	ON_BN_CLICKED(IDC_REFRESH_DRIVES, OnRefreshDrives)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -99,7 +100,8 @@ BOOL CFileAndFolder::OnInitDialog()
 	CDialog::OnInitDialog();
 
 	m_Tree.SetImageList(&m_SystemImageList.GetImageList(), TVSIL_NORMAL);	
-	OnViewRefresh();
+	ReadCachedDrives();
+	OnViewCachedDrives();
 	ShowDefault();
 	InitGrip();
 	ShowSizeGrip(TRUE);
@@ -109,6 +111,36 @@ BOOL CFileAndFolder::OnInitDialog()
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
 }
+void CFileAndFolder::ReadCachedDrives() {
+	CFile file;
+    CFileException fileException;
+    if (!file.Open( (LPCTSTR)"muzikbrowzerCachedDrives", 
+			CFile::modeRead,
+			&fileException )) {
+		return;
+	}
+
+	CArchive ar( &file, CArchive::load);
+	m_CachedDrives.RemoveAll();
+	m_CachedDrives.Serialize(ar);
+	ar.Close();
+	file.Close();
+}
+void CFileAndFolder::WriteCachedDrives() {
+	CFile file;
+    CFileException fileException;
+    if (!file.Open( (LPCTSTR)"muzikbrowzerCachedDrives", 
+			CFile::modeCreate | CFile::modeWrite,
+			&fileException )) {
+		return;
+	}
+
+	CArchive ar( &file, CArchive::store);
+	m_CachedDrives.Serialize(ar);
+	ar.Close();
+	file.Close();
+}
+
 void
 CFileAndFolder::ShowDefault() {
 	if (m_default.GetLength() == 0) {
@@ -178,14 +210,26 @@ void CFileAndFolder::OnViewRefresh()
 //	if (sItem.GetLength())
 //		hSelItem = SetSelectedPath(sItem, bExpanded);
 }
+void CFileAndFolder::OnViewCachedDrives() {
+	CWaitCursor c;
+	if (m_CachedDrives.GetCount() == 0) {
+		DisplayDrives(TVI_ROOT, FALSE);
+		return;
+	}
+    POSITION pos = m_CachedDrives.GetHeadPosition();
+    for (pos = m_CachedDrives.GetHeadPosition(); pos != NULL; ) {
+        CString string = m_CachedDrives.GetAt(pos);
+		CString drive,desc;
+		drive = string.Left(3);
+		desc = string.Mid(4);
+		InsertFileItem(desc,drive,TVI_ROOT);
 
+        m_CachedDrives.GetNext(pos);
+    }
+}
 void CFileAndFolder::DisplayDrives(HTREEITEM hParent, BOOL bUseSetRedraw)
 {
   CWaitCursor c;
-
-  //Speed up the job by turning off redraw
-//  if (bUseSetRedraw)
-//    SetRedraw(FALSE);
 
   //Remove any items currently in the tree
    m_Tree.DeleteAllItems();
@@ -193,14 +237,13 @@ void CFileAndFolder::DisplayDrives(HTREEITEM hParent, BOOL bUseSetRedraw)
   //Enumerate the drive letters and add them to the tree control
   DWORD dwDrives = GetLogicalDrives();
   DWORD dwMask = 1;
-//#pragma hack // change this 5 back to 32!!!!!!!
+  m_CachedDrives.RemoveAll();
   for (int i=0; i<32; i++)
   {
     if (dwDrives & dwMask)
     {
       CString sDrive,desc;
       sDrive.Format(_T("%c:\\"), i + _T('A'));
-//#ifdef notworkingsomaybeatalatertime
 	  char volname[100];
 	  char fsname[100];
 	  DWORD sn,maxcl,flags;
@@ -210,19 +253,16 @@ void CFileAndFolder::DisplayDrives(HTREEITEM hParent, BOOL bUseSetRedraw)
 		  sDrive,volname,99,&sn,&maxcl,&flags,fsname,99);
 	
 	  if (volname) {
-//		  desc = volname + CString(" (") + sDrive + ")";
 		  desc = CString("(") + sDrive + ") " + volname;
 	  } else 
 		  desc = sDrive;
-//#endif
 
       InsertFileItem(desc, sDrive, hParent);
+	  m_CachedDrives.AddTail(sDrive + "," + desc);
     }
     dwMask <<= 1;
   }
-
-//  if (bUseSetRedraw)
-//    SetRedraw(TRUE);
+  WriteCachedDrives();
 }
 HTREEITEM CFileAndFolder::InsertFileItem(const CString& sFile, 
 								const CString& sPath, HTREEITEM hParent)
@@ -525,7 +565,7 @@ void CFileAndFolder::OnSize(UINT nType, int cx, int cy)
 void CFileAndFolder::resizeControls() {
 	if (!IsWindow(m_hWnd)) return;
 
-	CRect crect,trect,okrect,cancelrect,msgrect;
+	CRect crect,trect,okrect,cancelrect,msgrect,refresh;
 	GetClientRect(crect);
 	if (!IsWindow(m_Tree.m_hWnd)) return;
 	m_Tree.GetClientRect(trect);
@@ -533,13 +573,17 @@ void CFileAndFolder::resizeControls() {
 	CWnd * cok = GetDlgItem(IDCANCEL);
 
 	m_Msg.GetClientRect(msgrect);
+	CWnd * wnd = GetDlgItem(IDC_REFRESH_DRIVES);
+	wnd->GetClientRect(refresh);
 
 	wok->GetClientRect(okrect);
 	int okh = okrect.Height();
 	int okw = okrect.Width();
 
+
+
 	trect = crect;
-	trect.top = trect.top + (msgrect.Height() + 10);
+	trect.top = trect.top + (msgrect.Height() + 10 + refresh.Height() + 10);
 	trect.bottom -= (okh + 10);
 	m_Tree.MoveWindow(trect,TRUE);
 
@@ -690,4 +734,10 @@ void CFileAndFolder::setMsg(const CString & msg) {
 }
 void CFileAndFolder::setTitle(const CString & msg) {
 	m_title = msg;
+}
+
+void CFileAndFolder::OnRefreshDrives() 
+{
+	OnViewRefresh();
+	
 }

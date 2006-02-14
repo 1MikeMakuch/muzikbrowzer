@@ -71,6 +71,7 @@ protected:
 	virtual void OnCancel();
 	afx_msg void OnItemexpanding(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
+	afx_msg void OnRefreshDrives();
 	//}}AFX_MSG
 
 	DECLARE_MESSAGE_MAP()
@@ -99,6 +100,9 @@ protected:
 	CString GetFullPath(HTREEITEM htree);
 	void resizeControls();
 	void ShowDefault();
+	void ReadCachedDrives();
+	void WriteCachedDrives();
+	void OnViewCachedDrives();
 
 // all below from CResizableGrip
 private:
@@ -122,6 +126,7 @@ protected:
 	void UpdateGripPos();
 	void ShowSizeGrip(BOOL bShow = TRUE);	// show or hide the size grip
 	CSystemImageList m_SystemImageList;
+	CStringList m_CachedDrives;
 
 
 

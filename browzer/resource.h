@@ -423,6 +423,7 @@
 #define IDC_LIST6                       2051
 #define IDC_WMP                         2053
 #define IDC_IRHELPBUTTON                2054
+#define IDC_REFRESH_DRIVES              2055
 #define IDS_UNKNOWN_ERROR               5000
 #define IDC_BUTTON_LOGO                 12052
 #define ID_XXX                          32775
@@ -486,7 +487,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        271
 #define _APS_NEXT_COMMAND_VALUE         32856
-#define _APS_NEXT_CONTROL_VALUE         2055
+#define _APS_NEXT_CONTROL_VALUE         2056
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
