@@ -246,7 +246,7 @@ void CConfigFiles::dirScan(CStringList & mp3list) {
 
     delete m_InitDialog;
 
-    MBMessageBox("Scan Results", scaninfo);
+    MBMessageBox("Scan Results", scaninfo, TRUE, FALSE);
 
 }
 

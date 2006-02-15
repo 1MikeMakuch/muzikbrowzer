@@ -209,6 +209,7 @@
 #define IDC_MESSAGE_BOX                 1178
 #define IDC_CANCEL                      1179
 #define IDC_PLAYLIST_CANCEL             1179
+#define IDC_MESSAGE_BOX2                1179
 #define IDC_FONT_BUTTON                 1180
 #define IDC_PLAYLIST_DELETE             1180
 #define IDC_GO                          1180

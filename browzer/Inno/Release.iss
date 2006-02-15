@@ -42,4 +42,5 @@ Name: "{userdesktop}\BitmapCutter"; Filename: "{app}\BitmapCutter.exe"; WorkingD
 [Registry]
 Root: HKLM; Subkey: "Software\muzikbrowzer"; Flags: createvalueifdoesntexist uninsdeletekey
 Root: HKLM; Subkey: "Software\muzikbrowzer"; ValueType: string; ValueName: "DbLocation"; ValueData: "{app}"  ; Flags: createvalueifdoesntexist uninsdeletekey
+Root: HKLM; Subkey: "Software\muzikbrowzer"; ValueType: string; ValueName: "SkinName"; ValueData: "MBClassic"  ; Flags: createvalueifdoesntexist uninsdeletekey
 

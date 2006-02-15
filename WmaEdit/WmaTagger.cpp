@@ -963,7 +963,7 @@ WmaTag::read(const CString & file, const BOOL durationOnly) {
 //	if (out != "") {
 //		return CString(error + out);
 //	} else {
-		return val;
+		return "";
 //	}
 }
 
