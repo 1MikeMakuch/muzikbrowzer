@@ -10,6 +10,7 @@
 #include "MyString.h"
 #include "FileAndFolder.h"
 //#define _WIN32_DCOM
+#include "GetTextField.h"
 #include <objbase.h>
 #include <winbase.h>
 
@@ -636,10 +637,20 @@ void CConfigFiles::AddMusic() {
 
 void CConfigFiles::Scan(BOOL fornew) {
 	m_bAdd=FALSE;
+	CString title = "Confirmation";
+	CString text;
 	if (fornew) {
-		OnDirscanNew();
+		text = "Scan music folders for new music and add to Library?";
 	} else {
-		OnDirscan();
+		text = "Scan music folders for all music and rebuild Library from scratch?";
+	}
+	GetTextFieldDlg dlg;
+	if (dlg.Confirm(title,text) == IDOK) {
+		if (fornew) {
+			OnDirscanNew();
+		} else {
+			OnDirscan();
+		}
 	}
 }
 
