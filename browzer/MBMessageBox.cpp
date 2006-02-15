@@ -80,6 +80,7 @@ BOOL MBMessageBoxImpl::OnInitDialog()
 	m_MessageBox.SetWindowText(msg);
 	m_MessageBox2.SetWindowText(msg);
 
+#ifdef asdf
     mfont.CreateFont(
         /* height */ 				15,
         /* width */ 				0,
@@ -96,6 +97,9 @@ BOOL MBMessageBoxImpl::OnInitDialog()
         /* pitch and family */ 		FIXED_PITCH,
         /* facename */ 				0
 		);
+#endif
+	LPLOGFONT lplf = thePlayer->config().getTitlesFont();
+	mfont.CreateFontIndirect(lplf);
 	m_MessageBox.SetFont(&mfont);
 	m_MessageBox2.SetFont(&mfont);
 
