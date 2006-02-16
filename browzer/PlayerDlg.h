@@ -148,6 +148,7 @@ private:
 	CRect m_LibDragRect;
 public:
     MBConfig m_Config;
+	CRect getWindowRect() { return m_WindowRect; }
 private:
 	CRect m_GenresRect,m_GenresLabelRect,
 		m_ArtistsRect,m_ArtistsLabelRect,
@@ -166,7 +167,8 @@ private:
 		m_SearchGoRect,
 		m_SearchCancelRect,
 		m_SearchStatusRect,
-		m_LibraryRect;
+		m_LibraryRect,
+		m_WindowRect;
 
 	CString m_CurrentTitleDesc;
 	COLORREF m_TransMain;
@@ -241,7 +243,6 @@ private:
 	CString m_LastAlbumArtFile;
 	CSize m_InitialSize;
 	BOOL m_FixedSize;
-	CRect m_WindowRect;
 	CPoint m_LastSized;
 	HANDLE m_hMutex;
 	BOOL m_QuickPlay;

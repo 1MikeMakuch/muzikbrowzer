@@ -3738,7 +3738,7 @@ MSongLib::readFromFile() {
 		m_garbagecollector = m_mem->readi(8);
 		if (m_files.read() == -1) { // create files list if !exists
 			int a,r;
-			r = MBMessageBox("Advisory","Database maintenance required.\r\nClick OK to continue.",TRUE,TRUE,TRUE);
+			r = MBMessageBox("Advisory","Database maintenance required.\r\nClick OK to continue.",TRUE,TRUE);
 			if (IDOK == r)
 				verify("Performing database maintenance", a, r, m_songcount);
 			else

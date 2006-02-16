@@ -21,7 +21,7 @@ class MBMessageBoxImpl : public CDialog
 // Construction
 public:
 	MBMessageBoxImpl(CString & title, CString & info, BOOL log = TRUE,
-		BOOL enableCancel=FALSE, BOOL NoPCheck=FALSE, CWnd* pParent = NULL);   // standard constructor
+		BOOL enableCancel=FALSE, CWnd* pParent = NULL);   // standard constructor
 	~MBMessageBoxImpl();
 // Dialog Data
 	//{{AFX_DATA(MBMessageBoxImpl)
@@ -73,7 +73,6 @@ private:
 	SIZE m_sizeGrip;		// holds grip size
 	CScrollBar m_wndGrip;
 	CWnd * m_Parent;
-	BOOL m_NoParentCheck;
 
 	static LRESULT CALLBACK 
 		GripWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -88,7 +87,7 @@ private:
 
 // returns 1 for OK and 0 for Cancel
 int MBMessageBox(CString title, CString msg, BOOL log = TRUE, 
-				 BOOL enableCancel=FALSE, BOOL NoParentCheck=FALSE);
+				 BOOL enableCancel=FALSE);
 
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.

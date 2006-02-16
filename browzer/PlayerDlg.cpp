@@ -147,7 +147,8 @@ CPlayerDlg::CPlayerDlg(CPlayerApp * theApp,
 	m_SearchCleared(TRUE),
 	m_LastShowSearchPanel(FALSE),
 	m_PlayLoopTimerId(0),
-	m_LoadPlaylistDlg(0)
+	m_LoadPlaylistDlg(0),
+	m_WindowRect(0,0,640,480)
 {
 	//{{AFX_DATA_INIT(CPlayerDlg)
 	//}}AFX_DATA_INIT
@@ -1061,6 +1062,7 @@ CPlayerDlg::resetControls() {
 
 	static BOOL firsttime = TRUE;
 	CWaitCursor c;
+	GetWindowRect(m_WindowRect);
 
 	irman().Close();
 	irman().init(RegKeyIrman, IR_MESSAGE_NUMBER_OF, this);
@@ -1647,7 +1649,6 @@ CPlayerDlg::resetControls() {
 	msg += numToString(counter) + "\r\n";
 	OutputDebugString(msg);
 	
-	GetWindowRect(m_WindowRect);
 	UpdateRects();
 
 	ShowSearchDlg();
@@ -3031,7 +3032,7 @@ void CPlayerDlg::OnMenuHelp()
 			d1,r1,d2,r2);
 		msg += buf.p;
 	}
-	MBMessageBox("Remote Control Help", msg, FALSE, FALSE, TRUE);
+	MBMessageBox("Remote Control Help", msg, FALSE, FALSE);
 }
 
 void CPlayerDlg::OnNextSong() {
