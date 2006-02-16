@@ -118,10 +118,6 @@ BOOL MBMessageBoxImpl::OnInitDialog()
 
 	CRect cmrect,mbrect;
 	CalcMsgRect(cmrect);
-//	if (GetParent())
-//		GetParent()->GetWindowRect(maxrect);
-//	else 
-//		maxrect = CRect(0,0,640,480);
 
 	if (m_MessageBoxPtr) {
 		m_MessageBoxPtr->GetClientRect(mbrect);

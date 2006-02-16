@@ -494,6 +494,7 @@ void LoadPlaylistDlg::OnSetfocusPlaylistNames()
 	m_Delete.SetTooltipText("Delete selected playlist");
 	//OnSelchangePlaylistNames();
 	m_PlaylistNames.invalidate();
+	m_PlaylistNames.SetFocus();
 }
 
 void LoadPlaylistDlg::OnSetfocusPlaylistSongs() 
@@ -1195,7 +1196,7 @@ void LoadPlaylistDlg::OnPlaylistUp()
 			m_Modified = TRUE;
 			m_Save.EnableWindow(TRUE);
 		}
-		m_PlaylistSongs.SetFocus();
+//		m_PlaylistSongs.SetFocus();
 		m_PlaylistSongs.SetCurSel(sel);
 	}
 }
@@ -1215,7 +1216,7 @@ void LoadPlaylistDlg::OnPlaylistDown()
 			m_Modified = TRUE;
 			m_Save.EnableWindow(TRUE);
 		}
-		m_PlaylistSongs.SetFocus();
+//		m_PlaylistSongs.SetFocus();
 		m_PlaylistSongs.SetCurSel(sel);
 	}
 }
