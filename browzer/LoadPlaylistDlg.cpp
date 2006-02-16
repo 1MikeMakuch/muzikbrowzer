@@ -187,7 +187,8 @@ BOOL LoadPlaylistDlg::OnInitDialog()
 	m_PlaylistNames.ResetContent();
 
 	m_GAAS.setDesc("gaas");
-	m_GAAS.SetWordWrap(TRUE);
+//	m_GAAS.SetWordWrap(TRUE);
+	m_GAAS.SetTicking(TRUE);
 
 	m_Delete.SetDefaultColors(TRUE);
 	m_Load.SetDefaultColors(TRUE);
@@ -435,9 +436,9 @@ void LoadPlaylistDlg::OnSelchangePlaylistNames()
 	}
 	m_PlaylistNames.invalidate();
 	m_PlaylistSongs.invalidate();
-	if (m_IsEditor)
-		m_GAAS.SetWindowText(name);
-	else 
+//	if (m_IsEditor)
+//		m_GAAS.SetWindowText(name);
+//	else 
 		m_GAAS.setText(name);
 	UpdateWindow();
 	m_LastName = name;
@@ -461,9 +462,9 @@ void LoadPlaylistDlg::OnSelchangePlaylistSongs()
 	if (sel < 0) return;
     CString name;
     m_PlaylistSongs.GetText(sel,name);
-    	if (m_IsEditor)
-		m_GAAS.SetWindowText(name);
-	else 
+// 	if (m_IsEditor)
+//		m_GAAS.SetWindowText(name);
+//	else 
 		m_GAAS.setText(name);
 	m_PlaylistSongs.invalidate();
 }
@@ -483,9 +484,9 @@ void LoadPlaylistDlg::OnSetfocusPlaylistNames()
 	CString name;
 	if (sel > -1)
 		m_PlaylistNames.GetText(sel,name);
-   	if (m_IsEditor)
-		m_GAAS.SetWindowText(name);
-	else 
+// 	if (m_IsEditor)
+//		m_GAAS.SetWindowText(name);
+//	else 
 		m_GAAS.setText(name);
     m_Load.EnableWindow(TRUE);
     m_Delete.EnableWindow(TRUE);
