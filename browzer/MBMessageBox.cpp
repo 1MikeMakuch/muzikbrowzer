@@ -22,7 +22,7 @@ MBMessageBoxImpl::MBMessageBoxImpl(CString & title, CString & info,
 		BOOL log, BOOL enableCancel, CWnd* pParent /*=NULL*/)
 	: CDialog(MBMessageBoxImpl::IDD, pParent), m_title(title),m_info(info),
 	m_log(log), m_EnableCancel(enableCancel), m_Parent(pParent),
-	m_Control(new VirtualControl)
+	m_Control(new VirtualControl),m_MessageBoxPtr(0)
 {
 	//{{AFX_DATA_INIT(MBMessageBoxImpl)
 		// NOTE: the ClassWizard will add member initialization here
@@ -80,8 +80,13 @@ BOOL MBMessageBoxImpl::OnInitDialog()
 	m_MessageBox.SetWindowText(msg);
 	m_MessageBox2.SetWindowText(msg);
 
-#ifdef asdf
-    mfont.CreateFont(
+	if (thePlayer) {
+		LPLOGFONT lplf = thePlayer->config().getTitlesFont();
+		mfont.CreateFontIndirect(lplf);
+		m_MessageBox.SetFont(&mfont);
+		m_MessageBox2.SetFont(&mfont);
+	} else {
+		mfont.CreateFont(
         /* height */ 				15,
         /* width */ 				0,
         /* escapement */ 			0,
@@ -97,11 +102,7 @@ BOOL MBMessageBoxImpl::OnInitDialog()
         /* pitch and family */ 		FIXED_PITCH,
         /* facename */ 				0
 		);
-#endif
-	LPLOGFONT lplf = thePlayer->config().getTitlesFont();
-	mfont.CreateFontIndirect(lplf);
-	m_MessageBox.SetFont(&mfont);
-	m_MessageBox2.SetFont(&mfont);
+	}
 
 	CRect wrect,crect;
 	GetClientRect(crect);
@@ -112,8 +113,14 @@ BOOL MBMessageBoxImpl::OnInitDialog()
 
 	CRect prect,cmrect,mbrect;
 	CalcMsgRect(cmrect);
-	GetParent()->GetWindowRect(prect);
-	m_MessageBoxPtr->GetClientRect(mbrect);
+	if (GetParent())
+		GetParent()->GetWindowRect(prect);
+	else 
+		prect = CRect(0,0,640,480);
+
+	if (m_MessageBoxPtr) {
+		m_MessageBoxPtr->GetClientRect(mbrect);
+	}
 
 	int dw,dh;
 	dw = wrect.Width() - mbrect.Width();
@@ -123,14 +130,20 @@ BOOL MBMessageBoxImpl::OnInitDialog()
 
 	wrect.right = wrect.left + cmrect.Width() + dw;
 	wrect.bottom = wrect.top + cmrect.Height() + dh;
+	
 	if (wrect.Width() > prect.Width()) 
 		wrect.right = wrect.left + (prect.Width() - 100);
+
 	if (wrect.Height() > prect.Height())
 		wrect.bottom = wrect.top + (prect.Height() - 100);
-	MoveWindow(wrect);
 
-	if (wrect.Width() < m_MinWidth) m_MinWidth = wrect.Width();
-	if (wrect.Height() < m_MinHeight) m_MinHeight = wrect.Height();
+	if (wrect.Width() < m_MinWidth ) {
+		wrect.right = wrect.left + m_MinWidth ;
+	}
+	if (wrect.Height() < m_MinHeight) {
+		wrect.bottom = wrect.top + m_MinHeight;
+	}
+	MoveWindow(wrect);
 
 	resizeControls();
 

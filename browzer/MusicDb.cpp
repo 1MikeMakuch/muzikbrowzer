@@ -311,7 +311,7 @@ MusicLib::writeDb() {
 }
 
 UINT
-MusicLib::addSongToDb(int & ctr, Song &song, const CString & file) {
+MusicLib::addSongToDb(int & ctr, int total, Song &song, const CString & file) {
 	CString dir;
 
 	static CString lastdir;
@@ -958,8 +958,9 @@ MusicLib::addFileToPlaylist(const CString & file) {
 		Song addsong = createSongFromFile(file);
 		if (addsong->GetCount()) {
 			addSongToPlaylist(addsong);
-			CString x;int y;
-			addSongToDb(y,addsong,x);
+			CString x;int y;int t;
+			y = t = 0;
+			addSongToDb(y,t,addsong,x);
 			return 1;
 		} 
 	}
@@ -1063,6 +1064,12 @@ MusicLib::clearPlaylist() {
 CString
 MusicLib::scanDirectories(const CStringList & directories,
 						  InitDlg * initDlg, BOOL scanNew, BOOL bAdd) {
+//	int x1,y1;
+//	x1=y1=0;
+//	CString msgx="Verify test";
+//	m_SongLib.verify(msgx,x1,y1,700);
+//	return "";
+
 	SearchClear();
     CStringList mp3Files,mp3Extensions;
     CString good_results, error_results;
@@ -1101,7 +1108,7 @@ MusicLib::scanDirectories(const CStringList & directories,
     _id->SendUpdateStatus(2, "", 0, m_totalMp3s);
 
     int good_count = 0;
-    int ctr = 0;
+    int ctr = 1;
 	int tlen_method_1_count = 0;
 	int tlen_method_2_count = 0;
 	int tlen_methods_failed_count = 0;
@@ -1109,7 +1116,23 @@ MusicLib::scanDirectories(const CStringList & directories,
 	CString added = "Files added:\r\n";
 
     _id->SendUpdateStatus(0, "Reading tag info from audio files", 0,0);
+	time_t starttime,elapsed,eta,now,lasteta;
+	lasteta = 0;
+	float timeper;
+	time(&starttime);
+	CString etaS;
     for (pos = mp3Files.GetHeadPosition(); pos != NULL; ) {
+		time(&now);
+		elapsed = now - starttime;
+		timeper = (float)elapsed / (float)ctr;
+		eta = (timeper * m_totalMp3s) - elapsed;
+		etaS = "Reading tag info from audio files. Estimated remaining: ";
+		etaS += String::secs2HMS(eta);
+		if (ctr > 100 && eta < lasteta) {
+			_id->SendUpdateStatus(0, etaS, 0,0);
+			lasteta = eta;
+		} else if (lasteta == 0) lasteta = eta;
+
         CString mp3file = mp3Files.GetAt(pos);
         _id->SendUpdateStatus(3, "", ctr, 0);
         if (InitDlg::m_Abort) {
@@ -1139,7 +1162,7 @@ MusicLib::scanDirectories(const CStringList & directories,
             ++good_count;
         }
 
-		added_count += addSongToDb(ctr, song, mp3file);
+		added_count += addSongToDb(ctr, m_totalMp3s, song, mp3file);
 		added += mp3file + "\r\n";
 		mp3Files.GetNext(pos);
     }
@@ -1154,7 +1177,7 @@ MusicLib::scanDirectories(const CStringList & directories,
 	}
 //	_id->ShowWindow(SW_HIDE);
 
-    CString verify_results1 = m_SongLib.verify(msg, num_albums1, num_songs1);
+    CString verify_results1 = m_SongLib.verify(msg, num_albums1, num_songs1,m_totalMp3s);
 
     writeDb();
 
@@ -3717,7 +3740,7 @@ MSongLib::readFromFile() {
 			int a,r;
 			r = MBMessageBox("Advisory","Database maintenance required.\r\nClick OK to continue.",TRUE,TRUE);
 			if (IDOK == r)
-				verify("Performing database maintenance", a, r);
+				verify("Performing database maintenance", a, r, m_songcount);
 			else
 				_exit(0);
 //		} else {
@@ -3894,7 +3917,7 @@ MSongLib::validate() {
 
 
 CString
-MSongLib::verify(CString msg, int & total_albums, int & total_songs) {
+MSongLib::verify(CString msg, int & total_albums, int & total_songs, const int totalMp3s) {
     CString results, contents, removed;
     int num_genres = 0;
     int total_artists = 0;
@@ -3902,12 +3925,20 @@ MSongLib::verify(CString msg, int & total_albums, int & total_songs) {
 	Playlist removeList;
 	m_files.removeAll();
 
+	time_t starttime,elapsed,eta,now,lasteta;
+	lasteta = 0;
+	float timeper;
+	time(&starttime);
+	CString etaS;
+
     InitDlg * dialog = new InitDlg(1,0);
 	dialog->SetLabel(msg);
 	dialog->ShowWindow(SW_SHOWNORMAL);
 //	dialog->SendUpdateStatus(2, "", 0, count());
 	dialog->ProgressRange(0, count());
 	dialog->UpdateWindow();
+
+	int ctr=1;
 	
     AutoBuf buf(1000);
     contents = "\r\nLibrary contains:\r\n";
@@ -3947,6 +3978,16 @@ MSongLib::verify(CString msg, int & total_albums, int & total_songs) {
 								song.lookupVal("TLEN")
 								);
 						}
+						time(&now);
+						elapsed = now - starttime;
+						timeper = (float)elapsed / (float)ctr;
+						eta = (timeper * totalMp3s) - elapsed;
+						if (ctr++ > 10 && eta < lasteta && (ctr % 50 == 0)) {
+							etaS = msg + " Estimated remaining: ";
+							etaS += String::secs2HMS(eta);
+							dialog->SetLabel(etaS);
+							lasteta = eta;
+						} else if (lasteta == 0) lasteta = eta;
 						dialog->ProgressPos(total_song_count++);
 						dialog->UpdateWindow();
 					}

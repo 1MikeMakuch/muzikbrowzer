@@ -295,7 +295,7 @@ class MSongLib {
 		operator = (MSongLib &);
 		void ShortCopy(MSongLib & );
 		void Destroy();
-		CString verify(CString msg, int &, int &);
+		CString verify(CString msg, int &, int &, const int);
 		void writeToFile();
 		int m_garbagecollector;
 		MFiles m_files;
@@ -327,7 +327,7 @@ class MusicLib
 	     int	addArtistToPlaylist(const CString &, const CString &);
 	     int	addFileToPlaylist(const CString & file);
 	     int	addGenreToPlaylist(const CString &);
-	    UINT	addSongToDb(int & ctr, Song &, const CString & file = "");
+	    UINT	addSongToDb(int & ctr, int t, Song &, const CString & file = "");
 	     int	addSongToPlaylist(const CString &, const CString &, const CString &, const CString &);
 	     int	addSongToPlaylist(const Song &);
 	    BOOL	apic(const CString & file, uchar *& rawdata, size_t & size);

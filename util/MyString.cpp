@@ -756,3 +756,41 @@ TEST(StringUpDir, StringUpDirTest)
 	newstring = String::upDir(string);
 	CHECK(newstring = "");
 }
+#ifdef asdf
+sub secs2hms {
+    local($secs) = @_;
+    local($hours) = int($secs / 3600);
+    local($mod) = $secs % 3600; 
+    local($mins) = int($mod / 60);
+    $secs = $mod % 60;
+    local($ret) = sprintf("%02d:%02d:%02d",$hours,$mins,$secs);
+    return $ret;
+}     
+#endif
+void
+String::secs2HMS(const time_t isecs, int & hours, int & mins, int & secs) {
+	hours = isecs / 3600;
+	int mod = isecs % 3600;
+	mins = mod / 60;
+	secs = mod % 60;
+}
+CString
+String::secs2HMS(const time_t secs) {
+	int h,m,s;
+	CString string;
+	String::secs2HMS(secs,h,m,s);
+	string.Format("%02d:%02d:%02d",h,m,s);
+	return string;
+}
+TEST(StringTestSecs2HMS,Secs2HMS)
+{
+	time_t secs = 1;
+	CString x = String::secs2HMS(secs);
+	CHECK("00:00:01" == x);
+	secs = 60;
+	x = String::secs2HMS(secs);
+	CHECK("00:01:00" == x);
+	secs = 3600;
+	x = String::secs2HMS(secs);
+	CHECK("01:00:00" == x);
+}
