@@ -3031,7 +3031,7 @@ void CPlayerDlg::OnMenuHelp()
 			d1,r1,d2,r2);
 		msg += buf.p;
 	}
-	MBMessageBox("Help", msg, FALSE);
+	MBMessageBox("Remote Control Help", msg, FALSE, FALSE, TRUE);
 }
 
 void CPlayerDlg::OnNextSong() {

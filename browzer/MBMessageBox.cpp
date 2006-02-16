@@ -19,10 +19,10 @@ static char THIS_FILE[] = __FILE__;
 
 
 MBMessageBoxImpl::MBMessageBoxImpl(CString & title, CString & info, 
-		BOOL log, BOOL enableCancel, CWnd* pParent /*=NULL*/)
+		BOOL log, BOOL enableCancel, BOOL nocheck, CWnd* pParent /*=NULL*/)
 	: CDialog(MBMessageBoxImpl::IDD, pParent), m_title(title),m_info(info),
 	m_log(log), m_EnableCancel(enableCancel), m_Parent(pParent),
-	m_Control(new VirtualControl),m_MessageBoxPtr(0)
+	m_Control(new VirtualControl),m_MessageBoxPtr(0), m_NoParentCheck(nocheck)
 {
 	//{{AFX_DATA_INIT(MBMessageBoxImpl)
 		// NOTE: the ClassWizard will add member initialization here
@@ -82,20 +82,20 @@ BOOL MBMessageBoxImpl::OnInitDialog()
 
 	if (thePlayer) {
 		LPLOGFONT lplf = thePlayer->config().getTitlesFont();
+		lplf->lfPitchAndFamily = FIXED_PITCH;
+		strcpy(lplf->lfFaceName,"");
 		mfont.CreateFontIndirect(lplf);
-		m_MessageBox.SetFont(&mfont);
-		m_MessageBox2.SetFont(&mfont);
 	} else {
 		mfont.CreateFont(
-        /* height */ 				15,
+        /* height */ 				16,
         /* width */ 				0,
         /* escapement */ 			0,
         /* orientation */ 			0,
-        /* weight */ 				FW_NORMAL,
+        /* weight */ 				FW_BOLD,
         /* italic */ 				FALSE,
         /* underline */ 			FALSE,
         /* strikeout */ 			0,
-        /* charset */ 				DEFAULT_CHARSET,
+        /* charset */ 				ANSI_CHARSET,
         /* outprecision */ 			OUT_CHARACTER_PRECIS,
         /* clipprecision */ 		CLIP_CHARACTER_PRECIS,
         /* quality */ 				DEFAULT_QUALITY,
@@ -103,6 +103,8 @@ BOOL MBMessageBoxImpl::OnInitDialog()
         /* facename */ 				0
 		);
 	}
+	m_MessageBox.SetFont(&mfont);
+	m_MessageBox2.SetFont(&mfont);
 
 	CRect wrect,crect;
 	GetClientRect(crect);
@@ -131,11 +133,13 @@ BOOL MBMessageBoxImpl::OnInitDialog()
 	wrect.right = wrect.left + cmrect.Width() + dw;
 	wrect.bottom = wrect.top + cmrect.Height() + dh;
 	
-	if (wrect.Width() > prect.Width()) 
-		wrect.right = wrect.left + (prect.Width() - 100);
+	if (FALSE == m_NoParentCheck) {
+		if (wrect.Width() > prect.Width()) 
+			wrect.right = wrect.left + (prect.Width() - 100);
 
-	if (wrect.Height() > prect.Height())
-		wrect.bottom = wrect.top + (prect.Height() - 100);
+		if (wrect.Height() > prect.Height())
+			wrect.bottom = wrect.top + (prect.Height() - 100);
+	}
 
 	if (wrect.Width() < m_MinWidth ) {
 		wrect.right = wrect.left + m_MinWidth ;
@@ -161,10 +165,11 @@ BOOL MBMessageBoxImpl::OnInitDialog()
 	              // EXCEPTION: OCX Property Pages should return FALSE
 }
 
-int MBMessageBox(CString title, CString msg, BOOL log, BOOL enableCancel)
+int MBMessageBox(CString title, CString msg, BOOL log, BOOL enableCancel,
+				 BOOL NoParentCheck)
 {
     MBMessageBoxImpl * mb = new MBMessageBoxImpl(title, msg, log, 
-		enableCancel);
+		enableCancel,NoParentCheck);
 	if (thePlayer)
 		*thePlayer->m_Dialog = mb;
 
