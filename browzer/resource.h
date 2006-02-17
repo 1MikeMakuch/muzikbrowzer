@@ -382,6 +382,17 @@
 #define IDC_IRCLEAR_STATUS              1723
 #define IDC_IRLOAD_STATUS               1724
 #define IDC_IRSAVE_STATUS               1725
+#define IDD_GETBLACKOUT_DIALOG          1726
+#define IDC_STATIC1                     1727
+#define IDC_BUTTON_R                    1728
+#define IDC_BUTTON_L                    1729
+#define IDC_BUTTON_U                    1730
+#define IDC_BUTTON_D                    1731
+#define IDC_BUTTON_UL                   1732
+#define IDC_BUTTON_UR                   1733
+#define IDC_BUTTON_DL                   1734
+#define IDC_BUTTON_DR                   1735
+#define IDC_BUTTON_W                    1736
 #define IDC_MESSAGEBOX_OK               2001
 #define IDC_CP_FIRSTNAME                2002
 #define IDC_MESSAGEBOX_CANCEL           2002
@@ -425,6 +436,7 @@
 #define IDC_WMP                         2053
 #define IDC_IRHELPBUTTON                2054
 #define IDC_REFRESH_DRIVES              2055
+#define IDC_BUTTON1                     2056
 #define IDS_UNKNOWN_ERROR               5000
 #define IDC_BUTTON_LOGO                 12052
 #define ID_XXX                          32775
@@ -488,7 +500,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        271
 #define _APS_NEXT_COMMAND_VALUE         32856
-#define _APS_NEXT_CONTROL_VALUE         2056
+#define _APS_NEXT_CONTROL_VALUE         2057
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

@@ -10,7 +10,7 @@
 #include "MBGlobals.h"
 #include "MBmessageBox.h"
 #include "MyString.h"
-#include "Fractal.h"
+#include "GetBlackOutDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -72,7 +72,7 @@ BOOL About::OnInitDialog()
 	CRect erect;
 	m_EasterEgg.GetWindowRect(erect);
 	m_EasterEgg.SetFlat(TRUE,TRUE);
-	//m_EasterEgg.SetSound("c:\\DX90SDK\\Samples\\Media\\s1.wav");
+
 	m_EasterEgg.DrawBorder(TRUE,TRUE);
 
 	int xspan = wrect.right - (erect.Width() + 6);
@@ -80,12 +80,10 @@ BOOL About::OnInitDialog()
 	int x = MyUtil::random(xspan);
 	int y = MyUtil::random(yspan);
 	x = y = 5;
-	// not working right. ASSERTs sometimes
-	m_EasterEgg.ShowWindow(SW_HIDE);
+
+//	m_EasterEgg.ShowWindow(SW_HIDE);
 
 	m_EasterEgg.MoveWindow(x,y,erect.Width(),erect.Height(),TRUE);
-//	OutputDebugString("EE @ " + numToString(x)+" "+numToString(y)+
-//		" "+numToString(xspan)+" "+numToString(yspan)+"\r\n");
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
@@ -93,8 +91,9 @@ BOOL About::OnInitDialog()
 
 void About::OnEasteregg() 
 {
-	MBMessageBox("", "Congratulations. You found the easter egg.", FALSE);
-//	FractalDlg dlg(m_rect);
-//	dlg.DoModal();
+	//MBMessageBox("", "Congratulations. You found the easter egg.", FALSE);
+	CGetBlackOutDlg dlg(this);
+	dlg.DoModal();
+
 	
 }
