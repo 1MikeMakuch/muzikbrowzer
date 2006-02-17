@@ -73,6 +73,7 @@
 #define MB_TRIAL_DAYS 60
 
 #undef MB_USING_TRIAL_MODE
+#define MB_USING_TRIAL_MODE
 
 #define Stringize( L ) #L 
 #define MakeString( M, L ) M(L) 

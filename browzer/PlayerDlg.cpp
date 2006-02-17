@@ -610,7 +610,7 @@ BOOL CPlayerDlg::OnInitDialog()
 	//ShowBetaWarning();
 	StartStatusTimer();
 	if (m_Config.trialMode() == TRUE) {
-		PlayerStatusTempSet("Trial Mode. Set Password in Configuration." );
+		PlayerStatusTempSet("Trial Mode. See Settings/License." );
 	}
 	CString menuFunc,menuDesc;
 	irman().getDescs(IR_MESSAGE_MENU, menuFunc, menuDesc);
@@ -3240,7 +3240,7 @@ void CPlayerDlg::PlayLoop() {
 				msg += m_mlib._playlist[m_PlaylistCurrent]->getId3("TCON");
 				CurrentTitleSet(msg);
 				if (m_Config.trialMode() == 1) {
-					PlayerStatusTempSet("Trial Mode. Set Password in Configuration.");
+					PlayerStatusTempSet("Trial Mode. See Settings/License.");
 				}
 				UpdateWindow();
 			}

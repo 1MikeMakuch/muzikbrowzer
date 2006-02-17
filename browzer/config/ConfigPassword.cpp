@@ -361,10 +361,12 @@ void CConfigPassword::OnSendinfo()
 void CConfigPassword::validate() {
 	m_TrialMode = 0;
 //	return;
-	CString p = createPassword();
-	if (m_Password == p) {
+	CString genpw;
+	genpw = createPassword();
+	m_Password = String::stripws(m_Password);
+	if (m_Password == genpw) {
 		m_TrialMode = 0;
-		m_Notice = "Valid password. Trial Mode removed.";
+		m_Notice = "Valid license key. Trial Mode removed.";
 		m_TrialLabel = "No Expiration";
 		m_TrialExpiration = "";
 	} else {
@@ -372,11 +374,11 @@ void CConfigPassword::validate() {
 			m_TrialMode = 1;
 m_Notice = "To purhcase muzikbrowzer and remove Trial Mode go to www.muzikbrowzer.com ";
 m_Notice += "and click on Purchase. If you've already purchased muzikbrowzer you ";
-m_Notice += "should have received your password, enter it along with your name and ";
+m_Notice += "should have received your license key, enter it along with your name and ";
 m_Notice += "email address above. \r\n\r\n";
       
-m_Notice += "If you've already purchased muzikbrowzer and you need a new password ";
-m_Notice += "go to www.muzikbrowzer.com Support and enter a support Ticket.";
+m_Notice += "If you've already purchased muzikbrowzer and you need a new license key";
+m_Notice += " go to www.muzikbrowzer.com and contact Support.";
 
 		} else {
 			m_TrialMode = 2;
@@ -410,7 +412,7 @@ CConfigPassword::createPassword() {
 
 	char * pmd5 = mbpwcreate(bhost.p,bfname.p,blname.p,bemail.p);
 
-	CString md5 = pmd5;
+	CString md5(pmd5);
 	free(pmd5);
 
 	return md5;
@@ -424,7 +426,7 @@ void CConfigPassword::OnValidatePw()
 	if (m_TrialMode) {
 //		m_RequestPw.EnableWindow(TRUE);
 		m_ValidatePw.EnableWindow(TRUE);
-		m_Notice = "Invalid Password: " + m_Notice;
+		m_Notice = "Invalid license key: " + m_Notice;
 	} else {
 //		m_RequestPw.EnableWindow(FALSE);
 	}
