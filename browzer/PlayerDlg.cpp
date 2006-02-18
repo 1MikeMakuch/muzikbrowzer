@@ -609,8 +609,8 @@ BOOL CPlayerDlg::OnInitDialog()
 
 	//ShowBetaWarning();
 	StartStatusTimer();
-	if (m_Config.trialMode() == TRUE) {
-		PlayerStatusTempSet("Trial Mode. See Settings/License." );
+	if (m_Config.trialMode()) {
+		PlayerStatusSet("Trial Mode. See Settings/License." );
 	}
 	CString menuFunc,menuDesc;
 	irman().getDescs(IR_MESSAGE_MENU, menuFunc, menuDesc);

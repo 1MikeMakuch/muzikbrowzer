@@ -464,7 +464,7 @@ BEGIN
     EDITTEXT        IDC_CP_PASSWORD,95,84,200,12,ES_AUTOHSCROLL
     CTEXT           "To obtain a password to remove Trial Mode, enter your name and email address and click the Send infol link below. You will receive a password at the email address specified.",
                     IDC_PASSWORD_MSG,12,106,317,50
-    PUSHBUTTON      "Validate Password",IDC_VALIDATE_PW,133,170,70,25
+    PUSHBUTTON      "Validate License Key",IDC_VALIDATE_PW,133,170,77,25
     EDITTEXT        IDC_CP_TRIAL_EXPIRATION,95,25,200,12,ES_AUTOHSCROLL | 
                     ES_READONLY | NOT WS_TABSTOP
     RTEXT           "Trial expires",IDC_CP_TRIAL_LABEL,40,25,50,12,
