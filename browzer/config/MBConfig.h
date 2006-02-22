@@ -126,6 +126,7 @@ public:
 	BOOL ChooseSkin(CString);
 	int getPanelWidth() ;
 	void ReadReg(RegistryKey &);
+	BOOL verifySkin();
 
 	void AddMusic();
 	void Scan(BOOL fornew=FALSE);

@@ -542,7 +542,7 @@ CConfigDisplay::ReadReg(RegistryKey & reg, BOOL readskin) {
         m_lfPanel.lfPitchAndFamily = pitchandfamily;
         strcpy(m_lfPanel.lfFaceName, (buf.p + CCFONTFACEPOS));
     } else {
-		MBMessageBox("Warning",MBFontErrorMsg(RegWindowsFontTitles));
+		MBMessageBox("Warning",MBFontErrorMsg(RegWindowsFontPanel));
 	}
 
     reg.Read(RegWindowsFontColHdr, buf.p, 999, "");
@@ -569,7 +569,7 @@ CConfigDisplay::ReadReg(RegistryKey & reg, BOOL readskin) {
         m_lfColHdr.lfPitchAndFamily = pitchandfamily;
         strcpy(m_lfColHdr.lfFaceName, (buf.p + CCFONTFACEPOS));
     } else {
-		MBMessageBox("Warning",MBFontErrorMsg(RegWindowsFontTitles));
+		MBMessageBox("Warning",MBFontErrorMsg(RegWindowsFontColHdr));
 	}
 
 //    reg.Read(RegWindowsFontCurPlay, buf.p, 999, "");
@@ -1145,6 +1145,17 @@ void CConfigDisplay::OnCancel()
 	
 	CPropertyPage::OnCancel();
 }
+BOOL CConfigDisplay::verifySkin() {
+	BOOL r = verifySkin(m_sSkinName );
+	if (!r) {
+		// set to built in skin
+//		CString tmp = "Bad skin:" + m_sSkinName + ", see " + (*m_callbacks->mbdir)();
+//		tmp += "\\muzikbrowzer.log";
+//		MBMessageBox("Corrupt skin", tmp, FALSE, FALSE);
+		return FALSE;
+	}
+	return TRUE;
+}
 BOOL CConfigDisplay::verifySkin(CString skin) {
 	AutoLog alog("CCD::verifySkin");
 	CStringList bmps;
@@ -1220,22 +1231,232 @@ BOOL CConfigDisplay::verifySkin(CString skin) {
 		name = bmps.GetAt(pos);
 		bmp = getSkin(skin, name);
 		if (bmp == "") {
+			if (msg.GetLength())
+				msg += "\r\n";
 			msg += name;
-			msg += "\r\n";
 		}
 		bmps.GetNext(pos);
 	}
+	CString tmp ;
 	if (msg != "") {
-		CString tmp = "The following bitmaps are missing from the\r\n";
+		tmp = "The following bitmaps are missing from the\r\n";
 		tmp += skin;
-		tmp += " skin.\r\n\r\n";
-		tmp += msg;
-		//MBMessageBox("Corrupted Skin", tmp, TRUE, FALSE);
-		logger.log(tmp);
-		return FALSE;
+		tmp += " skin.\r\n";
+		tmp += msg + "\r\n";
+		msg = tmp;
 	}
 
+//	Verify SkinDef's	
+	m_SkinDefKeyVals.RemoveAll();
+	loadSkinDefs();
+
+	CString skindef = getSkin(skin, MB_SKIN_DEF);
+	RegistryKey regSD(skindef);
+	regSD.ReadFile();
+
+	tmp = "";
+	if (checkSkinDef(regSD, tmp) != TRUE) {
+		msg += "Problems with " + skindef + "\r\n";
+		msg += tmp;
+	}
+
+	// read skin def custom
+	CString skindefcustom = getSkin(skin, MB_SKIN_DEF_CUSTOM);
+	RegistryKey regSDCustom(skindefcustom);
+	regSDCustom.ReadFile();
+
+	tmp = "";
+	if (checkSkinDef(regSDCustom, tmp) != TRUE) {
+		msg += "Problems with " + skindefcustom + "\r\n";
+		msg += "Go into Settings/Display, make a change and save.\r\n";
+		msg += tmp;
+	}
+
+	CString key,val;
+	tmp = "";
+    for( pos = m_SkinDefKeyVals.GetStartPosition(); pos != NULL; ) {
+        m_SkinDefKeyVals.GetNextAssoc(pos, key, val);
+		tmp += key + "\r\n";
+	}
+	if (tmp.GetLength()) {
+		msg += "Missing " + skin + " SkinDef parameters:\r\n";
+		msg += tmp;
+	}
+ 
+	if (msg.GetLength()) {
+		logger.log(msg);
+		MBMessageBox("Bad skin", msg,TRUE,FALSE);
+		return TRUE;
+	}
+	
 	return TRUE;
+}
+BOOL CConfigDisplay::checkSkinDef(const RegistryKey & regSD, CString & msg) {
+	BOOL good = TRUE;
+	CString key;
+    CString val;
+	int ival = 0;
+	int r,g,b;
+	CString sr,sg,sb;
+	POSITION pos;
+    for( pos = regSD.mKeyValPairs->GetStartPosition(); pos != NULL; ) {
+        regSD.mKeyValPairs->GetNextAssoc(pos, key, val);
+		m_SkinDefKeyVals.RemoveKey(key);
+		if (val.GetLength() == 0) {
+			msg += key + " missing value\r\n";
+			good = FALSE;
+		} else if (String::endsWith(key,"Width")
+			|| String::endsWith(key,"Height")
+			) {
+			ival = atoi(val);
+			if (ival < 1 || 1600 < ival) {
+				msg += key + " bad value:" + val + "\r\n";
+				good = FALSE;
+			}
+		} else if (String::endsWith(key,"X")
+			|| String::endsWith(key,"Y")
+			) {
+			ival = atoi(val);
+			if (ival < 0 || 1600 < ival) {
+				msg += key + " bad value:" + val + "\r\n";
+				good = FALSE;
+			}
+		} else if (String::contains(key,"Color")) {
+			long n = String::delCount(val,",");
+			sr = String::field(val,",",1);
+			sg = String::field(val,",",2);
+			sb = String::field(val,",",3);
+			r = atoi(sr); g = atoi(sg) ; b = atoi(sb);
+			if (n != 3 || sr.GetLength() == 0
+				|| sg.GetLength() == 0
+				|| sb.GetLength() == 0
+				|| r < 0 || g < 0 || b < 0 
+				|| r > 255 || g > 255 || b > 255) {
+				msg += key + " bad value:" + val + "\r\n";
+				good = FALSE;
+			}
+		} else if (key.Left(2) == "3d"
+			|| "BackgroundMainType" == key
+			|| "BackgroundPanelType" == key) {
+			if ("0" != val && "1" != val && "2" != val && "3" != val) {
+				msg += key + " bad value:" + val + "\r\n";
+				good = FALSE;
+			}
+		} else if ("OtherBtn3d" == key
+			|| "OtherBtnHover" == key) {
+			if ("0" != val && "1" != val) {
+				msg += key + " bad value:" + val + "\r\n";
+				good = FALSE;
+			}
+		} else if (key.Left(6) == "Border") {
+			ival = atoi(val);
+			if (ival < 0 || 1000 < ival) {
+				msg += key + " bad value:" + val + "\r\n";
+				good = FALSE;
+			}
+		}
+	}
+	return good;
+}
+void CConfigDisplay::loadSkinDefs() {
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_3dColHdrs,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_3dDataWindows,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_3dStatus,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_BackgroundMainType,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_BackgroundPanelType,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_BorderHorz,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_BorderPanel,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_BorderVert,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_BorderWidth,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_ClearHeight,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_ClearWidth,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_ClearX,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_ClearY,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_Color3dColHdrInLR,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_Color3dColHdrInUL,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_Color3dColHdrOutLR,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_Color3dColHdrOutUL,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_Color3dDataInLR,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_Color3dDataInUL,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_Color3dDataOutLR,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_Color3dDataOutUL,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_Color3dStatusInLR,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_Color3dStatusInUL,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_Color3dStatusOutLR,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_Color3dStatusOutUL,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_ColorBkColHdr,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_ColorBkHigh,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_ColorBkNormal,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_ColorBkPanel,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_ColorBkSel,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_ColorButtonsBgHover,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_ColorButtonsBgOut,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_ColorButtonsFgHover,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_ColorButtonsFgOut,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_ColorTransparentMain,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_ColorTransparentPanel,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_ColorTxColHdr,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_ColorTxHigh,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_ColorTxNormal,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_ColorTxPanel,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_ColorTxSel,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_ControlBoxHeight,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_ControlBoxWidth,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_FontColHdr,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_FontPanel,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_FontTitles,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_ForwardHeight,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_ForwardWidth,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_ForwardX,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_ForwardY,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_LoadHeight,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_LoadWidth,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_LoadX,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_LoadY,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_OtherBtn3d,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_OtherBtnHover,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_OtherColorBg,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_OtherColorBtnBgHover,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_OtherColorBtnBgOut,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_OtherColorBtnFgHover,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_OtherColorBtnFgOut,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_OtherColorFg,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_PauseHeight,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_PauseWidth,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_PauseX,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_PauseY,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_PlayHeight,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_PlayWidth,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_PlayX,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_PlayY,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_ProgressHeight,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_ProgressWidth,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_ProgressX,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_ProgressY,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_RandomHeight,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_RandomWidth,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_RandomX,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_RandomY,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_ReverseHeight,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_ReverseWidth,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_ReverseX,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_ReverseY,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_SaveHeight,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_SaveWidth,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_SaveX,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_SaveY,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_ShuffleHeight,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_ShuffleWidth,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_ShuffleX,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_ShuffleY,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_StopHeight,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_StopWidth,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_StopX,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_StopY,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_VolumeHeight,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_VolumeWidth,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_VolumeX,"1");
+	m_SkinDefKeyVals.SetAt(MB_SKINDEF_VolumeY,"1");
 }
 void CConfigDisplay::OnSkinChoose() 
 {
@@ -1265,9 +1486,9 @@ BOOL CConfigDisplay::OnSkinChoose(CString skin)
 	if (verifySkin(skin)) {
 		m_sSkinName = skin;
 	} else {
-		CString tmp = "Bad skin. See " + (*m_callbacks->mbdir)();
-		tmp += "/muzikbrowzer.log";
-		MBMessageBox("Corrupt skin", tmp, TRUE, FALSE);
+//		CString tmp = "Bad skin:" + skin + ", see " + (*m_callbacks->mbdir)();
+//		tmp += "\\muzikbrowzer.log";
+//		MBMessageBox("Corrupt skin", tmp, FALSE, FALSE);
 		return FALSE;
 	}
 

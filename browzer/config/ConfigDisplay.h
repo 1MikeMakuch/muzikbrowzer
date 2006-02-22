@@ -193,6 +193,8 @@ private:
 	CString m_SkinDir;
 	void readSkins();
 	void EnableDisable();
+	CMapStringToString m_SkinDefKeyVals;
+	void loadSkinDefs();
 	
 public:
     LPLOGFONT getTitlesFont() { return m_lplfTitles; }
@@ -227,6 +229,8 @@ public:
 	void getSkins(CStringList &);
 	const CString getCurrentSkin() { return m_sSkinName; }
 	BOOL verifySkin(CString skin);
+	BOOL verifySkin();
+	BOOL checkSkinDef(const RegistryKey & skindef,CString & msg);
 	void StatusSet(CString text);
 	void StatusTempSet(CString text);
 

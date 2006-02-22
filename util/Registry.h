@@ -101,11 +101,11 @@ public:
   BOOL WriteFile();
   BOOL ReadFile();
   BOOL Copy(const RegistryKey & src);
+  CMapStringToString * mKeyValPairs;
 
 private:
   HKEY key;
   CString mFileName;
-  CMapStringToString * mKeyValPairs;
 
   // Return true if successful - used by the public read/write routines above
   bool ReadData( const TCHAR* value, void* data, unsigned long& size,

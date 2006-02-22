@@ -186,6 +186,17 @@ String::extract(const CString &string, const CString &substring1,
     return substring;
 
 }
+TEST(StringExtract,stringextracttest)
+{
+	CString val = "a,b,c";
+	CString r = String::extract(val,"",",");
+	CString g = String::extract(val,",",",");
+//	CString b = String::extract(val,",","");
+	CHECK("a" == r);
+	CHECK("b" == g);
+//	CHECK("c" == b);
+
+}
 CString
 String::substring(const CString & string, const int start, const int length)
 {
@@ -793,4 +804,23 @@ TEST(StringTestSecs2HMS,Secs2HMS)
 	secs = 3600;
 	x = String::secs2HMS(secs);
 	CHECK("01:00:00" == x);
+}
+BOOL String::endsWith(const CString & string, const CString & end) {
+	return (string.Right(end.GetLength()) == end);
+}
+BOOL String::contains(const CString & string, const CString & contain) {
+	return (string.Find(contain) >= 0);
+}
+TEST(Stringendswith,Stringendswithandcontains)
+{
+	CString string = "abcdefg";
+	CString end = "efg";
+	CHECK(String::endsWith(string,end) == TRUE);
+	end = "xefg";
+	CHECK(String::endsWith(string,end) == FALSE);
+
+	CString contain = "cde";
+	CHECK(String::contains(string,contain) == TRUE);
+	contain = "xcde";
+	CHECK(String::contains(string,contain) == FALSE);
 }

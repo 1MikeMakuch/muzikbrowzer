@@ -1078,6 +1078,7 @@ CPlayerDlg::resetControls() {
 	// Necessary cause I'm getting config info from 2 places
 	// 1) via m_reg and 2) m_Config.
 	m_Config.ReadReg(m_reg);
+	m_Config.verifySkin();
 
 	m_AlbumArt = m_Config.getSkin(MB_SKIN_ALBUMART);
 	m_FixedSize = FALSE;
@@ -1210,7 +1211,7 @@ CPlayerDlg::resetControls() {
 	int rowMaxY = 0;
 	int maxX = 0;
 
-	logger.log("resizeControls 0");
+	logger.ods("resizeControls 0");
 
 	labelheight = m_ArtistsLabel.GetItemHeight() + 4;
 	statusheight = m_PlayerStatus.GetItemHeight() + 6;
@@ -1498,7 +1499,7 @@ CPlayerDlg::resetControls() {
 
 	FreeResources();
 	
-	logger.log("resizeControls 1");
+	logger.ods("resizeControls 1");
 
 ///////////////////////////////
 // Set all the CDialogSK bmps
@@ -1575,7 +1576,7 @@ CPlayerDlg::resetControls() {
 
 	make(cdc); // the background
 
-	logger.log("resizeControls 2");
+	logger.ods("resizeControls 2");
 	m_Need2Erase = TRUE;
 
 	OnNcPaint() ;
@@ -2962,6 +2963,9 @@ void CPlayerDlg::OnMenuSaveplaylist()
 }
 
 void CPlayerDlg::SavePlaylist(CString name) {
+	if (!::IsWindow(m_Playlist.m_hWnd)) {
+		return;
+	}
 	if (m_Playlist.GetCount() == 0) {
 		return;
 	}
@@ -4046,13 +4050,8 @@ CPlayerDlg::OnSkinPic(UINT wParam) {
 	}
 	
 	if (skin != "") {
-		if (m_Config.ChooseSkin(skin)) {
-			redraw();
-		} else {
-			CString tmp = "Bad skin. See " + m_Config.mbdir();
-			tmp += "/muzikbrowzer.log";
-			MBMessageBox("Corrupt skin", tmp, TRUE, FALSE);
-		}
+		m_Config.ChooseSkin(skin);
+		redraw();
 	}
 
 //	return 0;

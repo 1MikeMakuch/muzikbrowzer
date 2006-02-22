@@ -59,6 +59,9 @@ class String {
 	static void secs2HMS(const time_t secs, int & h, int & m, int & s);
 	static CString secs2HMS(const time_t secs);
 
+	static BOOL endsWith(const CString & string, const CString & end);
+	static BOOL contains(const CString & string, const CString & contain);
+
 
 };
 

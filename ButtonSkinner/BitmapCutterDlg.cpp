@@ -1629,25 +1629,25 @@ void CBitmapCutterDlg::StoreReg() {
 	m_nLineWidth = atoi(msg);
 	reg.Write("linewidth",m_nLineWidth);
 
-reg.Write("MenuX", m_nMenuX);
-reg.Write("MenuY", m_nMenuY);
-reg.Write("MenuWidth", m_nMenuWidth);
-reg.Write("MenuHeight", m_nMenuHeight);
+//reg.Write("MenuX", m_nMenuX);
+//reg.Write("MenuY", m_nMenuY);
+//reg.Write("MenuWidth", m_nMenuWidth);
+//reg.Write("MenuHeight", m_nMenuHeight);
 
-reg.Write("MusicX", m_nMusicX);
-reg.Write("MusicY", m_nMusicY);
-reg.Write("MusicWidth", m_nMusicWidth);
-reg.Write("MusicHeight", m_nMusicHeight);
+//reg.Write("MusicX", m_nMusicX);
+//reg.Write("MusicY", m_nMusicY);
+//reg.Write("MusicWidth", m_nMusicWidth);
+//reg.Write("MusicHeight", m_nMusicHeight);
 
-reg.Write("PicturesX", m_nPicturesX);
-reg.Write("PicturesY", m_nPicturesY);
-reg.Write("PicturesWidth", m_nPicturesWidth);
-reg.Write("PicturesHeight", m_nPicturesHeight);
+//reg.Write("PicturesX", m_nPicturesX);
+//reg.Write("PicturesY", m_nPicturesY);
+//reg.Write("PicturesWidth", m_nPicturesWidth);
+//reg.Write("PicturesHeight", m_nPicturesHeight);
 
-reg.Write("VideoX", m_nVideoX);
-reg.Write("VideoY", m_nVideoY);
-reg.Write("VideoWidth", m_nVideoWidth);
-reg.Write("VideoHeight", m_nVideoHeight);
+//reg.Write("VideoX", m_nVideoX);
+//reg.Write("VideoY", m_nVideoY);
+//reg.Write("VideoWidth", m_nVideoWidth);
+//reg.Write("VideoHeight", m_nVideoHeight);
 
 reg.Write("StopX", m_nStopX);
 reg.Write("StopY", m_nStopY);
