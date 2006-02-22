@@ -2012,33 +2012,34 @@ MusicLib::modifyID3(Song oldSong, Song newSong) {
 	// old* vars need to be null to search as wildcard
     searchForMp3s(songs, oldGenre, oldArtist, oldAlbum, oldTitle);
 	int count = songs.size();
+
 	dialog->ProgressRange(0, count);
 
-	msg = "The following files will be modified.\r\nClick OK to continue or Cancel to abort.\r\n";
+	msg = "The following files will be modified.\r\nClick OK to continue or Cancel to abort.\r\n\r\nChange:\r\n";
 	AutoBuf buf(1000);
-	CString fmt = "%15s: %20s,  %15s: %s\r\n";
+	CString fmt = "%-7s From:\t%s\r\n        To:\t%s\r\n";
 	if (newGenre.GetLength()) {
-		sprintf(buf.p,fmt,"old genre",oldGenre,"new genre",newGenre);
+		sprintf(buf.p,fmt,"Genre",oldGenre,newGenre);
 		msg += buf.p;
 	}
 	if (newArtist.GetLength()) {
-		sprintf(buf.p,fmt,"old artist",oldArtist,"new artist",newArtist);
+		sprintf(buf.p,fmt,"Artist",oldArtist,newArtist);
 		msg += buf.p;
 	}
 	if (newAlbum.GetLength()) {
-		sprintf(buf.p,fmt,"old album",oldAlbum,"new album",newAlbum);
+		sprintf(buf.p,fmt,"Album",oldAlbum,newAlbum);
 		msg += buf.p;
 	}
 	if (newTitle.GetLength()) {
-		sprintf(buf.p,fmt,"old title",oldTitle,"new title",newTitle);
+		sprintf(buf.p,fmt,"Title",oldTitle,newTitle);
 		msg += buf.p;
 	}
 	if (newTrack.GetLength()) {
-		sprintf(buf.p,fmt,"old track#",oldTrack,"new track",newTrack);
+		sprintf(buf.p,fmt,"Track#",oldTrack,newTrack);
 		msg += buf.p;
 	}
 	if (newYear.GetLength()) {
-		sprintf(buf.p,fmt,"old year",oldYear,"new year",newYear);
+		sprintf(buf.p,fmt,"Year",oldYear,newYear);
 		msg += buf.p;
 	}
 	msg += "\r\n";
@@ -2052,12 +2053,13 @@ MusicLib::modifyID3(Song oldSong, Song newSong) {
 
 	dialog->EndDialog(0);
 	delete dialog;
-	int r = MBMessageBox("Notice", msg, TRUE, TRUE);
+	int r = MBMessageBox("Confirmation", msg, TRUE, TRUE);
 	if (r == 0) {
 		MBMessageBox("Notice","Edit not performed");
 		return;
 	}
 
+	msg = "Modifying audio tags";
 	dialog = new InitDlg(1,0);
 	dialog->m_InitLabel = "Modifying audio files...";
 	dialog->SetLabel(msg);
