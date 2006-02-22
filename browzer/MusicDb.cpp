@@ -2017,18 +2017,30 @@ MusicLib::modifyID3(Song oldSong, Song newSong) {
 	msg = "The following files will be modified.\r\nClick OK to continue or Cancel to abort.\r\n";
 	AutoBuf buf(1000);
 	CString fmt = "%15s: %20s,  %15s: %s\r\n";
-	sprintf(buf.p,fmt,"old genre",oldGenre,"new genre",newGenre);
-	msg += buf.p;
-	sprintf(buf.p,fmt,"old artist",oldArtist,"new artist",newArtist);
-	msg += buf.p;
-	sprintf(buf.p,fmt,"old album",oldAlbum,"new album",newAlbum);
-	msg += buf.p;
-	sprintf(buf.p,fmt,"old title",oldTitle,"new title",newTitle);
-	msg += buf.p;
-	sprintf(buf.p,fmt,"old track#",oldTrack,"new track",newTrack);
-	msg += buf.p;
-	sprintf(buf.p,fmt,"old year",oldYear,"new year",newYear);
-	msg += buf.p;
+	if (newGenre.GetLength()) {
+		sprintf(buf.p,fmt,"old genre",oldGenre,"new genre",newGenre);
+		msg += buf.p;
+	}
+	if (newArtist.GetLength()) {
+		sprintf(buf.p,fmt,"old artist",oldArtist,"new artist",newArtist);
+		msg += buf.p;
+	}
+	if (newAlbum.GetLength()) {
+		sprintf(buf.p,fmt,"old album",oldAlbum,"new album",newAlbum);
+		msg += buf.p;
+	}
+	if (newTitle.GetLength()) {
+		sprintf(buf.p,fmt,"old title",oldTitle,"new title",newTitle);
+		msg += buf.p;
+	}
+	if (newTrack.GetLength()) {
+		sprintf(buf.p,fmt,"old track#",oldTrack,"new track",newTrack);
+		msg += buf.p;
+	}
+	if (newYear.GetLength()) {
+		sprintf(buf.p,fmt,"old year",oldYear,"new year",newYear);
+		msg += buf.p;
+	}
 	msg += "\r\n";
 
     for (PlaylistNode *p = songs.head();
