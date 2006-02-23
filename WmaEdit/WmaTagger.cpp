@@ -1042,7 +1042,7 @@ WmaTag::write() {
 	WmaTag old(m_file);
 
 	WORD				wStreamNum			= 0;
-	WCHAR				* pwszInFile		= (WCHAR*)(LPCTSTR)m_file;
+	WCHAR				* pwszInFile		= NULL;//(WCHAR*)(LPCTSTR)m_file;
     HRESULT             hr                  = S_OK;
 
     IWMMetadataEditor   * pEditor           = NULL;
@@ -1058,7 +1058,9 @@ WmaTag::write() {
     WORD				wLangIndex			= 0;
 
 	strcpy(buf,(LPCTSTR)m_file);
-    LPTSTR				ptszInFile			= buf;;
+    LPTSTR				ptszInFile			= buf;
+
+	WCHAR   * pwszAttribValue   = NULL;
 
     do
     {
@@ -1088,9 +1090,7 @@ WmaTag::write() {
 					// set
 					LPTSTR  ptszAttribName  = (char*)(LPCTSTR)key;
 					LPTSTR  ptszAttribValue = (char*)(LPCTSTR)val;
-					WCHAR   * pwszAttribName    = NULL;
-					WCHAR   * pwszAttribValue   = NULL;
-					ConvertMBtoWC(ptszAttribName, &pwszAttribName);
+							ConvertMBtoWC(ptszAttribName, &pwszAttribName);
 					ConvertMBtoWC(ptszAttribValue, &pwszAttribValue);
 					wAttribValueLen = ( wcslen( pwszAttribValue) + 1) *
 						sizeof (WCHAR);
@@ -1110,8 +1110,6 @@ WmaTag::write() {
 					// add
 					LPTSTR  ptszAttribName  = (char*)(LPCTSTR)key;
 					LPTSTR  ptszAttribValue = (char*)(LPCTSTR)val;
-					WCHAR   * pwszAttribName    = NULL;
-					WCHAR   * pwszAttribValue   = NULL;
 					ConvertMBtoWC(ptszAttribName, &pwszAttribName);
 					ConvertMBtoWC(ptszAttribValue, &pwszAttribValue);
 					dwAttribValueLen = ( wcslen( pwszAttribValue) + 1) *
@@ -1132,6 +1130,10 @@ WmaTag::write() {
 					}
 				}
 			}
+#ifndef UNICODE
+			SAFE_ARRAYDELETE( pwszAttribName );
+			SAFE_ARRAYDELETE( pwszAttribValue );
+#endif
 		}
 		hr = pEditor->Flush();
 		if( FAILED( hr ) )
@@ -1153,6 +1155,9 @@ WmaTag::write() {
 			break;
 		}
 	} while (FALSE);
+#ifndef UNICODE
+	SAFE_ARRAYDELETE( pwszInFile );
+#endif
 	if (out != "") {
 		return CString(error + out);
 	} else {
