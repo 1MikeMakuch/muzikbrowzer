@@ -132,7 +132,7 @@ TEST(IRMAN, CIQTest)
 	}
 }
 
-Irman::Irman() : keyCodes(0), mCIQ(0) 
+Irman::Irman() : keyCodes(0), mCIQ(0) , m_lasttick(0)
 {
 	theIrman = this;
 }

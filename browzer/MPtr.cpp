@@ -193,6 +193,18 @@ MPtrDLL<T>::remove(int element) {
     remove (p);
     return ;
 }
+template <class T> void
+MPtrDLL<T>::replace(MPtrDLLNode<T> ** p, T song) {
+	PlaylistNode * newp = new PlaylistNode(song);
+	newp->_prev = (*p)->_prev;
+	newp->_next = (*p)->_next;
+	if ((*p)->_prev)
+		(*p)->_prev->_next = newp;
+	if ((*p)->_next)
+		(*p)->_next->_prev = newp;
+	delete *p;
+	*p = newp;
+}
 
 template <class T>
 MPtrDLL<T>::MPtrDLL<T>(): _head(0), _tail(0), _size(0) {

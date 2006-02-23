@@ -380,6 +380,15 @@ Package=<4>
     Begin Project Dependency
     Project_Dep_Name GetBlackOut
     End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name GetSysColors
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name oggtagger
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Wmp
+    End Project Dependency
 }}}
 
 ###############################################################################

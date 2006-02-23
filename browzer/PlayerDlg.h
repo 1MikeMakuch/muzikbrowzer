@@ -83,6 +83,7 @@ public:
 		_selectedPlaylistSong;
 
 	void updatePlaylist(const BOOL save=TRUE);
+	void updatePlaylistPostEdit();
 	virtual BOOL PreTranslateMessage(MSG*);
 	Irman & irman() { return m_irman; }
     void PlayLoop();

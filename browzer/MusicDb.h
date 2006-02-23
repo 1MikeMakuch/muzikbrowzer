@@ -362,7 +362,7 @@ class MusicLib
 	     int	loadOldPlaylist(const CString & name, CStringList & playlist);
 	     int	loadPlaylist(const CString & name, CString & errormsg);
 	MSongLib	m_SongLib;
-	    void	modifyID3(Song old, Song newSong);
+	    BOOL	modifyID3(Song old, Song newSong);
 	    void	movePlaylistDown(int plc, int sel);
 	    void	MovePlaylistsToDir();
 	    void	movePlaylistUp(int plc, int sel);
@@ -386,6 +386,7 @@ class MusicLib
 	    void	setDbLocation(const CString & loc);
 	     int	setSongVal(const CString & key, const CString & value, const CString & genrename, const CString & artistname, const CString & albumname, const CString & songname);
 	    void	shufflePlaylist();
+		void	updatePlaylist(Song oldsong, Song newsong);
 	    UINT	writeDb();
 	 CString	writeSongToFile(Song song);
 private:

@@ -44,6 +44,7 @@ public:
 protected:
 	//{{AFX_MSG(CExtendedListBox)
 	//}}AFX_MSG
+	CFont m_font;
 
 	DECLARE_MESSAGE_MAP()
 };

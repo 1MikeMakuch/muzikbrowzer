@@ -17,6 +17,7 @@ static char THIS_FILE[] = __FILE__;
 
 CExtendedListBox::CExtendedListBox() : m_highlights(FALSE), m_companion(NULL)
 {
+	m_font.CreateStockObject(ANSI_VAR_FONT);
 }
 
 CExtendedListBox::~CExtendedListBox()
@@ -101,14 +102,16 @@ void CExtendedListBox::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 
 		CString strText;
 		GetText (lpDrawItemStruct->itemID, strText);
-		strText = String::replace(strText, '\t', "        ");
+		strText = String::replace(strText, '\t', "   ");
 
 		const RECT &rc=lpDrawItemStruct->rcItem;
-
+		
+		CFont *oldfont = pDC->SelectObject(&m_font);
 		pDC->ExtTextOut(rc.left + 2,
 				  rc.top + 2,// + max(0, (cyItem - m_cyText) / 2),
 				  ETO_OPAQUE, &rc,
 				  strText, strText.GetLength (), NULL);
+		pDC->SelectObject(oldfont);
 
 		pDC->SetTextColor (oldTextColor);
 		pDC->SetBkColor (oldBkColor);

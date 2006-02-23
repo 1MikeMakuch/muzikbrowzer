@@ -1983,7 +1983,7 @@ MusicLib::shufflePlaylist() {
         newplaylist.remove(newplaylist.head());
     }
 }
-void
+BOOL
 MusicLib::modifyID3(Song oldSong, Song newSong) {
 	SearchClear();
     CString oldGenre, oldArtist, oldAlbum, oldTitle, oldYear, oldTrack;
@@ -2044,19 +2044,34 @@ MusicLib::modifyID3(Song oldSong, Song newSong) {
 	}
 	msg += "\r\n";
 
+	BOOL writeable = TRUE;
+	CString unwmsg;
     for (PlaylistNode *p = songs.head();
 	  p != (PlaylistNode*)0; p = songs.next(p))
     {
-        msg += p->_item->getId3("FILE");
-		msg += "\r\n";
+		if (FileUtil::IsWriteable(p->_item->getId3("FILE")) == TRUE) {
+			msg += p->_item->getId3("FILE");
+			msg += "\r\n";
+		} else {
+			unwmsg += p->_item->getId3("FILE");
+			unwmsg += "\r\n";
+			writeable = FALSE;
+		}
     }
+	if (!writeable) {
+		dialog->EndDialog(0);
+		delete dialog;
+		unwmsg = "The following file(s) are unwriteable,\r\nperhaps because it is currently playing.\r\nEdit not performed.\r\n\r\n" + unwmsg;
+		MBMessageBox("Can't perform edit",unwmsg,FALSE,FALSE);
+		return FALSE;
+	}
 
 	dialog->EndDialog(0);
 	delete dialog;
 	int r = MBMessageBox("Confirmation", msg, TRUE, TRUE);
 	if (r == 0) {
 		MBMessageBox("Notice","Edit not performed");
-		return;
+		return FALSE;
 	}
 
 	msg = "Modifying audio tags";
@@ -2117,6 +2132,7 @@ MusicLib::modifyID3(Song oldSong, Song newSong) {
 //				m_SongLib.m_files.removeAll();
 				m_SongLib.removeSong(delsong);
 				m_SongLib.addSong(addsong);
+				updatePlaylist(delsong,addsong);
 			}
         }
     }
@@ -2131,7 +2147,19 @@ MusicLib::modifyID3(Song oldSong, Song newSong) {
 	delete dialog;
 	// playlists are now filename only
 	//modifyPlaylists(oldSong, newSong);
-    return;
+    return TRUE;
+}
+void
+MusicLib::updatePlaylist(Song oldsong, Song newsong) {
+	for (PlaylistNode *p = _playlist.head();
+			p != (PlaylistNode*)0;
+			p = _playlist.next(p)) {
+
+		if (p->_item->getId3("FILE") == oldsong->getId3("FILE")) {
+			_playlist.replace(&p, newsong);
+		}
+	}
+	return;
 }
 
 

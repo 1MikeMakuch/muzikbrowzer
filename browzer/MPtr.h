@@ -53,6 +53,7 @@ template <class T> class MPtrDLL {
 		void append(T);
 		int remove(MPtrDLLNode<T> *);
         void remove(int );
+		void replace(MPtrDLLNode<T> ** oldp, T newp);
         int reset();
         int size() { return _size; }
         void moveUp(int);

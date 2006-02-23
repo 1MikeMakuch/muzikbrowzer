@@ -2319,6 +2319,13 @@ CPlayerDlg::OnPlaylistFocus() {
 	if (m_Playlist.GetCount() == 0)
 		m_Playlist.InvalidateRgn(NULL);;
 }
+void CPlayerDlg::updatePlaylistPostEdit() {
+	int sel = m_Playlist.GetCurSel();
+	m_Playlist.ResetContent();
+	m_mlib.getPlaylist(m_Playlist);
+	m_Playlist.SetCurSel(sel);
+	m_Playlist.invalidate();
+}
 void CPlayerDlg::updatePlaylist(const BOOL save) {
 	m_Playlist.ResetContent();
 	m_mlib.getPlaylist(m_Playlist);
@@ -3416,10 +3423,6 @@ void CPlayerDlg::OnUserEditSong()
     CStringList genreList;
     m_mlib.getGenres(genreList);
 
-	if (m_mlib._playlist.size() > 0) {
-		MBMessageBox("Error", "You cannot edit/view song tags with a populated Playlist");
-		return;
-	}
 	if (mWindowFlag > 4) {
 		return;
 	}
@@ -3429,16 +3432,8 @@ void CPlayerDlg::OnUserEditSong()
 		DWORD data = m_Songs.GetItemData(sel);
 		song = m_mlib.m_SongLib.getSong(data);
 
-//	    CString songname;
-//	    m_Songs.GetText(sel, songname);
-//		CString filename = m_mlib.getSongVal("FILE", _selectedGenre,
-//			_selectedArtist, _selectedAlbum, songname);
-
 		CString filename = song->getId3("FILE");
 		if (!FileUtil::IsReadable(filename)) {
-//			song = m_mlib.getSong(_selectedGenre, _selectedArtist,
-//				_selectedAlbum, songname);
-//		else {
 			CString msg = "unable to open ";
 			msg += filename;
 			MBMessageBox(CString("Error"), msg);
@@ -3457,10 +3452,7 @@ void CPlayerDlg::OnUserEditSong()
         if (mWindowFlag >= 2) {
 			song->setId3(CS("TPE1"), _selectedArtist);
         }
-//        if (_selectedGenre != MBALL) {
-//            Genre_addGenre(id3, _selectedGenre);
-			song->setId3(CS("TCON"), _selectedGenre);
-//      }
+		song->setId3(CS("TCON"), _selectedGenre);
     }
 
 	dialog = new ModifyIDThree(&genreList, song, mWindowFlag);
@@ -3470,11 +3462,15 @@ void CPlayerDlg::OnUserEditSong()
 	if (ret == IDOK) {
 		DBLOCKED = TRUE;
 		OnSearchClear();
-        m_mlib.modifyID3(song, dialog->m_newSong);
-        initDb();
+        ret = m_mlib.modifyID3(song, dialog->m_newSong);
+		if (ret) {
+			initDb();
+			DBLOCKED = FALSE;
+			_selectedGenre = "xyzzy";
+			OnSelchangeGenres();
+			updatePlaylistPostEdit();
+		}
 		DBLOCKED = FALSE;
-		_selectedGenre = "xyzzy";
-		OnSelchangeGenres();
 	}
 	delete dialog;    	
 
