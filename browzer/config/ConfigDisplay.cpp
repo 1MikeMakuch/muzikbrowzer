@@ -1019,7 +1019,13 @@ CConfigDisplay::setupSample() {
 	ReleaseDC(cdc);
 
 	CDIBSectionLite bmp;
-	bmp.Load(getSkin(MB_SKIN_BACKGROUNDLIBRARY));
+	if (!bmp.Load(getSkin(MB_SKIN_BACKGROUNDLIBRARY))) {
+		m_SampleColHdr.RedrawWindow();	
+		m_SamplePanel.RedrawWindow();
+		m_SamplePlaylist.invalidate();
+		m_SamplePlaylist.RedrawWindow();
+		return;
+	}
 
 	CRect grect;
 	grect.UnionRect(rectColHdr,rectStatusNew);
@@ -1039,7 +1045,6 @@ CConfigDisplay::setupSample() {
 	m_SampleColHdr.RedrawWindow();	
 	m_SamplePanel.RedrawWindow();
 	
-//	m_SamplePlaylist.initBgDc();		
 	m_SamplePlaylist.invalidate();
 	m_SamplePlaylist.RedrawWindow();
 
