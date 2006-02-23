@@ -30,7 +30,7 @@
 // xxx make the increment large before shipping!
 #define MMEMORY_SIZE_INCREMENT 5000
 #define MMEMORY_RESERVE_BYTES 100
-#define MB_GARBAGE_INTERVAL 10
+#define MB_GARBAGE_INTERVAL 50
 #define MB_DB_VERSION 4
 
 #ifdef _DEBUG
@@ -2080,6 +2080,7 @@ MusicLib::modifyID3(Song oldSong, Song newSong) {
 	dialog->SetLabel(msg);
 	dialog->ShowWindow(SW_SHOWNORMAL);
 	dialog->UpdateWindow();
+	dialog->ProgressRange(0, count);
 
 	CString result;
     int ctr = 1;
