@@ -4,7 +4,7 @@
 
 # TARGTYPE "Win32 (x86) Static Library" 0x0104
 
-CFG=zlib - Win32 NASM Debug
+CFG=zlib - Win32 DebugBC
 !MESSAGE This is not a valid makefile. To build this project using NMAKE,
 !MESSAGE use the Export Makefile command and run
 !MESSAGE 
@@ -13,7 +13,7 @@ CFG=zlib - Win32 NASM Debug
 !MESSAGE You can specify a configuration when running NMAKE
 !MESSAGE by defining the macro CFG on the command line. For example:
 !MESSAGE 
-!MESSAGE NMAKE /f "zlib.mak" CFG="zlib - Win32 NASM Debug"
+!MESSAGE NMAKE /f "zlib.mak" CFG="zlib - Win32 DebugBC"
 !MESSAGE 
 !MESSAGE Possible choices for configuration are:
 !MESSAGE 
@@ -21,6 +21,7 @@ CFG=zlib - Win32 NASM Debug
 !MESSAGE "zlib - Win32 Debug" (based on "Win32 (x86) Static Library")
 !MESSAGE "zlib - Win32 NASM Debug" (based on "Win32 (x86) Static Library")
 !MESSAGE "zlib - Win32 NASM Release" (based on "Win32 (x86) Static Library")
+!MESSAGE "zlib - Win32 DebugBC" (based on "Win32 (x86) Static Library")
 !MESSAGE 
 
 # Begin Project
@@ -43,7 +44,8 @@ RSC=rc.exe
 # PROP Intermediate_Dir "Release"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /YX /FD /c
-# ADD CPP /nologo /MT /W3 /GX /O2 /I "..\include" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /YX /FD /c
+# ADD CPP /nologo /MT /W3 /GX /Zi /O2 /I "..\include" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /FD /c
+# SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x809
 # ADD RSC /l 0x809
 BSC32=bscmake.exe
@@ -51,7 +53,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
-# ADD LIB32 /nologo /out:"..\zlib.lib"
+# ADD LIB32 /nologo /out:"..\prj\Release\zlib.lib"
 
 !ELSEIF  "$(CFG)" == "zlib - Win32 Debug"
 
@@ -66,7 +68,8 @@ LIB32=link.exe -lib
 # PROP Intermediate_Dir "Debug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /Z7 /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /YX /FD /c
-# ADD CPP /nologo /MTd /W3 /GX /Z7 /Od /I "..\include" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /YX /FD /c
+# ADD CPP /nologo /MTd /W3 /GX /Z7 /Od /I "..\include" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /FD /c
+# SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x809
 # ADD RSC /l 0x809
 BSC32=bscmake.exe
@@ -74,7 +77,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
-# ADD LIB32 /nologo /out:"..\zlibD.lib"
+# ADD LIB32 /nologo /out:"..\prj\Debug\zlibD.lib"
 
 !ELSEIF  "$(CFG)" == "zlib - Win32 NASM Debug"
 
@@ -122,6 +125,31 @@ LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo /out:"zlib.lib"
 # ADD LIB32 /nologo /out:"..\zlib.lib"
 
+!ELSEIF  "$(CFG)" == "zlib - Win32 DebugBC"
+
+# PROP BASE Use_MFC 0
+# PROP BASE Use_Debug_Libraries 1
+# PROP BASE Output_Dir "zlib___Win32_DebugBC"
+# PROP BASE Intermediate_Dir "zlib___Win32_DebugBC"
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 0
+# PROP Use_Debug_Libraries 1
+# PROP Output_Dir "DebugBC"
+# PROP Intermediate_Dir "DebugBC"
+# PROP Target_Dir ""
+# ADD BASE CPP /nologo /MTd /W3 /GX /Z7 /Od /I "..\include" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /FD /c
+# SUBTRACT BASE CPP /YX
+# ADD CPP /nologo /MTd /W3 /GX /Z7 /Od /I "..\include" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /FD /c
+# SUBTRACT CPP /YX
+# ADD BASE RSC /l 0x809
+# ADD RSC /l 0x809
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LIB32=link.exe -lib
+# ADD BASE LIB32 /nologo /out:"..\Debug\zlibD.lib"
+# ADD LIB32 /nologo /out:"..\prj\DebugBC\zlibD.lib"
+
 !ENDIF 
 
 # Begin Target
@@ -130,6 +158,7 @@ LIB32=link.exe -lib
 # Name "zlib - Win32 Debug"
 # Name "zlib - Win32 NASM Debug"
 # Name "zlib - Win32 NASM Release"
+# Name "zlib - Win32 DebugBC"
 # Begin Group "source"
 
 # PROP Default_Filter ""

@@ -43,7 +43,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /Yu"stdafx.h" /FD /c
-# ADD CPP /nologo /MT /W3 /GX /Zi /O2 /I "..\..\3rdparty\id3lib-3.8.2" /I "..\..\3rdparty\id3lib-3.8.2\include" /D ID3LIB_LINKOPTION=1 /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /FR /FD /c
+# ADD CPP /nologo /MT /W3 /GX /Zi /O2 /I "..\..\3rdparty\id3lib-3.8.3" /I "..\..\3rdparty\id3lib-3.8.3\include" /D ID3LIB_LINKOPTION=1 /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /FR /FD /c
 # SUBTRACT CPP /YX /Yc /Yu
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
@@ -52,7 +52,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386
-# ADD LINK32 ..\..\3rdparty\id3lib-3.8.2\zlib\prj\Release\zlib.lib ..\..\3rdparty\id3lib-3.8.2\libprj\Release\id3lib.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386 /nodefaultlib:"msvcrt" /out:"c:\mkm\bin\id3.exe"
+# ADD LINK32 ..\..\3rdparty\id3lib-3.8.3\zlib\prj\Release\zlib.lib ..\..\3rdparty\id3lib-3.8.3\libprj\Release\id3lib.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386 /nodefaultlib:"msvcrt" /out:"c:\mkm\bin\id3.exe"
 # SUBTRACT LINK32 /pdb:none
 
 !ELSEIF  "$(CFG)" == "id3 - Win32 Debug"
@@ -69,7 +69,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /Yu"stdafx.h" /FD /GZ /c
-# ADD CPP /nologo /MTd /W3 /GX /Zi /Od /I "..\..\3rdparty\id3lib-3.8.2" /I "..\..\3rdparty\id3lib-3.8.2\include" /D ID3LIB_LINKOPTION=1 /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /FR /FD /GZ /c
+# ADD CPP /nologo /MTd /W3 /GX /Zi /Od /I "..\..\3rdparty\id3lib-3.8.3" /I "..\..\3rdparty\id3lib-3.8.3\include" /D ID3LIB_LINKOPTION=1 /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /FR /FD /GZ /c
 # SUBTRACT CPP /YX /Yc /Yu
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
@@ -78,7 +78,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 ..\..\3rdparty\id3lib-3.8.2\zlib\prj\Debug\zlibD.lib ..\..\3rdparty\id3lib-3.8.2\libprj\Debug\id3libD.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /out:"c:\mkm\bin\id3.exe" /pdbtype:sept
+# ADD LINK32 ..\..\3rdparty\id3lib-3.8.3\zlib\prj\Debug\zlibD.lib ..\..\3rdparty\id3lib-3.8.3\libprj\Debug\id3libD.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /out:"c:\mkm\bin\id3.exe" /pdbtype:sept
 # SUBTRACT LINK32 /nodefaultlib
 
 !ELSEIF  "$(CFG)" == "id3 - Win32 DebugBC"
@@ -95,9 +95,9 @@ LINK32=link.exe
 # PROP Intermediate_Dir "DebugBC"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
-# ADD BASE CPP /nologo /MTd /W3 /GX /Z7 /Od /I "..\..\3rdparty\id3lib-3.8.2" /I "..\..\3rdparty\id3lib-3.8.2\include" /D ID3LIB_LINKOPTION=1 /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /FD /GZ /c
+# ADD BASE CPP /nologo /MTd /W3 /GX /Z7 /Od /I "..\..\3rdparty\id3lib-3.8.3" /I "..\..\3rdparty\id3lib-3.8.3\include" /D ID3LIB_LINKOPTION=1 /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /FD /GZ /c
 # SUBTRACT BASE CPP /YX /Yc /Yu
-# ADD CPP /nologo /MTd /W3 /GX /Zi /Od /I "..\..\3rdparty\id3lib-3.8.2" /I "..\..\3rdparty\id3lib-3.8.2\include" /D ID3LIB_LINKOPTION=1 /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /FR /FD /GZ /c
+# ADD CPP /nologo /MTd /W3 /GX /Zi /Od /I "..\..\3rdparty\id3lib-3.8.3" /I "..\..\3rdparty\id3lib-3.8.3\include" /D ID3LIB_LINKOPTION=1 /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /FR /FD /GZ /c
 # SUBTRACT CPP /YX /Yc /Yu
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
@@ -105,9 +105,9 @@ BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
 LINK32=link.exe
-# ADD BASE LINK32 ..\..\3rdparty\id3lib-3.8.2\zlib\prj\Debug\zlibD.lib ..\..\3rdparty\id3lib-3.8.2\libprj\Debug\id3libD.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /out:"c:\mkm\bin\id3.exe" /pdbtype:sept
+# ADD BASE LINK32 ..\..\3rdparty\id3lib-3.8.3\zlib\prj\Debug\zlibD.lib ..\..\3rdparty\id3lib-3.8.3\libprj\Debug\id3libD.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /out:"c:\mkm\bin\id3.exe" /pdbtype:sept
 # SUBTRACT BASE LINK32 /nodefaultlib
-# ADD LINK32 ..\..\3rdparty\id3lib-3.8.2\zlib\prj\Debug\zlibD.lib ..\..\3rdparty\id3lib-3.8.2\libprj\Debug\id3libD.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /out:"c:\mkm\bin\id3.exe" /pdbtype:sept
+# ADD LINK32 ..\..\3rdparty\id3lib-3.8.3\zlib\prj\Debug\zlibD.lib ..\..\3rdparty\id3lib-3.8.3\libprj\Debug\id3libD.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /out:"c:\mkm\bin\id3.exe" /pdbtype:sept
 # SUBTRACT LINK32 /nodefaultlib
 
 !ENDIF 

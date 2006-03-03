@@ -3,21 +3,6 @@ Microsoft Developer Studio Workspace File, Format Version 6.00
 
 ###############################################################################
 
-Project: "BCDCTest"=.\BCDCTest\BCDCTest.dsp - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-    Begin Project Dependency
-    Project_Dep_Name util
-    End Project Dependency
-}}}
-
-###############################################################################
-
 Project: "BitmapCutter"=..\ButtonSkinner\BitmapCutter.dsp - Package Owner=<4>
 
 Package=<5>
@@ -219,13 +204,16 @@ Package=<5>
 Package=<4>
 {{{
     Begin Project Dependency
+    Project_Dep_Name zlib
+    End Project Dependency
+    Begin Project Dependency
     Project_Dep_Name id3lib
     End Project Dependency
 }}}
 
 ###############################################################################
 
-Project: "id3lib"="..\3rdparty\id3lib-3.8.2\libprj\id3lib.dsp" - Package Owner=<4>
+Project: "id3lib"="..\3rdparty\id3lib-3.8.3\libprj\id3lib.dsp" - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -246,13 +234,16 @@ Package=<5>
 Package=<4>
 {{{
     Begin Project Dependency
-    Project_Dep_Name id3lib
-    End Project Dependency
-    Begin Project Dependency
     Project_Dep_Name id3utils
     End Project Dependency
     Begin Project Dependency
     Project_Dep_Name util
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name id3lib
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name zlib
     End Project Dependency
 }}}
 
@@ -360,12 +351,6 @@ Package=<4>
     Project_Dep_Name ogg_static
     End Project Dependency
     Begin Project Dependency
-    Project_Dep_Name zlib
-    End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name id3lib
-    End Project Dependency
-    Begin Project Dependency
     Project_Dep_Name id3
     End Project Dependency
     Begin Project Dependency
@@ -388,6 +373,36 @@ Package=<4>
     End Project Dependency
     Begin Project Dependency
     Project_Dep_Name Wmp
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name BitmapCutter
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name bitmaptest
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name id3lib
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name id3tagger
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name mbpw
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name mbpwDlg
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name MetadataEdit
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name mydiff
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name regset
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name zlib
     End Project Dependency
 }}}
 
@@ -501,7 +516,7 @@ Package=<4>
 
 ###############################################################################
 
-Project: "zlib"="..\3rdparty\id3lib-3.8.2\zlib\prj\zlib.dsp" - Package Owner=<4>
+Project: "zlib"="..\3rdparty\id3lib-3.8.3\zlib\prj\zlib.dsp" - Package Owner=<4>
 
 Package=<5>
 {{{
