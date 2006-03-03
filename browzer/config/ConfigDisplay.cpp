@@ -480,8 +480,6 @@ CConfigDisplay::ReadReg(RegistryKey & reg) {
         m_lfTitles.lfQuality = quality;
         m_lfTitles.lfPitchAndFamily = pitchandfamily;
         strcpy(m_lfTitles.lfFaceName, (buf.p + CCFONTFACEPOS));
-    } else {
-		MBMessageBox("Warning",MBFontErrorMsg(RegWindowsFontTitles));
 	}
 
     reg.Read(RegWindowsFontPanel, buf.p, 999, "");
@@ -507,8 +505,6 @@ CConfigDisplay::ReadReg(RegistryKey & reg) {
         m_lfPanel.lfQuality = quality;
         m_lfPanel.lfPitchAndFamily = pitchandfamily;
         strcpy(m_lfPanel.lfFaceName, (buf.p + CCFONTFACEPOS));
-    } else {
-		MBMessageBox("Warning",MBFontErrorMsg(RegWindowsFontPanel));
 	}
 
     reg.Read(RegWindowsFontColHdr, buf.p, 999, "");
@@ -534,8 +530,6 @@ CConfigDisplay::ReadReg(RegistryKey & reg) {
         m_lfColHdr.lfQuality = quality;
         m_lfColHdr.lfPitchAndFamily = pitchandfamily;
         strcpy(m_lfColHdr.lfFaceName, (buf.p + CCFONTFACEPOS));
-    } else {
-		MBMessageBox("Warning",MBFontErrorMsg(RegWindowsFontColHdr));
 	}
 
 	EnableDisable();
@@ -1156,7 +1150,7 @@ BOOL CConfigDisplay::verifySkin(CString skin) {
 	tmp = "";
 	if (checkSkinDef(regSDCustom, tmp) != TRUE) {
 		msg += "Problems with " + skindefcustom + "\r\n";
-		msg += "Go into Settings/Display, make a change and save.\r\n";
+		msg += "Go into Settings/Display and click Ok.\r\n";
 		msg += tmp;
 	}
 
@@ -1240,6 +1234,12 @@ BOOL CConfigDisplay::checkSkinDef(const RegistryKey & regSD, CString & msg) {
 			ival = atoi(val);
 			if (ival < 0 || 1000 < ival) {
 				msg += key + " bad value:" + val + "\r\n";
+				good = FALSE;
+			}
+		} else if (key.Left(4) == "Font") {
+			if (!MBUtil::ConfigFontValidate(val)
+				|| val.GetLength() < CCFONTFACEPOS) {
+				msg += key + " bad font setting\r\n";
 				good = FALSE;
 			}
 		}
