@@ -429,6 +429,7 @@ protected:
 	int m_CheckSongCounter;
 	int m_CheckGoodCount;
 	int m_CheckBadCount;
+	BOOL m_Ready2Reset;
 
 	DECLARE_MESSAGE_MAP()
 

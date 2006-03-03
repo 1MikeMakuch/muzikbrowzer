@@ -148,7 +148,8 @@ CPlayerDlg::CPlayerDlg(CPlayerApp * theApp,
 	m_LastShowSearchPanel(FALSE),
 	m_PlayLoopTimerId(0),
 	m_LoadPlaylistDlg(0),
-	m_WindowRect(0,0,640,480)
+	m_WindowRect(0,0,640,480),
+	m_Ready2Reset(FALSE)
 {
 	//{{AFX_DATA_INIT(CPlayerDlg)
 	//}}AFX_DATA_INIT
@@ -596,6 +597,7 @@ BOOL CPlayerDlg::OnInitDialog()
 	EnableEasyMove();  // enable moving of the dialog 
     SetTransparentColor(m_TransMain, m_TransPanel); // set red as the 
 
+	m_Ready2Reset = TRUE;
     resetControls();
 
 	m_Genres.SetFocus();
@@ -1059,6 +1061,7 @@ CPlayerDlg::On1024x768() {
 
 void
 CPlayerDlg::resetControls() {
+	if (!m_Ready2Reset) return;
 
 	static BOOL firsttime = TRUE;
 	CWaitCursor c;
