@@ -604,12 +604,13 @@ void CConfigFiles::OnCancel()
 }
 
 
-
 void CConfigFiles::AddMusic() {
 	CString dflt;
 
-	dflt = m_slMP3DirList.GetTail();
-	dflt = String::upDir(dflt);
+	if (!m_slMP3DirList.IsEmpty()) {
+		dflt = m_slMP3DirList.GetTail();
+		dflt = String::upDir(dflt);
+	}
 
 	CFileAndFolder dialog(this, dflt);
 

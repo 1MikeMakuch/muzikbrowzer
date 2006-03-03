@@ -1070,6 +1070,10 @@ CPlayerDlg::resetControls() {
 
 	m_Skins.RemoveAll();
 	m_Config.getSkins(m_Skins);
+	if (m_Skins.GetCount() < 1) {
+		MBMessageBox("Alert","Muzikbrowzer is unable to locate it's skins and cannot proceed.\r\nYou may wish to reinstall Muzikbrowzer.",FALSE,FALSE);
+		exit(0);
+	}
 
 	// read skin def
 	MBCONFIG_READ_SKIN_DEFS(m_Config,m_reg);

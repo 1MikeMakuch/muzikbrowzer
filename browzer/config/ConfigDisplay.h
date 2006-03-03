@@ -138,9 +138,9 @@ private:
 
 
 public:
-    void ReadReg(RegistryKey & key,BOOL readskin=FALSE);
+    void ReadReg(RegistryKey & key);
 private:
-    void StoreReg(RegistryKey & key, BOOL storeskin=FALSE);
+    void StoreReg(RegistryKey & key);
     void setDefaults();
     void v2m();
     void m2v();

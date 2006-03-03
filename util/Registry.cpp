@@ -26,6 +26,8 @@ static char THIS_FILE[] = __FILE__;
 #endif
 RegistryKey::RegistryKey():mKeyValPairs(NULL),key(NULL)
 {}
+
+
 void
 RegistryKey::init(HKEY base, const TCHAR* keyName )
 {
@@ -49,7 +51,7 @@ RegistryKey::init(CString filename)
 }
 
 RegistryKey::RegistryKey( HKEY base, const TCHAR* keyName )
-	: mKeyValPairs(NULL),key(NULL)
+	: mKeyValPairs(NULL),key(NULL), m_keyname(keyName)
 {
   if( RegCreateKeyEx( base, keyName, 0, _T(""), 0,
                       KEY_QUERY_VALUE | KEY_SET_VALUE,
@@ -72,6 +74,7 @@ RegistryKey::~RegistryKey()
 	if (mKeyValPairs)
 		delete mKeyValPairs;
 }
+
 BOOL RegistryKey::Copy(const RegistryKey & src) {
     POSITION pos;
     CString key;

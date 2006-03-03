@@ -49,3 +49,25 @@ Root: HKLM; Subkey: "Software\muzikbrowzer"; Flags: createvalueifdoesntexist uni
 Root: HKLM; Subkey: "Software\muzikbrowzer"; ValueType: string; ValueName: "DbLocation"; ValueData: "{app}"  ; Flags: createvalueifdoesntexist uninsdeletekey
 Root: HKLM; Subkey: "Software\muzikbrowzer"; ValueType: string; ValueName: "SkinName"; ValueData: "MBClassic"  ; Flags: createvalueifdoesntexist uninsdeletekey
 
+; Keys to delete
+Root: HKLM; Subkey: "Software\muzikbrowzer\PreviousValues"; ValueType: none; Flags: deletekey dontcreatekey
+Root: HKLM; Subkey: "Software\muzikbrowzer"; ValueType: none; ValueName: "ColorBkHigh"; Flags: deletevalue dontcreatekey
+Root: HKLM; Subkey: "Software\muzikbrowzer"; ValueType: none; ValueName: "ColorBkNormal"; Flags: deletevalue dontcreatekey
+Root: HKLM; Subkey: "Software\muzikbrowzer"; ValueType: none; ValueName: "ColorBkPanel"; Flags: deletevalue dontcreatekey
+Root: HKLM; Subkey: "Software\muzikbrowzer"; ValueType: none; ValueName: "ColorBkSel"; Flags: deletevalue dontcreatekey
+Root: HKLM; Subkey: "Software\muzikbrowzer"; ValueType: none; ValueName: "ColorTxHigh"; Flags: deletevalue dontcreatekey
+Root: HKLM; Subkey: "Software\muzikbrowzer"; ValueType: none; ValueName: "ColorTxNormal"; Flags: deletevalue dontcreatekey
+Root: HKLM; Subkey: "Software\muzikbrowzer"; ValueType: none; ValueName: "ColorTxPanel"; Flags: deletevalue dontcreatekey
+Root: HKLM; Subkey: "Software\muzikbrowzer"; ValueType: none; ValueName: "ColorTxSel"; Flags: deletevalue dontcreatekey
+Root: HKLM; Subkey: "Software\muzikbrowzer"; ValueType: none; ValueName: "NumMp3Extensions"; Flags: deletevalue dontcreatekey
+Root: HKLM; Subkey: "Software\muzikbrowzer"; ValueType: none; ValueName: "Mp3Extension_00"; Flags: deletevalue dontcreatekey
+Root: HKLM; Subkey: "Software\muzikbrowzer"; ValueType: none; ValueName: "Mp3Extension_01"; Flags: deletevalue dontcreatekey
+Root: HKLM; Subkey: "Software\muzikbrowzer"; ValueType: none; ValueName: "Mp3Extension_02"; Flags: deletevalue dontcreatekey
+Root: HKLM; Subkey: "Software\muzikbrowzer"; ValueType: none; ValueName: "Mp3Extension_03"; Flags: deletevalue dontcreatekey
+Root: HKLM; Subkey: "Software\muzikbrowzer"; ValueType: none; ValueName: "Mp3Extension_04"; Flags: deletevalue dontcreatekey
+Root: HKLM; Subkey: "Software\muzikbrowzer"; ValueType: none; ValueName: "Mp3Extension_05"; Flags: deletevalue dontcreatekey
+Root: HKLM; Subkey: "Software\muzikbrowzer"; ValueType: none; ValueName: "FontPanel"; Flags: deletevalue dontcreatekey
+Root: HKLM; Subkey: "Software\muzikbrowzer"; ValueType: none; ValueName: "FontTitles"; Flags: deletevalue dontcreatekey
+
+
+

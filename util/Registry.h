@@ -106,6 +106,7 @@ public:
 private:
   HKEY key;
   CString mFileName;
+  CString m_keyname;
 
   // Return true if successful - used by the public read/write routines above
   bool ReadData( const TCHAR* value, void* data, unsigned long& size,
