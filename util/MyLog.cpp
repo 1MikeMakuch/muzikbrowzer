@@ -5,6 +5,7 @@
 
 #include "MyLog.h"
 #include "MBGlobals.h"
+#include "muzikbrowzerVersion.h"
 #include "MyString.h"
 #include "FileUtils.h"
 #ifdef _DEBUG
@@ -13,16 +14,17 @@
 //static char THIS_FILE[] = __FILE__;
 #endif
 
+#define MBMAXLOGFILE 1000000
+
 MyLog::~MyLog() {
 	if (m_ready)
 		close();
 }
 void
-MyLog::open(CString path) {
+MyLog::open(CString path, BOOL truncate) {
 
 	CFileException e;
 
-    CString file;
 	if (path == "") {
         TCHAR szBuff[_MAX_PATH];
         if ((::GetModuleFileName(NULL, szBuff, _MAX_PATH)) != 0) {
@@ -40,37 +42,30 @@ MyLog::open(CString path) {
 			path += ".log";
 		}
 	}
-	int i;
-	CString src = path;
-	CString dst = path;
-	CString mblog = "muzikbrowzer.log";
-	for(i = 2 ; i > 0 ; i--) {
-		src = path;
-		dst = path;
-		CString mbnumberedlogi = "muzikbrowzer" + numToString(i) + ".log";
-		CString mbnumberedlogiplusone = 
-			"muzikbrowzer" + numToString(i+1) + ".log";
-		src = String::replace(path,mbnumberedlogi,mblog);
-		dst = String::replace(path,mbnumberedlogiplusone,mblog);
-		FileUtil::mv(src,dst);
-	}
-	src = path;
-	dst = String::replace(path,"muzikbrowzer1.log",mblog);
-	FileUtil::mv(src,dst);
-
-	file = path;
-    _pathfile = file;
-    BOOL r = _file.Open(_pathfile, 
-        CFile::modeCreate
-//        |CFile::modeNoTruncate
-        |CFile::modeWrite
-//        |CFile::typeText
-        |CFile::shareDenyNone,
-        &e);
-
+	
+    _pathfile = path;
 	m_ready = TRUE;
-    log("started");
+	if (TRUE == truncate) {
+		_file.Open(_pathfile, 
+	        CFile::modeCreate
+			|CFile::modeReadWrite
+			|CFile::shareDenyNone,
+			&e);
+	} else {
+		_file.Open(_pathfile, 
+			CFile::modeCreate
+			|CFile::modeNoTruncate
+			|CFile::modeReadWrite
+			|CFile::shareDenyNone,
+			&e);
+	}
+	_file.SeekToEnd();
+	
+
+
+
 }
+
 void
 MyLog::close() {
 	_file.Close();
@@ -92,6 +87,9 @@ MyLog::log(const CString &m1, const CString &m2,
 		   const CString &m5, const CString &m6
 		   ) {
 	if (m_ready == FALSE) return;
+
+	trimIt();
+
     CString mx;
     CTime t = CTime::GetCurrentTime();
     mx = t.Format("%Y%m%d:%H%M%S ");
@@ -115,6 +113,20 @@ MyLog::log(const CString &m1, const CString &m2,
 	OutputDebugString(mx);
 	_file.Write(mx,mx.GetLength());
     _file.Flush();
+}
+void
+MyLog::trimIt() {
+	UINT cursize = _file.GetLength();
+	if (cursize > MBMAXLOGFILE) {
+		int halfsize = cursize / 2;
+		_file.Seek(-halfsize,CFile::end);
+		AutoBuf buf(halfsize);
+		_file.Read(buf.p, halfsize);
+		_file.Close();
+		open(_pathfile, TRUE);
+		_file.Write(buf.p,halfsize);
+		log(CS("muzikbrowzer version: ") + CS(MUZIKBROWZER_VERSION));
+	}
 }
 void
 MyLog::ods(char *  m0) {

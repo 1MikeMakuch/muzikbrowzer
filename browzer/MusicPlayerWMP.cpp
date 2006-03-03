@@ -48,7 +48,7 @@ MusicPlayerWMP::InputOpen(const char *file) {
 	m_MP->SetCurrentMedia(nm);
 	m_FileLoaded = TRUE;
 //	logger.log("InputOpen playcount:",numToString(m_MP->GetSettings().GetPlayCount()));
-	logger.log("WMP status:" ,m_MP->GetStatus());
+//	logger.log("WMP status:" ,m_MP->GetStatus());
 
 	return 1;
 //	m_MP->ResetDirectShow();
@@ -74,8 +74,8 @@ MusicPlayerWMP::Play() {
 //	m_MP->openPlayer(m_file);
 	if (m_FileLoaded) 
 		m_MP->GetControls().play();
-	logger.log("WMP status:" ,m_MP->GetStatus());
-	logger.log("WMP playstate:", numToString(m_MP->GetPlayState()));
+	logger.logd("WMP status:" ,m_MP->GetStatus());
+	logger.logd("WMP playstate:", numToString(m_MP->GetPlayState()));
 	return TRUE;
 }
 

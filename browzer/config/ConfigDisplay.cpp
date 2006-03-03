@@ -1173,7 +1173,7 @@ BOOL CConfigDisplay::verifySkin(CString skin) {
  
 	if (msg.GetLength()) {
 		logger.log(msg);
-		MBMessageBox("Bad skin", msg,TRUE,FALSE);
+		MBMessageBox("Bad skin", msg,FALSE,FALSE);
 		return TRUE;
 	}
 	

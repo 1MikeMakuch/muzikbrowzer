@@ -6,7 +6,7 @@ class MyLog {
 	public:
 		MyLog():m_ready(FALSE){};
 		~MyLog();
-		void open(CString);
+		void open(CString, BOOL trunc=FALSE);
 		void close();
 		void log(
 			const CString &msg1,
@@ -37,6 +37,7 @@ class MyLog {
 	private:
 		BOOL m_ready;
 		CFile _file;
+		void trimIt();
 
 };
 
