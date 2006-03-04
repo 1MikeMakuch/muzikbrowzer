@@ -175,7 +175,6 @@ BEGIN_MESSAGE_MAP(CConfigDisplay, CPropertyPage)
     ON_CBN_EDITCHANGE(IDC_FONT_COLHDR,              OnSelchangeFont)
     ON_CBN_SELENDOK(IDC_SKIN_LIST,                  OnSkinChoose)
     ON_BN_CLICKED(IDC_SKIN_DELETE,                  OnSkinDelete)
-	ON_BN_CLICKED(IDC_COLOR_BK_COLHDR,              OnColorButton)
 	ON_BN_CLICKED(IDC_SWAP_SETTINGS_BUTTON, OnSwapSettingsButton)
     ON_BN_CLICKED(IDC_3DCOLHDRS,					On3dColHdrs)
 	ON_BN_CLICKED(IDC_3DDATA,						On3dData)
@@ -184,14 +183,13 @@ BEGIN_MESSAGE_MAP(CConfigDisplay, CPropertyPage)
     ON_BN_CLICKED(IDC_BOLD_PANEL,                   onbold)
     ON_BN_CLICKED(IDC_BOLD_TITLES,                  onbold)
 	ON_BN_CLICKED(IDC_BOLD_TITLES,                  onbold)
-	ON_BN_CLICKED(IDC_COLOR_BK_CURPLY,              OnColorButton)
+	ON_BN_CLICKED(IDC_COLOR_BORDERS,                OnColorButton)
+	ON_BN_CLICKED(IDC_COLOR_BK_COLHDR,              OnColorButton)
 	ON_BN_CLICKED(IDC_COLOR_BK_HIGH,                OnColorButton)
 	ON_BN_CLICKED(IDC_COLOR_BK_NORMAL,              OnColorButton)
 	ON_BN_CLICKED(IDC_COLOR_BK_PANEL,               OnColorButton)
 	ON_BN_CLICKED(IDC_COLOR_BK_SEL,					OnColorButton)
-	ON_BN_CLICKED(IDC_COLOR_BORDERS,                OnColorButton)
 	ON_BN_CLICKED(IDC_COLOR_TX_COLHDR,              OnColorButton)
-	ON_BN_CLICKED(IDC_COLOR_TX_CURPLY,              OnColorButton)
 	ON_BN_CLICKED(IDC_COLOR_TX_HIGH,                OnColorButton)
 	ON_BN_CLICKED(IDC_COLOR_TX_NORMAL,              OnColorButton)
 	ON_BN_CLICKED(IDC_COLOR_TX_PANEL,               OnColorButton)
@@ -231,7 +229,6 @@ BEGIN_MESSAGE_MAP(CConfigDisplay, CPropertyPage)
     ON_CBN_SELENDOK(IDC_BORDER_PANEL,               OnUpdateWidth)
 	ON_CBN_SELENDOK(IDC_BORDER_VERT,               OnUpdateWidth)
     ON_CBN_SELENDOK(IDC_BORDER_WIDTH,               OnUpdateWidth)
-	ON_CBN_SELENDOK(IDC_COLOR_BK_COLHDR,			OnColorButton)
     ON_CBN_SELENDOK(IDC_FONT_COLHDR,                OnSelchangeFont)
     ON_CBN_SELENDOK(IDC_FONT,                       OnSelchangeFont)
     ON_CBN_SELENDOK(IDC_FONT_PANEL,                 OnSelchangeFont)
@@ -830,7 +827,7 @@ CConfigDisplay::setupSample() {
 	m_SampleColHdr.changeFont(&m_FontSampleColHdr);
 	m_SampleColHdr.setText("Artists");
 
-	m_SampleColHdr.SetColors(m_vTxNormal,m_vBkColHdr,
+	m_SampleColHdr.SetColors(m_vTxColHdr, m_vBkColHdr,
 		m_vcrColHdrInUL,m_vcrColHdrInLR,m_vcrColHdrOutUL,m_vcrColHdrOutLR,
 		m_3dColHdr);
 	
@@ -1140,6 +1137,7 @@ BOOL CConfigDisplay::verifySkin(CString skin) {
 	if (checkSkinDef(regSD, tmp) != TRUE) {
 		msg += "Problems with " + skindef + "\r\n";
 		msg += tmp;
+		msg += "Either reinstall muzikbrowzer or fix the skin.";
 	}
 
 	// read skin def custom
