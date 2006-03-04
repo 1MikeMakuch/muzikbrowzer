@@ -2781,6 +2781,32 @@ CPlayerDlg::HandleIRMessage(int key) {
 	}
     return 0;
 }
+void
+CPlayerDlg::nextDlgCtrl() {
+	CWnd * f = GetFocus();
+	if ((CWnd * )&m_Playlist == f
+		|| &m_SearchClear == f
+		|| &m_SearchCancel == f
+		|| &m_SearchGo == f
+		|| &m_SearchEdit == f
+		) {
+		GotoDlgCtrl(&m_Genres);
+	} else
+		NextDlgCtrl();
+}
+void
+CPlayerDlg::prevDlgCtrl() {
+	CWnd * f = GetFocus();
+	if ((CWnd * )&m_Genres== f
+		|| &m_SearchClear == f
+		|| &m_SearchCancel == f
+		|| &m_SearchGo == f
+		|| &m_SearchEdit == f
+		) {
+		GotoDlgCtrl(&m_Playlist);
+	} else
+		PrevDlgCtrl();
+}
 
 afx_msg LRESULT
 CPlayerDlg::OnSerialMsg (WPARAM wParam, LPARAM lParam) {

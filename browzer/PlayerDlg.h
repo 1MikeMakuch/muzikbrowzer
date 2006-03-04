@@ -133,6 +133,8 @@ public:
 	void Need2Erase(BOOL flag) {
 		m_Need2Erase = flag;
 	}
+	void nextDlgCtrl();
+	void prevDlgCtrl();
 private:
 	PlayerCallbacks m_callbacks;
 	PlayerCallbacks m_callbacksGenres;

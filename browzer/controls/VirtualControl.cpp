@@ -169,7 +169,7 @@ VirtualDialog::OnControlSelChange() {
 void
 VirtualDialog::PrevDlgCtrl() {
     if (m_PlayerDlg) {
-        m_PlayerDlg->PrevDlgCtrl();
+        m_PlayerDlg->prevDlgCtrl();
     } else if (m_LoadPlaylistDlg) {
         m_LoadPlaylistDlg->PrevDlgCtrl();
     } else if (m_MenuDlg) {
@@ -181,7 +181,7 @@ VirtualDialog::PrevDlgCtrl() {
 void
 VirtualDialog::NextDlgCtrl() {
     if (m_PlayerDlg) {
-        m_PlayerDlg->NextDlgCtrl();
+        m_PlayerDlg->nextDlgCtrl();
     } else if (m_LoadPlaylistDlg) {
         m_LoadPlaylistDlg->NextDlgCtrl();
     } else if (m_MenuDlg) {
