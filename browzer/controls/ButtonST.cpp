@@ -44,6 +44,7 @@ CButtonST::CButtonST(BOOL isbutton)
 	m_bIsFocused		= FALSE;
 	m_bIsDisabled		= FALSE;
 	m_bMouseOnButton	= FALSE;
+	m_bKeepFocused		= TRUE;
 
 	FreeResources(FALSE);
 
@@ -773,7 +774,7 @@ void CButtonST::DrawTheBitmap(CDC* pDC, BOOL bHasTitle, RECT* rpItem,
 //		byIndex = (m_csBitmaps[1].hBitmap == NULL ? 0 : 1);
 	if (bIsPressed)
 		byIndex = 0;
-	else if (m_bMouseOnButton || m_bIsFocused) {
+	else if (m_bMouseOnButton || (m_bIsFocused && m_bKeepFocused)) {
 		byIndex = 2;
 		SendHoverMsg();
 	} else
@@ -1636,6 +1637,10 @@ DWORD CButtonST::SetFlat(BOOL bFlat, BOOL bRepaint)
 
 	return BTNST_OK;
 } // End of SetFlat
+void CButtonST::SetKeepFocused(BOOL keep) {
+	m_bKeepFocused = keep;
+	return;
+}
 
 // This function sets the alignment type between icon/bitmap and text.
 //

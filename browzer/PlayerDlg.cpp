@@ -1027,6 +1027,17 @@ CPlayerDlg::setColors() {
 	m_ButtonPlay.SetHoverMsg(this, MB_HOVER_PLAY_MSG);
 	m_ButtonPause.SetHoverMsg(this, MB_HOVER_PAUSE_MSG);
 
+	m_LogoButton.SetKeepFocused(FALSE);
+	m_ButtonShuffle.SetKeepFocused(FALSE);
+	m_ButtonSave.SetKeepFocused(FALSE);
+	m_ButtonReverse.SetKeepFocused(FALSE);
+	m_ButtonRandom.SetKeepFocused(FALSE);
+	m_ButtonLoad.SetKeepFocused(FALSE);
+	m_ButtonFastForward.SetKeepFocused(FALSE);
+	m_ButtonClear.SetKeepFocused(FALSE);
+	m_ButtonStop.SetKeepFocused(FALSE);
+	m_ButtonPlay.SetKeepFocused(FALSE);
+	m_ButtonPause.SetKeepFocused(FALSE);
 
 
 }
@@ -1667,7 +1678,12 @@ CPlayerDlg::resetControls() {
 	m_SearchStatus.RedrawWindow();
 
 	//m_GenresLabel.RedrawWindow();
-	readConfig();
+
+	// Don't do this hear anymore, it's resetting volume back to
+	// what's saved in registry instead of current setting
+	//readConfig();
+	// Do this instead cause the slider initiall paints thumb at top
+	m_VolumeSlider.SetPos(m_VolumeSlider.GetPos());
 
 	POSITION pos;
 	HBRUSH hbr;

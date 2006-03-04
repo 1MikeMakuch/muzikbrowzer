@@ -146,6 +146,7 @@ public:
 
 	DWORD SetBtnCursor(int nCursorId = NULL, BOOL bRepaint = TRUE);
 
+	void SetKeepFocused(BOOL keep);
 	DWORD SetFlat(BOOL bFlat = TRUE, BOOL bRepaint = TRUE);
 	DWORD SetAlign(BYTE byAlign, BOOL bRepaint = TRUE);
 	DWORD SetPressedStyle(BYTE byStyle, BOOL bRepaint = TRUE);
@@ -217,6 +218,7 @@ protected:
 
 	BOOL		m_bIsButton;			// Is it a button?
 	BOOL		m_bIsFlat;			// Is a flat button?
+	BOOL		m_bKeepFocused;		// Show hover bmp if in focus?
 	BOOL		m_bMouseOnButton;	// Is mouse over the button?
 	BOOL		m_bDrawTransparent;	// Draw transparent?
 	BOOL		m_bIsPressed;		// Is button pressed?
