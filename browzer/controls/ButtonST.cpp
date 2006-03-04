@@ -385,7 +385,18 @@ void CButtonST::CancelHover()
 			Invalidate();
 		} // if
 	} // if
+	if (m_HoverCWnd && ::IsWindow(m_HoverCWnd->m_hWnd)) {
+		m_HoverCWnd->PostMessage(MB_HOVER_CANCEL_MSG,
+			MB_HOVER_CANCEL_MSG, (LPARAM)MB_HOVER_CANCEL_MSG);
+	}
+
 } // End of CancelHover
+void CButtonST::SendHoverMsg() {
+	if (m_HoverCWnd && ::IsWindow(m_HoverCWnd->m_hWnd)) {
+		m_HoverCWnd->PostMessage(m_HoverMsg,
+			m_HoverMsg, (LPARAM)m_HoverMsg);
+	}
+}
 
 void CButtonST::OnMouseMove(UINT nFlags, CPoint point)
 {
@@ -2617,14 +2628,3 @@ void CButtonST::SetHoverMsg(CWnd * c, UINT msg) {
 	m_HoverCWnd = c;
 	m_HoverMsg = msg;
 }
-void CButtonST::SendHoverMsg() {
-	if (m_HoverCWnd && ::IsWindow(m_HoverCWnd->m_hWnd)) {
-		m_HoverCWnd->PostMessage(m_HoverMsg,
-			m_HoverMsg, (LPARAM)m_HoverMsg);
-	}
-}
-
-
-
-
-

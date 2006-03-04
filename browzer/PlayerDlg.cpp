@@ -399,6 +399,14 @@ BEGIN_MESSAGE_MAP(CPlayerDlg, CDialogClassImpl)
 	ON_MESSAGE(MB_HOVER_PAUSE_MSG		,	 OnHoverMsg)
 	ON_MESSAGE(MB_HOVER_PREVIOUS_MSG	,	 OnHoverMsg)
 	ON_MESSAGE(MB_HOVER_NEXT_MSG		,	 OnHoverMsg)
+	ON_MESSAGE(MB_HOVER_VOLUME_MSG		,	 OnHoverMsg)
+	ON_MESSAGE(MB_HOVER_POSITION_MSG	,	 OnHoverMsg)
+	ON_MESSAGE(MB_HOVER_CANCEL_MSG		,	 OnHoverCancelMsg)
+	ON_MESSAGE(MB_HOVER_MENU_MSG		,	 OnHoverMsg)
+	ON_MESSAGE(MB_HOVER_MINIMIZE_MSG		,	 OnHoverMsg)
+	ON_MESSAGE(MB_HOVER_MAXIMIZE_MSG		,	 OnHoverMsg)
+	ON_MESSAGE(MB_HOVER_RESTORE_MSG		,	 OnHoverMsg)
+	ON_MESSAGE(MB_HOVER_EXIT_MSG		,	 OnHoverMsg)
 	ON_WM_CAPTURECHANGED()
 	ON_WM_CTLCOLOR()
 	ON_WM_GETMINMAXINFO()
@@ -1026,6 +1034,13 @@ CPlayerDlg::setColors() {
 	m_ButtonStop.SetHoverMsg(this, MB_HOVER_STOP_MSG);
 	m_ButtonPlay.SetHoverMsg(this, MB_HOVER_PLAY_MSG);
 	m_ButtonPause.SetHoverMsg(this, MB_HOVER_PAUSE_MSG);
+	m_VolumeSlider.SetHoverMsg(this, MB_HOVER_VOLUME_MSG);
+	m_PositionSlider.SetHoverMsg(this, MB_HOVER_POSITION_MSG);
+	m_OptionsButton.SetHoverMsg(this, MB_HOVER_MENU_MSG);
+	m_ButtonMinimize.SetHoverMsg(this, MB_HOVER_MINIMIZE_MSG);
+	m_ButtonMaximize.SetHoverMsg(this, MB_HOVER_MAXIMIZE_MSG);
+	m_ButtonRestore.SetHoverMsg(this, MB_HOVER_RESTORE_MSG);
+	m_ButtonExit.SetHoverMsg(this, MB_HOVER_EXIT_MSG);
 
 	m_LogoButton.SetKeepFocused(FALSE);
 	m_ButtonShuffle.SetKeepFocused(FALSE);
@@ -4616,6 +4631,12 @@ void CPlayerDlg::OnLogoButton()
 
 }
 LRESULT
+CPlayerDlg::OnHoverCancelMsg(UINT wParam, LONG lParam) {
+	PlayerStatusTempSet("");
+	return 0;
+}
+
+LRESULT
 CPlayerDlg::OnHoverMsg(UINT wParam, LONG lParam) {
 	CString msg;
 	switch(wParam) {
@@ -4642,9 +4663,23 @@ CPlayerDlg::OnHoverMsg(UINT wParam, LONG lParam) {
 		msg = "Play previous song in playlist";break;
 	case MB_HOVER_NEXT_MSG:
 		msg = "Play next song in playlist";break;
+	case MB_HOVER_VOLUME_MSG:
+		msg = "Volume"; break;
+	case MB_HOVER_POSITION_MSG:
+		msg = "Progress"; break;
+	case MB_HOVER_MENU_MSG:
+		msg = "Menu: Settings, Options, Help"; break;
+	case MB_HOVER_MINIMIZE_MSG:
+		msg = "Minimize"; break;
+	case MB_HOVER_MAXIMIZE_MSG:
+		msg = "Maximize"; break;
+	case MB_HOVER_RESTORE_MSG:
+		msg = "Restore"; break;
+	case MB_HOVER_EXIT_MSG:
+		msg = "Exit"; break;
 	}
-//	if (msg.GetLength())
-//		PlayerStatusTempSet(msg);
+	if (msg.GetLength())
+		PlayerStatusTempSet(msg);
 	return 0;
 }
 

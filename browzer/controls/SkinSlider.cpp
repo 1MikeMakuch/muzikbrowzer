@@ -37,6 +37,10 @@ CMySliderCtrl::CMySliderCtrl(CWnd * parent) : m_pParent(parent)
 	m_Pos = 0;
 	m_Dragging = FALSE;
 
+	m_HoverMsg = 0;
+	m_HoverCWnd = NULL;
+	m_Hovering = FALSE;
+
 	m_BgSet = FALSE;
 	m_bmpBkCh.DeleteObject();
 
@@ -130,8 +134,6 @@ void CMySliderCtrl::SetPos(int pos, BOOL sendmsg) {
 void CMySliderCtrl::OnLButtonDown(UINT nFlags, CPoint point) {
 	if (m_ThumbRect.PtInRect(point)) {
 		m_Dragging = TRUE;
-//		SetCapture();
-//		OutputDebugString("Slider Capture\r\n");
 	} else {
 		SetPos(point);
 	}
@@ -142,22 +144,53 @@ void CMySliderCtrl::OnLButtonUp(UINT nFlags, CPoint point) {
 	if (m_Dragging) {
 		m_Dragging = FALSE;
 		ReleaseCapture();
+		SendHoverCancel();
 	}
 }
 void CMySliderCtrl::OnMouseMove(UINT nFlags, CPoint point) {
+	CRect rect;
+	GetClientRect(rect);
+	if (!m_Dragging && !rect.PtInRect(point)) {
+		ReleaseCapture();
+		SendHoverCancel();
+	}
 	if (m_Dragging)
 		SetPos(point);
 }
+
 UINT
 CMySliderCtrl::OnNcHitTest( CPoint point ) {
 	CRect rect;
 	GetWindowRect(rect);
-	if (rect.PtInRect(point)) 
+	if (rect.PtInRect(point)) {
+		if (!m_Dragging) {
+			SetCapture();
+			SendHoverMsg();
+		}
 		return HTCLIENT;
-	else {
+	} else {
+		SendHoverCancel();
+		if (m_Dragging)
+			ReleaseCapture();
 		m_Dragging = FALSE;
 	}
 	return HTNOWHERE   ;
+}
+void CMySliderCtrl::SendHoverMsg() {
+	if (m_Hovering) return;
+	if (m_HoverCWnd && ::IsWindow(m_HoverCWnd->m_hWnd)) {
+		m_HoverCWnd->PostMessage(m_HoverMsg,
+			m_HoverMsg, (LPARAM)m_HoverMsg);
+	}
+	m_Hovering = TRUE;
+}
+void CMySliderCtrl::SendHoverCancel() {
+	if (!m_Hovering) return;
+	if (m_HoverCWnd && ::IsWindow(m_HoverCWnd->m_hWnd)) {
+		m_HoverCWnd->PostMessage(MB_HOVER_CANCEL_MSG,
+			MB_HOVER_CANCEL_MSG, (LPARAM)MB_HOVER_CANCEL_MSG);
+	}
+	m_Hovering = FALSE;
 }
 
 void CMySliderCtrl::OnPaint() {
@@ -441,3 +474,9 @@ void CMySliderCtrl::SizeToContent(CWnd * parent)
 void CMySliderCtrl::getChannelRect(CRect & rect) {
 	rect = m_ChannelRect;
 }
+void CMySliderCtrl::SetHoverMsg(CWnd * c, UINT msg) {
+
+	m_HoverCWnd = c;
+	m_HoverMsg = msg;
+}
+

@@ -226,7 +226,7 @@ BOOL LoadPlaylistDlg::OnInitDialog()
 	
 	CDC * cdc = GetDC();
 
-	m_TitleLabel.setText("Playlist Editor");
+	m_TitleLabel.setText("Playlist Editor ");
 	if (m_IsEditor) { 
 		m_PlaylistNames.SetBitmaps(cdc);
 		m_PlaylistSongs.SetBitmaps(cdc);
@@ -235,7 +235,7 @@ BOOL LoadPlaylistDlg::OnInitDialog()
 		m_NamesLabel.initFont();
 		m_SongsLabel.initFont();
 	} else {
-		m_TitleLabel.setText("Playlist Loader");
+		m_TitleLabel.setText("Playlist Loader ");
 		m_TitleLabel.SetColors(crOtherFg,crOtherBg);
 //		m_TitleLabel.SetTransparent(cdc, m_crTransPanel);
 

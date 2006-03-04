@@ -65,10 +65,12 @@ public:
 		HBITMAP hThumb, COLORREF crTransThumb);
 	void SizeToContent(CWnd * parent = NULL);
 	BOOL m_Dragging;
+	BOOL m_Hovering;
 	void getChannelRect(CRect & rect);
 
 	enum { VERTICAL, HORIZONTAL } ;
 	void SetOrientation(UINT);
+	void SetHoverMsg(CWnd * c, UINT msg);
 
 protected:
     //{{AFX_MSG(CMySliderSK)
@@ -83,6 +85,9 @@ protected:
 	HBITMAP CreateBitmapMask(HBITMAP hSourceBitmap, DWORD dwWidth, DWORD dwHeight, COLORREF crTransColor);
 	void DrawTheBitmap(CPaintDC* pDC, CRect & rect, BYTE index);
 	void PaintBk(CPaintDC* pDC);
+
+	void SendHoverMsg();
+	void SendHoverCancel();
 private:
 	UINT m_Orientation;
 	int m_Min;
@@ -102,6 +107,9 @@ private:
 	BOOL		m_BgSet;
 	CBitmap		m_bmpBkCh;
 	CWnd *		m_pParent;
+	
+	UINT m_HoverMsg;
+	CWnd * m_HoverCWnd;
 
 	typedef struct _STRUCT_BITMAPS
 	{

@@ -383,6 +383,7 @@ public:
 	afx_msg LRESULT OnVolume(UINT wParam, LONG lParam);
 	afx_msg LRESULT OnProgress(UINT wParam, LONG lParam);
 	afx_msg LRESULT OnHoverMsg(UINT wParam, LONG lParam);
+	afx_msg LRESULT OnHoverCancelMsg(UINT wParam, LONG lParam);
 	afx_msg LRESULT OnMovePlaylistUp(UINT wParam, LONG lParam);
 	afx_msg LRESULT OnMovePlaylistDn(UINT wParam, LONG lParam);
     afx_msg LRESULT OnPostMyIdle(UINT wParam, LONG lParam);
