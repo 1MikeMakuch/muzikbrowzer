@@ -77,8 +77,7 @@ private:
     COLORREF m_TColor;
 
     void init();
-	BOOL HelpInfo();
-	afx_msg BOOL OnHelpInfo( HELPINFO* );
+	BOOL HelpInfo(const int i);
 	afx_msg BOOL OnCommand(WPARAM wParam, LPARAM lParam) ;
 
 public:

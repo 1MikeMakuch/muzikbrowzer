@@ -9,7 +9,9 @@ media and accompanying items.
 
 1. Grant of License. Pecan Ventures, LLC hereby grants to you (an individual
 or company) the right to install and activate the Software
-on one computer for your personal or commerical use.
+on one computer for your personal use. Commercial use is strictly
+prohibited by this license agreement. Contact Pecan Ventures for
+commercial licensing.
 Copying, sharing or distributing this Software with other
 individuals is in violation of this license.
 

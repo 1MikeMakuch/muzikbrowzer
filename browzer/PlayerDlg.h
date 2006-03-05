@@ -217,7 +217,8 @@ private:
 	void saveConfig();
 	void readConfig();
 	void ShowBetaWarning();
-	BOOL HelpInfo();
+	void HelpInfo();
+	void HelpInfo(BOOL userormain);
 	void recordTLEN();
  	void displayAlbumArt(const CString & file);
  	void killAlbumArt();

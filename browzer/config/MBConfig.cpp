@@ -64,10 +64,8 @@ MBConfig::init() {
 #endif
 
     AddPage(m_Files);
-    AddPage(m_Irman);
-//    AddPage(m_Fonts);
-//    AddPage(m_Colors);
 	AddPage(m_Display);
+    AddPage(m_Irman);
 #ifdef MB_USING_TRIAL_MODE
 	AddPage(m_Password);
 #endif
@@ -79,8 +77,6 @@ BEGIN_MESSAGE_MAP(MBConfig, CPropertySheet)
 		// NOTE - the ClassWizard will add and remove mapping macros here.
 	ON_COMMAND(ID_MENU_HELP, HelpInfo)
 	//}}AFX_MSG_MAP
-
-	ON_WM_HELPINFO()
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -248,7 +244,7 @@ int MBConfig::trialMode() {
 	} else return FALSE;
 }
 
-BOOL MBConfig::HelpInfo() {
+BOOL MBConfig::HelpInfo(const int idx) {
     TCHAR szPath[_MAX_PATH],
       szFname[_MAX_FNAME],
       szDir[_MAX_DIR],
@@ -258,39 +254,45 @@ BOOL MBConfig::HelpInfo() {
 		DWORD dwError = GetLastError();
 		CString msg;
 		msg << "HelpInfo: Error " << dwError;
-//		logger.log(msg);
 		return FALSE;
 	}
+
+	CString helppage,anchor ;
 
     _splitpath(szPath, szDrive, 
                szDir, szFname, NULL);
     _makepath(szPath, szDrive, szDir, 
                       MUZIKBROWZER, "chm");
 
-//	HtmlHelp(GetDesktopWindow()->m_hWnd, 
-//                 szPath,HH_DISPLAY_TOPIC, NULL);
+	helppage = "ms-its:" + CString(szPath);
+	if (0 == idx) {
+		anchor = "::/Html/Configuration.htm#General";
+	} else if (1 == idx) {
+		anchor = "::/Html/Configuration.htm#Display";
+	} else if (2 == idx) {
+		anchor = "::/Html/Configuration.htm#Irman";
+	} else if (3 == idx) {
+		anchor = "::/Html/Configuration.htm#License";
+	}
+	helppage += anchor;
 
-//	HINSTANCE h = ShellExecute(this->m_hWnd, "open", "KeyHH.exe", szPath,
-	HINSTANCE h = ShellExecute(this->m_hWnd, "open",  szPath, NULL,
+	HINSTANCE h = ShellExecute(this->m_hWnd, "open",  "hh.exe", helppage, 
 		szDir, SW_SHOW);
 	if ((int)h <= 32) {
 		CString msg;
 		msg << "ShellExecute on help failed. ShellExecute returned "
 			<< (int)h << " on " << szPath << " " << szDir;
-//		logger.log(msg);
 	}
 
     return(TRUE);
 }
-BOOL MBConfig::OnHelpInfo(HELPINFO* pHelpInfo) {
-	return HelpInfo();
 
-}
 BOOL MBConfig::OnCommand(WPARAM wParam, LPARAM lParam) 
 {
 	UINT nID = LOWORD(wParam);
 	if(nID == IDHELP) {
-		HelpInfo();
+		int i = GetActiveIndex();
+		HelpInfo(i);
 	} else {
 		return CPropertySheet::OnCommand(wParam, lParam);
 	}

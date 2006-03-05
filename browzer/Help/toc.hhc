@@ -13,7 +13,7 @@
 		<param name="Local" value="Html/Introduction.htm">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="License">
+		<param name="Name" value="Trial & License">
 		<param name="Local" value="Html/License.htm">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
@@ -39,29 +39,29 @@
 			</OBJECT>
 	</UL>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="Configuration">
+		<param name="Name" value="Settings">
 		<param name="Local" value="Html/Configuration.htm">
 		</OBJECT>
 	<UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Files">
-			<param name="Local" value="Html/Configuration.htm#Files">
+			<param name="Name" value="General">
+			<param name="Local" value="Html/Configuration.htm#General">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Display">
+			<param name="Local" value="Html/Configuration.htm#Display">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Irman">
 			<param name="Local" value="Html/Configuration.htm#Irman">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Fonts & Colors">
-			<param name="Local" value="Html/Configuration.htm#FontsColors">
+			<param name="Name" value="License">
+			<param name="Local" value="Html/Configuration.htm#License">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Ogg Vorbis">
 			<param name="Local" value="Html/Configuration.htm#OggVorbis">
-			</OBJECT>
-		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Password">
-			<param name="Local" value="Html/Configuration.htm#Password">
 			</OBJECT>
 	</UL>
 	<LI> <OBJECT type="text/sitemap">

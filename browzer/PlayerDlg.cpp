@@ -4360,7 +4360,7 @@ void CPlayerDlg::OnTestMenu() {
 
 }
 
-BOOL CPlayerDlg::HelpInfo() {
+void CPlayerDlg::HelpInfo(BOOL user) {
     TCHAR szPath[_MAX_PATH],
       szFname[_MAX_FNAME],
       szDir[_MAX_DIR],
@@ -4371,19 +4371,23 @@ BOOL CPlayerDlg::HelpInfo() {
 		CString msg;
 		msg << "HelpInfo: Error " << dwError;
 		logger.log(msg);
-		return FALSE;
+		return ;
 	}
+
+	CString helppage,anchor ;
 
     _splitpath(szPath, szDrive, 
                szDir, szFname, NULL);
     _makepath(szPath, szDrive, szDir, 
                       MUZIKBROWZER, "chm");
 
-//	HtmlHelp(GetDesktopWindow()->m_hWnd, 
-//                 szPath,HH_DISPLAY_TOPIC, NULL);
+	helppage = "ms-its:" + CString(szPath);
+	if (user) {
+		anchor = "::/Html/UserGuide.htm";
+	}
+	helppage += anchor;
 
-//	HINSTANCE h = ShellExecute(this->m_hWnd, "open", "KeyHH.exe", szPath,
-	HINSTANCE h = ShellExecute(this->m_hWnd, "open",  szPath, NULL,
+	HINSTANCE h = ShellExecute(this->m_hWnd, "open",  "hh.exe", helppage, 
 		szDir, SW_SHOW);
 	if ((int)h <= 32) {
 		CString msg;
@@ -4392,11 +4396,16 @@ BOOL CPlayerDlg::HelpInfo() {
 		logger.log(msg);
 	}
 
-    return(TRUE);
-}
-BOOL CPlayerDlg::OnHelpInfo(HELPINFO* pHelpInfo) {
-	return HelpInfo();
 
+}
+// This one's called from the Menu
+void CPlayerDlg::HelpInfo() {
+	HelpInfo(FALSE);
+}
+// While this one's called via F1
+BOOL CPlayerDlg::OnHelpInfo(HELPINFO* pHelpInfo) {
+	HelpInfo(TRUE);
+	return TRUE;
 }
 
 void CPlayerDlg::OnMenuExportLibrary() {

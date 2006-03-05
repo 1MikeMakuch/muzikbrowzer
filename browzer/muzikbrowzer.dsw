@@ -48,18 +48,6 @@ Package=<4>
 
 ###############################################################################
 
-Project: "GetSysColors"=..\..\samples\GetSysColors\GetSysColors.dsp - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
 Project: "Inno"=.\Inno\Inno.dsp - Package Owner=<4>
 
 Package=<5>
@@ -342,18 +330,6 @@ Package=<4>
     Project_Dep_Name util
     End Project Dependency
     Begin Project Dependency
-    Project_Dep_Name vorbis_static
-    End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name vorbisfile_static
-    End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name ogg_static
-    End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name id3
-    End Project Dependency
-    Begin Project Dependency
     Project_Dep_Name vorbiscomment
     End Project Dependency
     Begin Project Dependency
@@ -366,40 +342,7 @@ Package=<4>
     Project_Dep_Name GetBlackOut
     End Project Dependency
     Begin Project Dependency
-    Project_Dep_Name GetSysColors
-    End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name oggtagger
-    End Project Dependency
-    Begin Project Dependency
     Project_Dep_Name Wmp
-    End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name BitmapCutter
-    End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name bitmaptest
-    End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name id3lib
-    End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name id3tagger
-    End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name mbpw
-    End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name mbpwDlg
-    End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name MetadataEdit
-    End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name mydiff
-    End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name regset
     End Project Dependency
     Begin Project Dependency
     Project_Dep_Name zlib
