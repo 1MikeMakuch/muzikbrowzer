@@ -3,9 +3,9 @@
   <head>
     <meta name="generator" content="MAKEHHP Ver. 1.0">
     <meta name="description" content="MAKEHHP Helpfile Compiler Generated HTML File">
-    <meta name="author" content="Kooware">
-    <meta name="publisher" content="Kooware">
-    <meta name="copyright" content="Kooware 2002">
+    <meta name="author" content="Muzikbrowzer">
+    <meta name="publisher" content="Muzikbrowzer">
+    <meta name="copyright" content="Muzikbrowzer 2002-2006">
     <meta name="date" content="2001-06-01T00:00:10+00:00">
     <meta name="robots" content="NONE">
     <title>User Guide</title>
@@ -55,13 +55,13 @@ associated with that function. <p class="text">
 	Album window. For instance if you press 'Y' it'll take you to the Y's in your Genre,
 	Artist or Album window.
 
-	<li>The 'u' and 'd' keys have a special function inside the Playlist. They
+	<li>The Alt+Up/Alt+Down arrow keys have a special function inside the Playlist. They
 	allow you to reorder the songs in the Playlist. To do so first select a
-	song in the Playlist you wish to move up or down. Then use the 'u' or
-	'd' to move the selected song up or down in the Playlist.
+	song in the Playlist you wish to move up or down. Then use the Alt+Up or
+	Alt+Down to move the selected song up or down in the Playlist.
 
 	<li>Delete key will delete a song in the Playlist. It has no function in the other windows.
-	<li>Right click on any Genre, Artist, Album or Song to access and optionally edit ID3/Ogg tag information. <i>Note: Any saved playlists that you have may become unusable after performing ID3/Ogg tag editing.</i>
+	<li>Right click on any Genre, Artist, Album or Song to access and optionally edit tag information. <i>Note: Any saved playlists that you have may become unusable after performing tag editing.</i>
 	<li>Menu. Click on the Menu button in the upper right corner of muzikbrowzer to access the menu of the following functions:
 		<ul class="text">
 		<li>Shuffle Playlist. "Shuffles" the Playlist in Artist/Album order. Takes the first song from each Album and adds them to the Playlist, then the second song from each Album and so forth. Successive shuffles on the same Playlist will always yield the same shuffled Playlist.
@@ -71,31 +71,58 @@ associated with that function. <p class="text">
 		<li>Load Playlist. Opens the LoadPlaylist Dialog allowing you to choose from your previously saved playlists. You can also delete a previously saved playlist from here.
 		<li>Pause, Play, Stop do the obvious.
 		<li>Help. You are here.
-		<li>Configuration. See <a href="Html/Configuration.htm" target="_blank">Configuration</a>
+		<li>Configuration. See <a href="Html/Configuration.htm" >Configuration</a>
 		</ul>
 	<li>Progress slider. You can use the mouse to fast forward or rewind the song currently playing.
 	<li>Minimize, Maximize and Exit buttons appear at the upper right.
 	<li>The muzikbrowzer dialog can be resized with the mouse. Size and position are saved and restored next time muzikbrowzer is opened.
 	</ul>
+<li>Keyboard shortcuts
+	<p class=text>
+	<table class=text border=0>
+	<tr><td>left/right/up/down arrows</td>		<td>navigate through Muzikbrowzer</td></tr>
+	<tr><td>Enter/Return</td>					<td>Add selected music to playlist</td></tr>
+	<tr><td>Tab</td>							<td>same as right arrow</td></tr>
+	<tr><td>Delete</td>							<td>delete song from Playlist</td></tr>
+	<tr><td>Alt+M</td>							<td>Menu</td></tr>
+	<tr><td>Alt+Up</td>							<td>Move song up in Playlist</td></tr>
+	<tr><td>Alt+Down</td>						<td>Move song down in Playlist</td></tr>
+	<tr><td>Alt+S</td>							<td>Stop</td></tr>
+	<tr><td>Alt+P</td>							<td>Play</td></tr>
+	<tr><td>Alt+A</td>							<td>Pause</td></tr>
+	<tr><td>Alt+I</td>							<td>Previous song</td></tr>
+	<tr><td>Alt+N</td>							<td>Next song</td></tr>
+	<tr><td>Alt+D</td>							<td>Randomize</td></tr>
+	<tr><td>Alt+H</td>							<td>Shuffle</td></tr>
+	<tr><td>Alt+C</td>							<td>Clear</td></tr>
+	<tr><td>Alt+L</td>							<td>Load</td></tr>
+	<tr><td>Alt+V</td>							<td>Save</td></tr>
+	<tr><td>Alt+U</td>							<td>Volume up</td></tr>
+	<tr><td>Alt+O</td>							<td>Volume down</td></tr>
+	<tr><td>Alt+F</td>							<td>Fast forward</td></tr>
+	<tr><td>Alt+E</td>							<td>Reverse</td></tr>
+	<tr><td>Alt+R</td>							<td>Remote control menu</td></tr>
+	</table>
+	</p>
 <a name="Miscellaneous">
 <li>Miscellaneous
 	<ul class="text">
 	<li>Genres and Artists are sorted alphabetically.
-	<li>Albums are sorted by Year if the ID3/Ogg tag contains the year. Otherwise alphabetically.
-	<li>Songs are sorted by track number if the ID3/Ogg tag contains the track number. Otherwise by filename (this can be usefull if you don't have the track number in the ID3/Ogg tag but your song files are named with the track number as a prefix, i.e. '01-Here Comes The Sun', '02-Hey Jude', etc).
+	<li>Albums are sorted by Year if the tag contains the year. Otherwise alphabetically.
+	<li>Songs are sorted by track number if the tag contains the track number. Otherwise by filename (this can be usefull if you don't have the track number in the tag but your song files are named with the track number as a prefix, i.e. '01-Here Comes The Sun', '02-Hey Jude', etc).
 	<li>Currently muzikbrowzer does not "rip" or record from CD's into mp3 files.
 	<li>Certain operations write error and informational messages into the log file, muzikbrowzer.log located in the directory specified in the Configuration dialog. This file may be helpfull in diagnosing problems.
 	<li>While playing music muzikbrowzer will display the song currently playing in the Playing status field at the bottom right. As you navigate around through different windows, the currently selected field will temporarily be displayed in this status field. After a few seconds the status field will go back to displaying the song currently playing.
 
 	<li>Album cover art is displayed for the song currently playing
-	and while you are browsing through your mp3 library. Album cover
-	picture is read from the id3 tag of mp3 files if present in an APIC
-	id3 field. Each picture is displayed as you browse through different
+	and while you are browsing through your music library. Album cover
+	picture is read from the tag of audio files if present.
+	Each picture is displayed as you browse through different
 	artists, albums in muzikbrowzer. As well the album cover picture will
 	be displayed as songs are played in muzikbrowzer. Note that you must
 	obtain the album cover picture via software other than muzikbrowzer.
-	New in version 1.3: if no album art picture is found in the id3 tag muzikbrowzer
-	will look in the folder of the mp3 file for a file called "folder.jpg". This follows
+	If no album art picture is found in the tag muzikbrowzer
+	will look in the folder of the audio file for a file called "folder.jpg" or "cover.jpg". This follows
 	Windows XP convention.
 
 	<li>The Player Status field is the smaller field to the left of the Playing Status field. It shows the current status of the player, i.e. Playing, Paused etc.
@@ -104,32 +131,6 @@ associated with that function. <p class="text">
 	<li>Playlist and Song duration: 
 	When you queue up songs into the Playlist, muzikbrowzer adds up the duration of each
 	song selected and displays the total Playlist duration above the Playlist. 
-	To determine the duration of each song muzikbrowzer performs the following steps;
-	<ul>
-	<li>For ogg files, it just reads the duration from the ogg file
-	</ul>
-	<ul>
-	<li>For mp3 files when muzikbrowzer scans each mp3 file (when you click Scan in the Configuration 
-	dialog) it looks for the TLEN field in the id3 tag in the mp3/ogg file. The TLEN field may
-	be set by some external program you used when you ripped, or recorded, the song. Or 
-	it may be set by some other software you use. 
-	If the TLEN field is present muzikbrowzer uses this value as the songs duration time.
-
-	<li>If the TLEN field is not present in the id3 tag for an mp3 file then muzikbrowzer
-	attempts to quickly analyze the mp3 file, looking for mp3 headers which provide 
-	duration information. 
-	If
-	muzikbrowzer can quickly determine the songs duration it will use this value. In this case 
-	muzikbrowzer will store the song duration in it's own internal database and use it for 
-	the Playlist duration display.
-	If muzikbrowzer cannot  quickly
-	determine the song duration it will not be represented in the Playlist duration
-	field the first time the song is played in muzikbrowzer. 
-	
-	However, after the song is played the first time
-	muzikbrowzer will recognize how long the song took to play and it will store the song's duration in it's internal 
-	database for later use.
-	</ul>
 
 	</ul>
 </ul>
@@ -144,7 +145,7 @@ associated with that function. <p class="text">
 			</td>
 		</tr>
 		</table>
-		 <P align=center><FONT size=1>Copyright 2002 Pecan Ventures LLC - All rights reserved.
+		 <P align=center><FONT size=1>Copyright 2002-2006 Pecan Ventures LLC - All rights reserved.
 		              </FONT></P>
     </body>
 </html>

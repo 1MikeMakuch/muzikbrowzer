@@ -3,12 +3,12 @@
   <head>
     <meta name="generator" content="MAKEHHP Ver. 1.0">
     <meta name="description" content="MAKEHHP Helpfile Compiler Generated HTML File">
-    <meta name="author" content="Kooware">
-    <meta name="publisher" content="Kooware">
-    <meta name="copyright" content="Kooware 2002">
+    <meta name="author" content="Muzikbrowzer">
+    <meta name="publisher" content="Muzikbrowzer">
+    <meta name="copyright" content="Muzikbrowzer 2002-2006">
     <meta name="date" content="2001-06-01T00:00:10+00:00">
     <meta name="robots" content="NONE">
-    <title>Configuration</title>
+    <title>Settings</title>
     <link type="text/css" rel="stylesheet" href="helpstyles.css">
   </head>
 
@@ -16,28 +16,23 @@
 		<table class="main"  border="0" cellpadding="0" cellspacing="0">
 		<tr>
 			<td>
-				<h1>Configuration</h1>
+				<h1>Settings</h1>
 				<p class="text">
 
 
 				
-<a name="Files">
+<a name="General">
 			<ul class="text">
 			<li><b>General</b>
-		<center><img src="SShotConfigFiles.gif"></center><br>
-				<ul class="text">
+			<ul class="text">
 			<li><b>Directories to scan for audio files</b>. Tell muzikbrowzer where
-				to look for mp3/ogg files on your computer or network. You don't want
+				to look for audio files on your computer or network. You don't want
 				to enter "C:\" here, rather, enter the specific directory(ies) where your
 				music files are stored.
 
-			<li><b>Audio File extensions</b>. Normally the default "mp3" is sufficient. 
-				Only modify this list if you have mp3 files with an extension other than 
-				"mp3". If you have ogg files, add "ogg" to this list.
-
 			<li><b>Location of muzikbrowzer database</b>. Normally the default 
 				location is copasetic. This is where muzikbrowzer stores the database, 
-				saved playlists, log files etc. If you have some reason to store the
+				saved playlists, skins, log files etc. If you have some reason to store the
 				muzikbrowzer database and other data in a folder other than the default
 				"Program Files\muzikbrowzer" you may do so.
 
@@ -51,20 +46,58 @@
 				to the list of directories to scan. Scan for New is significantly 
 				faster than a complete Scan because it
 				retains the existing database and only searches for new files.
-				Note that if you use id3 tag editing software other than muzikbrowzer, 
+				Note that if you use tag editing software other than muzikbrowzer, 
 				you'll have to perform a complete Scan in order for muzikbrowzer to pickup 
 				those changes.
 
 			<li><b>Run at Startup</b>. This will cause muzikbrowzer to run when you 
 			logon. Tip: see the Autolog program at www.sysinternals.com.
+
+			<li<b>Album sort</b>. Sort albums alphabetically or by release date?
 				</ul>
 				<p>
 
+<a name="Display">
+			<li><b>Display</b>
+				Muzikbrowzer allows a wide range of display settings to be modified to suit
+				your environment. As you experiment making changes to this screen you may
+				click Apply to apply the changes to muzikbrowzer.
+				<ul>
+				<li><b>Skin</b>. Choose the desired skin.
+				<li><b>Restore default skins settings</b>. All Display settings on this screen
+				have default settings in the skin definition. Click Restore to revert these
+				settings back to the skin default. In doing so you'll lose any changes you've
+				made to this screen.
+				<li><b>Text and Backgrounds</b>. Set the colors and font parameters for the 5
+				text types. As you make changes the Sample window reflects your changes.
+				<li><b>3D Shadow</b>. Set the 3D Shadow effect for the Column Headers, Data
+				Windows and Status line. Around each of these 3 windows are a 2 pixel wide
+				border, broken into 4 colors.<br>
+					<table border=0><tr><td>
+					<ul>
+					<li><font size=2 color=red>Top and Left Outer</font>
+					<li><font size=2 color=blue>Top and Left Inner</font>
+					<li><font size=2 color=black>Bottom and Right Inner</font>
+					<li><font size=2 color=green>Bottom and Right Outer</font>
+					</ul>
+					</td><td>
+					<img src="Display3DShadow.gif"><br>
+					</td></tr></table>
+					These colors used for illustration. Good choice of colors produce desired
+					effect.
+
+				<li><b>Margin</b>. Sets the margin around the outer edge of the whole
+				Muzikbrowzer window. On some systems when you maximize Muzikbrowzer the edges
+				may be lost off the edge of the display. Increasing this value resolves this
+				problem.
+
+				</ul>
+
+<p>
 
 
 <a name="Irman">
 		<li><b>Irman</b>
-	<center><img src="SShotConfigIrman.gif"></center><br>
 		<ul class="text">
 		<li><b>Irman COM Port</b>. Choose the serial COM Port you have the
 			Irman infrared receiver plugged into. Usually 1 or 2. Choose Disabled 
@@ -72,17 +105,13 @@
 		<li><b>Initialize</b>. Click on Initialize after you have chosen a COM Port 
 			to test muzikbrowzer communication with the Irman. On Success you should 
 			get an "Ok".
-		<li><b>IR Pulses per press</b>. You may have to adjust this value depending upon
-			how your remote control works with the Irman. This value represents the
-			number of ir code sequences transmitted each time you press a button on 
-			your remote control. It will vary with different remote controls. See the
-			procedure below for determining this value.
+
 		<li><b>Record</b>. Click Record to teach muzikbrowzer your remote control codes.
-			According to <a href="www.evation.com">Irman</a> most all infrared
+			According to <a target=_blank href="http://www.evation.com">Irman</a> most all infrared
 			remote controls will work with the Irman.
 			<ul class="text">
 			<li>Click Record.
-			<li>Click the Up button on the Irman Configuration Dialog. The <b>Code</b>
+			<li>Click the Up button on the Irman Settings Dialog. The <b>Code</b>
 			value should indicating <B><I>reading...</i></b>.
 			<li>Now press the button on your remote control which you choose to serve 
 				as the Up button. Upon receiving a signal the <b>Code</b> value
@@ -113,51 +142,39 @@
 		<li><b>Test</b>. When you have <i>taught</i> muzikbrowzer some or all of
 			your remote control codes click on <b>Test</b> to verify that the Irman
 			is correctly reading signals from your remote control and that each
-			button learned is distinguished from the others. In some cases more than
-			one button on a remote control results in the Irman producing the same
-			hexidecimal sequence. In this case you may not be able to use those
-			buttons or in the worst case you may have to try a different remote control.
+			button learned is distinguished from the others. 
+			When you click a remote control button and Muzikbrowzer successfully receives
+			the signal from the Irman, the description is displayed in the <b>Read</b>
+			window followed by an increment number. This number indicates how many
+			times Muzikbrowzer received that signal. (See Key Suppress below).
+			
+		<li><b>Key suppress</b>. (milliseconds) Some remote controls send more than
+			1 infrared signal when you press a button once.
+			This parameter allows Muzikbrowzer to
+			ignore the extra signals sent by your remote
+			control. Successive signals received within this
+			time period will be ignored.
+
+			The Key Suppress value should be as low as possible
+			without producing Read increments greater than 1.
+
 				
-		<li><b>Ir Pulses per press</b>
-		<ul class="text">
-		<li>First "teach" muzikbrowzer your remote control's ir code sequences by
-		performing the "Record" procedure above.
-		<li>Start with a value of 1 IR Pulses per press.
-		<li>Click OK and save the configuration, and return to the muzikbrowzer
-		screen.
-		<li>Try a few different remote control buttons, up, down, left, right.
-		<li>Observe what happens on the muzikbrowzer screen.
-		<li>If you for instance you are observing 2 up's, in response to a single press of the up key, then try increasing the 'IR Pulses per press' value to 2.
-		</ul>
 		</ul>
 <p>
 
-<a name="FontsColors">
-			<li><b>Fonts & Colors.</b>
-	<center><img src="SShotConfigFonts.gif"></center><br>
-	<center><img src="SShotConfigColors.gif"></center><br>
+<a name="License">
+			<li><b>License</b>
 			<ul>
-
-			<li>muzikbrowzer is designed
-				to accomodate the relative low resolution of tv screens. Adjust
-				Font type, size and colors to your preference.
-			</ul>
-
-<p>
-<a name="Password">
-			<li><b>Password</b>
-	<center><img src="SShotConfigPassword.gif"></center><br>
-			<ul>
-			<li>Enter your registration and license password here.
-			<li>Without a password muzikbrowzer will run in Trial Mode. You have 60 days
+			<li>Enter your license information here.
+			<li>Without a license muzikbrowzer will run in Trial Mode. You have 60 days
 			to decide whether or not to purchase.
 			<li>To purchase click on the Purchase link at <a target=_blank href="http://www.muzikbrowzer.com">www.muzikbrowzer.com</a>.
-			<li>At that time you'll be given your license password which will work on one pc only.
-			<li>You must enter your name, email, and password exactly identical as when you
-			entered it in the Purchase form.
+			<li>At that time you'll be given your license key which will work on one pc only.
+			<li>You must enter your name, email, and license key exactly as you
+			entered it in the Purchase form (case sensitive).
 			<li>Your HostId must match also. If it does not for some reason 
 			you should 
-			send an email to <a href="mailto:support@muzikbrowzer.com">support@muzikbrowzer.com</a> explaining why you need a new password.
+			send an email to <a href="mailto:support@muzikbrowzer.com">support@muzikbrowzer.com</a> explaining why you need a new license key.
 			</ul>
 
 <p>
@@ -166,9 +183,8 @@
 			<ul>
 
 			<li>To enable muzikbrowzer to play Ogg Vorbis (.ogg)
-			files you'll need to install an Ogg Vorbis Direct Show
-			filter. This one is known to work with muzikbrowzer; <a
-			href="http://tobias.everwicked.com">http://tobias.everwicked.com/</a>.
+			files you'll need to install an Ogg Vorbis 
+			filter. <a target=_blank href="http://www.vorbis.com">http://www.vorbis.com</a>.
 			Just download and install it and muzikbrowzer will
 			be able to play ogg files.  </ul>
 
@@ -184,7 +200,7 @@
 			</td>
 		</tr>
 		</table>
-		 <P align=center><FONT size=1>Copyright 2002 Pecan Ventures LLC - All rights reserved.
+		 <P align=center><FONT size=1>Copyright 2002-2006 Pecan Ventures LLC - All rights reserved.
 		              </FONT></P>
     </body>
 </html>
