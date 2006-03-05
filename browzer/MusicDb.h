@@ -147,7 +147,7 @@ class MRecord {
 		CString label();
 		void label(const CString &);
 		static int needed(const CString &);
-//#pragma hack
+#pragma hack
 		// xxx hack alert: getVal should be in something like MSong
 		CString getKey();
 		CString getVal();

@@ -40,7 +40,7 @@ MusicPlayerWMP::init()
 int
 MusicPlayerWMP::InputOpen(const char *file) {
 	m_file = file;
-	logger.log("InputOpen ",m_file);
+	logger.logd("InputOpen ",m_file);
 //	logger.log("InputOpen playcount:",numToString(m_MP->GetSettings().GetPlayCount()));
 
 	m_MP->GetSettings().SetAutoStart(FALSE);

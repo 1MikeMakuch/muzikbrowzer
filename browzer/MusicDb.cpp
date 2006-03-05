@@ -601,7 +601,7 @@ MusicLib::getSongsInPlaylist(const CString & name,
 
         CString msg = "Unable to read playlist ";
 		msg += dbfilename;
-        MBMessageBox(CString("alert"), msg);
+        MBMessageBox(CString("alert"), msg,TRUE);
         return -1;
 	}
     if (myFile.GetLength()) {
@@ -666,7 +666,7 @@ MusicLib::loadPlaylist(const CString & name, CString & error_msg) {
 
         CString msg = "Unable to read playlist ";
 		msg += dbfilename;
-        MBMessageBox(CString("alert"), msg);
+        MBMessageBox(CString("alert"), msg,TRUE);
         return -1;
 	}
     if (myFile.GetLength()) {
@@ -1816,7 +1816,7 @@ MusicLib::savePlaylist(Playlist & playlist, const CString & file) {
 	{
         CString msg = "Unable to save playlist ";
         msg += dbfilename;
-        MBMessageBox(CString("alert"), msg);
+        MBMessageBox(CString("alert"), msg,TRUE);
         return ;
 	}
 
@@ -1859,7 +1859,7 @@ MusicLib::savePlaylist(const CStringArray & list, const CString & name) {
 	{
         CString msg = "Unable to save playlist ";
         msg += dbfilename;
-        MBMessageBox(CString("alert"), msg);
+        MBMessageBox(CString("alert"), msg,TRUE);
         return ;
 	}
 	for(int pos = 0 ; pos < size ; pos++) {
@@ -2062,13 +2062,13 @@ MusicLib::modifyID3(Song oldSong, Song newSong) {
 		dialog->EndDialog(0);
 		delete dialog;
 		unwmsg = "The following file(s) are unwriteable,\r\nperhaps because it is currently playing.\r\nEdit not performed.\r\n\r\n" + unwmsg;
-		MBMessageBox("Can't perform edit",unwmsg,FALSE,FALSE);
+		MBMessageBox("Can't perform edit",unwmsg);
 		return FALSE;
 	}
 
 	dialog->EndDialog(0);
 	delete dialog;
-	int r = MBMessageBox("Confirmation", msg, TRUE, TRUE);
+	int r = MBMessageBox("Confirmation", msg, FALSE, TRUE);
 	if (r == 0) {
 		MBMessageBox("Notice","Edit not performed");
 		return FALSE;
@@ -3781,7 +3781,7 @@ MSongLib::readFromFile() {
 		m_garbagecollector = m_mem->readi(8);
 		if (m_files.read() == -1) { // create files list if !exists
 			int a,r;
-			r = MBMessageBox("Advisory","Database maintenance required.\r\nClick OK to continue.",TRUE,TRUE);
+			r = MBMessageBox("Advisory","Database maintenance required.\r\nClick OK to continue.",TRUE);
 			if (IDOK == r)
 				verify("Performing database maintenance", a, r, m_songcount);
 			else

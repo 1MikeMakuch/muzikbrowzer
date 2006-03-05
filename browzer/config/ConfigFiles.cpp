@@ -204,7 +204,7 @@ void CConfigFiles::dirScan(CStringList & mp3list) {
     CString dir;
     int n = m_slMP3DirList.GetCount();
 	if (n < 1) {
-		MBMessageBox("Scan", "You must enter at least one directory in Settings.");
+		MBMessageBox("Scan", "You must enter at least one directory in Settings.",FALSE);
 		return;
 	}
 	if (m_bAdd) {
@@ -247,7 +247,7 @@ void CConfigFiles::dirScan(CStringList & mp3list) {
 
     delete m_InitDialog;
 
-    MBMessageBox("Scan Results", scaninfo, TRUE, FALSE);
+    MBMessageBox("Scan Results", scaninfo, FALSE, FALSE);
 
 }
 

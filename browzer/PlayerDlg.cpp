@@ -1100,7 +1100,7 @@ CPlayerDlg::resetControls() {
 	m_Skins.RemoveAll();
 	m_Config.getSkins(m_Skins);
 	if (m_Skins.GetCount() < 1) {
-		MBMessageBox("Alert","Muzikbrowzer is unable to locate it's skins and cannot proceed.\r\nYou may wish to reinstall Muzikbrowzer.",FALSE,FALSE);
+		MBMessageBox("Alert","Muzikbrowzer is unable to locate it's skins and cannot proceed.\r\nYou may wish to reinstall Muzikbrowzer.",TRUE);
 		exit(0);
 	}
 
@@ -4110,8 +4110,8 @@ CPlayerDlg::OnSkinPic(UINT wParam) {
 	}
 	
 	if (skin != "") {
-		m_Config.ChooseSkin(skin);
-		redraw();
+		if (m_Config.ChooseSkin(skin))
+			redraw();
 	}
 
 //	return 0;

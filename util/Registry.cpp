@@ -85,8 +85,9 @@ BOOL RegistryKey::Copy(const RegistryKey & src) {
     for( pos = src.mKeyValPairs->GetStartPosition(); pos != NULL; ) {
         src.mKeyValPairs->GetNextAssoc(pos, key, val);
 #pragma hack // this needs to go away before release
-		if ("L " == val.Left(2) || "S " == val.Left(2)) // old "L ", "S " stuff
-			val = val.Mid(2);
+// Commented out 3/5/06
+//		if ("L " == val.Left(2) || "S " == val.Left(2)) // old "L ", "S " stuff
+//			val = val.Mid(2);
 		mKeyValPairs->SetAt(key, val);
 	}
 	return TRUE;
@@ -183,8 +184,9 @@ void RegistryKey::Read( const TCHAR* value, TCHAR* data,
 			// just to remain backwards compatible with inhouse versions only
 			// can go prior to release
 #pragma hack
-			if (val.Left(2) == "L " || val.Left(2) == "S ")
-				val = val.Right(val.GetLength()-2);
+// COmmented out 3/5/06
+//			if (val.Left(2) == "L " || val.Left(2) == "S ")
+//				val = val.Right(val.GetLength()-2);
 		}
 		_tcsnccpy( data, val.GetBuffer(0), maxSize );
 
@@ -221,10 +223,10 @@ TEST(Registry, FileWrite)
 {
 	RegistryKey rk("..\\testdata\\registry.dat");
 	rk.Write("key1","val1");
-	rk.Write("key11","S val1.1");
-	rk.Write("key12","L val1.2");
+	rk.Write("key11","val1.1");
+	rk.Write("key12","val1.2");
 	rk.Write("key13","X val1.3");
-	rk.Write("key14","L 104");
+	rk.Write("key14","104");
 	rk.Write("key2", 100);
 	rk.Write("key9", 900);
 	rk.Write("key8", 800);
@@ -292,8 +294,9 @@ unsigned long RegistryKey::Read( const TCHAR* value, unsigned long deflt ) const
 			// just to remain backwards compatible with inhouse versions only
 			// can go prior to release
 #pragma hack
-			if (val.Left(2) == "L " || val.Left(2) == "S ")
-				val = val.Right(val.GetLength()-2);
+// COmmented out 3/5/06
+//			if (val.Left(2) == "L " || val.Left(2) == "S ")
+//				val = val.Right(val.GetLength()-2);
 
 			// if it's a key containing "Color" and the value has 2
 			// commas surrounded by non white space, it must be an rgb! Argh!

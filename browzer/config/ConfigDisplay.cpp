@@ -1165,8 +1165,8 @@ BOOL CConfigDisplay::verifySkin(CString skin) {
  
 	if (msg.GetLength()) {
 		logger.log(msg);
-		MBMessageBox("Bad skin", msg,FALSE,FALSE);
-		return TRUE;
+		MBMessageBox("Bad skin", msg,TRUE,FALSE);
+		return FALSE;
 	}
 	
 	return TRUE;
@@ -1502,7 +1502,7 @@ void CConfigDisplay::readSkins() {
 void CConfigDisplay::OnSwapSettingsButton() 
 {
 	CString msg ="Choosing \"Ok\" will restore the skin default\r\ncolor/bold/size/font settings. If you then\r\nclick Apply or Ok you will lose any custom\r\nsettings you have made.\r\nClick Ok to proceed or Cancel.";
-	int r = MBMessageBox("Caution", msg, TRUE, TRUE);
+	int r = MBMessageBox("Caution", msg, FALSE, TRUE);
 
 	if (1 == r) {
 		CString skindef = getSkin(MB_SKIN_DEF);

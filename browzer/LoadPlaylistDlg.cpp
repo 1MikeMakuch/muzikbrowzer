@@ -396,7 +396,7 @@ void LoadPlaylistDlg::OnSelchangePlaylistNames()
 		if (m_Modified) {
 			CString tmp = "You have made changes to your \"";
 			tmp += m_LastName + "\" playlist.\r\nDo you wish to first save it?";
-			int ok = MBMessageBox("Confirmation", tmp, TRUE, TRUE);
+			int ok = MBMessageBox("Confirmation", tmp, FALSE, TRUE);
 			if (0 != ok) {
 				reload = FALSE;
 			} else {
@@ -579,7 +579,7 @@ LoadPlaylistDlg::OnExit() {
 		m_PlaylistNames.GetText(sel, name);
 		CString tmp = "You have made changes to your \"";
 		tmp += name + "\" playlist.\r\nDo you wish to first save it?";
-		int ok = MBMessageBox("Confirmation", tmp, TRUE, TRUE);
+		int ok = MBMessageBox("Confirmation", tmp, FALSE, TRUE);
 		if (0 != ok) { // OK, let them save it.
 			return;
 		}
@@ -596,7 +596,7 @@ void LoadPlaylistDlg::OnCancel()
 		m_PlaylistNames.GetText(sel, name);
 		CString tmp = "You have made changes to your \"";
 		tmp += name + "\" playlist.\r\nDo you wish to first save it?";
-		int ok = MBMessageBox("Confirmation", tmp, TRUE, TRUE);
+		int ok = MBMessageBox("Confirmation", tmp, FALSE, TRUE);
 		if (0 != ok) { // OK, let them save it.
 			return;
 		}
@@ -613,7 +613,7 @@ void LoadPlaylistDlg::OnPlaylistOk()
 		m_PlaylistNames.GetText(sel, name);
 		CString tmp = "You have made changes to your \"";
 		tmp += name + "\" playlist.\r\nDo you wish to first save it?";
-		int ok = MBMessageBox("Confirmation", tmp, TRUE, TRUE);
+		int ok = MBMessageBox("Confirmation", tmp, FALSE, TRUE);
 		if (0 != ok) { // OK, let them save it.
 			return;
 		}

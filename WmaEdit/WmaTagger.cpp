@@ -812,7 +812,7 @@ WmaTag::readTimex(const CString & file) {
 
 CString
 WmaTag::read(const CString & file, const BOOL durationOnly) {
-	logger.log("WmaTag::read:",file);
+	logger.logd("WmaTag::read:",file);
 	CString error="WmaTag::read error ";
 	CString out;
 
