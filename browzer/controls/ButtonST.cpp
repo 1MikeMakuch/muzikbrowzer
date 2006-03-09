@@ -21,7 +21,6 @@ static char THIS_FILE[] = __FILE__;
 // CButtonST
 
 // Mask for control's type
-//#define BS_TYPEMASK SS_TYPEMASK
 
 #ifndef	TTM_SETTITLE
 #define TTM_SETTITLEA           (WM_USER + 32)  // wParam = TTI_*, lParam = char* szTitle

@@ -141,6 +141,17 @@ void CRectHeight(CRect & rect, int newheight) {
 
 const char * val10 = "0	 !\"$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
 const char * val11 = "100 , 100 , 100";
+
+TEST(stacktest,stacktest)
+{
+	stack<int> istack;
+	istack.push(0);
+	istack.push(1);
+	istack.push(2);
+
+	int i = istack.top();
+}
+
 TEST(ConfigFileParser2, ParseTest2)
 {
 	stack<KVPair> kvstack;

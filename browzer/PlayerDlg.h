@@ -23,7 +23,7 @@
 //#include "MenuDialog.h"
 #include "MBConfig.h"
 #include "ColorStatic.h"
-#include "MusicPlayer.h"
+//#include "MusicPlayer.h"
 #include "PictureStatic.h"
 #include "MyString.h"
 #include "Controls.h"
@@ -235,10 +235,10 @@ private:
     CMapStringToString m_ArtistAlbum;
     CMapStringToString m_AlbumSong;
     BOOL m_SavePlaylistFlag;
-	REFERENCE_TIME m_timerid;
-	REFERENCE_TIME m_StatusTimerId;
-	REFERENCE_TIME m_VolumeTimerId;
-	REFERENCE_TIME m_PlayLoopTimerId;
+	UINT m_timerid;
+	UINT m_StatusTimerId;
+	UINT m_VolumeTimerId;
+	UINT m_PlayLoopTimerId;
 
 	CString m_HelpMsg;
 	BOOL m_InitDone;

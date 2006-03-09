@@ -1516,6 +1516,7 @@ void ConfigFileParser(const char * file, stack<KVPair> * kvstack) {
 void ConfigFileParser(const char * file, stack<KVPair> * kvstack) {
 
 	std::ifstream fs(file, ios::in | ios::binary);
+	if (!fs.is_open()) return;
 
 	_kvstack = kvstack;
 

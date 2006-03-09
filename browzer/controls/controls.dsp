@@ -170,10 +170,6 @@ SOURCE=.\ResizableGrip.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\SkinBmp.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\SkinSlider.cpp
 # End Source File
 # Begin Source File
@@ -259,11 +255,11 @@ SOURCE=.\ResizableGrip.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\SkinBmp.h
+SOURCE=.\SkinSlider.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\SkinSlider.h
+SOURCE=.\StdAfx.h
 # End Source File
 # Begin Source File
 

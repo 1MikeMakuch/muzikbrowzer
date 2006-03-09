@@ -8,7 +8,7 @@
 // DirectShow
 ////////////////////////////////////////////////////
 
-#include "MusicPlayerDS.h"
+//#include "MusicPlayerDS.h"
 
 class MusicPlayer
 {
@@ -34,7 +34,7 @@ public:
 	long ReadMediaPosition(void);
 	void ReadMediaPosition(long &, long &, long &);
 private:
-	MusicPlayerDS * m_MP;
+//	MusicPlayerDS * m_MP;
 
 	int m_State;
 	HINSTANCE m_Instance;

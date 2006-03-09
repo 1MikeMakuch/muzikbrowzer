@@ -790,7 +790,7 @@ void CMydiffDlg::mysystem(const CString & command, UINT msg2post) {
     script.Flush();
 	script.Close();
 
-	CString pcommand = "c:\\cygwin\\bin\\bash.exe --login ";
+	CString pcommand = "d:\\cygwin\\bin\\bash.exe --login ";
 	pcommand += "c:/tmp/mydiff_script.sh";
 
 	m_msg2post = msg2post;

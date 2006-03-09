@@ -291,7 +291,7 @@ FileUtil::StringToFile(const CString & string, const CString & file) {
 TEST(FileUtilFileToString,StringToFile)
 {
 	CString s = "123";
-	CString f = "c:\\Temp\\FileUtilTest";
+	CString f = "..\\testdata\\FileUtilTest";
 	BOOL r = FileUtil::StringToFile(s,f);
 	CHECK(TRUE == r);
 	CString s2 = FileUtil::FileToString(f);

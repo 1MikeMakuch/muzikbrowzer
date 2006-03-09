@@ -183,6 +183,10 @@ SOURCE=.\XGetopt.cpp
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
 # Begin Source File
 
+SOURCE=.\ConfigFileLexer.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\DIBSectionLite.h
 # End Source File
 # Begin Source File

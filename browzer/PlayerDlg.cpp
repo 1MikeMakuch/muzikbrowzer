@@ -482,8 +482,10 @@ BOOL CPlayerDlg::OnInitDialog()
 	_initdialog->ShowWindow(SW_SHOWNORMAL /* CWinApp::m_nCmdShow */);
 	_initdialog->UpdateWindow();
 
-	::PlaySound("muzikbrowzer.wav",NULL,SND_ASYNC | SND_FILENAME | SND_NODEFAULT
-		| SND_NOWAIT);
+	if (FileUtil::IsReadable("muzikbrowzer.wav")) {
+		::PlaySound("muzikbrowzer.wav",NULL,
+			SND_ASYNC | SND_FILENAME | SND_NODEFAULT | SND_NOWAIT);
+	}
 
 // App mutex
 	CString amemsg,ammsg;
@@ -617,7 +619,7 @@ BOOL CPlayerDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);		// Set small ic
 
-	//ShowBetaWarning();
+	ShowBetaWarning();
 	StartStatusTimer();
 	if (m_Config.trialMode()) {
 		PlayerStatusSet("Trial Mode. See Settings/License." );
@@ -681,13 +683,14 @@ void CPlayerDlg::ShowBetaWarning() {
 		reg.Write("lastrunmdy", (LPCTSTR) mdy);
 		CString msg;
 	msg << 
-"Warning: This is a beta version of muzikbrowzer. It\r\n" <<
-"may contain bugs which could potentially damage\r\n" <<
-"damage data on your computer. While every effort has\r\n" <<
-"been made to ensure against this there are no\r\n" <<
-"guarantees. Pecan Ventures assumes no liability what\r\n" <<
-"so ever for any damage caused by muzikbrowzer\r\n";
-		MBMessageBox("Beta software", msg);
+"Muzikbrowzer 2.0 is beta software. It may contain bugs\r\n" <<
+"which could potentially damage data on your computer.\r\n" <<
+"While every effort has been made to ensure against this\r\n" <<
+"there are no guarantees. Pecan Ventures assumes no\r\n" <<
+"liability what so ever for any damage caused by muzikbrowzer.\r\n" <<
+"Backup your data before performing tag editing with Muzikbrowzer.";
+
+		MBMessageBox("Beta software", msg,FALSE);
 	}
 }
 

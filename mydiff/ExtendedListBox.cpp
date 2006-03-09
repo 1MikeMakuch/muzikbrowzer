@@ -102,7 +102,7 @@ void CExtendedListBox::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 
 		CString strText;
 		GetText (lpDrawItemStruct->itemID, strText);
-		strText = String::replace(strText, '\t', "   ");
+		strText = String::replace(strText, '\t', "    ");
 
 		const RECT &rc=lpDrawItemStruct->rcItem;
 		
