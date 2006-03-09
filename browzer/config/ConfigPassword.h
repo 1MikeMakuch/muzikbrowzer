@@ -71,7 +71,9 @@ private:
 	void validate();
 	CString createPassword();
 	CString munge(const CString & msg);
+
 public:
+	int trialLeft();
 	CString genHost();
 	static CString uuidEncode(const CString & u);
 	static CString uuidDecode(const CString & u);

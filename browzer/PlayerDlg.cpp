@@ -621,8 +621,12 @@ BOOL CPlayerDlg::OnInitDialog()
 
 	ShowBetaWarning();
 	StartStatusTimer();
-	if (m_Config.trialMode()) {
+	if (m_Config.trialMode() == 1) {
 		PlayerStatusSet("Trial Mode. See Settings/License." );
+		CString msg = "You have " + numToString(m_Config.trialLeft()) + " days left on your 60 day free trial";
+		MBMessageBox("60 day Trial",msg,FALSE);
+	} else if (m_Config.trialMode() == 2) {
+		MBMessageBox("Trial Expired","Your 60 day trial has expired.",FALSE);
 	}
 	CString menuFunc,menuDesc;
 	irman().getDescs(IR_MESSAGE_MENU, menuFunc, menuDesc);

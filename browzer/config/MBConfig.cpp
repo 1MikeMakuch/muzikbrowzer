@@ -243,6 +243,11 @@ int MBConfig::trialMode() {
 		return m_Password->trialMode(); 
 	} else return FALSE;
 }
+int MBConfig::trialLeft() {
+	if (m_Password)
+		return m_Password->trialLeft();
+	else return 1;
+}
 
 BOOL MBConfig::HelpInfo(const int idx) {
     TCHAR szPath[_MAX_PATH],

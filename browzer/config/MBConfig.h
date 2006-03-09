@@ -118,6 +118,7 @@ public:
 	void getRegistry(const CString & key, CString & value);
 	void setRegistry(const CString & key, const CString & value);
 	int trialMode();
+	int trialLeft();
 	CString mbdir();
 	const CString getSkin(const CString key);
 	const CString getCurrentSkin();

@@ -112,7 +112,7 @@ CConfigPassword::ReadReg() {
 	int im = atoi(m);
 	int id = atoi(d);
 	CTime exp;
-	if (iy < 2003 || iy > 3000 || im < 1 || im > 12 || id < 1 || id > 31
+	if (iy < 2006 || iy > 3000 || im < 1 || im > 12 || id < 1 || id > 31
 			|| m_TrialExpiration == "") {
 		CTime t = CTime::GetCurrentTime();
 		time_t now = t.GetTime();
@@ -125,6 +125,9 @@ CConfigPassword::ReadReg() {
 		exp = expnew;
 	}
 	m_ExpDate = exp;
+	if (h.GetLength() == 0) {
+		StoreReg();
+	}
 }
 void
 CConfigPassword::StoreReg() {
@@ -357,6 +360,13 @@ void CConfigPassword::OnSendinfo()
 		msg += "You will receive your password within a few days.";
 		MBMessageBox("Advisory", msg);
 	}
+}
+int
+CConfigPassword::trialLeft() {
+	CTimeSpan ts = m_ExpDate  - CTime::GetCurrentTime();
+	time_t t = ts.GetTotalSeconds();
+	t = t / 86400;
+	return t;
 }
 void CConfigPassword::validate() {
 	m_TrialMode = 0;
