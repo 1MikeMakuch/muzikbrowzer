@@ -1139,6 +1139,7 @@ LoadPlaylistDlg::AdjustLibraryWidths(CPoint &apoint) {
 		OnNcPaint();
 	m_Need2Erase = TRUE;
 	UpdateWindow();
+	resetControls();
 }
 // These 2 up/dn functions process msg from ExtendedListBox that
 // a move has occured. Since ELB handled moving the display

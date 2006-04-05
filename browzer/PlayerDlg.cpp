@@ -4013,30 +4013,9 @@ CPlayerDlg::AdjustLibraryWidths(CPoint &apoint) {
 	}
 
 	OnNcPaint();
-	Invalidate();
-	RedrawWindow();
-
-#ifdef asdf
-	m_Genres.Invalidate();
-	m_GenresLabel.Invalidate();
-	m_Genres.RedrawWindow();
-	m_GenresLabel.RedrawWindow();
-
-	m_Artists.Invalidate();
-	m_ArtistsLabel.Invalidate();
-	m_Artists.RedrawWindow();
-	m_ArtistsLabel.RedrawWindow();
-
-	m_Albums.Invalidate();
-	m_AlbumsLabel.Invalidate();
-	m_Albums.RedrawWindow();
-	m_AlbumsLabel.RedrawWindow();
-
-	m_Songs.Invalidate();
-	m_SongsLabel.Invalidate();
-	m_Songs.RedrawWindow();
-	m_SongsLabel.RedrawWindow();
-#endif
+//	Invalidate();
+//	RedrawWindow();
+	resetControls();
 
 	UpdateRects();
 
