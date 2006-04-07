@@ -1,3 +1,3 @@
 
 all:
-	\cygwin\bin\perl ../scripts/version.pl ../muzikbrowzerVersion.h
+	d:\cygwin\bin\perl ../scripts/version.pl ../muzikbrowzerVersion.h

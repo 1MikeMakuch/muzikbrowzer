@@ -678,6 +678,9 @@ BOOL CPlayerDlg::OnInitDialog()
 }
 void CPlayerDlg::ShowBetaWarning() {
 	CTime t = CTime::GetCurrentTime();
+	CString y = t.Format("%Y");
+	int Y = atoi(y);
+
 	CString mdy = t.Format("%d%m%y");
 	RegistryKey reg(HKEY_LOCAL_MACHINE, RegKey);
 	AutoBuf buf(500);
@@ -693,6 +696,14 @@ void CPlayerDlg::ShowBetaWarning() {
 "there are no guarantees. Pecan Ventures assumes no\r\n" <<
 "liability what so ever for any damage caused by muzikbrowzer.\r\n" <<
 "Backup your data before performing tag editing with Muzikbrowzer.";
+
+		if (Y >= 2007) {
+			msg << 
+"Muzikbrowzer 2.0 is beta software. The beta period for version 2.0 is\r\n" <<
+"over. You must download the final release version from www.muzikbrowzer.com\r\n";
+			MBMessageBox("Beta software", msg,FALSE);
+			exit(0);
+		}
 
 		MBMessageBox("Beta software", msg,FALSE);
 	}

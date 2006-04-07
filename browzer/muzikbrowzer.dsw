@@ -359,6 +359,36 @@ Package=<4>
     Begin Project Dependency
     Project_Dep_Name vorbisfile_static
     End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name BitmapCutter
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name bitmaptest
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name id3tagger
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name mbpw
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name mbpwDlg
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name MetadataEdit
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name mydiff
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name ogg_static
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name oggtagger
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name regset
+    End Project Dependency
 }}}
 
 ###############################################################################

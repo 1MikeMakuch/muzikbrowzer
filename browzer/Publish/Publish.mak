@@ -1,3 +1,3 @@
 
 all:
-	c:\cygwin\bin\bash ../scripts/publish.sh
+	d:\cygwin\bin\bash ../scripts/publish.sh

@@ -1,1 +1,1 @@
-static const char MUZIKBROWZER_VERSION[] = "2.0.0 2006-03-05 17:38:15";
+static const char MUZIKBROWZER_VERSION[] = "2.0.0 2006-04-05 13:14:00";
