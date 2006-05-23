@@ -11,23 +11,23 @@ ClearHeight: 36
 ClearWidth: 52
 ClearX: 78
 ClearY: 48
-Color3dColHdrInLR: 100,100,100
-Color3dColHdrInUL: 0,0,0
-Color3dColHdrOutLR: 175,175,175
-Color3dColHdrOutUL: 75,75,75
-Color3dDataInLR: 100,100,100
-Color3dDataInUL: 0,0,0
-Color3dDataOutLR: 175,175,175
-Color3dDataOutUL: 75,75,75
-Color3dStatusInLR: 100,100,100
-Color3dStatusInUL: 0,0,0
-Color3dStatusOutLR: 175,175,175
-Color3dStatusOutUL: 75,75,75
+Color3dColHdrInLR: 255,251,240
+Color3dColHdrInUL: 255,251,240
+Color3dColHdrOutLR: 0,0,0
+Color3dColHdrOutUL: 0,0,0
+Color3dDataInLR: 255,251,240
+Color3dDataInUL: 255,251,240
+Color3dDataOutLR: 0,0,0
+Color3dDataOutUL: 0,0,0
+Color3dStatusInLR: 255,251,240
+Color3dStatusInUL: 255,251,240
+Color3dStatusOutLR: 0,0,0
+Color3dStatusOutUL: 0,0,0
 ColorBgColHdr: 61,61,61
 ColorBgHigh: 0,0,0
 ColorBgNormal: 0,0,0
 ColorBgPanel: 61,61,61
-ColorBgSel: 0,0,255
+ColorBgSel: 255,255,0
 ColorButtonsBgHover: 250,250,250
 ColorButtonsBgOut: 150,150,150
 ColorButtonsFgHover: 0,0,0
@@ -36,14 +36,14 @@ ColorFgColHdr: 225,225,225
 ColorFgHigh: 255,255,0
 ColorFgNormal: 255,255,255
 ColorFgPanel: 255,255,255
-ColorFgSel: 255,255,0
+ColorFgSel: 0,0,0
 ColorTransparentMain: 1,1,255
 ColorTransparentPanel: 5,5,0
 ControlBoxHeight: 136
 ControlBoxWidth: 191
 FontColHdr: FFFFFFF0 00000000 00000000 00000000 000002BC 00 00 00 00 00 00 00 00 Tahoma
 FontPanel: FFFFFFF0 00000000 00000000 00000000 000002BC 00 00 00 00 00 00 00 00 Tahoma
-FontTitles: FFFFFFF0 00000000 00000000 00000000 000002BC 00 00 00 00 00 00 00 00 Tahoma
+FontTitles: FFFFFFF0 00000000 00000000 00000000 000002BC 00 00 00 00 00 00 00 01 Tahoma
 ForwardHeight: 22
 ForwardWidth: 24
 ForwardX: 129

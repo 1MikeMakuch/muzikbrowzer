@@ -6,44 +6,44 @@ BackgroundPanelType: 1
 BorderHorz: 5
 BorderPanel: 5
 BorderVert: 5
-BorderWidth: 5
+BorderWidth: 10
 ClearHeight: 32
 ClearWidth: 37
 ClearX: 85
 ClearY: 44
-Color3dColHdrInLR: 0,0,0
-Color3dColHdrInUL: 0,0,0
-Color3dColHdrOutLR: 0,0,0
-Color3dColHdrOutUL: 0,0,0
-Color3dDataInLR: 0,0,0
-Color3dDataInUL: 0,0,0
-Color3dDataOutLR: 0,0,0
-Color3dDataOutUL: 0,0,0
-Color3dStatusInLR: 0,0,0
-Color3dStatusInUL: 0,0,0
-Color3dStatusOutLR: 0,0,0
-Color3dStatusOutUL: 0,0,0
-ColorBgColHdr: 91,91,91
+Color3dColHdrInLR: 255,255,255
+Color3dColHdrInUL: 255,255,255
+Color3dColHdrOutLR: 255,255,255
+Color3dColHdrOutUL: 255,255,255
+Color3dDataInLR: 255,255,255
+Color3dDataInUL: 255,255,255
+Color3dDataOutLR: 255,255,255
+Color3dDataOutUL: 255,255,255
+Color3dStatusInLR: 255,255,255
+Color3dStatusInUL: 255,255,255
+Color3dStatusOutLR: 255,255,255
+Color3dStatusOutUL: 255,255,255
+ColorBgColHdr: 0,128,255
 ColorBgHigh: 0,0,0
 ColorBgNormal: 0,0,0
 ColorBgPanel: 0,0,0
-ColorBgSel: 0,0,255
+ColorBgSel: 109,207,246
 ColorButtonsBgHover: 250,250,250
 ColorButtonsBgOut: 150,150,150
 ColorButtonsFgHover: 0,0,0
 ColorButtonsFgOut: 0,0,0
-ColorFgColHdr: 0,0,0
-ColorFgHigh: 255,255,0
+ColorFgColHdr: 255,255,255
+ColorFgHigh: 109,207,246
 ColorFgNormal: 255,255,255
 ColorFgPanel: 255,255,255
-ColorFgSel: 255,255,0
+ColorFgSel: 0,128,255
 ColorTransparentMain: 115,115,115
 ColorTransparentPanel: 254,0,253
 ControlBoxHeight: 80
 ControlBoxWidth: 200
-FontColHdr: FFFFFFF0 00000000 00000000 00000000 000002BC 00 00 00 00 00 00 00 00 Tahoma
-FontPanel: FFFFFFF0 00000000 00000000 00000000 000002BC 00 00 00 00 00 00 00 00 Tahoma
-FontTitles: FFFFFFF0 00000000 00000000 00000000 000002BC 00 00 00 00 00 00 00 00 Tahoma
+FontColHdr: FFFFFFEE 00000000 00000000 00000000 000002BC 00 00 00 00 00 00 00 00 Lucida Sans Unicode
+FontPanel: FFFFFFF0 00000000 00000000 00000000 000002BC 00 00 00 00 00 00 00 00 Lucida Sans Unicode
+FontTitles: FFFFFFF0 00000000 00000000 00000000 000002BC 00 00 00 00 00 00 00 00 Lucida Sans Unicode
 ForwardHeight: 33
 ForwardWidth: 37
 ForwardX: 159
