@@ -1525,13 +1525,17 @@ int
 MusicLib::garbageCollect(InitDlg * dialog) {
 	SearchClear();
 	if (m_SongLib.m_garbagecollector < MB_GARBAGE_INTERVAL) {
+		logger.log("garbageCollect not done");
 		return 0;
 	}
+	logger.log("garbageCollect being done");
 	m_SongLib.m_garbagecollector = 0;
 	if (dialog) {
 		CString msg = "Performing database maintenance. Just a minute please...";
 		dialog->SetLabel(msg);
 		dialog->ProgressRange(0,m_SongLib.count());
+		// Added this in April 2006, finding it now in Nov. Checking it in. We'll see!
+		dialog->UpdateStatus(CS(""));
 	}
 
 	int ctr = 0;
@@ -1552,7 +1556,12 @@ MusicLib::garbageCollect(InitDlg * dialog) {
 						artist.label());
 					MList::Iterator albumIter(albumList);
 					while (albumIter.more()) {
-						if (dialog) dialog->ProgressPos(ctr);
+						if (dialog) {
+							dialog->ProgressPos(ctr);
+							// Added this in April 2006, finding it now in Nov. Checking it in. We'll see!
+							dialog->UpdateWindow();
+//							logger.log("garbage collect:" + numToString(ctr));
+						}
 						MRecord album = albumIter.next();
 						MList songList = m_SongLib.songList(genre.label(),
 							artist.label(), album.label());
@@ -1985,6 +1994,7 @@ MusicLib::shufflePlaylist() {
 }
 BOOL
 MusicLib::modifyID3(Song oldSong, Song newSong) {
+	logger.log("modifyID3");
 	SearchClear();
     CString oldGenre, oldArtist, oldAlbum, oldTitle, oldYear, oldTrack;
     CString newGenre, newArtist, newAlbum, newTitle, newYear, newTrack;
@@ -2012,6 +2022,7 @@ MusicLib::modifyID3(Song oldSong, Song newSong) {
 	// old* vars need to be null to search as wildcard
     searchForMp3s(songs, oldGenre, oldArtist, oldAlbum, oldTitle);
 	int count = songs.size();
+	logger.log("modifyID3: songs to modify = " + numToString(count) );
 
 	dialog->ProgressRange(0, count);
 
@@ -2063,6 +2074,7 @@ MusicLib::modifyID3(Song oldSong, Song newSong) {
 		delete dialog;
 		unwmsg = "The following file(s) are unwriteable,\r\nperhaps because it is currently playing.\r\nEdit not performed.\r\n\r\n" + unwmsg;
 		MBMessageBox("Can't perform edit",unwmsg);
+		logger.log("modifyID3: Can't perform edit " + unwmsg);
 		return FALSE;
 	}
 
@@ -2091,6 +2103,8 @@ MusicLib::modifyID3(Song oldSong, Song newSong) {
 
         dialog->UpdateStatus(file);
         dialog->ProgressPos(ctr++);
+		// Added this in April 2006, finding it now in Nov. Checking it in. We'll see!
+		dialog->UpdateWindow();
 
 		int updateFlag = 0;
 		Song addsong = new CSong(p->_item);
@@ -2134,12 +2148,14 @@ MusicLib::modifyID3(Song oldSong, Song newSong) {
 				m_SongLib.removeSong(delsong);
 				m_SongLib.addSong(addsong);
 				updatePlaylist(delsong,addsong);
+				logger.log("modifyID3: updated " + addsong->getId3("FILE"));
 			}
         }
     }
 	if (result.GetLength()) {
 //		result += "\r\nYou'll need to re-scan";
 		MBMessageBox(CString("alert"), result);
+		logger.log("modifyID3: " + result);
 	}
 	m_SongLib.m_garbagecollector++;
     garbageCollect(dialog);

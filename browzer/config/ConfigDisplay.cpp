@@ -121,6 +121,7 @@ void CConfigDisplay::DoDataExchange(CDataExchange* pDX)
 {
 	CPropertyPage::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CConfigDisplay)
+	DDX_Control(pDX, IDC_MAKEDEFAULT, m_MakeDefault);
 	DDX_Control(pDX, IDC_SAMPLE_GROUP, m_SampleGroup);
 	DDX_Control(pDX, IDC_3DCOLHDRS, m_3dColHdrsCheck);
 	DDX_Control(pDX, IDC_3DDATA, m_3dDataCheck);
@@ -175,7 +176,9 @@ BEGIN_MESSAGE_MAP(CConfigDisplay, CPropertyPage)
     ON_CBN_EDITCHANGE(IDC_FONT_COLHDR,              OnSelchangeFont)
     ON_CBN_SELENDOK(IDC_SKIN_LIST,                  OnSkinChoose)
     ON_BN_CLICKED(IDC_SKIN_DELETE,                  OnSkinDelete)
+	ON_BN_CLICKED(IDC_COLOR_BORDERS,                OnColorButton)
 	ON_BN_CLICKED(IDC_SWAP_SETTINGS_BUTTON, OnSwapSettingsButton)
+	ON_LBN_SELCHANGE(IDC_SAMPLE_PLAYLIST, OnSelchangeSamplePlaylist)
     ON_BN_CLICKED(IDC_3DCOLHDRS,					On3dColHdrs)
 	ON_BN_CLICKED(IDC_3DDATA,						On3dData)
 	ON_BN_CLICKED(IDC_3DSTATUS,						On3dStatus)
@@ -183,7 +186,6 @@ BEGIN_MESSAGE_MAP(CConfigDisplay, CPropertyPage)
     ON_BN_CLICKED(IDC_BOLD_PANEL,                   onbold)
     ON_BN_CLICKED(IDC_BOLD_TITLES,                  onbold)
 	ON_BN_CLICKED(IDC_BOLD_TITLES,                  onbold)
-	ON_BN_CLICKED(IDC_COLOR_BORDERS,                OnColorButton)
 	ON_BN_CLICKED(IDC_COLOR_BK_COLHDR,              OnColorButton)
 	ON_BN_CLICKED(IDC_COLOR_BK_HIGH,                OnColorButton)
 	ON_BN_CLICKED(IDC_COLOR_BK_NORMAL,              OnColorButton)
@@ -235,7 +237,7 @@ BEGIN_MESSAGE_MAP(CConfigDisplay, CPropertyPage)
     ON_CBN_SELENDOK(IDC_FONTSIZE_COLHDR,			OnSelchangeFont)
     ON_CBN_SELENDOK(IDC_FONTSIZE,                   OnSelchangeFont)
     ON_CBN_SELENDOK(IDC_FONTSIZE_PANEL,             OnSelchangeFont)
-	ON_LBN_SELCHANGE(IDC_SAMPLE_PLAYLIST, OnSelchangeSamplePlaylist)
+	ON_BN_CLICKED(IDC_MAKEDEFAULT, OnMakedefault)
 	//}}AFX_MSG_MAP
 	ON_MESSAGE(MB_CONFIG_CBUTTON, OnCButtonMessage)
 END_MESSAGE_MAP()
@@ -306,6 +308,10 @@ BOOL CConfigDisplay::OnInitDialog()
     showSample();
 
 	m_Modified = FALSE;
+
+#ifndef _DEBUG
+	m_MakeDefault.ShowWindow(SW_HIDE);
+#endif
 	
 	EnableDisable();
 	
@@ -1570,3 +1576,20 @@ void CConfigDisplay::OnSelchangeSamplePlaylist()
 	m_SamplePanel.setText(text);
 	
 }
+
+void CConfigDisplay::OnMakedefault() 
+{
+	// For internal use only. Copies Custom settings into
+	// default skindef.
+	CString skindef = getSkin(MB_SKIN_DEF);
+
+	RegistryKey regSD(skindef);
+	
+	regSD.ReadFile();
+	
+	StoreReg(regSD);
+	regSD.WriteFile();
+	
+}
+
+

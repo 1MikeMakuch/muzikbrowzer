@@ -891,15 +891,21 @@ void CExtendedListBox::OnNcCalcSize(BOOL bCalcValidRects,
     UINT iheight = GetItemHeight(0);
     m_Count = GetCount();
     UINT height = rect.bottom - rect.top;
-    int fit = height / iheight;
 
-    if (m_Count > fit && m_UseColors == TRUE) {
-        m_HaveScroll = TRUE;
-        lpncsp->rgrc[0].right -= (m_ScrollWidth);
-    } else {
-        m_HaveScroll = FALSE;
-        //lpncsp->rgrc[0].right += m_ScrollWidth;
-    }
+	// Don't remember what this "if (iheight > 0) {" is for. Was made around 
+	// April 2006 and found it now that I'm compiling again here in Nov 2006.
+	if (iheight > 0) {
+
+		int fit = height / iheight;
+
+		if (m_Count > fit && m_UseColors == TRUE) {
+			m_HaveScroll = TRUE;
+			lpncsp->rgrc[0].right -= (m_ScrollWidth);
+		} else {
+	        m_HaveScroll = FALSE;
+			//lpncsp->rgrc[0].right += m_ScrollWidth;
+		}
+	}
 	
 	CListBox::OnNcCalcSize(bCalcValidRects, lpncsp);
 

@@ -32,6 +32,7 @@ public:
 // Dialog Data
 	//{{AFX_DATA(CConfigDisplay)
 	enum { IDD = IDD_CONFIG_DISPLAY };
+	CButton	m_MakeDefault;
 	CButton	m_SampleGroup;
 	CButton	m_3dColHdrsCheck;
 	CButton	m_3dDataCheck;
@@ -107,6 +108,7 @@ protected:
 	afx_msg void OnColorButton();
 	afx_msg void OnSwapSettingsButton();
 	afx_msg void OnSelchangeSamplePlaylist();
+	afx_msg void OnMakedefault();
 	//}}AFX_MSG
 	afx_msg void OnCButtonMessage(WPARAM w, LPARAM l)  ;
 	afx_msg void onbold();

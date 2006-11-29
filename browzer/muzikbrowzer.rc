@@ -65,7 +65,7 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_ICON_V2             ICON    DISCARDABLE     "res\\IconV2_01.ico"
+IDI_ICON1               ICON    DISCARDABLE     "res\\IconV2_v4.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -593,6 +593,7 @@ BEGIN
     GROUPBOX        "3D Shadow",IDC_STATIC,190,18,112,124
     GROUPBOX        "Text and Backgrounds",IDC_STATIC,2,18,185,124
     GROUPBOX        "Sample",IDC_SAMPLE_GROUP,304,18,92,124
+    PUSHBUTTON      "Make Default",IDC_MAKEDEFAULT,229,1,66,12
 END
 
 IDD_FRACTAL_DLG DIALOG DISCARDABLE  0, 0, 351, 242

@@ -156,7 +156,8 @@ CPlayerDlg::CPlayerDlg(CPlayerApp * theApp,
 	// Note that LoadIcon does not require a subsequent DestroyIcon in Win32
 		m_bPlayer=TRUE;
     m_Playlist.m_reorder = TRUE;
-	m_hIcon = AfxGetApp()->LoadIcon(IDI_ICON_V2);
+	// Changed this in April 2006, finding it now in Nov. Checking it in. We'll see!
+	m_hIcon = AfxGetApp()->LoadIcon(IDI_ICON1);
 //    m_hIcon = AfxGetApp()->LoadIcon(IDI_MBLOGO3232);
 	thePlayer = this;
 	
@@ -617,7 +618,8 @@ BOOL CPlayerDlg::OnInitDialog()
 	initDb();
 
 	SetIcon(m_hIcon, TRUE);			// Set big icon
-	SetIcon(m_hIcon, FALSE);		// Set small ic
+	// Removed this in April 2006, finding it now in Nov. Checking it in. We'll see!
+//	SetIcon(m_hIcon, FALSE);		// Set small ic
 
 	ShowBetaWarning();
 	StartStatusTimer();
@@ -664,12 +666,13 @@ BOOL CPlayerDlg::OnInitDialog()
 
 	}
 
-	CMenu* pSysMenu = GetSystemMenu(FALSE);
-	if (pSysMenu != NULL)
-	{
-		pSysMenu->AppendMenu(MF_SEPARATOR);
-		pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, "A&bout Muzikbrowzer");
-	}
+//	One user complained about this
+//	CMenu* pSysMenu = GetSystemMenu(FALSE);
+//	if (pSysMenu != NULL)
+//	{
+//		pSysMenu->AppendMenu(MF_SEPARATOR);
+//		pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, "A&bout Muzikbrowzer");
+//	}
 
 	logger.ods("End of InitDialog");
 

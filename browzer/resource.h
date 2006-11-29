@@ -80,6 +80,7 @@
 #define IDD_DIALOG2                     265
 #define IDI_ICON_V2                     268
 #define IDC_CURSOR4                     270
+#define IDI_ICON1                       271
 #define IDC_VOLUME_BUTTON               1000
 #define IDC_STOP_BUTTON                 1001
 #define IDC_PLAY_BUTTON                 1002
@@ -437,6 +438,7 @@
 #define IDC_IRHELPBUTTON                2054
 #define IDC_REFRESH_DRIVES              2055
 #define IDC_BUTTON1                     2056
+#define IDC_MAKEDEFAULT                 2056
 #define IDS_UNKNOWN_ERROR               5000
 #define IDC_BUTTON_LOGO                 12052
 #define ID_XXX                          32775
@@ -498,7 +500,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        271
+#define _APS_NEXT_RESOURCE_VALUE        272
 #define _APS_NEXT_COMMAND_VALUE         32856
 #define _APS_NEXT_CONTROL_VALUE         2057
 #define _APS_NEXT_SYMED_VALUE           101
