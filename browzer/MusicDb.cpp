@@ -1599,7 +1599,7 @@ void
 MusicLib::SearchClear() {
 	if (!m_Searching)
 		return;
-	m_Searching = FALSE;
+//	m_Searching = FALSE;
 	m_SongLib = m_SaveLib;
 	IgetLibraryCounts();
 }

@@ -456,8 +456,8 @@ void CColorStatic::OnPaint() {
 			dc.DrawText(m_text2,rectInner, DT_LEFT | DT_WORDBREAK);
 		} else {
 			dc.TextOut (m_TickerX,m_TickerY,m_text2);
-			if ("searchstatus" == m_desc)
-				logger.ods("CCS::OnPaint TextOut");
+//			if ("searchstatus" == m_desc)
+//				logger.ods("CCS::OnPaint TextOut");
 		}
 		dc.SelectObject(oldfont);
 	} else {

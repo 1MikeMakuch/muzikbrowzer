@@ -161,6 +161,10 @@ void CDialogSK::Init()
                         GetProcAddress(hUser32, "SetLayeredWindowAttributes");
 		first = FALSE;
 	}
+//#define NO_MB_LAYERED_WINDOWS
+#ifdef NO_MB_LAYERED_WINDOWS
+	g_pSetLayeredWindowAttributes = NULL;
+#endif
 }
 
 
