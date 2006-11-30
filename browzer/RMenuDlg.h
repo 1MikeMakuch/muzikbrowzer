@@ -6,10 +6,8 @@
 #endif // _MSC_VER > 1000
 // RMenuDlg.h : header file
 //
-//#include "PlayerDlg.h"
 #include "Resource.h"
 #include "MusicDb.h"
-#include "ExtendedListBox.h"
 #include "ResizableGrip.h"
 #include "CDialogSK.h"
 #include "Registry.h"

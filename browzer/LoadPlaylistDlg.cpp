@@ -25,6 +25,9 @@ void Need2EraseChooser(BOOL b) {
 CDialog * getChooser() {
 	return theLoader;
 }
+LoadPlaylistDlg * getLoader() {
+	return theLoader;
+}
 /////////////////////////////////////////////////////////////////////////////
 // LoadPlaylistDlg dialog
 
@@ -51,6 +54,7 @@ LoadPlaylistDlg::LoadPlaylistDlg(PlayerCallbacks * pcb,
 	m_callbacks.Need2Erase = &::Need2EraseChooser;
 	m_callbacks.mbconfig = m_parentcallbacks->mbconfig;
 	m_callbacks.dlg = &::getChooser;
+	m_callbacks.lpdlg = &::getLoader;
 
 	MBCONFIG_READ_SKIN_DEFS_POBJ(m_parentcallbacks->mbconfig(),m_reg);
 }

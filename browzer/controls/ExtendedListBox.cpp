@@ -7,6 +7,7 @@
 #include "PlayerCallbacks.h"
 #include "Misc.h"
 #include "FileUtils.h"
+#include "LoadPlaylistDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -28,6 +29,7 @@ BEGIN_MESSAGE_MAP(CExtendedListBox, CListBox)
 	ON_WM_ERASEBKGND()
 	ON_WM_CTLCOLOR()
 	ON_WM_SYSKEYDOWN()
+	ON_WM_MOUSEWHEEL()
 	//}}AFX_MSG_MAP
     ON_WM_KEYDOWN()
     ON_WM_NCCALCSIZE()
@@ -953,3 +955,25 @@ CExtendedListBox::invalidate() {
 
 
 
+
+BOOL CExtendedListBox::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) 
+{
+//	logger.ods("CELB: " + numToString(zDelta));
+	int cur = GetCurSel();
+	int ncur = cur;
+	int steps = abs(zDelta) / 120;
+	if (zDelta < 0) {
+		ncur = cur + steps;
+	} else if (zDelta > 0) {
+		ncur = cur - steps;
+	}
+	if (ncur < 0) ncur = 0;
+	if (ncur > GetCount()) ncur = GetCount() -1;
+	SetCurSel(ncur);
+	if (m_parentcallbacks && m_parentcallbacks->playerdlg)
+		(*m_parentcallbacks->playerdlg)()->OnControlSelChange();
+	else if (m_parentcallbacks && m_parentcallbacks->lpdlg)
+		(*m_parentcallbacks->lpdlg)()->OnControlSelChange();
+	
+	return TRUE;
+}

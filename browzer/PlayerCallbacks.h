@@ -11,6 +11,7 @@ class MBConfig;
 class MusicLib;
 class CPlayerDlg;
 class CExtendedListBox;
+class LoadPlaylistDlg ;
 
 class PlayerCallbacks {
 public:
@@ -30,6 +31,7 @@ public:
 		musiclib = NULL;
 		playerdlg = NULL;
 		dlg = NULL;
+		lpdlg = NULL;
 		OnPaintCallback = NULL;
 		SetSelected = NULL;
 	}
@@ -47,6 +49,7 @@ public:
 	MusicLib * (*musiclib)();
 	CPlayerDlg * (*playerdlg)();
 	CDialog * (*dlg)();
+	LoadPlaylistDlg * (*lpdlg)();
 	BOOL (*OnPaintCallback)();
 	void (*SetSelected)(const CString text, DWORD data);
 

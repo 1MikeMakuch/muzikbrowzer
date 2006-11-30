@@ -161,6 +161,8 @@ void CDialogSK::Init()
                         GetProcAddress(hUser32, "SetLayeredWindowAttributes");
 		first = FALSE;
 	}
+// This turns off layering. Was a one off build for a cust using
+// Anyplace; remote desktop manager; which can't handle layered windows.
 //#define NO_MB_LAYERED_WINDOWS
 #ifdef NO_MB_LAYERED_WINDOWS
 	g_pSetLayeredWindowAttributes = NULL;
