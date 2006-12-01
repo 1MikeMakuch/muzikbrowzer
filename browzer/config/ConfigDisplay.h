@@ -8,7 +8,7 @@
 #include "controls/ColorStatic.h"
 #include <afxdlgs.h>
 #include "ExtendedListBox.h"
-#include "ButtonSkin.h"
+//#include "ButtonSkin.h"
 
 #if _MSC_VER > 1000
 #pragma once
