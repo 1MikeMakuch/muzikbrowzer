@@ -3490,6 +3490,8 @@ void CPlayerDlg::OnContextMenu(CWnd* pWnd, CPoint ScreenPnt)
 					MF_DISABLED |MF_GRAYED| MF_BYCOMMAND);
 				popup->EnableMenuItem(ID_DELETE_FROM_PL, 
 					MF_ENABLED | MF_BYCOMMAND);
+				popup->EnableMenuItem(ID_EDIT_ID3TAG, 
+					MF_DISABLED |MF_GRAYED| MF_BYCOMMAND);
 			}
             popup->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON,ScreenPnt.x,
                 ScreenPnt.y, AfxGetMainWnd());
