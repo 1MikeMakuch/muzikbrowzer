@@ -1,20 +1,19 @@
-I did a fresh checkout of the sources and did a build to make sure
-I've got all my ducks in a row. Only found 1 file missing from my
-repository. Added that and it built and ran.
+To build Muzikbrowzer:
 
 I'm using MSVC6 sp6. 
 
-I'm using the last sdk for VC6, 
-"MS Platform SDK, Feb 2003 Edition (Windows 2003 server)" is
-what it says on the CD. In case you don't have it;
-http://mike.makuch.org/ps/MSSDK2003.zip
+All 3rd party libs are included in the src tree except the 
+MS Platform sdk.  I'm using the last sdk for VC6, 
 
-The "MS SDK\include" has to be included before the stock VC98 includes".
+"MS Platform SDK, Feb 2003 Edition (Windows 2003 server)" 
 
-I have the WindowsMediaPlayer format sdk rev 9.5 installed on my box. I
-thought my build was depending on it but I don't see reference to it
-anywhere in the workspace. DL it from MS or here
-http://mike.makuch.org/ps/WMFormat95SDK.exe
+is what it says on the CD. In case you don't have it;
+http://mike.makuch.org/ps/MSSDK2003.zip Unzip it and point IE at the
+home.htm file.
+
+The "c:\Program Files\Microsoft SDK\include" has to be included 
+before the stock VC98 includes.  In VC it's Tools/Options/Directories.
+Same for the Lib.  Just in case you're rusty :-)
 
 To build open the MSVC6 workspace muzik/browzer/muzikbrowzer.dsw
 
@@ -28,12 +27,14 @@ Build either Debug or Release should build without error. There are warnings
 in some of the 3rdparty stuff. DebugBC is just to keep seperate binaries for 
 using BoundsChecker.
 
-Projects. # denotes not required for building MB.
+Projects. # denotes not required for building MB. Dependencies are
+set so. Some of these accessory projects depend upon cygwin but
+you shouldn't need it.
 
 #BitmapCutter	util for making skins
 #bitmaptest		testing
-config			Configuration Dialog
-ConfigFileLexer	Simple lexer to parse the config files. Shouldn't have to build. src's are
+config			Settings Dialog
+ConfigFileLexer	Simple lexer to parse the config files. Shouldn't have to flex it. src's are
 				there. 
 controls		most of the controls
 GetBlackOut		easter egg. The secret is out!
@@ -53,7 +54,7 @@ ogg_static		ogg support
 #oggtagger		cl
 #Prebuild		increments version info
 #Publish		pushes setup.exe out to the web site
-#regset			registry i/o
+#regset			registry i/o cl
 Serial			serial i/o for irman
 TestHarness		unit test macros
 util			utilities
