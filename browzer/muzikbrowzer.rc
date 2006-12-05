@@ -97,7 +97,7 @@ IDD_PLAYER_DIALOG DIALOGEX 0, 0, 402, 281
 STYLE WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | WS_CLIPSIBLINGS | 
     WS_CLIPCHILDREN | WS_CAPTION | WS_THICKFRAME
 EXSTYLE WS_EX_APPWINDOW
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     LISTBOX         IDC_GENRES,22,183,79,46,LBS_SORT | LBS_OWNERDRAWFIXED | 
                     LBS_HASSTRINGS | LBS_NOINTEGRALHEIGHT | NOT WS_BORDER | 
@@ -161,18 +161,18 @@ BEGIN
                     WS_VISIBLE,358,255,1,1
 END
 
-IDD_INIT_DIALOG DIALOG DISCARDABLE  0, 0, 337, 96
+IDD_INIT_DIALOG DIALOG DISCARDABLE  0, 0, 374, 85
 STYLE DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION
 CAPTION "muzikbrowzer"
 FONT 8, "MS Sans Serif"
 BEGIN
-    LTEXT           "",IDC_INIT_LABEL,15,13,250,23,SS_CENTERIMAGE | NOT 
-                    WS_GROUP
-    LTEXT           "",IDC_INIT_STATUS,15,43,300,14,SS_CENTERIMAGE | 
+    LTEXT           "",IDC_INIT_LABEL,15,7,295,14,NOT WS_GROUP
+    LTEXT           "",IDC_INIT_STATUS,17,41,343,14,SS_CENTERIMAGE | 
                     SS_SUNKEN | NOT WS_GROUP
     CONTROL         "Progress1",IDC_INIT_PROGRESS,"msctls_progress32",
-                    WS_BORDER,16,66,300,14
-    PUSHBUTTON      "Abort",IDC_INIT_ABORT,274,14,41,14
+                    WS_BORDER,17,58,343,14
+    PUSHBUTTON      "Abort",IDC_INIT_ABORT,319,14,41,14,NOT WS_TABSTOP
+    LTEXT           "",IDC_INIT_LABEL2,17,24,295,14,NOT WS_GROUP
 END
 
 IDD_MENU_DIALOG DIALOGEX 0, 0, 139, 234
@@ -293,30 +293,29 @@ BEGIN
                     WS_BORDER
 END
 
-IDD_CONFIG_FILES DIALOGEX 0, 0, 301, 182
+IDD_CONFIG_FILES DIALOGEX 0, 0, 356, 183
 STYLE WS_CHILD | WS_DISABLED | WS_CAPTION | WS_SYSMENU
 CAPTION "General"
-FONT 8, "MS Sans Serif", 0, 0, 0x1
+FONT 8, "MS Sans Serif"
 BEGIN
-    LISTBOX         IDC_DIRLIST,10,15,273,55,LBS_SORT | WS_VSCROLL | 
+    LISTBOX         IDC_DIRLIST,18,16,319,52,LBS_SORT | WS_VSCROLL | 
                     WS_HSCROLL
-    PUSHBUTTON      "Add",IDC_DIRADD,96,69,36,11
-    PUSHBUTTON      "Remove",IDC_DIRREMOVE,137,68,36,11
-    PUSHBUTTON      "Scan",IDC_DIRSCAN,11,145,36,13
-    PUSHBUTTON      "Edit",IDC_LOCATION_BUTTON,235,105,33,13
-    LTEXT           "",IDC_MDB_LOCATION,10,105,218,14,NOT WS_GROUP,
+    PUSHBUTTON      "Add",IDC_DIRADD,139,69,36,11
+    PUSHBUTTON      "Remove",IDC_DIRREMOVE,180,68,36,11
+    PUSHBUTTON      "Complete Rebuild",IDC_DIRSCAN,24,145,63,13
+    PUSHBUTTON      "Edit",IDC_LOCATION_BUTTON,302,105,33,13
+    LTEXT           "",IDC_MDB_LOCATION,19,105,273,14,NOT WS_GROUP,
                     WS_EX_CLIENTEDGE
-    GROUPBOX        "Directories to scan for audio files",IDC_STATIC,5,5,285,
-                    80
-    GROUPBOX        "Location of muzikbrowzer database, playlists, etc.",
-                    IDC_STATIC,5,90,285,35
+    GROUPBOX        "Audio file folders",IDC_STATIC,11,5,332,80
+    GROUPBOX        "Location of muzikbrowzer database files, playlists, etc.",
+                    IDC_STATIC,12,90,331,35
     CONTROL         "Yes",IDC_RUNATSTARTUP,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,179,146,40,8
-    GROUPBOX        "Add audio files to muzikbrowzer database",IDC_STATIC,5,
-                    129,145,35
-    PUSHBUTTON      "Scan for New",IDC_DIRSCAN_NEW,55,145,60,13
-    GROUPBOX        "Run muzikbrowzer at Start up?",IDC_STATIC,153,132,110,
-                    30
+                    WS_TABSTOP,252,146,40,8
+    GROUPBOX        "Music Library maintenance",IDC_STATIC,12,129,209,35
+    PUSHBUTTON      "Search folders for new music",IDC_DIRSCAN_NEW,105,145,
+                    98,13
+    GROUPBOX        "Run muzikbrowzer at Start up?",IDC_STATIC,233,129,110,
+                    35
     CONTROL         "Date",IDC_ALBUMSORT_DATE,"Button",BS_AUTORADIOBUTTON | 
                     WS_GROUP,49,169,28,10
     CONTROL         "Alpha",IDC_ALBUMSORT_ALPHA,"Button",BS_AUTORADIOBUTTON | 
@@ -713,9 +712,9 @@ BEGIN
     IDD_INIT_DIALOG, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 330
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 89
+        RIGHTMARGIN, 367
+        TOPMARGIN, 6
+        BOTTOMMARGIN, 74
     END
 
     IDD_MENU_DIALOG, DIALOG
@@ -777,9 +776,9 @@ BEGIN
     IDD_CONFIG_FILES, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 294
+        RIGHTMARGIN, 349
         TOPMARGIN, 7
-        BOTTOMMARGIN, 175
+        BOTTOMMARGIN, 176
     END
 
     IDD_CONFIG_IRMAN, DIALOG
@@ -907,11 +906,11 @@ BEGIN
     BEGIN
         POPUP "Music Library"
         BEGIN
-            MENUITEM "Add music",                   ID_MENU_ADD
-            POPUP "Scan "
+            MENUITEM "Add music to Library",        ID_MENU_ADD
+            POPUP "Rebuild Music Library"
             BEGIN
-                MENUITEM "Complete Rebuild",            ID_MENU_SCAN
-                MENUITEM "Scan disk for new music",     ID_MENU_SCANNEW
+                MENUITEM "Complete Rebuild from folders", ID_MENU_SCAN
+                MENUITEM "Search for new music in folders", ID_MENU_SCANNEW
             END
         END
         POPUP "S&kin"

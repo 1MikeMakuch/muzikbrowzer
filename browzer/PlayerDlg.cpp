@@ -267,6 +267,7 @@ void CPlayerDlg::DoDataExchange(CDataExchange* pDX)
 }
 
 BEGIN_MESSAGE_MAP(CPlayerDlg, CDialogClassImpl)
+	//ON_COMMAND(ID_MENU_CHECKEM,			OnMenuCheckem)
 	//{{AFX_MSG_MAP(CPlayerDlg)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
@@ -274,8 +275,6 @@ BEGIN_MESSAGE_MAP(CPlayerDlg, CDialogClassImpl)
 	ON_BN_CLICKED(IDC_PLAY_BUTTON,			OnPlayButton)
 	ON_BN_CLICKED(IDC_OPEN_FILE_BUTTON,		OnOpenFileButton)
 	ON_BN_CLICKED(IDC_STOP_BUTTON,			OnStopButton)
-//	ON_WM_HSCROLL()
-//	ON_WM_VSCROLL()
 	ON_BN_CLICKED(IDD_ABOUT,				OnAbout)
 	ON_LBN_SELCHANGE(IDC_ARTISTS,			OnSelchangeArtists)
 	ON_LBN_SELCHANGE(IDC_ALBUMS,			OnSelchangeAlbums)
@@ -285,7 +284,6 @@ BEGIN_MESSAGE_MAP(CPlayerDlg, CDialogClassImpl)
 	ON_LBN_DBLCLK(IDC_GENRES,				OnDblclkGenres)
 	ON_BN_CLICKED(IDC_MENU_BUTTON,			OnMenuButton)
 	ON_COMMAND(ID_MENU_OPTIONS,				OnMenuOptions)
-//	ON_COMMAND(ID_MENU_CHECKEM,				OnMenuCheckem)
 	ON_BN_CLICKED(IDC_SEARCH_GO,				OnSearchGo)
 	ON_COMMAND(ID_SEARCH,					OnSearchDlg)
 	ON_BN_CLICKED(IDC_SEARCH_CANCEL,		OnNoSearchDlg)
@@ -558,9 +556,9 @@ BOOL CPlayerDlg::OnInitDialog()
 	m_mlib.MovePlaylistsToDir();
     
 	if (m_mlib.init()) {
-		MBMessageBox("Error", "Database corrupted. Rebuild it by performing a\r\nScan in Options/Configuration");
+		MBMessageBox("Error", "Database corrupted. Rebuild it by performing a\r\nComplete Rebuild.");
 		PlayerStatusSet(CString(
-			"Database corrupted. Do a Scan."));
+			"Database corrupted. Do a Complete Rebuild."));
 	}
 
     // set some of the control's properties
@@ -659,6 +657,7 @@ BOOL CPlayerDlg::OnInitDialog()
 	if (_initdialog) {
 		time_t now = CTime::GetCurrentTime().GetTime();
 		if (now - _initdialog->m_start.GetTime() < 2) {
+			// Just to show the banner for a sec
 			Sleep(1000);
 		}
 		_initdialog->DestroyWindow();
@@ -1953,9 +1952,9 @@ CPlayerDlg::init() {
 	m_mlib.MovePlaylistsToDir();
 
     if (m_mlib.init()) {
-		MBMessageBox("Error", "Database corrupted. Rebuild it by performing a\r\nScan in Options/Configuration");
+		MBMessageBox("Error", "Database corrupted. Rebuild it by performing a\r\nComplete Rebuild.");
 		PlayerStatusSet(CString(
-			"Database corrupted. Do a scan in Configuration."));
+			"Database corrupted. Do a Complete Rebuild."));
 	}
 	_selectedGenre = "";
 	_selectedArtist = "";
@@ -2016,10 +2015,14 @@ void CPlayerDlg::OnSysCommand(UINT nID, LPARAM lParam)
 		case 'o': case 'O': OnVolDown();		break;
 		case 'f': case 'F': OnFastForward();	break;
 		case 'e': case 'E': OnReverse();		break;
+//		case 'z': case 'Z': OnVerify();		break;
 		}
     } else {
 		CDialogClassImpl::OnSysCommand(nID, lParam);
 	}
+}
+void CPlayerDlg::OnVerify() {
+	CString msg = m_mlib.JustVerify();
 }
 
 // If you add a minimize button to your dialog, you will need the code below
@@ -3732,7 +3735,7 @@ CPlayerDlg::PlayerStatusTempSet(LPCTSTR lpmsg) {
 void
 CPlayerDlg::PlayerStatusTempSet(CString & cmsg) {
 	CString msg(cmsg);
-	if (MBALL == msg) 
+	if (MBALL == msg)
 		msg = m_mlib.getLibraryCounts();		
 	m_PlayerStatus.setText(msg/*,TRUE*/);
     m_PlayerStatusTime = CTime::GetCurrentTime();
@@ -4802,4 +4805,5 @@ void CPlayerDlg::OnWarningWmp(long WarningType, long Param, LPCTSTR Description)
 	//PlayLoop();
 	
 }
+
 

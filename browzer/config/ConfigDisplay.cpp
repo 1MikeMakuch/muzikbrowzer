@@ -182,10 +182,9 @@ BEGIN_MESSAGE_MAP(CConfigDisplay, CPropertyPage)
     ON_BN_CLICKED(IDC_3DCOLHDRS,					On3dColHdrs)
 	ON_BN_CLICKED(IDC_3DDATA,						On3dData)
 	ON_BN_CLICKED(IDC_3DSTATUS,						On3dStatus)
-	ON_BN_CLICKED(IDC_BOLD_CURPLY,                  onbold)
-    ON_BN_CLICKED(IDC_BOLD_PANEL,                   onbold)
-    ON_BN_CLICKED(IDC_BOLD_TITLES,                  onbold)
 	ON_BN_CLICKED(IDC_BOLD_TITLES,                  onbold)
+    ON_BN_CLICKED(IDC_BOLD_PANEL,                   onbold)
+	ON_BN_CLICKED(IDC_BOLD_COLHDR,                  onbold)
 	ON_BN_CLICKED(IDC_COLOR_BK_COLHDR,              OnColorButton)
 	ON_BN_CLICKED(IDC_COLOR_BK_HIGH,                OnColorButton)
 	ON_BN_CLICKED(IDC_COLOR_BK_NORMAL,              OnColorButton)
@@ -888,7 +887,8 @@ CConfigDisplay::setupSample() {
 	m_SamplePlaylist.AddString("Xyzzy");
 	m_SamplePlaylist.AddString("Big Little Band O Little Twisties");
 	m_SamplePlaylist.AddString("Plugh");
-	m_SamplePlaylist.AddString("Did you get the memo on your TPS Report Cover sheet?");
+	m_SamplePlaylist.AddString("Did you get the memo about the new cover sheets for our TPS Reports?");
+	m_SamplePlaylist.AddString("There is an Easter Egg on the about screen.");
 
 	m_SamplePlaylist.MoveWindow(rectDataNew);
 	m_SamplePlaylist.SetBitmaps(cdc, 

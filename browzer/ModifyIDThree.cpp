@@ -107,6 +107,8 @@ BOOL ModifyIDThree::OnInitDialog()
         m_Artist.EnableWindow(TRUE);
 		m_Artist.SetWindowText(artist);
 		m_OldArtist.SetWindowText(artist);
+		if (artist == MBALL)
+			m_Artist.EnableWindow(FALSE);
     }
     if (mWindowFlag >= 3) {
         m_Album.EnableWindow(TRUE);

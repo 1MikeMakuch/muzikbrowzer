@@ -199,6 +199,7 @@
 #define IDC_INIT_LABEL                  1163
 #define IDC_INIT_PROGRESS               1164
 #define IDC_INIT_ABORT                  1165
+#define IDC_INIT_LABEL2                 1166
 #define IDC_MP3_REMOVE                  1167
 #define IDC_MP3_ADD_EXT                 1168
 #define IDC_MP3_ADD                     1169
@@ -502,7 +503,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        272
 #define _APS_NEXT_COMMAND_VALUE         32856
-#define _APS_NEXT_CONTROL_VALUE         2057
+#define _APS_NEXT_CONTROL_VALUE         2058
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

@@ -87,7 +87,6 @@ BOOL CPlayerApp::InitInstance()
     // Check registration here
     // If in eval mode just continue, but throw up a reminder dialog
 
-//	InitDlg *InitDialog = new InitDlg(1,0);
 
 #ifdef doingithere
 	CTransparentDialogDlg * splashDlg = new CTransparentDialogDlg();

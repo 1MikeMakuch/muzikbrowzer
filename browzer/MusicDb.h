@@ -387,6 +387,7 @@ class MusicLib
 	     int	setSongVal(const CString & key, const CString & value, const CString & genrename, const CString & artistname, const CString & albumname, const CString & songname);
 	    void	shufflePlaylist();
 		void	updatePlaylist(Song oldsong, Song newsong);
+		CString	JustVerify();
 	    UINT	writeDb();
 	 CString	writeSongToFile(Song song);
 private:
@@ -402,7 +403,7 @@ private:
 
         int scanDirectory(int * abortf, CStringList &, const CString &,
 			BOOL scanNew, BOOL bAdd);
-        int garbageCollect(InitDlg * dialog = NULL);
+        int garbageCollect(InitDlg * dialog, BOOL test=FALSE);
 		CString IgetLibraryCounts();
         
 };

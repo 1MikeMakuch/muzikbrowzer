@@ -94,7 +94,7 @@ void CConfigFiles::OnDiradd()
 
 	CFileAndFolder dialog(this, dflt);
 	dialog.setTitle("Add folders");
-	dialog.setMsg("Select folder(s) to be scanned.");
+	dialog.setMsg("Select folder(s) to be searched.");
 
 	int ret;
 	ret = dialog.DoModal();
@@ -186,16 +186,46 @@ CConfigFiles::ScanThreadStop() {
 void CConfigFiles::OnDirscan() 
 {
 
-	m_scanNew = FALSE;
-	CStringList x;
-	dirScan(x);
+	Scan(FALSE);
 }
 void CConfigFiles::OnDirscanNew() 
 {
-	m_scanNew = TRUE;
-	CStringList x;
-	dirScan(x);	
+	Scan(TRUE);
 }
+void CConfigFiles::Scan(BOOL fornew) {
+	m_bAdd=FALSE;
+	CString title = "Confirmation";
+	CString text;
+	if (fornew) {
+		text = "Search the music folders below for new music and\r\nadd to Library?\r\n\r\n";
+	} else {
+		text = "Search the music folders below for all music and\r\nrebuild Library from scratch?\r\n\r\n";
+	}
+
+	POSITION pos;
+	CString dir;
+	for (pos = m_slMP3DirList.GetHeadPosition(); pos != NULL; ) {
+        dir = m_slMP3DirList.GetAt(pos);
+		text += dir + "\r\n";
+		m_slMP3DirList.GetNext(pos);
+    }
+
+	int r = MBMessageBox("Confirmation", text, FALSE, TRUE);
+	if (r == 0) {
+		MBMessageBox("Notice","Search not performed");
+		return ;
+	}
+
+	CStringList x;
+	if (fornew) {
+		m_scanNew = TRUE;
+		dirScan(x);	
+	} else {
+		m_scanNew = FALSE;
+		dirScan(x);	
+	}
+}
+
 
 void CConfigFiles::dirScan(CStringList & mp3list) {
 
@@ -204,7 +234,7 @@ void CConfigFiles::dirScan(CStringList & mp3list) {
     CString dir;
     int n = m_slMP3DirList.GetCount();
 	if (n < 1) {
-		MBMessageBox("Scan", "You must enter at least one directory in Settings.",FALSE);
+		MBMessageBox("Search", "You must enter at least one directory in Settings.",FALSE);
 		return;
 	}
 	if (m_bAdd) {
@@ -247,7 +277,7 @@ void CConfigFiles::dirScan(CStringList & mp3list) {
 
     delete m_InitDialog;
 
-    MBMessageBox("Scan Results", scaninfo, FALSE, FALSE);
+    MBMessageBox("Search Results", scaninfo, FALSE, FALSE);
 
 }
 
@@ -537,10 +567,13 @@ void CConfigFiles::EnableDisableButtons() {
     CString location;
     m_MdbLocation.GetWindowText(location);
     CWnd * scan = GetDlgItem(IDC_DIRSCAN);
+	CWnd * scannew = GetDlgItem(IDC_DIRSCAN_NEW);
     if (m_MP3DirList.GetCount() < 1 || location.GetLength() < 1) {
         scan->EnableWindow(FALSE);
+		scannew->EnableWindow(FALSE);
     } else {
         scan->EnableWindow(TRUE);
+		scannew->EnableWindow(TRUE);
     }
 
 }
@@ -635,23 +668,4 @@ void CConfigFiles::AddMusic() {
 }
 
 
-
-void CConfigFiles::Scan(BOOL fornew) {
-	m_bAdd=FALSE;
-	CString title = "Confirmation";
-	CString text;
-	if (fornew) {
-		text = "Scan music folders for new music and add to Library?";
-	} else {
-		text = "Scan music folders for all music and rebuild Library from scratch?";
-	}
-	GetTextFieldDlg dlg;
-	if (dlg.Confirm(title,text) == IDOK) {
-		if (fornew) {
-			OnDirscanNew();
-		} else {
-			OnDirscan();
-		}
-	}
-}
 

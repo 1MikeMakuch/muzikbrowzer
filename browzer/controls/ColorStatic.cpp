@@ -410,9 +410,9 @@ void CColorStatic::OnPaint() {
 		pDC.Draw3dRect(rectIn, m_crInUL, m_crInLR);
 	}
 
-    if (m_text.GetLength()) {
+    if (m_text1.GetLength()) {
 		CFont * oldfont = dc.SelectObject(&m_font);
-		CSize cs = dc.GetTextExtent(m_text);
+		CSize cs = dc.GetTextExtent(m_text1);
 
 		if (cs.cx > rectInner.Width()) {
 			m_NeedTicker = TRUE;
@@ -441,9 +441,9 @@ void CColorStatic::OnPaint() {
 			dc.SetBkColor(m_crBkColor);
 		dc.SetBkMode(OPAQUE);
 		if (m_Ticking) {
-			m_text2 = m_text + TICKSPACES + m_text;
+			m_text2 = m_text1 + TICKSPACES + m_text1;
 		} else {
-			m_text2 = m_text;
+			m_text2 = m_text1;
 			if (DT_CENTER == m_Justify && !m_NeedTicker) {
 				m_TickerX = (rectInner.Width() - cs.cx) / 2;
 			} else if(DT_RIGHT == m_Justify && !m_NeedTicker) {
@@ -453,7 +453,16 @@ void CColorStatic::OnPaint() {
 			}
 		}
 		if (m_WordWrap) {
-			dc.DrawText(m_text2,rectInner, DT_LEFT | DT_WORDBREAK);
+			if (m_WordWrapEllipsis) {
+				// Must give DrawText a buffer to modify
+				// else it was modifying passed in CStrings all the way back!
+				char buf[MAX_PATH];
+				strcpy(buf,m_text2);
+				dc.DrawText(buf, -1, rectInner, DT_LEFT 
+				| DT_PATH_ELLIPSIS | DT_MODIFYSTRING | DT_SINGLELINE);
+			} else
+				dc.DrawText(m_text2, rectInner, DT_LEFT | DT_WORDBREAK);
+				
 		} else {
 			dc.TextOut (m_TickerX,m_TickerY,m_text2);
 //			if ("searchstatus" == m_desc)
@@ -522,9 +531,9 @@ void CColorStatic::SetTransparent(CBitmap * bmp, const CRect & srcRect,
 }
 
 void
-CColorStatic::setText(CString text, const int justify) {
+CColorStatic::setText(const CString textstring, const int justify) {
+    m_text1 = textstring;
 	m_Justify = justify;
-    m_text = text;
 	//SetItemWidth();
 	// Don't do this cause it allows the control to somehow
 	// paint the text occaisionally outside of OnPaint
@@ -557,7 +566,7 @@ void
 CColorStatic::SetItemWidth() {
 	return;
 
-	int length = m_text.GetLength();
+	int length = m_text1.GetLength();
 	if (length == 0)
 		return;
 
@@ -570,7 +579,7 @@ CColorStatic::SetItemWidth() {
 
 void
 CColorStatic::getText(CString & text) {
-    text = m_text;
+    text = m_text1;
 }
 void CColorStatic::changeFont(CFont * f) {
 	LOGFONT lf;

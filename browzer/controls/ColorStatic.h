@@ -45,8 +45,9 @@ public:
 		COLORREF outLR=0,
 		BOOL threeD=FALSE);
 
-	void SetWordWrap(BOOL b = TRUE) {
-		m_WordWrap = TRUE;
+	void SetWordWrap(BOOL b = TRUE, BOOL b2 = FALSE) {
+		m_WordWrap = b;
+		m_WordWrapEllipsis = b2;
 	}
 	void SetTextColor(COLORREF crTextColor = 0xffffffff);
 	COLORREF GetTextColor();
@@ -75,7 +76,7 @@ public:
 	static const short GetVersionI();
 	static const char* GetVersionC();
 
-    void setText(CString text, const int justify=DT_LEFT);
+    void setText(const CString text, const int justify=DT_LEFT);
     void getText(CString &);
 	void changeFont(LPLOGFONT lplf);
 	void changeFont(CFont * f);
@@ -135,7 +136,8 @@ private:
 	CWnd* m_pParent;
 	UINT m_nMsg;
 
-    CString m_text,m_text2;
+    CString m_text1;
+	CString m_text2;
 	BOOL m_border;
 	int m_height;
 	int m_width;
@@ -151,6 +153,7 @@ private:
 	BOOL m_TickerIt,m_NeedTicker, m_Ticking;
 	CTime m_TickerStart, m_TimeTmp;
 	BOOL m_WordWrap;
+	BOOL m_WordWrapEllipsis;
 
 	CBitmap m_bmpBg;
 

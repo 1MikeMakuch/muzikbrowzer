@@ -107,6 +107,7 @@ public:
     void OnPageDown();
     void OnNextSong();
     void OnPreviousSong();
+	void OnVerify();
     void setFont();
 	void setColors();
     MBConfig & config() { return m_Config; }
@@ -220,7 +221,7 @@ private:
 	void HelpInfo();
 	void HelpInfo(BOOL userormain);
 	void recordTLEN();
- 	void displayAlbumArt(const CString & file);
+ 	void displayAlbumArt(const CString & file = "");
  	void killAlbumArt();
 	void ShowSearchDlg();
 	void UpdateRects();
@@ -323,8 +324,6 @@ public:
 	afx_msg void OnPlayButton();
 	afx_msg void OnOpenFileButton();
 	afx_msg void OnStopButton();
-	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
-	afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	afx_msg void OnAbout();
 	afx_msg void OnSelchangeArtists();
 	afx_msg void OnSelchangeAlbums();
@@ -334,9 +333,9 @@ public:
 	afx_msg void OnDblclkGenres();
 	afx_msg void OnMenuButton();
 	afx_msg void OnMenuOptions();
-	afx_msg void OnMenuCheckem();
 	afx_msg void OnSearchGo();
 	afx_msg void OnSearchDlg();
+	afx_msg void OnMenuCheckem();
 	afx_msg void OnNoSearchDlg();
 	afx_msg void OnSearchClear();
 	afx_msg void OnMenuEditPlaylist();
@@ -378,7 +377,6 @@ public:
 	afx_msg void OnErrorWmp();
 	afx_msg void OnWarningWmp(long WarningType, long Param, LPCTSTR Description);
 	DECLARE_EVENTSINK_MAP()
-
 	//}}AFX_MSG
 	afx_msg void OnCaptureChanged(CWnd *pWnd);
 	afx_msg LRESULT OnGraphNotify(UINT wParam, LONG lParam);

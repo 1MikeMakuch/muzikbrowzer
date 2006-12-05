@@ -1,6 +1,10 @@
 #if !defined(AFX_INITDLG_H__2B2759A0_A315_11D5_8676_002078049F22__INCLUDED_)
 #define AFX_INITDLG_H__2B2759A0_A315_11D5_8676_002078049F22__INCLUDED_
 
+// Current places where InitDlg is used;
+// Scan from menu, from config, Add, scan for new
+// garbage collect, modifyid3, verify
+
 #if _MSC_VER > 1000
 #pragma once
 #endif // _MSC_VER > 1000
@@ -8,6 +12,7 @@
 //
 #include "stdafx.h"
 #include "Resource.h"
+#include "ColorStatic.h"
 //#include "PlayerApp.h"
 /////////////////////////////////////////////////////////////////////////////
 // InitDlg dialog
@@ -19,9 +24,10 @@ class InitDlg : public CDialog
 public:
 	InitDlg(int cflag, int abortflag, CWinThread * pthread=NULL,
 		CWnd* pParent = NULL);   // standard constructor
-	void SetLabel(CString &);
-	void UpdateStatus(CString &);
-    void SendUpdateStatus(int flag, CString, int i1, int i2);
+	void SetLabel(const CString &);
+	void UpdateStatus(const CString &);
+	void UpdateStatus2(const CString &);
+    void SendUpdateStatus(int flag, const CString &, int i1, int i2);
     // flag 0 == label, 1 == status, 2 == range, 3 == pos
 	void ProgressRange(int beg, int end);
 	void ProgressPos(int pos);
@@ -29,10 +35,11 @@ public:
 // Dialog Data
 	//{{AFX_DATA(InitDlg)
 	enum { IDD = IDD_INIT_DIALOG };
+	CColorStatic	m_InitStatus2;
 	CButton	m_AbortButton;
 	CProgressCtrl	m_InitProgress;
-	CString	m_InitStatus;
-	CString	m_InitLabel;
+	CColorStatic	m_InitStatus;
+	CColorStatic	m_InitLabel;
 	//}}AFX_DATA
 
     static int m_Abort;

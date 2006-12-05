@@ -81,10 +81,11 @@ BOOL MBMessageBoxImpl::OnInitDialog()
 	m_MessageBox2.SetWindowText(msg);
 	CRect maxrect;
 
-	if (thePlayer && thePlayer->config()) {
+	if (thePlayer && thePlayer->pconfig()) {
 		LPLOGFONT lplf = thePlayer->config().getTitlesFont();
 		lplf->lfPitchAndFamily = FIXED_PITCH;
-		strcpy(lplf->lfFaceName,"");
+//		lplf->lfWeight = FW_LIGHT;
+//		strcpy(lplf->lfFaceName,"");
 		mfont.CreateFontIndirect(lplf);
 		maxrect = thePlayer->getWindowRect();
 	} else {
@@ -93,7 +94,7 @@ BOOL MBMessageBoxImpl::OnInitDialog()
         /* width */ 				0,
         /* escapement */ 			0,
         /* orientation */ 			0,
-        /* weight */ 				FW_BOLD,
+        /* weight */ 				FW_LIGHT,
         /* italic */ 				FALSE,
         /* underline */ 			FALSE,
         /* strikeout */ 			0,
