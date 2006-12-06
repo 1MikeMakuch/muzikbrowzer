@@ -159,7 +159,7 @@ BOOL MBMessageBoxImpl::OnInitDialog()
 	InitGrip();
 	ShowSizeGrip(TRUE);
 
-	return TRUE;  // return TRUE unless you set the focus to a control
+	return FALSE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
 }
 
