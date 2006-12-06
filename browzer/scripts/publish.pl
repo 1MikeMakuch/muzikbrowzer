@@ -14,7 +14,7 @@ close(F);
 
 ($major,$minor,$patch) = split('\.',$version);
 
-$exe = "muzikbrowzer_setup";
+$exe = "Muzikbrowzer_setup";
 $exe_rev = "_" . $major . "_" . $minor . "_" . $patch ;
 $exe_sfx = ".exe";
 $exefile = $exe . $exe_rev . $exe_sfx;
@@ -57,7 +57,7 @@ print F "To: $to\n";
 print F "Subject: new mb on mbdev.makuch.org\n";
 print F "From: michaelk\@makuch.org\n\n";
 print F "Your engineering team has published a new and 
-improved version of muzikbrowzer for your pleasure.
+improved version of Muzikbrowzer for your pleasure.
 This is an automated message.\n\n";
 print F "version $major.$minor.$patch built $ds $dt\n";
 print F "http://mbdev.makuch.org\n

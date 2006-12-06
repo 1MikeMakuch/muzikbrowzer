@@ -125,7 +125,7 @@ MyLog::trimIt() {
 		_file.Close();
 		open(_pathfile, TRUE);
 		_file.Write(buf.p,halfsize);
-		log(CS("muzikbrowzer version: ") + CS(MUZIKBROWZER_VERSION));
+		log(CS("Muzikbrowzer version: ") + CS(MUZIKBROWZER_VERSION));
 	}
 }
 void

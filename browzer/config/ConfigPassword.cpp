@@ -353,7 +353,7 @@ void CConfigPassword::OnSendinfo()
 	BOOL r = smtp.mail(serverPort,from,to,headers,body);
 	if (r != TRUE) {
 		CString msg = "Unable to send information to muzikbrowzer.com.";
-		msg += "\r\nPlease contact muzikbrowzer support.";
+		msg += "\r\nPlease contact Muzikbrowzer support.";
 		MBMessageBox("Alert", msg);
 	} else {
 		CString msg = "Information sent to muzikbrowzer.com\r\n";
@@ -382,17 +382,17 @@ void CConfigPassword::validate() {
 	} else {
 		if (CTime::GetCurrentTime() < m_ExpDate) {
 			m_TrialMode = 1;
-m_Notice = "To purhcase muzikbrowzer and remove Trial Mode go to www.muzikbrowzer.com ";
-m_Notice += "and click on Purchase. If you've already purchased muzikbrowzer you ";
+m_Notice = "To purhcase Muzikbrowzer and remove Trial Mode go to www.muzikbrowzer.com ";
+m_Notice += "and click on Purchase. If you've already purchased Muzikbrowzer you ";
 m_Notice += "should have received your license key, enter it along with your name and ";
 m_Notice += "email address above. \r\n\r\n";
       
-m_Notice += "If you've already purchased muzikbrowzer and you need a new license key";
+m_Notice += "If you've already purchased Muzikbrowzer and you need a new license key";
 m_Notice += " go to www.muzikbrowzer.com and contact Support.";
 
 		} else {
 			m_TrialMode = 2;
-			m_Notice = "Your Trial period has expired. You may purchase a muzikbrowzer ";
+			m_Notice = "Your Trial period has expired. You may purchase a Muzikbrowzer ";
 			m_Notice += "license at www.muzikbrowzer.com";
 			m_TrialExpiration = "";
 			m_TrialLabel = "Expired";

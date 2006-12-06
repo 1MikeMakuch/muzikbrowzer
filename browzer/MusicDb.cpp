@@ -423,16 +423,16 @@ MusicLib::MovePlaylistsToDir() {
         plist.GetNext(pos);
     }
 	CString src,dst;
-	src = m_dir + "\\muzikbrowzer.files";
-	dst = m_dir + "\\muzikbrowzer.mbfls";
+	src = m_dir + "\\Muzikbrowzer.files";
+	dst = m_dir + "\\Muzikbrowzer.mbfls";
 	if (!FileUtil::IsReadable(dst))
 		FileUtil::mv(src,dst);
 
-	CString msg = "This version of muzikbrowzer converts your old\r\n";
+	CString msg = "This version of Muzikbrowzer converts your old\r\n";
 	msg += "playlists into a new format.\r\n\r\n";
 	if (errormsg.GetLength()) {
 		msg += "Errors encountered during playlist conversion.\r\n";
-		msg += "Make a copy of the muzikbrowzer.log file below and\r\n";
+		msg += "Make a copy of the Muzikbrowzer.log file below and\r\n";
 		msg += "contact support. " + CS(MBURL);
 	} else {
 		msg += "Your playlists have been converted to the new industry\r\n";
@@ -2623,7 +2623,7 @@ MMemory::writeToFile() {
         CFile::modeWrite | CFile::modeCreate,
         &fileException ))
 	{
-        CString msg = "Unable to save muzikbrowzer database ";
+        CString msg = "Unable to save Muzikbrowzer database ";
 		msg += dbfilename;
         MBMessageBox(CString("alert"), msg);
         return -1;
@@ -2644,7 +2644,7 @@ MMemory::addr(int p) {
 	}
 }
 
-#define MBTESTFILE "muzikbrowzer.ck"
+#define MBTESTFILE "Muzikbrowzer.ck"
 TEST(PMemoryTests, PMemory)
 {
 	PMemory m;
@@ -3970,7 +3970,7 @@ MSongLib::dump(CString name) {
         CFile::modeWrite | CFile::modeCreate,
         &fileException ))
 	{
-        CString msg = "Unable to create muzikbrowzer database file ";
+        CString msg = "Unable to create Muzikbrowzer database file ";
 		msg += dbfilename;
         MBMessageBox(CString("alert"), msg);
         return ;
@@ -4006,7 +4006,7 @@ int
 MSongLib::validate() {
 	if (m_db_version != MB_DB_VERSION) {
 		init(TRUE);
-		CString msg = "The muzikbrowzer database appears to be an\r\nolder incompatible version.\r\n";
+		CString msg = "The Muzikbrowzer database appears to be an\r\nolder incompatible version.\r\n";
 		msg += "You must do a Complete Rebuild.";
 		MBMessageBox("Error", msg);
 		return -1;
@@ -4023,7 +4023,7 @@ MSongLib::validate() {
 			|| rlength < 1)
 		{
 			init(TRUE);
-			CString msg = "muzikbrowzer database corrupted.\r\n";
+			CString msg = "Muzikbrowzer database corrupted.\r\n";
 			msg += "Perform a Complete Rebuild.";
 			MBMessageBox("Error", msg);
 			return -1;
@@ -4033,7 +4033,7 @@ MSongLib::validate() {
 			int llen = strlen(label);
 			if (llen != rlength - (sizeof(MRecordt) + 1)) {
 				init(TRUE);
-				CString msg = "muzikbrowzer database corrupted.\r\n";
+				CString msg = "Muzikbrowzer database corrupted.\r\n";
 				msg += "Perform a Complete Rebuild.";
 				MBMessageBox("Error", msg);
 				return -1;

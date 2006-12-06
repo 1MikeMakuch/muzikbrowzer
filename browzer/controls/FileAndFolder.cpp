@@ -114,7 +114,7 @@ BOOL CFileAndFolder::OnInitDialog()
 void CFileAndFolder::ReadCachedDrives() {
 	CFile file;
     CFileException fileException;
-    if (!file.Open( (LPCTSTR)"muzikbrowzerCachedDrives", 
+    if (!file.Open( (LPCTSTR)"MuzikbrowzerCachedDrives", 
 			CFile::modeRead,
 			&fileException )) {
 		return;
@@ -129,7 +129,7 @@ void CFileAndFolder::ReadCachedDrives() {
 void CFileAndFolder::WriteCachedDrives() {
 	CFile file;
     CFileException fileException;
-    if (!file.Open( (LPCTSTR)"muzikbrowzerCachedDrives", 
+    if (!file.Open( (LPCTSTR)"MuzikbrowzerCachedDrives", 
 			CFile::modeCreate | CFile::modeWrite,
 			&fileException )) {
 		return;

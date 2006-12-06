@@ -647,7 +647,7 @@ void CConfigFiles::AddMusic() {
 
 	CFileAndFolder dialog(this, dflt);
 
-	dialog.setTitle("Add music to muzikbrowzer library");
+	dialog.setTitle("Add music to Muzikbrowzer library");
 	dialog.setMsg("Select file(s)/folder(s) to be added.");
 	int ret;
 	ret = dialog.DoModal();

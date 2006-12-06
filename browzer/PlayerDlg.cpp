@@ -446,7 +446,7 @@ BOOL CPlayerDlg::OnInitDialog()
 	lfile += ".log";
 	
     logger.open(lfile);
-	logger.log(CS("muzikbrowzer version: ") + CS(MUZIKBROWZER_VERSION));
+	logger.log(CS("Muzikbrowzer version: ") + CS(MUZIKBROWZER_VERSION));
 
 	logger.ods("Begin InitDialog");
 	CDialogClassImpl::OnInitDialog();
@@ -481,8 +481,8 @@ BOOL CPlayerDlg::OnInitDialog()
 	_initdialog->ShowWindow(SW_SHOWNORMAL /* CWinApp::m_nCmdShow */);
 	_initdialog->UpdateWindow();
 
-	if (FileUtil::IsReadable("muzikbrowzer.wav")) {
-		::PlaySound("muzikbrowzer.wav",NULL,
+	if (FileUtil::IsReadable("Muzikbrowzer.wav")) {
+		::PlaySound("Muzikbrowzer.wav",NULL,
 			SND_ASYNC | SND_FILENAME | SND_NODEFAULT | SND_NOWAIT);
 	}
 
@@ -696,7 +696,7 @@ void CPlayerDlg::ShowBetaWarning() {
 "which could potentially damage data on your computer.\r\n" <<
 "While every effort has been made to ensure against this\r\n" <<
 "there are no guarantees. Pecan Ventures assumes no\r\n" <<
-"liability what so ever for any damage caused by muzikbrowzer.\r\n" <<
+"liability what so ever for any damage caused by Muzikbrowzer.\r\n" <<
 "Backup your data before performing tag editing with Muzikbrowzer.";
 
 		if (Y >= 2007) {
@@ -1947,7 +1947,7 @@ CPlayerDlg::init() {
 	lpath += MUZIKBROWZER;
 	lpath += ".log";
     logger.open(lpath);
-	logger.log(CS("muzikbrowzer version: ") + CS(MUZIKBROWZER_VERSION));
+	logger.log(CS("Muzikbrowzer version: ") + CS(MUZIKBROWZER_VERSION));
 
 	m_mlib.MovePlaylistsToDir();
 
@@ -2878,7 +2878,7 @@ void CPlayerDlg::OnMenuCheckem() {
 	lpath += "-Check";
 	lpath += ".log";
     CheckEmLog.open(lpath);
-	CheckEmLog.log(CS("muzikbrowzer version: ") + CS(MUZIKBROWZER_VERSION));
+	CheckEmLog.log(CS("Muzikbrowzer version: ") + CS(MUZIKBROWZER_VERSION));
 	CheckEmLog.log("Checking all files for playability");
 	logger.log("Checking all files for playability");
 	logger.log("see "+lpath);

@@ -152,7 +152,7 @@ CSMTP::mail(const CString & serverHostPort,
 //	CWSAStartup wsastartup;
 	if (!AfxSocketInit())
 	{
-		MBMessageBox("Info", "Unable to send info to muzikbrowzer");
+		MBMessageBox("Info", "Unable to send info to Muzikbrowzer");
 		return FALSE;
 	}
 

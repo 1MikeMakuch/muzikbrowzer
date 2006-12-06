@@ -10,10 +10,10 @@
 #define MBUNKNOWN " unknown"
 #define MBURL "www.muzikbrowzer.com"
 
-#define MUZIKBROWZER "muzikbrowzer"
-#define MBREGKEYIRMAN "Software\\muzikbrowzer\\Irman"
-#define MBREGKEY "Software\\muzikbrowzer"
-#define MBREGKEYLAST "Software\\muzikbrowzer\\PreviousValues"
+#define MUZIKBROWZER "Muzikbrowzer"
+#define MBREGKEYIRMAN "Software\\Muzikbrowzer\\Irman"
+#define MBREGKEY "Software\\Muzikbrowzer"
+#define MBREGKEYLAST "Software\\Muzikbrowzer\\PreviousValues"
 
 #define MBUNABLETOOPEN "Unable to open database location. Set in config options, then run Scan."
 #define PLAYER_STATUS_DELAY 2

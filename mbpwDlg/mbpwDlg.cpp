@@ -214,7 +214,7 @@ void CMbpwDlg::OnMbpwGenButton()
 	output += "\r\n\r\nIf your ";
 	output += MBPW_HOSTID;
 	output += " does not match ";
-	output += "contact support.\r\n\r\nThe muzikbrowzer team.\r\n";
+	output += "contact support.\r\n\r\nThe Muzikbrowzer team.\r\n";
 
 	if (host.GetLength() && fname.GetLength() && lname.GetLength()
 		&& email.GetLength() && password.GetLength()) {

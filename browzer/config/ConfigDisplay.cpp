@@ -1143,7 +1143,7 @@ BOOL CConfigDisplay::verifySkin(CString skin) {
 	if (checkSkinDef(regSD, tmp) != TRUE) {
 		msg += "Problems with " + skindef + "\r\n";
 		msg += tmp;
-		msg += "Either reinstall muzikbrowzer or fix the skin.";
+		msg += "Either reinstall Muzikbrowzer or fix the skin.";
 	}
 
 	// read skin def custom
