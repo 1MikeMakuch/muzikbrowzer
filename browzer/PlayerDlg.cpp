@@ -3410,6 +3410,7 @@ void CPlayerDlg::LoadPlaylist(CString name) {
 void CPlayerDlg::OnContextMenu(CWnd* pWnd, CPoint ScreenPnt) 
 {
 
+
     CPoint  point; // point inside the list ctrl where right-click occurred
     int  nIndex = 0; // index of the client that was right-clicked
     UINT uFlags = 0;
@@ -3433,6 +3434,7 @@ void CPlayerDlg::OnContextMenu(CWnd* pWnd, CPoint ScreenPnt)
 
     if (genreRect.PtInRect(point)) {
         m_Genres.SetFocus();
+		OnGenresFocus( ); // added this to update selection upon right click
         int sel = m_Genres.GetSelectedItemFromPoint(point);
         if (sel >= 0) {
             m_Genres.SetCurSel(sel);
@@ -3441,6 +3443,7 @@ void CPlayerDlg::OnContextMenu(CWnd* pWnd, CPoint ScreenPnt)
         }
     } else if (artistRect.PtInRect(point)) {
         m_Artists.SetFocus();
+		OnArtistsFocus( );
         int sel = m_Artists.GetSelectedItemFromPoint(point);
         if (sel >= 0) {
             m_Artists.SetCurSel(sel);
@@ -3449,6 +3452,7 @@ void CPlayerDlg::OnContextMenu(CWnd* pWnd, CPoint ScreenPnt)
         }
     } else if (albumRect.PtInRect(point)) {
         m_Albums.SetFocus();
+		OnAlbumsFocus( );
         int sel = m_Albums.GetSelectedItemFromPoint(point);
         if (sel >= 0) {
             m_Albums.SetCurSel(sel);
@@ -3457,6 +3461,7 @@ void CPlayerDlg::OnContextMenu(CWnd* pWnd, CPoint ScreenPnt)
         }
     } else if (songRect.PtInRect(point)) {
         m_Songs.SetFocus();
+		OnSongsFocus( );
         int sel = m_Songs.GetSelectedItemFromPoint(point);
         if (sel >= 0) {
 			m_Songs.SetCurSel(sel);
@@ -3465,6 +3470,7 @@ void CPlayerDlg::OnContextMenu(CWnd* pWnd, CPoint ScreenPnt)
 		}
     } else if (playlistRect.PtInRect(point)) {
         m_Playlist.SetFocus();
+		OnPlaylistFocus( );
         int sel = m_Playlist.GetSelectedItemFromPoint(point);
         if (sel >= 0) m_Playlist.SetCurSel(sel);
         mWindowFlag = 5;

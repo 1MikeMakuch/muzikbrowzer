@@ -100,6 +100,7 @@ protected:
 	afx_msg BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);
 	virtual void PreSubclassWindow();
 	afx_msg BOOL OnLbnSelchange();
+	afx_msg void OnContextMenu(CWnd* pWnd, CPoint point);
 	//}}AFX_MSG
     DECLARE_MESSAGE_MAP();
 private:

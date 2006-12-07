@@ -30,6 +30,7 @@ BEGIN_MESSAGE_MAP(CExtendedListBox, CListBox)
 	ON_WM_CTLCOLOR()
 	ON_WM_SYSKEYDOWN()
 	ON_WM_MOUSEWHEEL()
+	ON_WM_CONTEXTMENU()
 	//}}AFX_MSG_MAP
     ON_WM_KEYDOWN()
     ON_WM_NCCALCSIZE()
@@ -976,4 +977,8 @@ BOOL CExtendedListBox::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 		(*m_parentcallbacks->lpdlg)()->OnControlSelChange();
 	
 	return TRUE;
+}
+void CExtendedListBox::OnContextMenu(CWnd* pWnd, CPoint ScreenPnt)  {
+	RedrawWindow(0,0,RDW_FRAME|RDW_INVALIDATE|RDW_UPDATENOW);
+	CListBox::OnContextMenu(pWnd, ScreenPnt);
 }
