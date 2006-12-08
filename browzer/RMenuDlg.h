@@ -75,8 +75,6 @@ protected:
 	// Generated message map functions
 	//{{AFX_MSG(RMenuDlg)
 //	afx_msg HBRUSH OnCtlColor( CDC* pDC, CWnd* pWnd, UINT nCtlColor );
-//	virtual BOOL PreTranslateMessage(MSG*);
-
 	afx_msg void OnMenuClearplaylist();
 	afx_msg void OnMenuExit();
 	afx_msg void OnMenuLoadplaylist();

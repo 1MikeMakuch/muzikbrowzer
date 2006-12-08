@@ -89,6 +89,7 @@ public:
 	virtual void OnOK();
 	virtual void OnCancel();
 	virtual BOOL OnApply();
+	virtual BOOL OnInitDialog();
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	//}}AFX_VIRTUAL
@@ -97,25 +98,24 @@ public:
 protected:
 	// Generated message map functions
 	//{{AFX_MSG(CConfigDisplay)
-	virtual BOOL OnInitDialog();
-	afx_msg void OnSetDefault();
-	afx_msg void OnPaint();
-	afx_msg void OnSelchangeFont();
-	afx_msg void OnSkinChoose();
-	afx_msg void OnSkinDelete();
-	afx_msg void OnEditchangeSkinList();
-	afx_msg void OnSelendokSkinList();
-	afx_msg void OnColorButton();
-	afx_msg void OnSwapSettingsButton();
-	afx_msg void OnSelchangeSamplePlaylist();
-	afx_msg void OnMakedefault();
-	//}}AFX_MSG
-	afx_msg void OnCButtonMessage(WPARAM w, LPARAM l)  ;
-	afx_msg void onbold();
 	afx_msg void On3dColHdrs();
 	afx_msg void On3dData();
 	afx_msg void On3dStatus();
+	afx_msg void onbold();
+	afx_msg LRESULT OnCButtonMessage(WPARAM w, LPARAM l)  ;
+	afx_msg void OnColorButton();
+	afx_msg void OnEditchangeSkinList();
+	afx_msg void OnMakedefault();
+	afx_msg void OnPaint();
+	afx_msg void OnSelchangeFont();
+	afx_msg void OnSelchangeSamplePlaylist();
+	afx_msg void OnSelendokSkinList();
+	afx_msg void OnSetDefault();
+	afx_msg void OnSkinChoose();
+	afx_msg void OnSkinDelete();
+	afx_msg void OnSwapSettingsButton();
 	afx_msg void OnUpdateWidth();
+	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 private:
     PlayerCallbacks * m_callbacks;

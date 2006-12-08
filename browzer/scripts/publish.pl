@@ -1,5 +1,11 @@
 #!/usr/bin/perl
 
+sub mysystem {
+	local($com) = @_;
+	print $com."\n";
+	system($com);
+}
+
 $f=$ARGV[0];
 
 #print "ok test!\n";
@@ -34,20 +40,20 @@ $exedst2 = "pecan.makuch.org:/var/www/virtuals/muzikbrowzer/httpdocs/dl/".$exe.$
 #print F $buf;
 #close(F);
 
-system("scp $exesrc $exedst");
+mysystem("/usr/bin/scp $exesrc $exedst");
 
 open(F,">current_rev");
 print F $major . '.' . $minor . '.' . $patch;
 close(F);
-system("touch Publish.exe");
+mysystem("/usr/bin/touch Publish.exe");
 open(F,">current_rev_built");
 print F "$ds $dt\n";
 close(F);
 
-system("scp current_rev pecan.makuch.org:/var/www/virtuals/muzikbrowzer/httpdocs/dl/current_rev");
-system("scp current_rev_built pecan.makuch.org:/var/www/virtuals/muzikbrowzer/httpdocs/dl/current_rev_built");
+mysystem("/usr/bin/scp current_rev pecan.makuch.org:/var/www/virtuals/muzikbrowzer/httpdocs/dl/current_rev");
+mysystem("/usr/bin/scp current_rev_built pecan.makuch.org:/var/www/virtuals/muzikbrowzer/httpdocs/dl/current_rev_built");
 
-#system("cd /cygdrive/c/mkm/src/muzik/browzer/scripts; /usr/bin/bash --login /cygdrive/c/mkm/src/muzik/browzer/scripts/makezip.sh $src");
+#mysystem("cd /cygdrive/c/mkm/src/muzik/browzer/scripts; /usr/bin/bash --login /cygdrive/c/mkm/src/muzik/browzer/scripts/makezip.sh $src");
 
 
 $to="michaelk\@makuch.org";
@@ -65,8 +71,9 @@ print F "http://mbdev.makuch.org\n
 Here is the first 100 lines of the ChangeLog, the rest can be found at the link above.\n\n";
 close(F);
 
-system("(cd /cygdrive/c/mkm/src/muzik ; cvs2cl.pl --summary --hide-filenames -f /tmp/mbpublish.txt2)");
-system("head -100 /tmp/mbpublish.txt2 >> /tmp/mbpublish.txt");
+mysystem("(cd /cygdrive/c/mkm/src/muzik ; /cygdrive/c/mkm/scripts/cvs2cl.pl --summary --hide-filenames -f /tmp/mbpublish.txt2 2>&1 >/dev/null)");
 
-system("/usr/sbin/ssmtp $to < /tmp/mbpublish.txt");
-system("/usr/bin/rsync /tmp/mbpublish.txt2 pecan:/var/www/virtuals/mbdev/httpdocs/ChangeLog.txt");
+#mysystem("/usr/bin/head -100 /tmp/mbpublish.txt2 >> /tmp/mbpublish.txt");
+#mysystem("/usr/sbin/ssmtp $to < /tmp/mbpublish.txt");
+
+mysystem("/usr/bin/scp /tmp/mbpublish.txt2 pecan:/var/www/virtuals/mbdev/httpdocs/ChangeLog.txt");

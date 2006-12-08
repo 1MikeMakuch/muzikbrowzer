@@ -51,7 +51,7 @@ public:
     void changeFont(LPLOGFONT);
     void initFont();
 
-    afx_msg void OnKeyDown( UINT nChar, UINT nRepCnt, UINT nFlags );
+    
     afx_msg void OnNcCalcSize(BOOL bCalcValidRects,
         NCCALCSIZE_PARAMS FAR* lpncsp) ;
     afx_msg void OnNcPaint();
@@ -94,6 +94,7 @@ protected:
     void DrawScrollButton(BOOL calc = TRUE, CPoint p = CPoint(0,0));
 
 	//{{AFX_MSG(CExtendedListBox)
+	afx_msg void OnKeyDown( UINT nChar, UINT nRepCnt, UINT nFlags );
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 	afx_msg void OnSysKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);

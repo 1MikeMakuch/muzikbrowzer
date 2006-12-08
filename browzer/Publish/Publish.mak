@@ -1,3 +1,3 @@
 
 all:
-	c:\cygwin\bin\bash ../scripts/publish.sh
+	c:\cygwin\bin\bash -lc "(cd /cygdrive/c/mkm/src/muzik/browzer/Publish;../scripts/publish.sh)"

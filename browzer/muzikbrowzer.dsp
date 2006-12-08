@@ -114,7 +114,7 @@ BSC32=bscmake.exe
 LINK32=link.exe
 # ADD BASE LINK32 Version.lib config\Debug\config.lib ../3rdparty/ogg/libogg-1.0/win32/Debug/ogg_static_d.lib ../oggtagger/Debug/oggtagger.lib ../3rdparty/ogg/libvorbis-1.0/win32/Debug/vorbis_static_d.lib ../3rdparty/ogg/libvorbis-1.0/win32/Debug/vorbisfile_static_d.lib rpcrt4.lib ..\3rdparty/id3lib-3.8.3\libprj\Debug\id3libD.lib ..\3rdparty/id3lib-3.8.3\zlib\prj\Debug\zlibD.lib ..\TestHarness\Debug\TestHarness.lib Help\HtmlHelp.lib strmiids.lib config\Debug\config.lib controls\Debug\controls.lib ..\id3\id3libutils\Debug\id3utils.lib irman\Debug\irman.lib Serial\Debug\Serial.lib ..\util\Debug\util.lib dxguid.lib Quartz.lib ..\md5\Debug\md5.lib /nologo /subsystem:windows /incremental:no /debug /debugtype:both /machine:I386 /nodefaultlib:"msvcrt" /nodefaultlib:"libcmt" /nodefaultlib:"nafxcw" /out:"Debug/muzikbrowzerD.exe" /pdbtype:sept
 # SUBTRACT BASE LINK32 /pdb:none
-# ADD LINK32 Version.lib config\DebugBC\config.lib ../3rdparty/ogg/libogg-1.0/win32/DebugBC/ogg_static_d.lib ../oggtagger/DebugBC/oggtagger.lib ../3rdparty/ogg/libvorbis-1.0/win32/DebugBC/vorbis_static_d.lib ../3rdparty/ogg/libvorbis-1.0/win32/DebugBC/vorbisfile_static_d.lib rpcrt4.lib ..\3rdparty/id3lib-3.8.3\libprj\DebugBC\id3libD.lib ..\3rdparty/id3lib-3.8.3\zlib\prj\DebugBC\zlibD.lib ..\TestHarness\DebugBC\TestHarness.lib Help\HtmlHelp.lib strmiids.lib config\Debug\config.lib controls\DebugBC\controls.lib ..\id3\id3libutils\DebugBC\id3utils.lib irman\DebugBC\irman.lib Serial\DebugBC\Serial.lib ..\util\DebugBC\util.lib dxguid.lib Quartz.lib ..\md5\DebugBC\md5.lib wmvcore.lib ..\3rdparty\Wmp\DebugBC\Wmp.lib ..\GetBlackOut\DebugBC\GetBlackOut.lib /nologo /subsystem:windows /incremental:no /debug /debugtype:both /machine:I386 /nodefaultlib:"msvcrt" /nodefaultlib:"libcmt" /nodefaultlib:"nafxcw" /out:"DebugBC/muzikbrowzerD.exe" /pdbtype:sept /libpath:"..\3rdparty\WMFSDK9\lib"
+# ADD LINK32 Version.lib config\DebugBC\config.lib ../3rdparty/ogg/libogg-1.0/win32/DebugBC/ogg_static_d.lib ../oggtagger/DebugBC/oggtagger.lib ../3rdparty/ogg/libvorbis-1.0/win32/DebugBC/vorbis_static_d.lib ../3rdparty/ogg/libvorbis-1.0/win32/DebugBC/vorbisfile_static_d.lib rpcrt4.lib ..\3rdparty/id3lib-3.8.3\libprj\DebugBC\id3libD.lib ..\3rdparty/id3lib-3.8.3\zlib\prj\DebugBC\zlibD.lib ..\TestHarness\DebugBC\TestHarness.lib Help\HtmlHelp.lib strmiids.lib config\Debug\config.lib controls\DebugBC\controls.lib ..\id3\id3libutils\DebugBC\id3utils.lib irman\DebugBC\irman.lib Serial\DebugBC\Serial.lib ..\util\DebugBC\util.lib dxguid.lib Quartz.lib ..\md5\DebugBC\md5.lib wmvcore.lib ..\3rdparty\Wmp\DebugBC\Wmp.lib ..\GetBlackOut\DebugBC\GetBlackOut.lib /nologo /subsystem:windows /incremental:no /debug /debugtype:both /machine:I386 /nodefaultlib:"msvcrt" /nodefaultlib:"libcmt" /nodefaultlib:"nafxcw" /out:"DebugBC/MuzikbrowzerD.exe" /pdbtype:sept /libpath:"..\3rdparty\WMFSDK9\lib"
 # SUBTRACT LINK32 /pdb:none
 
 !ENDIF 
@@ -723,9 +723,40 @@ SOURCE=.\res\xaudio.ico
 # End Group
 # End Target
 # End Project
-# Section muzikbrowzer : {6BF52A52-394A-11D3-B153-00C04F79FAA6}
-# 	2:21:DefaultSinkHeaderFile:wmpplayer4.h
-# 	2:16:DefaultSinkClass:CWMPPlayer4
+# Section muzikbrowzer : {4A976298-8C0D-11D3-B389-00C04F68574B}
+# 	2:5:Class:CWMPStringCollection
+# 	2:10:HeaderFile:wmpstringcollection.h
+# 	2:8:ImplFile:wmpstringcollection.cpp
+# End Section
+# Section muzikbrowzer : {8363BC22-B4B4-4B19-989D-1CD765749DD1}
+# 	2:5:Class:CWMPMediaCollection
+# 	2:10:HeaderFile:wmpmediacollection.h
+# 	2:8:ImplFile:wmpmediacollection.cpp
+# End Section
+# Section muzikbrowzer : {74C09E02-F828-11D2-A74B-00A0C905F36E}
+# 	2:5:Class:CWMPControls
+# 	2:10:HeaderFile:wmpcontrols.h
+# 	2:8:ImplFile:wmpcontrols.cpp
+# End Section
+# Section muzikbrowzer : {679409C0-99F7-11D3-9FB7-00105AA620BB}
+# 	2:5:Class:CWMPPlaylistArray
+# 	2:10:HeaderFile:wmpplaylistarray.h
+# 	2:8:ImplFile:wmpplaylistarray.cpp
+# End Section
+# Section muzikbrowzer : {CFAB6E98-8730-11D3-B388-00C04F68574B}
+# 	2:5:Class:CWMPCdrom
+# 	2:10:HeaderFile:wmpcdrom.h
+# 	2:8:ImplFile:wmpcdrom.cpp
+# End Section
+# Section muzikbrowzer : {8DA61686-4668-4A5C-AE5D-803193293DBE}
+# 	2:5:Class:CWMPDVD
+# 	2:10:HeaderFile:wmpdvd.h
+# 	2:8:ImplFile:wmpdvd.cpp
+# End Section
+# Section muzikbrowzer : {6C497D62-8919-413C-82DB-E935FB3EC584}
+# 	2:5:Class:CWMPPlayer4
+# 	2:10:HeaderFile:wmpplayer4.h
+# 	2:8:ImplFile:wmpplayer4.cpp
 # End Section
 # Section muzikbrowzer : {40897764-CEAB-47BE-AD4A-8E28537F9BBF}
 # 	2:5:Class:CWMPPlayerApplication
@@ -737,35 +768,39 @@ SOURCE=.\res\xaudio.ico
 # 	2:10:HeaderFile:wmpsettings.h
 # 	2:8:ImplFile:wmpsettings.cpp
 # End Section
+# Section muzikbrowzer : {6BF52A52-394A-11D3-B153-00C04F79FAA6}
+# 	2:21:DefaultSinkHeaderFile:wmpplayer4.h
+# 	2:16:DefaultSinkClass:CWMPPlayer4
+# End Section
 # Section muzikbrowzer : {A12DCF7D-14AB-4C1B-A8CD-63909F06025B}
 # 	2:5:Class:CWMPError
 # 	2:10:HeaderFile:wmperror.h
 # 	2:8:ImplFile:wmperror.cpp
-# End Section
-# Section muzikbrowzer : {4F2DF574-C588-11D3-9ED0-00C04FB6E937}
-# 	2:5:Class:CWMPClosedCaption
-# 	2:10:HeaderFile:wmpclosedcaption.h
-# 	2:8:ImplFile:wmpclosedcaption.cpp
-# End Section
-# Section muzikbrowzer : {D5F0F4F1-130C-11D3-B14E-00C04F79FAA6}
-# 	2:5:Class:CWMPPlaylist
-# 	2:10:HeaderFile:wmpplaylist.h
-# 	2:8:ImplFile:wmpplaylist.cpp
 # End Section
 # Section muzikbrowzer : {EE4C8FE2-34B2-11D3-A3BF-006097C9B344}
 # 	2:5:Class:CWMPCdromCollection
 # 	2:10:HeaderFile:wmpcdromcollection.h
 # 	2:8:ImplFile:wmpcdromcollection.cpp
 # End Section
-# Section muzikbrowzer : {3614C646-3B3B-4DE7-A81E-930E3F2127B3}
-# 	2:5:Class:CWMPErrorItem
-# 	2:10:HeaderFile:wmperroritem.h
-# 	2:8:ImplFile:wmperroritem.cpp
+# Section muzikbrowzer : {D5F0F4F1-130C-11D3-B14E-00C04F79FAA6}
+# 	2:5:Class:CWMPPlaylist
+# 	2:10:HeaderFile:wmpplaylist.h
+# 	2:8:ImplFile:wmpplaylist.cpp
+# End Section
+# Section muzikbrowzer : {4F2DF574-C588-11D3-9ED0-00C04FB6E937}
+# 	2:5:Class:CWMPClosedCaption
+# 	2:10:HeaderFile:wmpclosedcaption.h
+# 	2:8:ImplFile:wmpclosedcaption.cpp
 # End Section
 # Section muzikbrowzer : {94D55E95-3FAC-11D3-B155-00C04F79FAA6}
 # 	2:5:Class:CWMPMedia
 # 	2:10:HeaderFile:wmpmedia.h
 # 	2:8:ImplFile:wmpmedia.cpp
+# End Section
+# Section muzikbrowzer : {3614C646-3B3B-4DE7-A81E-930E3F2127B3}
+# 	2:5:Class:CWMPErrorItem
+# 	2:10:HeaderFile:wmperroritem.h
+# 	2:8:ImplFile:wmperroritem.cpp
 # End Section
 # Section muzikbrowzer : {EC21B779-EDEF-462D-BBA4-AD9DDE2B29A7}
 # 	2:5:Class:CWMPNetwork
@@ -776,39 +811,4 @@ SOURCE=.\res\xaudio.ico
 # 	2:5:Class:CWMPPlaylistCollection
 # 	2:10:HeaderFile:wmpplaylistcollection.h
 # 	2:8:ImplFile:wmpplaylistcollection.cpp
-# End Section
-# Section muzikbrowzer : {8363BC22-B4B4-4B19-989D-1CD765749DD1}
-# 	2:5:Class:CWMPMediaCollection
-# 	2:10:HeaderFile:wmpmediacollection.h
-# 	2:8:ImplFile:wmpmediacollection.cpp
-# End Section
-# Section muzikbrowzer : {4A976298-8C0D-11D3-B389-00C04F68574B}
-# 	2:5:Class:CWMPStringCollection
-# 	2:10:HeaderFile:wmpstringcollection.h
-# 	2:8:ImplFile:wmpstringcollection.cpp
-# End Section
-# Section muzikbrowzer : {CFAB6E98-8730-11D3-B388-00C04F68574B}
-# 	2:5:Class:CWMPCdrom
-# 	2:10:HeaderFile:wmpcdrom.h
-# 	2:8:ImplFile:wmpcdrom.cpp
-# End Section
-# Section muzikbrowzer : {679409C0-99F7-11D3-9FB7-00105AA620BB}
-# 	2:5:Class:CWMPPlaylistArray
-# 	2:10:HeaderFile:wmpplaylistarray.h
-# 	2:8:ImplFile:wmpplaylistarray.cpp
-# End Section
-# Section muzikbrowzer : {74C09E02-F828-11D2-A74B-00A0C905F36E}
-# 	2:5:Class:CWMPControls
-# 	2:10:HeaderFile:wmpcontrols.h
-# 	2:8:ImplFile:wmpcontrols.cpp
-# End Section
-# Section muzikbrowzer : {6C497D62-8919-413C-82DB-E935FB3EC584}
-# 	2:5:Class:CWMPPlayer4
-# 	2:10:HeaderFile:wmpplayer4.h
-# 	2:8:ImplFile:wmpplayer4.cpp
-# End Section
-# Section muzikbrowzer : {8DA61686-4668-4A5C-AE5D-803193293DBE}
-# 	2:5:Class:CWMPDVD
-# 	2:10:HeaderFile:wmpdvd.h
-# 	2:8:ImplFile:wmpdvd.cpp
 # End Section

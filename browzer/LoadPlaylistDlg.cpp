@@ -95,35 +95,33 @@ void LoadPlaylistDlg::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(LoadPlaylistDlg, CDialogSK)
 	//{{AFX_MSG_MAP(LoadPlaylistDlg)
-	ON_LBN_DBLCLK(IDC_PLAYLIST_NAMES, OnDblclkPlaylistNames)
-	ON_LBN_SELCHANGE(IDC_PLAYLIST_NAMES, OnSelchangePlaylistNames)
-	ON_LBN_SETFOCUS(IDC_PLAYLIST_NAMES, OnSetfocusPlaylistNames)
-	ON_LBN_SETFOCUS(IDC_PLAYLIST_SONGS, OnSetfocusPlaylistSongs)
-	ON_BN_CLICKED(IDC_PLAYLIST_LOAD, OnPlaylistOk)
-	ON_BN_CLICKED(IDC_PLAYLIST_UP, OnPlaylistUp)
-	ON_BN_CLICKED(IDC_PLAYLIST_DOWN, OnPlaylistDown)
-	ON_BN_CLICKED(IDC_PLAYLIST_SAVE, OnPlaylistSave)
-	ON_BN_CLICKED(IDC_PLAYLIST_DELETE, OnDeletePlaylist)
-	ON_BN_CLICKED(IDC_PLAYLIST_RENAME, OnRenamePlaylist)
-	ON_LBN_KILLFOCUS(IDC_PLAYLIST_SONGS, OnKillfocusPlaylistSongs)
-	ON_LBN_SELCHANGE(IDC_PLAYLIST_SONGS, OnSelchangePlaylistSongs)
-	ON_WM_NCMOUSEMOVE()
-	ON_WM_LBUTTONUP()
-	ON_WM_MOUSEMOVE()
-	ON_WM_SETCURSOR()
-	ON_BN_CLICKED(IDC_PLAYLIST_CLOSE, OnCancel)
+	ON_WM_CTLCOLOR()                     
+	ON_WM_LBUTTONUP()                    
+	ON_WM_MOUSEMOVE()                    
+	ON_WM_NCHITTEST()                    
+	ON_WM_NCLBUTTONDOWN()                
+	ON_WM_NCLBUTTONUP()                  
+	ON_WM_NCMOUSEMOVE()                  
+	ON_WM_SETCURSOR()                    
+	ON_WM_SIZE()                         
+	ON_WM_SIZING()                       
+	ON_BN_CLICKED(IDC_PLAYLIST_CLOSE,    OnCancel)
+	ON_LBN_DBLCLK(IDC_PLAYLIST_NAMES,    OnDblclkPlaylistNames)
+	ON_BN_CLICKED(IDC_PLAYLIST_DELETE,   OnDeletePlaylist)
 	ON_LBN_KILLFOCUS(IDC_PLAYLIST_NAMES, OnKillfocusPlaylistNames)
+	ON_LBN_KILLFOCUS(IDC_PLAYLIST_SONGS, OnKillfocusPlaylistSongs)
+	ON_MESSAGE(MB_LISTMOVEDN,            OnMovePlaylistDn)
+	ON_MESSAGE(MB_LISTMOVEUP,            OnMovePlaylistUp)
+	ON_BN_CLICKED(IDC_PLAYLIST_DOWN,     OnPlaylistDown)
+	ON_BN_CLICKED(IDC_PLAYLIST_LOAD,     OnPlaylistOk)
+	ON_BN_CLICKED(IDC_PLAYLIST_SAVE,     OnPlaylistSave)
+	ON_BN_CLICKED(IDC_PLAYLIST_UP,       OnPlaylistUp)
+	ON_BN_CLICKED(IDC_PLAYLIST_RENAME,   OnRenamePlaylist)
+	ON_LBN_SELCHANGE(IDC_PLAYLIST_NAMES, OnSelchangePlaylistNames)
+	ON_LBN_SELCHANGE(IDC_PLAYLIST_SONGS, OnSelchangePlaylistSongs)
+	ON_LBN_SETFOCUS(IDC_PLAYLIST_NAMES,  OnSetfocusPlaylistNames)
+	ON_LBN_SETFOCUS(IDC_PLAYLIST_SONGS,  OnSetfocusPlaylistSongs)
 	//}}AFX_MSG_MAP
-	ON_WM_NCLBUTTONDOWN()
-	ON_WM_NCLBUTTONUP()
-	ON_WM_SIZE()
-	ON_WM_SIZING()
-	ON_WM_NCHITTEST()
-	ON_WM_CTLCOLOR()
-	ON_WM_SETCURSOR()
-	ON_MESSAGE(MB_LISTMOVEUP, OnMovePlaylistUp)
-	ON_MESSAGE(MB_LISTMOVEDN, OnMovePlaylistDn)
-
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1149,7 +1147,7 @@ LoadPlaylistDlg::AdjustLibraryWidths(CPoint &apoint) {
 // a move has occured. Since ELB handled moving the display
 // strings we only do our backend data structure here.
 LRESULT
-LoadPlaylistDlg::OnMovePlaylistUp(UINT sel, LONG lParam) {
+LoadPlaylistDlg::OnMovePlaylistUp(WPARAM sel, LPARAM lParam) {
 	CString name,file;
 	name = m_csaPlaylistDesc.GetAt(sel);
 	file = m_csaPlaylist.GetAt(sel);
@@ -1167,7 +1165,7 @@ LoadPlaylistDlg::OnMovePlaylistUp(UINT sel, LONG lParam) {
 	return 0;
 }
 LRESULT
-LoadPlaylistDlg::OnMovePlaylistDn(UINT sel, LONG lParam) {
+LoadPlaylistDlg::OnMovePlaylistDn(WPARAM sel, LPARAM lParam) {
 	CString name,file;
 	name = m_csaPlaylistDesc.GetAt(sel);
 	file = m_csaPlaylist.GetAt(sel);
@@ -1195,7 +1193,7 @@ void LoadPlaylistDlg::OnPlaylistUp()
 			CString name;
 			m_PlaylistSongs.GetText(sel, name);
 			m_PlaylistSongs.DeleteString(sel);
-			OnMovePlaylistUp(sel);
+			OnMovePlaylistUp(sel,0);
 			sel--;
 			if (sel < 0) sel = 0;
 			m_PlaylistSongs.InsertString(sel,name);
@@ -1215,7 +1213,7 @@ void LoadPlaylistDlg::OnPlaylistDown()
 			CString name;
 			m_PlaylistSongs.GetText(sel, name);
 			m_PlaylistSongs.DeleteString(sel);
-			OnMovePlaylistDn(sel);
+			OnMovePlaylistDn(sel,0);
 			sel++;
 			if (sel > m_PlaylistSongs.GetCount()) sel = m_PlaylistSongs.GetCount();
 			m_PlaylistSongs.InsertString(sel,name);

@@ -268,154 +268,154 @@ void CPlayerDlg::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CPlayerDlg, CDialogClassImpl)
 	//ON_COMMAND(ID_MENU_CHECKEM,			OnMenuCheckem)
+	//ON_WM_NCPAINT()                        
+	// Don't *think* these are used: 12/7/2006
+	//ON_WM_COMPAREITEM()                      
+	//ON_WM_RBUTTONDOWN()                      
+	//ON_WM_RBUTTONUP()                        
+	ON_MESSAGE(MB_DBLCLICK_GENRES,           OnDblclkGenres)
+	ON_MESSAGE(MB_DBLCLICK_ARTISTS,          OnDblclkArtists)
+	ON_MESSAGE(MB_DBLCLICK_ALBUMS,           OnDblclkAlbums)
 	//{{AFX_MSG_MAP(CPlayerDlg)
-	ON_WM_SYSCOMMAND()
-	ON_WM_PAINT()
-	ON_WM_QUERYDRAGICON()
-	ON_BN_CLICKED(IDC_PLAY_BUTTON,			OnPlayButton)
-	ON_BN_CLICKED(IDC_OPEN_FILE_BUTTON,		OnOpenFileButton)
-	ON_BN_CLICKED(IDC_STOP_BUTTON,			OnStopButton)
-	ON_BN_CLICKED(IDD_ABOUT,				OnAbout)
-	ON_LBN_SELCHANGE(IDC_ARTISTS,			OnSelchangeArtists)
-	ON_LBN_SELCHANGE(IDC_ALBUMS,			OnSelchangeAlbums)
-	ON_LBN_DBLCLK(IDC_SONGS,				OnDblclkSongs)
-	ON_LBN_DBLCLK(IDC_ALBUMS,				OnDblclkAlbums)
-	ON_LBN_DBLCLK(IDC_ARTISTS,				OnDblclkArtists)
-	ON_LBN_DBLCLK(IDC_GENRES,				OnDblclkGenres)
-	ON_BN_CLICKED(IDC_MENU_BUTTON,			OnMenuButton)
-	ON_COMMAND(ID_MENU_OPTIONS,				OnMenuOptions)
-	ON_BN_CLICKED(IDC_SEARCH_GO,				OnSearchGo)
-	ON_COMMAND(ID_SEARCH,					OnSearchDlg)
-	ON_BN_CLICKED(IDC_SEARCH_CANCEL,		OnNoSearchDlg)
-	ON_BN_CLICKED(IDC_SEARCH_CLEAR,			OnSearchClear)	
-	ON_COMMAND(ID_MENU_EDITPL,				OnMenuEditPlaylist)
-	ON_BN_CLICKED(IDC_BUTTON_CLEAR,			OnMenuClearplaylist)
-	ON_COMMAND(ID_MENU_EXIT,				OnMenuExit)
-	ON_BN_CLICKED(IDC_BUTTON_LOAD,			OnMenuLoadplaylist)
-	ON_BN_CLICKED(IDC_BUTTON_SAVE,			OnMenuSaveplaylist)
-	ON_COMMAND(ID_MENU_EXPORT,				OnMenuExportLibrary)
-	ON_BN_CLICKED(IDC_BUTTON_SHUFFLE,		OnMenuShuffleplaylist)
-	ON_BN_CLICKED(IDC_BUTTON_PAUSE,			OnMenuPause)
-	ON_BN_CLICKED(IDC_BUTTON_PLAY,			OnMenuPlay)
-	ON_BN_CLICKED(IDC_BUTTON_STOP,			OnMenuStop)
-	ON_COMMAND(ID_PMENU_HELP,				OnMenuHelp)
-	ON_LBN_SELCHANGE(IDC_GENRES,			OnSelchangeGenres)
-	ON_LBN_DBLCLK(IDC_PLAYLIST,				OnDblclkPlaylist)
-	ON_WM_CONTEXTMENU()
-	ON_COMMAND(ID_EDIT_ID3TAG,				OnUserEditSong)
-	ON_WM_SIZE()
-	ON_WM_SIZING()
-	ON_LBN_SELCHANGE(IDC_SONGS,				OnSelchangeSongs)
-	ON_LBN_SELCHANGE(IDC_PLAYLIST,			OnSelchangePlaylist)
-	ON_BN_CLICKED(IDC_BUTTON_RANDOM,		OnMenuRandomizePlaylist)
-	ON_BN_CLICKED(IDC_OPTIONS_BUTTON,		OnButtonMenu)
-	ON_BN_CLICKED(IDC_MUSIC_BUTTON,			OnMusicButton)
-	ON_BN_CLICKED(IDC_PICTURES_BUTTON,		OnPicturesButton)
-	ON_BN_CLICKED(IDC_VIDEO_BUTTON,			OnVideoButton)
-	ON_BN_CLICKED(IDC_BUTTON_MINIMIZE,		OnButtonMinimize)
-	ON_BN_CLICKED(IDC_BUTTON_MAXIMIZE,		OnButtonMaximize)
-	ON_WM_SETCURSOR()
-	ON_WM_NCMOUSEMOVE()
-	ON_WM_LBUTTONUP()
-	ON_WM_MOUSEMOVE()
-	ON_BN_CLICKED(IDC_BUTTON_LOGO,			OnLogoButton)
-	ON_LBN_KILLFOCUS(IDC_GENRES,			OnKillfocusVirtuals)
-	ON_LBN_KILLFOCUS(IDC_ARTISTS,			OnKillfocusVirtuals)
-	ON_LBN_KILLFOCUS(IDC_ALBUMS,			OnKillfocusVirtuals)
-	ON_LBN_KILLFOCUS(IDC_SONGS,				OnKillfocusVirtuals)
-	ON_LBN_KILLFOCUS(IDC_PLAYLIST,			OnKillfocusVirtuals)
-	ON_BN_CLICKED(IDC_BUTTON_EXIT,			OnCancel)
-	ON_BN_CLICKED(IDC_BUTTON_FASTFORWARD,	OnNextSong)
-	ON_BN_CLICKED(IDC_BUTTON_RESTORE,		OnButtonMaximize)
-	ON_BN_CLICKED(IDC_BUTTON_REVERSE,		OnPreviousSong)
-	ON_COMMAND(ID_MENU_CLEARPLAYLIST,		OnMenuClearplaylist)
-	ON_COMMAND(ID_MENU_HELP,				HelpInfo)
-	ON_COMMAND(ID_MENU_LOADPLAYLIST,		OnMenuLoadplaylist)
-	ON_COMMAND(ID_MENU_PAUSE,				OnMenuPause)
-	ON_COMMAND(ID_MENU_PLAY,				OnMenuPlay)
-	ON_COMMAND(ID_MENU_RANDOMIZE_PLAYLIST,	OnMenuRandomizePlaylist)
-	ON_COMMAND(ID_MENU_SAVEPLAYLIST,		OnMenuSaveplaylist)
-	ON_COMMAND(ID_MENU_SHUFFLEPLAYLIST,		OnMenuShuffleplaylist)
-	ON_COMMAND(ID_MENU_STOP,				OnMenuStop)
-	ON_COMMAND(ID_PMENU_CLEAR,				OnMenuClearplaylist)
-	ON_COMMAND(ID_PMENU_EXIT,				OnMenuExit)
-	ON_COMMAND(ID_PMENU_LOADPLAYLIST,		OnMenuLoadplaylist)
-	ON_COMMAND(ID_PMENU_PAUSE,				OnMenuPause)
-	ON_COMMAND(ID_PMENU_PLAY,				OnMenuPlay)
-	ON_COMMAND(ID_PMENU_SHUFFLE,			OnMenuShuffleplaylist)
-	ON_COMMAND(ID_PMENU_STOP,				OnMenuStop)
-	ON_WM_COMPAREITEM()
-	ON_WM_RBUTTONDOWN()
-	ON_WM_RBUTTONUP()
-	ON_COMMAND(ID__PLAYER_STOP,				OnMenuStop)
-	ON_COMMAND(ID__PLAYER_PLAY,				OnMenuPlay)
-	ON_COMMAND(ID__PLAYER_PAUSE,			OnMenuPause)
-	ON_COMMAND(ID__PLAYER_PREVIOUSSONG,		OnPreviousSong)
-	ON_COMMAND(ID__PLAYER_NEXTSONG,			OnNextSong)
-	ON_COMMAND(ID__PLAYER_RANDOMIZE,		OnMenuRandomizePlaylist)
-	ON_COMMAND(ID__PLAYER_SHUFFLE,			OnMenuShuffleplaylist)
-	ON_COMMAND(ID__PLAYER_CLEAR,			OnMenuClearplaylist)
-	ON_COMMAND(ID__PLAYER_LOAD,				OnMenuLoadplaylist)
-	ON_COMMAND(ID__PLAYER_SAVE,				OnMenuSaveplaylist)
-	ON_COMMAND(ID__PLAYER_VOLUMEUP,			OnVolUp)
-	ON_COMMAND(ID__PLAYER_VOLUMEDOWN,		OnVolDown)
-	ON_COMMAND(ID__PLAYER_FASTFORWARD,		OnFastForward)
-	ON_COMMAND(ID__PLAYER_REVERSESKIP,		OnReverse)
-	//}}AFX_MSG_MAP
-	//ON_WM_NCPAINT()
-//	ON_COMMAND(ID_640X480,	On640x480)
-//	ON_COMMAND(ID_800X600,	On800x600)
-//	ON_COMMAND(ID_1024X768,	On1024x768)
-	ON_COMMAND(ID_MENU_ADD, OnMusicAdd)
-	ON_COMMAND(ID_MENU_SCAN, OnMusicScan)
-	ON_COMMAND(ID_MENU_SCANNEW, OnMusicScanNew)
-	ON_COMMAND(ID_MYTEST, OnTestMenu)
+	ON_WM_CAPTURECHANGED()                   
+	ON_WM_CONTEXTMENU()                      
+	ON_WM_CTLCOLOR()                         
+	ON_WM_GETMINMAXINFO()                    
+	ON_WM_HELPINFO()                         
+	ON_WM_INITMENUPOPUP()                    
+	ON_WM_LBUTTONUP()                        
+	ON_WM_MOUSEMOVE()                        
+	ON_WM_NCHITTEST()                        
+	ON_WM_NCLBUTTONDOWN()                    
+	ON_WM_NCLBUTTONUP()                      
+	ON_WM_NCMOUSEMOVE()                      
+	ON_WM_PAINT()                            
+	ON_WM_QUERYDRAGICON()                    
+	ON_WM_SETCURSOR()                        
+	ON_WM_SIZE()                             
+	ON_WM_SIZING()                           
+	ON_WM_SYSCOMMAND()                       
+	ON_WM_TIMER()                            
+	ON_COMMAND(ID_MENU_HELP,                 HelpInfo)
+	ON_BN_CLICKED(IDD_ABOUT,                 OnAbout)
+	ON_COMMAND(ID_ADDTO_PLAYLIST,            OnAddToPlaylist)
+	ON_LBN_SETFOCUS(IDC_ALBUMS,              OnAlbumsFocus)
+	ON_LBN_SETFOCUS(IDC_ARTISTS,             OnArtistsFocus)
+	ON_BN_CLICKED(IDC_BUTTON_MAXIMIZE,       OnButtonMaximize)
+	ON_BN_CLICKED(IDC_BUTTON_RESTORE,        OnButtonMaximize)
+	ON_BN_CLICKED(IDC_OPTIONS_BUTTON,        OnButtonMenu)
+	ON_BN_CLICKED(IDC_BUTTON_MINIMIZE,       OnButtonMinimize)
+	ON_BN_CLICKED(IDC_BUTTON_EXIT,           OnCancel)
+	ON_LBN_DBLCLK(IDC_ALBUMS,                OnDblclkAlbums)
+	ON_LBN_DBLCLK(IDC_ARTISTS,               OnDblclkArtists)
+	ON_LBN_DBLCLK(IDC_GENRES,                OnDblclkGenres)
+	ON_LBN_DBLCLK(IDC_PLAYLIST,              OnDblclkPlaylist)
+	ON_LBN_DBLCLK(IDC_SONGS,                 OnDblclkSongs)
+	ON_COMMAND(ID_DELETE_FROM_PL,            OnDelete)
+	ON_COMMAND(ID__PLAYER_FASTFORWARD,       OnFastForward)
+	ON_LBN_SETFOCUS(IDC_GENRES,              OnGenresFocus)
+	ON_MESSAGE(WM_GRAPHNOTIFY,               OnGraphNotify)
+	ON_MESSAGE(MB_HOVER_CANCEL_MSG,          OnHoverCancelMsg)
+	ON_MESSAGE(MB_HOVER_CLEAR_MSG,           OnHoverMsg1)
+	ON_MESSAGE(MB_HOVER_EXIT_MSG,            OnHoverMsg2)
+	ON_MESSAGE(MB_HOVER_LOAD_MSG,            OnHoverMsg3)
+	ON_MESSAGE(MB_HOVER_MAXIMIZE_MSG,        OnHoverMsg4)
+	ON_MESSAGE(MB_HOVER_MENU_MSG,            OnHoverMsg5)
+	ON_MESSAGE(MB_HOVER_MINIMIZE_MSG,        OnHoverMsg6)
+	ON_MESSAGE(MB_HOVER_NEXT_MSG,            OnHoverMsg7)
+	ON_MESSAGE(MB_HOVER_PAUSE_MSG,           OnHoverMsg8)
+	ON_MESSAGE(MB_HOVER_PLAY_MSG,            OnHoverMsg9)
+	ON_MESSAGE(MB_HOVER_POSITION_MSG,        OnHoverMsg10)
+	ON_MESSAGE(MB_HOVER_PREVIOUS_MSG,        OnHoverMsg11)
+	ON_MESSAGE(MB_HOVER_RANDOM_MSG,          OnHoverMsg12)
+	ON_MESSAGE(MB_HOVER_RESTORE_MSG,         OnHoverMsg13)
+	ON_MESSAGE(MB_HOVER_SAVE_MSG,            OnHoverMsg14)
+	ON_MESSAGE(MB_HOVER_SHUFFLE_MSG,         OnHoverMsg15)
+	ON_MESSAGE(MB_HOVER_STOP_MSG,            OnHoverMsg16)
+	ON_MESSAGE(MB_HOVER_VOLUME_MSG,          OnHoverMsg17)
+	ON_MESSAGE(MB_HOVER_WWW_MSG,             OnHoverMsg18)
+	ON_LBN_KILLFOCUS(IDC_ALBUMS,             OnKillfocusVirtuals)
+	ON_LBN_KILLFOCUS(IDC_ARTISTS,            OnKillfocusVirtuals)
+	ON_LBN_KILLFOCUS(IDC_GENRES,             OnKillfocusVirtuals)
+	ON_LBN_KILLFOCUS(IDC_PLAYLIST,           OnKillfocusVirtuals)
+	ON_LBN_KILLFOCUS(IDC_SONGS,              OnKillfocusVirtuals)
+	ON_BN_CLICKED(IDC_BUTTON_LOGO,           OnLogoButton)
+	ON_BN_CLICKED(IDC_MENU_BUTTON,           OnMenuButton)
+	ON_BN_CLICKED(IDC_BUTTON_CLEAR,          OnMenuClearplaylist)
+	ON_COMMAND(ID_MENU_CLEARPLAYLIST,        OnMenuClearplaylist)
+	ON_COMMAND(ID_PMENU_CLEAR,               OnMenuClearplaylist)
+	ON_COMMAND(ID__PLAYER_CLEAR,             OnMenuClearplaylist)
+	ON_COMMAND(ID_MENU_EDITPL,               OnMenuEditPlaylist)
+	ON_COMMAND(ID_MENU_EXIT,                 OnMenuExit)
+	ON_COMMAND(ID_PMENU_EXIT,                OnMenuExit)
+	ON_COMMAND(ID_MENU_EXPORT,               OnMenuExportLibrary)
+	ON_COMMAND(ID_PMENU_HELP,                OnMenuHelp)
+	ON_BN_CLICKED(IDC_BUTTON_LOAD,           OnMenuLoadplaylist)
+	ON_COMMAND(ID_MENU_LOADPLAYLIST,         OnMenuLoadplaylist)
+	ON_COMMAND(ID_PMENU_LOADPLAYLIST,        OnMenuLoadplaylist)
+	ON_COMMAND(ID__PLAYER_LOAD,              OnMenuLoadplaylist)
+	ON_COMMAND(ID_MENU_OPTIONS,              OnMenuOptions)
+	ON_BN_CLICKED(IDC_BUTTON_PAUSE,          OnMenuPause)
+	ON_COMMAND(ID_MENU_PAUSE,                OnMenuPause)
+	ON_COMMAND(ID_PMENU_PAUSE,               OnMenuPause)
+	ON_COMMAND(ID__PLAYER_PAUSE,             OnMenuPause)
+	ON_BN_CLICKED(IDC_BUTTON_PLAY,           OnMenuPlay)
+	ON_COMMAND(ID_MENU_PLAY,                 OnMenuPlay)
+	ON_COMMAND(ID_PMENU_PLAY,                OnMenuPlay)
+	ON_COMMAND(ID__PLAYER_PLAY,              OnMenuPlay)
+	ON_BN_CLICKED(IDC_BUTTON_RANDOM,         OnMenuRandomizePlaylist)
+	ON_COMMAND(ID_MENU_RANDOMIZE_PLAYLIST,   OnMenuRandomizePlaylist)
+	ON_COMMAND(ID__PLAYER_RANDOMIZE,         OnMenuRandomizePlaylist)
+	ON_BN_CLICKED(IDC_BUTTON_SAVE,           OnMenuSaveplaylist)
+	ON_COMMAND(ID_MENU_SAVEPLAYLIST,         OnMenuSaveplaylist)
+	ON_COMMAND(ID__PLAYER_SAVE,              OnMenuSaveplaylist)
+	ON_BN_CLICKED(IDC_BUTTON_SHUFFLE,        OnMenuShuffleplaylist)
+	ON_COMMAND(ID_MENU_SHUFFLEPLAYLIST,      OnMenuShuffleplaylist)
+	ON_COMMAND(ID_PMENU_SHUFFLE,             OnMenuShuffleplaylist)
+	ON_COMMAND(ID__PLAYER_SHUFFLE,           OnMenuShuffleplaylist)
+	ON_BN_CLICKED(IDC_BUTTON_STOP,           OnMenuStop)
+	ON_COMMAND(ID_MENU_STOP,                 OnMenuStop)
+	ON_COMMAND(ID_PMENU_STOP,                OnMenuStop)
+	ON_COMMAND(ID__PLAYER_STOP,              OnMenuStop)
+	ON_MESSAGE(MB_LISTMOVEDN,                OnMovePlaylistDn)
+	ON_MESSAGE(MB_LISTMOVEUP,                OnMovePlaylistUp)
+	ON_COMMAND(ID_MENU_ADD,                  OnMusicAdd)
+	ON_BN_CLICKED(IDC_MUSIC_BUTTON,          OnMusicButton)
+	ON_COMMAND(ID_MENU_SCAN,                 OnMusicScan)
+	ON_COMMAND(ID_MENU_SCANNEW,              OnMusicScanNew)
+	ON_BN_CLICKED(IDC_BUTTON_FASTFORWARD,    OnNextSong)
+	ON_COMMAND(ID__PLAYER_NEXTSONG,          OnNextSong)
+	ON_BN_CLICKED(IDC_SEARCH_CANCEL,         OnNoSearchDlg)
+	ON_BN_CLICKED(IDC_OPEN_FILE_BUTTON,      OnOpenFileButton)
+	ON_BN_CLICKED(IDC_PICTURES_BUTTON,       OnPicturesButton)
+	ON_BN_CLICKED(IDC_PLAY_BUTTON,           OnPlayButton)
+	ON_LBN_SETFOCUS(IDC_PLAYLIST,            OnPlaylistFocus)
+	ON_MESSAGE(WM_PLAYLOOP,                  OnPlayloop)
+	ON_MESSAGE(MB_POST_MYIDLE_MESSAGE,       OnPostMyIdle)
+	ON_BN_CLICKED(IDC_BUTTON_REVERSE,        OnPreviousSong)
+	ON_COMMAND(ID__PLAYER_PREVIOUSSONG,      OnPreviousSong)
+	ON_MESSAGE(MB_PROGRESS_MSG,              OnProgress)
+	ON_COMMAND(ID_QUICK_PLAY,                OnQuickPlay)
+	ON_COMMAND(ID__PLAYER_REVERSESKIP,       OnReverse)
+	ON_BN_CLICKED(IDC_SEARCH_CLEAR,          OnSearchClear)
+	ON_COMMAND(ID_SEARCH,                    OnSearchDlg)
+	ON_BN_CLICKED(IDC_SEARCH_GO,             OnSearchGo)
+	ON_LBN_SELCHANGE(IDC_ALBUMS,             OnSelchangeAlbums)
+	ON_LBN_SELCHANGE(IDC_ARTISTS,            OnSelchangeArtists)
+	ON_LBN_SELCHANGE(IDC_GENRES,             OnSelchangeGenres)
+	ON_LBN_SELCHANGE(IDC_PLAYLIST,           OnSelchangePlaylist)
+	ON_LBN_SELCHANGE(IDC_SONGS,              OnSelchangeSongs)
+	ON_MESSAGE(MB_SERIAL_MESSAGE,            OnSerialMsg)
 	ON_COMMAND_RANGE(MB_SKINPICS_MSGS_BEGIN,MB_SKINPICS_MSGS_END, OnSkinPic)
-	ON_COMMAND(ID_ADDTO_PLAYLIST, OnAddToPlaylist)
-	ON_COMMAND(ID_DELETE_FROM_PL, OnDelete)
-	ON_COMMAND(ID_QUICK_PLAY, OnQuickPlay)
-	ON_LBN_SETFOCUS(IDC_ALBUMS, OnAlbumsFocus)
-	ON_LBN_SETFOCUS(IDC_ARTISTS, OnArtistsFocus)
-	ON_LBN_SETFOCUS(IDC_GENRES, OnGenresFocus)
-	ON_LBN_SETFOCUS(IDC_PLAYLIST, OnPlaylistFocus)
-	ON_LBN_SETFOCUS(IDC_SONGS, OnSongsFocus)
-	ON_MESSAGE(MB_LISTMOVEDN, OnMovePlaylistDn)
-	ON_MESSAGE(MB_LISTMOVEUP, OnMovePlaylistUp)
-	ON_MESSAGE(MB_POST_MYIDLE_MESSAGE, OnPostMyIdle)
-	ON_MESSAGE(MB_PROGRESS_MSG, OnProgress)
-	ON_MESSAGE(MB_SERIAL_MESSAGE, OnSerialMsg)
-	ON_MESSAGE(MB_VOLUME_MSG, OnVolume)
-	ON_MESSAGE(WM_GRAPHNOTIFY, OnGraphNotify)
-	ON_MESSAGE(WM_PLAYLOOP, OnPlayloop)
-	ON_MESSAGE(MB_HOVER_WWW_MSG		,	 OnHoverMsg)
-	ON_MESSAGE(MB_HOVER_SHUFFLE_MSG	,	 OnHoverMsg)
-	ON_MESSAGE(MB_HOVER_LOAD_MSG		,	 OnHoverMsg)
-	ON_MESSAGE(MB_HOVER_CLEAR_MSG		,	 OnHoverMsg)
-	ON_MESSAGE(MB_HOVER_SAVE_MSG		,	 OnHoverMsg)
-	ON_MESSAGE(MB_HOVER_RANDOM_MSG		,	 OnHoverMsg)
-	ON_MESSAGE(MB_HOVER_PLAY_MSG		,	 OnHoverMsg)
-	ON_MESSAGE(MB_HOVER_STOP_MSG		,	 OnHoverMsg)
-	ON_MESSAGE(MB_HOVER_PAUSE_MSG		,	 OnHoverMsg)
-	ON_MESSAGE(MB_HOVER_PREVIOUS_MSG	,	 OnHoverMsg)
-	ON_MESSAGE(MB_HOVER_NEXT_MSG		,	 OnHoverMsg)
-	ON_MESSAGE(MB_HOVER_VOLUME_MSG		,	 OnHoverMsg)
-	ON_MESSAGE(MB_HOVER_POSITION_MSG	,	 OnHoverMsg)
-	ON_MESSAGE(MB_HOVER_CANCEL_MSG		,	 OnHoverCancelMsg)
-	ON_MESSAGE(MB_HOVER_MENU_MSG		,	 OnHoverMsg)
-	ON_MESSAGE(MB_HOVER_MINIMIZE_MSG		,	 OnHoverMsg)
-	ON_MESSAGE(MB_HOVER_MAXIMIZE_MSG		,	 OnHoverMsg)
-	ON_MESSAGE(MB_HOVER_RESTORE_MSG		,	 OnHoverMsg)
-	ON_MESSAGE(MB_HOVER_EXIT_MSG		,	 OnHoverMsg)
-	ON_WM_CAPTURECHANGED()
-	ON_WM_CTLCOLOR()
-	ON_WM_GETMINMAXINFO()
-	ON_WM_HELPINFO()
-	ON_WM_INITMENUPOPUP()
-	ON_WM_NCHITTEST()
-	ON_WM_NCLBUTTONDOWN()
-	ON_WM_NCLBUTTONUP()
-	ON_WM_TIMER()
-
+	ON_LBN_SETFOCUS(IDC_SONGS,               OnSongsFocus)
+	ON_BN_CLICKED(IDC_STOP_BUTTON,           OnStopButton)
+	ON_COMMAND(ID_MYTEST,                    OnTestMenu)
+	ON_COMMAND(ID_EDIT_ID3TAG,               OnUserEditSong)
+	ON_BN_CLICKED(IDC_VIDEO_BUTTON,          OnVideoButton)
+	ON_COMMAND(ID__PLAYER_VOLUMEDOWN,        OnVolDown)
+	ON_COMMAND(ID__PLAYER_VOLUMEUP,          OnVolUp)
+	ON_MESSAGE(MB_VOLUME_MSG,                OnVolume)
+	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CPlayerDlg message handlers
@@ -1075,33 +1075,6 @@ CPlayerDlg::setColors() {
 	m_ButtonPause.SetKeepFocused(FALSE);
 
 
-}
-void
-CPlayerDlg::On640x480() {
-	CRect rect;
-	GetWindowRect(rect);
-	rect.right = rect.left + 640;
-	rect.bottom = rect.top + 480;
-	MoveWindow(rect);
-	resetControls();
-}
-void
-CPlayerDlg::On800x600() {
-	CRect rect;
-	GetWindowRect(rect);
-	rect.right = rect.left + 800;
-	rect.bottom = rect.top + 600;
-	MoveWindow(rect);
-	resetControls();
-}
-void
-CPlayerDlg::On1024x768() {
-	CRect rect;
-	GetWindowRect(rect);
-	rect.right = rect.left + 1024;
-	rect.bottom = rect.top + 768;
-	MoveWindow(rect);
-	resetControls();
 }
 
 
@@ -1984,7 +1957,7 @@ CPlayerDlg::initDb() {
 
 }
 
-void CPlayerDlg::OnSysCommand(UINT nID, LPARAM lParam)
+void CPlayerDlg::OnSysCommand(UINT nID, LONG lParam)
 {
 //	logger.ods("OnSysCommand:" + numToString(nID) + " " + numToString(lParam));
 	if ((nID & 0xFFF0) == IDM_ABOUTBOX)	{
@@ -2413,7 +2386,6 @@ void CPlayerDlg::OnDblclkSongs()
 		DWORD data = m_Songs.GetItemData(sel);
 		song = m_mlib.m_SongLib.getSong(data);
 		m_mlib.addSongToPlaylist(song);
-
 		updatePlaylist();
 		m_LastThingQueuedUp = last;
 	} else {
@@ -2421,43 +2393,75 @@ void CPlayerDlg::OnDblclkSongs()
 	}
 }
 
+LRESULT CPlayerDlg::OnDblclkAlbums(WPARAM, LPARAM) {
+	OnDblclkAlbums() ;
+	return 0;
+}
 void CPlayerDlg::OnDblclkAlbums() 
 {
+	static justclicked = TRUE;
 	CString last = _selectedGenre + _selectedArtist + _selectedAlbum;
 	if (last != m_LastThingQueuedUp) {
-		m_mlib.addAlbumToPlaylist(_selectedGenre, _selectedArtist, _selectedAlbum);
-		updatePlaylist();
-		m_LastThingQueuedUp = last;
+		if (justclicked) {
+			PostMessage(MB_DBLCLICK_ALBUMS, (WPARAM)0, (LPARAM)0);
+			justclicked = FALSE;
+		} else {
+			justclicked = TRUE;
+			m_mlib.addAlbumToPlaylist(_selectedGenre, _selectedArtist, _selectedAlbum);
+			updatePlaylist();
+			m_LastThingQueuedUp = last;
+		}
 	} else {
 		PlayerStatusTempSet("You just added that!");
 	}
 }
-
-void CPlayerDlg::OnDblclkArtists() 
+LRESULT CPlayerDlg::OnDblclkArtists(WPARAM, LPARAM) {
+	OnDblclkArtists();
+	return 0;
+}
+void CPlayerDlg::OnDblclkArtists()
 {
+	static justclicked = TRUE;
 	if (_selectedArtist == MBALL) return;
 	CString last = _selectedGenre + _selectedArtist;
 	if (last != m_LastThingQueuedUp) {
-		m_mlib.addArtistToPlaylist(_selectedGenre, _selectedArtist);
-		updatePlaylist();
-		m_LastThingQueuedUp = last;
+		if (justclicked) {
+			PostMessage(MB_DBLCLICK_ARTISTS, (WPARAM)0, (LPARAM)0);
+			justclicked = FALSE;
+		} else {
+			justclicked = TRUE;
+			m_mlib.addArtistToPlaylist(_selectedGenre, _selectedArtist);
+			updatePlaylist();
+			m_LastThingQueuedUp = last;
+		}
+	} else {
+		PlayerStatusTempSet("You just added that!");
+	}
+}
+LRESULT CPlayerDlg::OnDblclkGenres(WPARAM, LPARAM) {
+	OnDblclkGenres();
+	return 0;
+}
+void CPlayerDlg::OnDblclkGenres() 
+{
+	static justclicked = TRUE;
+	if (_selectedGenre == MBALL) return;
+	CString last = _selectedGenre;
+	if (last != m_LastThingQueuedUp) {
+		if (justclicked) {
+			PostMessage(MB_DBLCLICK_GENRES, (WPARAM)0, (LPARAM)0);
+			justclicked = FALSE;
+		} else {
+			justclicked = TRUE;
+			m_mlib.addGenreToPlaylist(_selectedGenre);	
+			updatePlaylist();
+			m_LastThingQueuedUp = last;
+		}
 	} else {
 		PlayerStatusTempSet("You just added that!");
 	}
 }
 
-void CPlayerDlg::OnDblclkGenres() 
-{
-	if (_selectedGenre == MBALL) return;
-	CString last = _selectedGenre;
-	if (last != m_LastThingQueuedUp) {
-		m_mlib.addGenreToPlaylist(_selectedGenre);	
-		updatePlaylist();
-		m_LastThingQueuedUp = last;
-	} else {
-		PlayerStatusTempSet("You just added that!");
-	}
-}
 void CPlayerDlg::OnDblclkPlaylist() 
 {
     int sel = m_Playlist.GetCurSel();
@@ -2479,8 +2483,9 @@ BOOL CPlayerDlg::PreTranslateMessage(MSG* pMsg)
 		} else if (pMsg->wParam == VK_ESCAPE) {
 			return TRUE;
         } else if (pMsg->wParam == VK_DELETE) {
-            if (OnDelete())
-				return TRUE;
+            //if (OnDelete()) // changed OnDelete to void per proper sig.
+			OnDelete();
+			return TRUE;
 		} else if (pMsg->wParam == VK_F5) {
 			resetControls();
 			return TRUE;
@@ -2539,11 +2544,10 @@ void CPlayerDlg::OnMenuButton()
     }
 }
 
-BOOL
-CPlayerDlg::OnDelete() {
+void CPlayerDlg::OnDelete() {
     if (m_Control->ptr() == &m_Playlist) {
 	    int sel = m_Playlist.GetCurSel();
-        if (sel < 0) { return TRUE; }
+        if (sel < 0) { return ; }
         if (sel == m_PlaylistCurrent) {
             Stop();
             m_PlaylistCurrent = sel-1;
@@ -2571,9 +2575,9 @@ CPlayerDlg::OnDelete() {
 		calcDuration();
 		m_LastThingQueuedUp = "";
 		OnSelchangePlaylist() ;
-		return TRUE;
+		return ;
     }
-	return FALSE;
+	return ;
 }
 
 void
@@ -2691,13 +2695,13 @@ NULL);
 #endif
 
 LRESULT
-CPlayerDlg::OnGraphNotify(UINT wParam, LONG lParam) {
+CPlayerDlg::OnGraphNotify(WPARAM wParam, LPARAM lParam) {
 	m_Player->HandleGraphEvent();
 	return 0;
 }
 
 LRESULT
-CPlayerDlg::OnPlayloop(UINT wParam, LONG lParam) {
+CPlayerDlg::OnPlayloop(WPARAM wParam, LPARAM lParam) {
 	PlayLoop();
 	return 0;
 }
@@ -2856,7 +2860,7 @@ PostMyIdleMessage() {
     }
 }
 LRESULT
-CPlayerDlg::OnPostMyIdle(UINT wParam, LONG lParam) {
+CPlayerDlg::OnPostMyIdle(WPARAM wParam, LPARAM lParam) {
 //	OutputDebugString("OnPostMyIdle");
     PlayerStatusRevert();
     return 0;
@@ -3773,12 +3777,12 @@ CPlayerDlg::PlayerStatusRevert() {
     }
 }
 LRESULT
-CPlayerDlg::OnMovePlaylistUp(UINT wParam, LONG lParam) {
+CPlayerDlg::OnMovePlaylistUp(WPARAM wParam, LPARAM lParam) {
 	movePlaylistUp(wParam);
 	return 0;
 }
 LRESULT
-CPlayerDlg::OnMovePlaylistDn(UINT wParam, LONG lParam) {
+CPlayerDlg::OnMovePlaylistDn(WPARAM wParam, LPARAM lParam) {
 	movePlaylistUp(wParam);
 	return 0;
 }
@@ -4517,7 +4521,7 @@ void CPlayerDlg::adjustPosition(int pct) {
 	updatePositionLabel();
 }
 LRESULT
-CPlayerDlg::OnProgress(UINT wParam, LONG lParam) {
+CPlayerDlg::OnProgress(WPARAM wParam, LPARAM lParam) {
 	adjustPosition();
 	return 0;
 }
@@ -4534,7 +4538,7 @@ void CPlayerDlg::OnReverse() {
 //	m_VolumeLabel.setText(buf.p);
 //}
 LRESULT
-CPlayerDlg::OnVolume(UINT wParam, LONG lParam) {
+CPlayerDlg::OnVolume(WPARAM wParam, LPARAM lParam) {
 	adjustVolume();
 	return 0;
 }
@@ -4677,13 +4681,13 @@ void CPlayerDlg::OnLogoButton()
 
 }
 LRESULT
-CPlayerDlg::OnHoverCancelMsg(UINT wParam, LONG lParam) {
+CPlayerDlg::OnHoverCancelMsg(WPARAM wParam, LPARAM lParam) {
 	PlayerStatusTempSet("");
 	return 0;
 }
 
 LRESULT
-CPlayerDlg::OnHoverMsg(UINT wParam, LONG lParam) {
+CPlayerDlg::OnHoverMsg1(WPARAM wParam, LPARAM lParam) {
 	CString msg;
 	switch(wParam) {
 
@@ -4728,6 +4732,25 @@ CPlayerDlg::OnHoverMsg(UINT wParam, LONG lParam) {
 		PlayerStatusTempSet(msg);
 	return 0;
 }
+// This bit of nonsense is to allow the class wizard to parse the message map,
+// i.e. it fails to parse when multiple messages use the same handler!
+LRESULT CPlayerDlg::OnHoverMsg2(WPARAM wParam, LPARAM lParam) { return OnHoverMsg1(wParam,lParam);}
+LRESULT CPlayerDlg::OnHoverMsg3(WPARAM wParam, LPARAM lParam) { return OnHoverMsg1(wParam,lParam);}
+LRESULT CPlayerDlg::OnHoverMsg4(WPARAM wParam, LPARAM lParam) { return OnHoverMsg1(wParam,lParam);}
+LRESULT CPlayerDlg::OnHoverMsg5(WPARAM wParam, LPARAM lParam) { return OnHoverMsg1(wParam,lParam);}
+LRESULT CPlayerDlg::OnHoverMsg6(WPARAM wParam, LPARAM lParam) { return OnHoverMsg1(wParam,lParam);}
+LRESULT CPlayerDlg::OnHoverMsg7(WPARAM wParam, LPARAM lParam) { return OnHoverMsg1(wParam,lParam);}
+LRESULT CPlayerDlg::OnHoverMsg8(WPARAM wParam, LPARAM lParam) { return OnHoverMsg1(wParam,lParam);}
+LRESULT CPlayerDlg::OnHoverMsg9(WPARAM wParam, LPARAM lParam) { return OnHoverMsg1(wParam,lParam);}
+LRESULT CPlayerDlg::OnHoverMsg10(WPARAM wParam, LPARAM lParam) { return OnHoverMsg1(wParam,lParam);}
+LRESULT CPlayerDlg::OnHoverMsg11(WPARAM wParam, LPARAM lParam) { return OnHoverMsg1(wParam,lParam);}
+LRESULT CPlayerDlg::OnHoverMsg12(WPARAM wParam, LPARAM lParam) { return OnHoverMsg1(wParam,lParam);}
+LRESULT CPlayerDlg::OnHoverMsg13(WPARAM wParam, LPARAM lParam) { return OnHoverMsg1(wParam,lParam);}
+LRESULT CPlayerDlg::OnHoverMsg14(WPARAM wParam, LPARAM lParam) { return OnHoverMsg1(wParam,lParam);}
+LRESULT CPlayerDlg::OnHoverMsg15(WPARAM wParam, LPARAM lParam) { return OnHoverMsg1(wParam,lParam);}
+LRESULT CPlayerDlg::OnHoverMsg16(WPARAM wParam, LPARAM lParam) { return OnHoverMsg1(wParam,lParam);}
+LRESULT CPlayerDlg::OnHoverMsg17(WPARAM wParam, LPARAM lParam) { return OnHoverMsg1(wParam,lParam);}
+LRESULT CPlayerDlg::OnHoverMsg18(WPARAM wParam, LPARAM lParam) { return OnHoverMsg1(wParam,lParam);}
 
 
 void CPlayerDlg::OnInitMenuPopup(CMenu *pSysMenu, 

@@ -67,42 +67,41 @@ public:
 
 // Implementation
 protected:
-
+	CWnd*                 GetResizableWnd();
+	void AdjustLibraryWidths(CPoint & point);
 	// Generated message map functions
 	//{{AFX_MSG(LoadPlaylistDlg)
-	afx_msg void OnDblclkPlaylistNames();
-	afx_msg void OnSelchangePlaylistNames();
-	afx_msg void OnSetfocusPlaylistNames();
-	virtual BOOL OnInitDialog();
-	afx_msg void OnSetfocusPlaylistSongs();
-	virtual void OnCancel();
-	afx_msg void OnPlaylistOk();
-	afx_msg void OnPlaylistUp();
-	afx_msg void OnPlaylistDown();
-	afx_msg void OnPlaylistSave();
-	afx_msg void OnDeletePlaylist();
-	afx_msg void OnRenamePlaylist();
-	afx_msg void OnDeltaposSpin1(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnKillfocusPlaylistSongs();
-	afx_msg void OnSelchangePlaylistSongs();
-	afx_msg void OnSize(UINT nType, int cx, int cy);
-	afx_msg void OnSizing(UINT fwSide, LPRECT pRect);
-	afx_msg UINT OnNcHitTest( CPoint point );
-	afx_msg HBRUSH OnCtlColor( CDC* pDC, CWnd* pWnd, UINT nCtlColor );
-	afx_msg void OnNcMouseMove(UINT nFlags, CPoint point);
-	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
-	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
-	afx_msg void OnNcLButtonDown(UINT, CPoint);
-	afx_msg void OnNcLButtonUp(UINT, CPoint);
-	afx_msg BOOL OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message);
-	afx_msg void OnKillfocusPlaylistNames();
+	virtual void          OnCancel();
+	afx_msg HBRUSH        OnCtlColor( CDC* pDC, CWnd* pWnd, UINT nCtlColor );
+	afx_msg void          OnDblclkPlaylistNames();
+	afx_msg void          OnDeletePlaylist();
+	afx_msg void          OnDeltaposSpin1(NMHDR* pNMHDR, LRESULT* pResult);
+	virtual BOOL          OnInitDialog();
+	afx_msg void          OnKillfocusPlaylistNames();
+	afx_msg void          OnKillfocusPlaylistSongs();
+	afx_msg void          OnLButtonUp(UINT nFlags, CPoint point);
+	afx_msg void          OnMouseMove(UINT nFlags, CPoint point);
+	afx_msg LRESULT       OnMovePlaylistDn(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT       OnMovePlaylistUp(WPARAM wParam, LPARAM lParam);
+	afx_msg UINT          OnNcHitTest( CPoint point );
+	afx_msg void          OnNcLButtonDown(UINT, CPoint);
+	afx_msg void          OnNcLButtonUp(UINT, CPoint);
+	afx_msg void          OnNcMouseMove(UINT nFlags, CPoint point);
+	afx_msg void          OnPlaylistDown();
+	afx_msg void          OnPlaylistOk();
+	afx_msg void          OnPlaylistSave();
+	afx_msg void          OnPlaylistUp();
+	afx_msg void          OnRenamePlaylist();
+	afx_msg void          OnSelchangePlaylistNames();
+	afx_msg void          OnSelchangePlaylistSongs();
+	afx_msg BOOL          OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message);
+	afx_msg void          OnSetfocusPlaylistNames();
+	afx_msg void          OnSetfocusPlaylistSongs();
+	afx_msg void          OnSize(UINT nType, int cx, int cy);
+	afx_msg void          OnSizing(UINT fwSide, LPRECT pRect);
+	virtual BOOL          PreTranslateMessage(MSG*);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
-	afx_msg LRESULT OnMovePlaylistUp(UINT wParam, LONG lParam=0);
-	afx_msg LRESULT OnMovePlaylistDn(UINT wParam, LONG lParam=0);
-	void AdjustLibraryWidths(CPoint & point);
-	CWnd* GetResizableWnd();
-	virtual BOOL PreTranslateMessage(MSG*);
 private:
 //    MusicLib *m_mdb;
 //    CPlayerDlg *m_pd;
