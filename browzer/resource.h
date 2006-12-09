@@ -2,6 +2,7 @@
 // Microsoft Developer Studio generated include file.
 // Used by muzikbrowzer.rc
 //
+#define ID_EXPORT_TEMPLATE_BROWSE       4
 #define IDM_ABOUTBOX                    0x0010
 #define IDD_ABOUTBOX                    100
 #define IDS_ABOUTBOX                    101
@@ -81,6 +82,7 @@
 #define IDI_ICON_V2                     268
 #define IDC_CURSOR4                     270
 #define IDI_ICON1                       271
+#define IDD_EXPORT_DLG                  272
 #define IDC_VOLUME_BUTTON               1000
 #define IDC_STOP_BUTTON                 1001
 #define IDC_PLAY_BUTTON                 1002
@@ -129,6 +131,7 @@
 #define IDC_STREAM_PROPERTIES           1027
 #define IDC_SLIDER7                     1028
 #define IDC_SLIDER8                     1029
+#define ID_EXPORT_OUPUT_BROWSE          1029
 #define IDC_LIST1                       1033
 #define IDC_ARTISTS                     1033
 #define IDC_DIRLIST                     1033
@@ -440,6 +443,19 @@
 #define IDC_REFRESH_DRIVES              2055
 #define IDC_BUTTON1                     2056
 #define IDC_MAKEDEFAULT                 2056
+#define IDC_EXPORT_CSV                  2058
+#define IDC_EXPORT_HTML                 2060
+#define IDC_EXPORT_GENRE                2061
+#define IDC_EXPORT_ARTIST               2062
+#define IDC_EXPORT_ALBUM                2063
+#define IDC_EXPORT_SONG                 2064
+#define IDC_EXPORT_TRACK                2065
+#define IDC_EXPORT_LENGTH               2066
+#define IDC_EXPORT_YEAR                 2067
+#define IDC_EXPORT_MP3FILE              2068
+#define IDC_EXPORT_DIR                  2069
+#define IDC_EXPORT_FILE                 2070
+#define IDC_EXPORT_TMPL                 2071
 #define IDS_UNKNOWN_ERROR               5000
 #define IDC_BUTTON_LOGO                 12052
 #define ID_XXX                          32775
@@ -496,14 +512,16 @@
 #define ID__PLAYER_VOLUMEDOWN           32853
 #define ID__PLAYER_FASTFORWARD          32854
 #define ID__PLAYER_REVERSESKIP          32855
+#define ID_EXPORT_TAGS                  32856
+#define ID_OPEN_FILE_BUTTON             32857
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        272
-#define _APS_NEXT_COMMAND_VALUE         32856
-#define _APS_NEXT_CONTROL_VALUE         2058
+#define _APS_NEXT_RESOURCE_VALUE        273
+#define _APS_NEXT_COMMAND_VALUE         32859
+#define _APS_NEXT_CONTROL_VALUE         2070
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

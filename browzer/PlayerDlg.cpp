@@ -43,7 +43,7 @@
 #include "DIBSectionLite.h"
 #include "GetTextField.h"
 #include "MusicPlayerWMP.h"
-
+#include "ExportDlg.h"
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -348,7 +348,7 @@ BEGIN_MESSAGE_MAP(CPlayerDlg, CDialogClassImpl)
 	ON_COMMAND(ID_MENU_EDITPL,               OnMenuEditPlaylist)
 	ON_COMMAND(ID_MENU_EXIT,                 OnMenuExit)
 	ON_COMMAND(ID_PMENU_EXIT,                OnMenuExit)
-	ON_COMMAND(ID_MENU_EXPORT,               OnMenuExportLibrary)
+	ON_COMMAND(ID_EXPORT_TAGS,               OnMenuExportLibrary)
 	ON_COMMAND(ID_PMENU_HELP,                OnMenuHelp)
 	ON_BN_CLICKED(IDC_BUTTON_LOAD,           OnMenuLoadplaylist)
 	ON_COMMAND(ID_MENU_LOADPLAYLIST,         OnMenuLoadplaylist)
@@ -386,7 +386,7 @@ BEGIN_MESSAGE_MAP(CPlayerDlg, CDialogClassImpl)
 	ON_BN_CLICKED(IDC_BUTTON_FASTFORWARD,    OnNextSong)
 	ON_COMMAND(ID__PLAYER_NEXTSONG,          OnNextSong)
 	ON_BN_CLICKED(IDC_SEARCH_CANCEL,         OnNoSearchDlg)
-	ON_BN_CLICKED(IDC_OPEN_FILE_BUTTON,      OnOpenFileButton)
+	ON_BN_CLICKED(ID_OPEN_FILE_BUTTON,       OnOpenFileButton)
 	ON_BN_CLICKED(IDC_PICTURES_BUTTON,       OnPicturesButton)
 	ON_BN_CLICKED(IDC_PLAY_BUTTON,           OnPlayButton)
 	ON_LBN_SETFOCUS(IDC_PLAYLIST,            OnPlaylistFocus)
@@ -2047,13 +2047,15 @@ void CPlayerDlg::OnOpenFileButton()
 							OFN_FILEMUSTEXIST    | 
 							OFN_HIDEREADONLY     |
 							OFN_EXPLORER,
-							"MPEG Audio Files {*.mpg;*.mp1;*.mp2;*.mp3}|*.mpg;*.mp1;*.mp2;*.mp3|All Files {*.*}|*.*||");
+"mp3,wma,wav,ogg files{*.mp3;*.wma;*.wav;*.ogg;*.mpg;*.mp1;*.mp2}|*.mp3;*.wma;*.wav;*.ogg;*.mpg;*.mp1;*.mp2|All Files {*.*}|*.*||");
+
 
 	int ret;
 	ret = dialog->DoModal();
 	if (ret == IDOK) {
         // a file was selected
-		m_Player->InputOpen(dialog->GetPathName());
+		m_mlib.addFileToPlaylist(dialog->GetPathName());
+		updatePlaylist();	
 	}
 
 	delete dialog;
@@ -4069,7 +4071,7 @@ void CPlayerDlg::OnButtonMenu()
 			popup->CheckMenuItem(ID_SEARCH, MF_UNCHECKED | MF_BYCOMMAND);
 		}
 
-		CMenu * skinmenu = popup->GetSubMenu(1);
+		CMenu * skinmenu = popup->GetSubMenu(3);
 		ASSERT(skinmenu != NULL);
 		CString currentskin = m_Config.getCurrentSkin();
 
@@ -4424,7 +4426,17 @@ BOOL CPlayerDlg::OnHelpInfo(HELPINFO* pHelpInfo) {
 }
 
 void CPlayerDlg::OnMenuExportLibrary() {
-//    m_mlib.exportLibrary();
+	ExportDlg dlg;
+	BOOL again = TRUE;
+	while (again) {
+		dlg.DoModal();
+		again = dlg.m_Again;
+	}
+
+	if (dlg.m_Doit) {
+		CWaitCursor c;
+		m_mlib.export(&dlg);
+	}
     return;
 }
 

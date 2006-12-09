@@ -17,6 +17,9 @@
 #include "FileUtils.h"
 #include "WmaTagger.h"
 #include "MyID3LibMiscSupport.h"
+#include "ExportDlg.h"
+#include <afxtempl.h> 
+#include "SortedArray.h"
 
 #include "vorbis/codec.h"
 #include "vorbis/vorbisfile.h"
@@ -25,6 +28,7 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include "util/Misc.h"
+
 
 #pragma hack
 // xxx make the increment large before shipping!
@@ -231,6 +235,9 @@ int
 MusicLib::init() {
     
 	m_mp3Extensions.RemoveAll();
+	m_mp3Extensions.AddTail("mpg");
+	m_mp3Extensions.AddTail("mp1");
+	m_mp3Extensions.AddTail("mp2");
 	m_mp3Extensions.AddTail("mp3");
 	m_mp3Extensions.AddTail("wma");
 	m_mp3Extensions.AddTail("ogg");
@@ -1375,7 +1382,10 @@ MusicLib::createSongFromFile(const CString & mp3file,
 #endif
 		delete id3;
 		WmaTag wma; // WMASDK does a better job of calcing duration
-		CString tlen = wma.read(mp3file,TRUE);
+		//CString tlen = wma.read(mp3file,TRUE);
+		// Wma returns time in milliseconds * 10000. We store in millis
+		wma.read(mp3file,TRUE);
+		tlen = wma.getVal("Duration");
 		if (tlen.GetLength()) {
 			float d = atof(tlen);
 			d = d / 10000;
@@ -1544,6 +1554,321 @@ MusicLib::writeSongToFile(Song song) {
 	return result;
 }
 
+void
+MusicLib::export(ExportDlg * exp) {
+	CString filehtm = exp->m_Folder + exp->m_File + ".htm";
+	CString filetxt = exp->m_Folder + exp->m_File + ".txt";
+	CString filecsv = exp->m_Folder + exp->m_File + ".csv";
+	CString htmltemplatefn = exp->m_HtmlTemplate;
+	CString HtmlTmplHead ;
+	CString HtmlTmplAlbumHead ;
+	CString HtmlTmplAlbumTail ;
+	CString HtmlTmplSongs;
+	CString HtmlTmplTail ;
+
+	if (!FileUtil::DirIsWriteable(exp->m_Folder)) {
+		if (!FileUtil::mkdirp(exp->m_Folder)) {
+			MBMessageBox("Error","Unable to create folder "+exp->m_Folder,TRUE,FALSE);
+			return;
+		}
+	}
+	if (!FileUtil::DirIsWriteable(exp->m_Folder)) {
+		MBMessageBox("Error","Folder is unwriteable "+exp->m_Folder,TRUE,FALSE);
+		return;
+	}
+	if (exp->m_Html) {
+		CString HtmlTmpl = FileUtil::FileToString(htmltemplatefn);
+		if (!HtmlTmpl.GetLength()) {
+			MBMessageBox("Error", htmltemplatefn + " unreadable.",TRUE,FALSE);
+			return;
+		}
+		HtmlTmplHead = String::extract(HtmlTmpl,"","<MB-HEAD-END-ALBUM-BEGIN>");
+		HtmlTmplAlbumHead = String::extract(HtmlTmpl,"<MB-HEAD-END-ALBUM-BEGIN>","<MB-SONGS>");
+		HtmlTmplAlbumTail = String::extract(HtmlTmpl,"<MB-SONGS>","<MB-ALBUM-END-SONG-BEGIN>");
+		HtmlTmplSongs= String::extract(HtmlTmpl,"<MB-ALBUM-END-SONG-BEGIN>","<MB-SONG-END>");
+		HtmlTmplTail = String::extract(HtmlTmpl,"<MB-SONG-END>","");
+	}	
+
+	MyLog ExpCsv,ExpTxt,ExpHtm;
+	ExpCsv.m_DTStamp = FALSE;
+	ExpTxt.m_DTStamp = FALSE;
+	ExpHtm.m_DTStamp = FALSE;
+	ExpCsv.m_trim = FALSE;
+	ExpTxt.m_trim = FALSE;
+	ExpHtm.m_trim = FALSE;
+	if (exp->m_Commas) {
+		if (!ExpCsv.open(filecsv,TRUE)) {
+			MBMessageBox("Error", filecsv + " is unwriteable.",TRUE,FALSE);
+			return;
+		}
+		Song song = new CSong();
+		song->setId3("TCON", "Genre");
+		song->setId3("TPE1", "Artist");
+		song->setId3("TALB", "Album");
+		song->setId3("TIT2", "Song");
+		song->setId3("TRCK", "Track");
+		song->setId3("FILE", "File");
+		song->setId3("TLEN", "Length");
+		song->setId3("TYER", "Year");
+		exportCsv(exp, &ExpCsv, song);
+	}
+	CSortedArray<CString, CString&> genreCSList;
+	if (exp->m_Html) {
+		if (!ExpHtm.open(filehtm,TRUE)) {
+			MBMessageBox("Error", filehtm + " is unwriteable.",TRUE,FALSE);
+			return;
+		}
+	}
+
+
+	MList genreList = m_SongLib.genreList();
+	MList::Iterator genreIter(genreList);
+	while (genreIter.more()) {
+		MRecord genre = genreIter.next();
+		if (genre.label() != MBALL)
+			genreCSList.Add(genre.label());
+	}
+
+	//Now sort the genres 
+	genreCSList.SetCompareFunction(CompareByFilenameNoCase);
+	genreCSList.Sort();
+	CString genreRefs;
+
+
+	if (exp->m_Html) {
+		for (int i=0; i<genreCSList.GetSize(); i++)
+		{
+			CString& genre1 = genreCSList.ElementAt(i);
+			genreRefs += "<a href=\"#" + String::stripws(genre1)
+				+ "\">" + genre1 + "</a>&nbsp&nbsp&nbsp ";
+		}
+
+		HtmlTmplHead = String::replace(HtmlTmplHead, genreRefs, "<MB-GENRE-LIST>");
+
+		// No build list of artist hrefs
+		CString artistRefs;
+		CSortedArray<CString, CString&> artistCSList;
+		for (i=0; i<genreCSList.GetSize(); i++)
+		{
+			artistCSList.RemoveAll();
+			CString& genre = genreCSList.ElementAt(i);
+			MList artistList = m_SongLib.artistList(genre);
+			MList::Iterator artistIter(artistList);
+			while (artistIter.more()) {
+				MRecord artist = artistIter.next();
+				if (artist.label() != MBALL)
+					artistCSList.Add(artist.label());
+			}
+			artistCSList.SetCompareFunction(CompareByFilenameNoCase);
+			artistCSList.Sort();
+
+			artistRefs += "\r\n\r\n<p><a name=\""+ String::stripws(genre)
+				+ "\"><h4>" + genre + "</h4>&nbsp&nbsp&nbsp ";
+			for (int j=0; j<artistCSList.GetSize(); j++) {
+				CString& artist = artistCSList.ElementAt(j);
+				artistRefs += "<a href=\"#" + String::stripws(artist)
+					+ "\">" + artist + "</a>&nbsp&nbsp&nbsp ";
+			}
+		}
+
+		HtmlTmplHead = String::replace(HtmlTmplHead, artistRefs, "<MB-ARTIST-LIST>");
+
+		ExpHtm.log(HtmlTmplHead);
+	}
+
+	InitDlg *dialog = new InitDlg(1,0);
+	dialog->SetLabel("Exporting tag data");
+	dialog->ShowWindow(SW_SHOWNORMAL);
+	dialog->ProgressRange(0, m_totalMp3s);
+	time_t starttime,elapsed,eta,now,lastupdate;
+	lastupdate=0;
+	float timeper;
+	time(&starttime);
+	CString etaS;
+
+
+	CString tmp;
+	int ctr = 0;
+
+	for (int i=0; i<genreCSList.GetSize(); i++) {
+		CSortedArray<CString, CString&> artistCSList;
+		CString& genre = genreCSList.ElementAt(i);
+		MList artistList = m_SongLib.artistList(genre);
+		MList::Iterator artistIter(artistList);
+		while (artistIter.more()) {
+			MRecord artist = artistIter.next();
+			if (artist.label() != MBALL)
+				artistCSList.Add(artist.label());
+		}
+		artistCSList.SetCompareFunction(CompareByFilenameNoCase);
+		artistCSList.Sort();
+		for (int j=0; j<artistCSList.GetSize(); j++) {
+			CString& artist = artistCSList.ElementAt(j);
+			CSortedArray<CString, CString&> albumCSList;
+			MList albumList = m_SongLib.albumList(genre, artist);
+			MList::Iterator albumIter(albumList);
+			while (albumIter.more()) {
+				MRecord album = albumIter.next();
+				albumCSList.Add(album.label());
+			}
+			artistCSList.SetCompareFunction(CompareByFilenameNoCase);
+			artistCSList.Sort();
+			for (int k=0; k<albumCSList.GetSize(); k++) {
+				CString& album = albumCSList.ElementAt(k);
+				if (exp->m_Html) {
+					CString artistref,genreref;
+					artistref = "<a name=\""+ String::stripws(artist) + "\">";
+					genreref= "<a name=\""+ String::stripws(genre) + "\">";
+					tmp = String::replace(HtmlTmplAlbumHead, genre,"<MB-GENRE>");
+					tmp = String::replace(tmp, artist,"<MB-ARTIST>");
+					tmp = String::replace(tmp, album,"<MB-ALBUM>");
+					tmp = String::replace(tmp, artistref,"<MB-ARTIST-ANCHOR>");
+					tmp = String::replace(tmp, genreref,"<MB-GENRE-ANCHOR>");
+					ExpHtm.log(tmp);
+				}
+				dialog->ProgressPos(ctr);
+
+				CObArray namenums;			
+				MList songList = m_SongLib.songList(genre, artist, album);
+				MList::Iterator songIter(songList);
+				while (songIter.more()) {
+					MRecord songr = songIter.next();
+					CString track = songr.lookupVal("TRCK");
+					int itrack = 0;
+					if (track != "") {
+						itrack = atoi((LPCTSTR)track);
+					}
+					NameNum * nn = new NameNum(songr.label(), itrack, songr.i());
+					namenums.Add(nn);
+				}
+				NameNum::bsort(namenums);
+				for (int l = 0 ; l < namenums.GetSize(); ++l) {
+					Song song = new CSong;
+					song = m_SongLib.getSong(((NameNum*)namenums[l])->m_p);
+					if (exp->m_Commas)
+						exportCsv(exp, &ExpCsv, song);
+					if (exp->m_Html)
+						exportHtml(exp, &ExpHtm,song, HtmlTmplSongs);
+					delete (NameNum*) namenums[l];
+
+					time(&now);
+					elapsed = now - starttime;
+					timeper = (float)elapsed / (float)ctr;
+					eta = (timeper * m_totalMp3s) - elapsed;
+					etaS = "Exporting tag data. Remaining: ";
+					etaS += String::secs2HMS(eta);
+					if (ctr++ > 5 && lastupdate < now) {
+						dialog->SetLabel(etaS);
+						lastupdate = now;
+					}
+				}
+				if (exp->m_Html)
+					ExpHtm.log(HtmlTmplAlbumTail);
+			}
+		}
+	}
+	if (exp->m_Html) {
+		ExpHtm.log(HtmlTmplTail);
+	}
+	dialog->EndDialog(0);
+	delete dialog;
+}
+
+int MusicLib::CompareByFilenameNoCase(CString& element1, CString& element2) 
+{
+  return element1.CompareNoCase(element2);
+}
+int MusicLib::CompareByNum(CString& element1, CString& element2) 
+{
+	int i1,i2;
+	if (element1.GetLength())
+		i1 = atoi(element1);
+	if (element2.GetLength())
+		i2 = atoi(element2);
+  return (i1  < i2);
+}
+void
+MusicLib::exportCsv(ExportDlg * exp, MyLog * log, Song song) {
+	CString entry;
+	if (exp->m_Genre){
+		entry = expQE(entry, song->getId3("TCON"));
+	}
+	if (exp->m_Artist) {
+		entry = expQE(entry, song->getId3("TPE1"));
+	}
+	if (exp->m_Album) {
+		entry = expQE(entry, song->getId3("TALB"));
+	}
+	if (exp->m_Song) {
+		entry = expQE(entry, song->getId3("TIT2"));
+	}
+	if (exp->m_Track) {
+		entry = expQE(entry, song->getId3("TRCK"));
+	}
+	if (exp->m_Length) {
+		entry = expQE(entry, song->getId3("TLEN"));
+	}
+	if (exp->m_Year) {
+		entry = expQE(entry, song->getId3("TYER"));
+	}
+	if (exp->m_Mp3File) {
+		entry = expQE(entry, song->getId3("FILE"));
+	}
+	log->log(entry);
+}
+CString 
+MusicLib::expQE(const CString & entry, const CString in) {
+	CString out = String::replace(in, "\"\"", "\"");
+	out = "\"" + out + "\"";
+	if (entry.GetLength()) 
+		out = entry + "," + out;
+	return out;
+}
+void
+MusicLib::exportTxt(ExportDlg * exp, MyLog * log, Song song) {
+
+}
+void
+MusicLib::exportHtml(ExportDlg * exp, MyLog * log, Song song, CString & tmpl) {
+	CString entry = tmpl;
+	CString tmp ;
+	if (exp->m_Genre){
+		entry = String::replace(entry, song->getId3("TCON"), "<MB-GENRE>");
+	}
+	if (exp->m_Artist) {
+		entry = String::replace(entry, song->getId3("TPE1"), "<MB-ARTIST>");
+	}
+	if (exp->m_Album) {
+		entry = String::replace(entry, song->getId3("TALB"), "<MB-ALBUM>");
+	}
+	if (exp->m_Song) {
+		entry = String::replace(entry, song->getId3("TIT2"), "<MB-SONG>");
+	}
+	if (exp->m_Track) {
+		entry = String::replace(entry, song->getId3("TRCK"), "<MB-TRACK>");
+	}
+	if (exp->m_Length) {
+		tmp = song->getId3("TLEN");
+		if (tmp.GetLength()) {
+			int tlen = atoi(tmp);
+			if (tlen) {
+				tmp = String::secs2HMS(tlen/1000);
+				if (tmp.Left(3) == "00:") 
+					tmp = String::substring(tmp,3);
+				entry = String::replace(entry, tmp, "<MB-LENGTH>");
+			} else {
+				entry = String::replace(entry, song->getId3("TLEN"), "<MB-LENGTH>");
+			}
+		}
+	}
+	if (exp->m_Year) {
+		entry = String::replace(entry, song->getId3("TYER"), "<MB-YEAR>");
+	}
+	if (exp->m_Mp3File) {
+		entry = String::replace(entry, song->getId3("FILE"), "<MB-FILE>");
+	}
+	log->log(entry);
+}
 int
 MusicLib::garbageCollect(InitDlg * dialog, BOOL test) {
 	SearchClear();

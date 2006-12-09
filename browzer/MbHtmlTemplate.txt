@@ -1,0 +1,64 @@
+<!-- Muzikbrowzer Export Template -->
+<!-- Everything from here down to MB-HEAD-END-ALBUM-BEGIN is the template header -->
+
+<HTML><head><title>Muzikbrowzer Export</title></head>
+
+<style type="text/css">
+table.MBTable {
+	border: 0px solid grey;
+	border-collapse: collapse;
+}
+td {
+	padding: 5px;
+}
+</style>
+
+<BODY bgcolor=#eeeeee>
+<a name=Top>
+<h4>Muzikbrowzer Export</h4>
+
+<!-- List of all genres -->
+<MB-GENRE-LIST>
+
+<p>
+
+<!-- List of all artists by genre -->
+<MB-ARTIST-LIST>
+
+<p>
+
+<table class=MBTable>
+
+<!-- From here to MB-SONGS is placed at the start of each album -->
+<MB-HEAD-END-ALBUM-BEGIN>
+
+	<tr>
+		<td class=MBAlbum colspan=3>
+<MB-GENRE-ANCHOR> <MB-ARTIST-ANCHOR>
+			<b><MB-GENRE> 
+			&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp
+			<MB-ARTIST> 
+			&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp
+			<MB-ALBUM></b>
+		</td>
+		<td><a href="#Top">Top</a></td>
+	</tr>
+
+<!-- here's where each song line is placed, down to MB-ALBUM-END-SONG-BEGIN -->
+	<MB-SONGS>
+
+<!-- a blank line between albums -->
+	<tr><td colspan=4>&nbsp</td></tr>
+
+<!-- this is the template for each song in an album, gets inserted at MB-SONGS above -->
+<MB-ALBUM-END-SONG-BEGIN>
+	<tr><td valign=top class=MBTrack><MB-TRACK></td>
+	<td valign=top class=MBSong><MB-SONG></td>
+	<td valign=top class=MBLength><MB-LENGTH></td>
+	<td valign=top class=MBMp3File><a href="<MB-FILE>"><MB-FILE></a></td></tr>
+<MB-SONG-END>
+<!-- everything below here is appended to end of file -->
+
+</table><p>
+
+</BODY></HTML>

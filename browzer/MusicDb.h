@@ -14,6 +14,9 @@
 #include "PicCache.h"
 //#include "WmaTagger.h"
 #include "MyString.h"
+
+class MyLog;
+
 class WmaTag;
 
 // A MemDb is a hierarchical tree looking structure not
@@ -315,7 +318,7 @@ class MSongLib {
 typedef MPtr<MSongLib> MSongLibP;
 
 class OggTag;
-
+class ExportDlg;
 class MusicLib
 {
 	public:
@@ -332,6 +335,8 @@ class MusicLib
 	     int	addSongToPlaylist(const Song &);
 	    BOOL	apic(const CString & file, uchar *& rawdata, size_t & size);
 	     int	clearPlaylist();
+  static int    CompareByFilenameNoCase(CString& element1, CString& element2) ;
+  static int    CompareByNum(CString& element1, CString& element2) ;
 	    Song	createSongFromFile(const CString & mp3file);
 	    Song	createSongFromFile(const CString & mp3file, CString & error_results, int & t1, int & t2, int & fc);
 	    Song	createSongFromId3(ID3_Tag *);
@@ -340,6 +345,11 @@ class MusicLib
 	    void	deletePlaylist(const CString &);
 	     int	deleteSongFromPlaylist(PlaylistNode *p);
 	    void	dumpPL(int p);
+		void	export(ExportDlg *);
+		void	exportCsv(ExportDlg *, MyLog *, Song);
+		void	exportTxt(ExportDlg *, MyLog *, Song);
+		void	exportHtml(ExportDlg *, MyLog *, Song, CString & tmpl);
+		CString expQE(const CString & entry, const CString in);
 	     int	getAlbums(const CString &, const CString &, CExtendedListBox&, BOOL albumsortalpha=TRUE);
 	     int	getArtists(const CString &, CExtendedListBox&);
 	 CString	getDbLocation() { return m_dir; };

@@ -654,6 +654,43 @@ BEGIN
     LTEXT           "",IDC_STATIC1,49,189,85,46,SS_NOTIFY | SS_CENTERIMAGE
 END
 
+IDD_EXPORT_DLG DIALOG DISCARDABLE  0, 0, 200, 172
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Muzikbrowzer tag export"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         "Genre",IDC_EXPORT_GENRE,"Button",BS_AUTOCHECKBOX | 
+                    WS_GROUP | WS_TABSTOP,16,18,41,8
+    CONTROL         "Artist",IDC_EXPORT_ARTIST,"Button",BS_AUTOCHECKBOX | 
+                    WS_GROUP | WS_TABSTOP,16,28,41,8
+    CONTROL         "Album",IDC_EXPORT_ALBUM,"Button",BS_AUTOCHECKBOX | 
+                    WS_GROUP | WS_TABSTOP,16,40,41,8
+    CONTROL         "Song",IDC_EXPORT_SONG,"Button",BS_AUTOCHECKBOX | 
+                    WS_GROUP | WS_TABSTOP,16,52,41,8
+    CONTROL         "Track",IDC_EXPORT_TRACK,"Button",BS_AUTOCHECKBOX | 
+                    WS_GROUP | WS_TABSTOP,58,18,41,8
+    CONTROL         "Length",IDC_EXPORT_LENGTH,"Button",BS_AUTOCHECKBOX | 
+                    WS_GROUP | WS_TABSTOP,58,28,41,8
+    CONTROL         "Year",IDC_EXPORT_YEAR,"Button",BS_AUTOCHECKBOX | 
+                    WS_GROUP | WS_TABSTOP,58,40,41,8
+    CONTROL         "Audio file",IDC_EXPORT_MP3FILE,"Button",BS_AUTOCHECKBOX | 
+                    WS_GROUP | WS_TABSTOP,58,52,45,8
+    CONTROL         ".csv file?",IDC_EXPORT_CSV,"Button",BS_AUTOCHECKBOX | 
+                    WS_GROUP | WS_TABSTOP,125,18,41,8
+    CONTROL         ".html file?",IDC_EXPORT_HTML,"Button",BS_AUTOCHECKBOX | 
+                    WS_GROUP | WS_TABSTOP,125,28,41,8
+    EDITTEXT        IDC_EXPORT_DIR,7,92,186,15,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EXPORT_FILE,7,128,186,15,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "Export",IDOK,31,148,50,14,WS_GROUP
+    PUSHBUTTON      "Cancel",IDCANCEL,119,148,50,14,WS_GROUP
+    GROUPBOX        "Export options",IDC_STATIC,7,7,186,63
+    LTEXT           "Output folder",IDC_STATIC,7,81,44,9
+    LTEXT           "Output filename (w/out .ext)",IDC_STATIC,7,113,94,9
+    PUSHBUTTON      "Browse",ID_EXPORT_OUPUT_BROWSE,73,76,50,14,WS_GROUP
+    EDITTEXT        IDC_EXPORT_TMPL,7,150,186,15,ES_AUTOHSCROLL
+    PUSHBUTTON      "Browse",ID_EXPORT_TEMPLATE_BROWSE,72,149,50,14,WS_GROUP
+END
+
 
 #ifndef _MAC
 /////////////////////////////////////////////////////////////////////////////
@@ -867,6 +904,14 @@ BEGIN
     BEGIN
         BOTTOMMARGIN, 284
     END
+
+    IDD_EXPORT_DLG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 193
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 165
+    END
 END
 #endif    // APSTUDIO_INVOKED
 
@@ -904,6 +949,8 @@ IDR_MENU2 MENU DISCARDABLE
 BEGIN
     POPUP ""
     BEGIN
+        MENUITEM "Open...",                     ID_OPEN_FILE_BUTTON
+        MENUITEM SEPARATOR
         POPUP "Music Library"
         BEGIN
             MENUITEM "Add music to Library",        ID_MENU_ADD
@@ -912,6 +959,8 @@ BEGIN
                 MENUITEM "Complete Rebuild from folders", ID_MENU_SCAN
                 MENUITEM "Search for new music in folders", ID_MENU_SCANNEW
             END
+            MENUITEM SEPARATOR
+            MENUITEM "Export tags",                 ID_EXPORT_TAGS
         END
         POPUP "S&kin"
         BEGIN
@@ -919,20 +968,20 @@ BEGIN
         END
         POPUP "Player"
         BEGIN
-            MENUITEM "Stop\tAlt+S",                 ID__PLAYER_STOP
-            MENUITEM "Play\tAlt+P",                 ID__PLAYER_PLAY
-            MENUITEM "Pause\tAlt+A",                ID__PLAYER_PAUSE
-            MENUITEM "Previous Song\tAlt+I",        ID__PLAYER_PREVIOUSSONG
-            MENUITEM "Next Song\tAlt+N",            ID__PLAYER_NEXTSONG
-            MENUITEM "Randomize\tAlt+D",            ID__PLAYER_RANDOMIZE
-            MENUITEM "Shuffle\tAlt+H",              ID__PLAYER_SHUFFLE
             MENUITEM "Clear\tAlt+C",                ID__PLAYER_CLEAR
-            MENUITEM "Load\tAlt+L",                 ID__PLAYER_LOAD
-            MENUITEM "Save\tAlt+V",                 ID__PLAYER_SAVE
-            MENUITEM "Volume Up\tAlt+U",            ID__PLAYER_VOLUMEUP
-            MENUITEM "Volume Down\tAlt+O",          ID__PLAYER_VOLUMEDOWN
             MENUITEM "Fast Forward\tAlt+F",         ID__PLAYER_FASTFORWARD
+            MENUITEM "Load\tAlt+L",                 ID__PLAYER_LOAD
+            MENUITEM "Next Song\tAlt+N",            ID__PLAYER_NEXTSONG
+            MENUITEM "Pause\tAlt+A",                ID__PLAYER_PAUSE
+            MENUITEM "Play\tAlt+P",                 ID__PLAYER_PLAY
+            MENUITEM "Previous Song\tAlt+I",        ID__PLAYER_PREVIOUSSONG
+            MENUITEM "Randomize\tAlt+D",            ID__PLAYER_RANDOMIZE
+            MENUITEM "Save\tAlt+V",                 ID__PLAYER_SAVE
+            MENUITEM "Shuffle\tAlt+H",              ID__PLAYER_SHUFFLE
+            MENUITEM "Stop\tAlt+S",                 ID__PLAYER_STOP
             MENUITEM "Reverse\tAlt+E",              ID__PLAYER_REVERSESKIP
+            MENUITEM "Volume Down\tAlt+O",          ID__PLAYER_VOLUMEDOWN
+            MENUITEM "Volume Up\tAlt+U",            ID__PLAYER_VOLUMEUP
         END
         MENUITEM "&Playlist editor",            ID_MENU_EDITPL
         MENUITEM "&Settings",                   ID_MENU_OPTIONS

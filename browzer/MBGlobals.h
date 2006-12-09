@@ -91,11 +91,16 @@
 
 #define Stringize( L ) #L 
 #define MakeString( M, L ) M(L) 
+
+#ifdef MBUsePragmaHack
 #define $Line \
 	MakeString( Stringize, __LINE__ ) 
 #define Reminder \
 	 __FILE__ "(" $Line ") : Reminder: "
 #define hack message(Reminder "Fix this hack!") 
+#else
+#define hack 
+#endif
 
 #define MB_MIN_WIDTH 500
 #define MB_MIN_HEIGHT 400

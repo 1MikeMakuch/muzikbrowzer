@@ -20,7 +20,7 @@ MyLog::~MyLog() {
 	if (m_ready)
 		close();
 }
-void
+BOOL
 MyLog::open(CString path, BOOL truncate) {
 
 	CFileException e;
@@ -46,24 +46,25 @@ MyLog::open(CString path, BOOL truncate) {
     _pathfile = path;
 	m_ready = TRUE;
 	if (TRUE == truncate) {
-		_file.Open(_pathfile, 
+		m_ready = _file.Open(_pathfile, 
 	        CFile::modeCreate
 			|CFile::modeReadWrite
 			|CFile::shareDenyNone,
 			&e);
 	} else {
-		_file.Open(_pathfile, 
+		m_ready = _file.Open(_pathfile, 
 			CFile::modeCreate
 			|CFile::modeNoTruncate
 			|CFile::modeReadWrite
 			|CFile::shareDenyNone,
 			&e);
 	}
-	_file.SeekToEnd();
-	
-
-
-
+	if (m_ready != 0) {
+		_file.SeekToEnd();
+		return TRUE;
+	} else {
+		return FALSE;
+	}
 }
 
 void
@@ -91,8 +92,10 @@ MyLog::log(const CString &m1, const CString &m2,
 	trimIt();
 
     CString mx;
-    CTime t = CTime::GetCurrentTime();
-    mx = t.Format("%Y%m%d:%H%M%S ");
+	if (m_DTStamp) {
+		CTime t = CTime::GetCurrentTime();
+		mx = t.Format("%Y%m%d:%H%M%S ");
+	}
     mx += m1 ; 
 	if (m2.GetLength()) {
 		mx += " " ;	mx += m2 ; 
@@ -116,6 +119,7 @@ MyLog::log(const CString &m1, const CString &m2,
 }
 void
 MyLog::trimIt() {
+	if (!m_trim) return;
 	UINT cursize = _file.GetLength();
 	if (cursize > MBMAXLOGFILE) {
 		int halfsize = cursize / 2;

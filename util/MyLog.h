@@ -4,9 +4,9 @@
 
 class MyLog {
 	public:
-		MyLog():m_ready(FALSE){};
+		MyLog():m_ready(FALSE),m_DTStamp(TRUE),m_trim(TRUE){};
 		~MyLog();
-		void open(CString, BOOL trunc=FALSE);
+		BOOL open(CString, BOOL trunc=FALSE);
 		void close();
 		void log(
 			const CString &msg1,
@@ -34,10 +34,13 @@ class MyLog {
 		void odsRect(const CString & name, const CRect & rect);
 		void odsRGB(const COLORREF c);
 		CString _pathfile;
+		BOOL m_DTStamp;
+		BOOL m_trim;
 	private:
 		BOOL m_ready;
 		CFile _file;
 		void trimIt();
+
 
 };
 

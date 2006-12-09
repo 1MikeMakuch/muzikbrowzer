@@ -13,14 +13,14 @@ Type: files; Name: "{commonprograms}\Muzikbrowzer.lnk";
 AppMutex=MuzikbrowzerAppMutex,Global\MuzikbrowzerAppMutex
 ;AppMutex=MuzikbrowzerAppMutex,Global\MuzikbrowzerAppMutex,MuzikbrowzerBitMapCutterAppMutex,Global\MuzikbrowzerBitMapCutterAppMutex
 AppName=Muzikbrowzer
-AppVerName=Muzikbrowzer 2.0.2
+AppVerName=muzikbrowzer 2.0.2
 AppCopyright=Copyright (C) 2001-Present Pecan Ventures, LLC
 DefaultDirName={pf}\Muzikbrowzer
 DefaultGroupName=Muzikbrowzer
 DisableProgramGroupPage=yes
 UninstallDisplayIcon={app}\Muzikbrowzer.exe
 MinVersion=4.1.1998,4
-OutputBaseFilename=Muzikbrowzer_setup_2_0_2
+OutputBaseFilename=muzikbrowzer_setup_2_0_2
 LicenseFile=mb_license.txt
 
 [Files]
@@ -50,6 +50,7 @@ Root: HKLM; Subkey: "Software\Muzikbrowzer"; ValueType: string; ValueName: "DbLo
 Root: HKLM; Subkey: "Software\Muzikbrowzer"; ValueType: string; ValueName: "SkinName"; ValueData: "MBClassic"  ; Flags: createvalueifdoesntexist uninsdeletekey
 Root: HKLM; Subkey: "Software\Muzikbrowzer"; ValueType: dword; ValueName: "NumDirs"; ValueData: "1"  ; Flags: createvalueifdoesntexist uninsdeletekey
 Root: HKLM; Subkey: "Software\Muzikbrowzer"; ValueType: string; ValueName: "Dir_00"; ValueData: "{userdocs}\My Music"; Flags: createvalueifdoesntexist uninsdeletekey
+Root: HKLM; Subkey: "Software\Muzikbrowzer"; ValueType: string; ValueName: "ExpHtmlTmpl"; ValueData: "{app}\MbHtmlTemplate.txt" ; Flags: createvalueifdoesntexist uninsdeletekey
 
 ; Keys to delete
 Root: HKLM; Subkey: "Software\Muzikbrowzer\PreviousValues"; ValueType: none; Flags: deletekey dontcreatekey

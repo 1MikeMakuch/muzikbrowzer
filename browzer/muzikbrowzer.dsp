@@ -137,6 +137,10 @@ SOURCE=.\CDialogSK.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\ExportDlg.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\ID3Display.cpp
 # End Source File
 # Begin Source File
@@ -215,6 +219,10 @@ SOURCE=.\DirectShow.h
 # Begin Source File
 
 SOURCE=.\DirectShowMediaTypes.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ExportDlg.h
 # End Source File
 # Begin Source File
 

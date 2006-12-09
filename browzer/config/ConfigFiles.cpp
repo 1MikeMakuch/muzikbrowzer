@@ -79,42 +79,7 @@ void CConfigFiles::init() {
 
 
 
-void CConfigFiles::OnDiradd() 
-{
 
-    // open a file
-	int s = m_MP3DirList.GetCurSel();
-	CString dflt;
-	if (s <  0)
-		s = 0;
-	if (s = m_MP3DirList.GetCount()) {
-		m_MP3DirList.GetText(s-1, dflt);
-		dflt = String::upDir(dflt);
-	}
-
-	CFileAndFolder dialog(this, dflt);
-	dialog.setTitle("Add folders");
-	dialog.setMsg("Select folder(s) to be searched.");
-
-	int ret;
-	ret = dialog.DoModal();
-	if (ret == IDOK) {
-        // a file was selected
-		CStringList list;
-		dialog.GetPaths(list);
-		POSITION pos;
-		for(pos = list.GetHeadPosition(); pos != NULL;) {
-			CString path = list.GetNext(pos);
-			if (path.GetLength())
-				m_MP3DirList.AddString(path);
-				m_slMP3DirList.AddTail(path);
-		}
-
-        EnableDisableButtons(); 
-        UpdateData(FALSE);
-		SetModified(TRUE);
-	}
-}
 
 
 void CConfigFiles::OnSelchangeDirlist() 
@@ -280,27 +245,74 @@ void CConfigFiles::dirScan(CStringList & mp3list) {
     MBMessageBox("Search Results", scaninfo, FALSE, FALSE);
 
 }
-
-void CConfigFiles::OnLocationButton() 
+void CConfigFiles::OnDiradd() 
 {
+
     // open a file
+	int s = m_MP3DirList.GetCurSel();
 	CString dflt;
-	m_MdbLocation.GetWindowText(dflt);
-	CFolderDialog dialog(dflt);
+	if (s <  0)
+		s = 0;
+	if (s = m_MP3DirList.GetCount()) {
+		m_MP3DirList.GetText(s-1, dflt);
+		dflt = String::upDir(dflt);
+	}
+
+	CFileAndFolder dialog(this, dflt);
+	dialog.SetShowFiles(FALSE);
+	dialog.setTitle("Add folders");
+	dialog.setMsg("Select folder(s) to be searched.");
 
 	int ret;
 	ret = dialog.DoModal();
 	if (ret == IDOK) {
         // a file was selected
-		CString path = dialog.GetPathName();
-        m_MdbLocation.SetWindowText(path);
+		CStringList list;
+		dialog.GetPaths(list);
+		POSITION pos;
+		for(pos = list.GetHeadPosition(); pos != NULL;) {
+			CString path = list.GetNext(pos);
+			if (path.GetLength())
+				m_MP3DirList.AddString(path);
+				m_slMP3DirList.AddTail(path);
+		}
+
         EnableDisableButtons(); 
         UpdateData(FALSE);
-
-		(*m_playercallbacks->setDbLocation)(path);
-        m_path = path;
 		SetModified(TRUE);
-		m_LocDirModified = TRUE;
+	}
+}
+void CConfigFiles::OnLocationButton() 
+{
+    // open a file
+	CString dflt;
+	m_MdbLocation.GetWindowText(dflt);
+	CFileAndFolder dialog(this, dflt);
+	dialog.SetShowFiles(FALSE);
+	dialog.setTitle("Set location of Muzikbrowzer files");
+	dialog.setMsg("... where Muzikbrowzer's files, playlists, skins reside");
+
+	int ret;
+	ret = dialog.DoModal();
+	if (ret == IDOK) {
+        // a file was selected
+		CStringList paths ;
+		dialog.GetPaths(paths );
+        POSITION pos;
+		for(pos = paths.GetHeadPosition(); pos != NULL;) {
+			CString path = paths.GetNext(pos);
+			if (path.GetLength()) {
+				m_MdbLocation.SetWindowText(path);
+				EnableDisableButtons(); 
+				UpdateData(FALSE);
+
+				(*m_playercallbacks->setDbLocation)(path);
+				m_path = path;
+				SetModified(TRUE);
+				m_LocDirModified = TRUE;
+				return;
+			}
+		}
 	}	
 }
 
