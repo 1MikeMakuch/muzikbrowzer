@@ -66,7 +66,7 @@ LIB32=link.exe -lib
 # PROP Intermediate_Dir "Debug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /Yu"stdafx.h" /FD /GZ /c
-# ADD CPP /nologo /MTd /W3 /GX /Zi /Od /I "..\\" /I "..\..\\" /I "..\controls" /I "..\..\util" /I "..\irman" /I "..\..\id3lib-3.8.3\include" /I "..\id3utils" /I "..\Serial" /I "..\config" /D ID3LIB_LINKOPTION=1 /D "TEST_HARNESS" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_WIN32_DCOM" /FR /FD /GZ /c
+# ADD CPP /nologo /MTd /W3 /GX /Zi /Od /I "..\\" /I "..\..\\" /I "..\controls" /I "..\..\util" /I "..\irman" /I "..\..\id3lib-3.8.3\include" /I "..\id3utils" /I "..\Serial" /I "..\config" /I "..\..\3rdparty\USBUIRT" /D ID3LIB_LINKOPTION=1 /D "TEST_HARNESS" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_WIN32_DCOM" /FR /FD /GZ /c
 # SUBTRACT CPP /YX /Yc /Yu
 # ADD BASE RSC /l 0x409 /d "_DEBUG" /d "_AFXDLL"
 # ADD RSC /l 0x409 /d "_DEBUG"
@@ -118,8 +118,16 @@ SOURCE=.\irman.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\RemoteReceiver.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\StdAfx.cpp
 # ADD CPP /Yc"stdafx.h"
+# End Source File
+# Begin Source File
+
+SOURCE=.\UsbUirt.cpp
 # End Source File
 # End Group
 # Begin Group "Header Files"
@@ -135,7 +143,15 @@ SOURCE=.\irman_common.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\RemoteReceiver.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\StdAfx.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\usbuirt.h
 # End Source File
 # End Group
 # Begin Source File

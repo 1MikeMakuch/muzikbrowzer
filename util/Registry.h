@@ -16,6 +16,8 @@
 #include "StdAfx.h"
 
 const static TCHAR RegKeyIrman[] = _T(MBREGKEYIRMAN);
+const static TCHAR RegKeyUsbUirt[] = _T(MBREGKEYUSBUIRT);
+const static TCHAR RegKeyTira[] = _T(MBREGKEYTIRA);
 const static TCHAR RegKey[] = _T(MBREGKEY);
 const static TCHAR RegKeyPrevVals[] = _T(MBREGKEYLAST);
 
@@ -95,6 +97,9 @@ public:
   void Write( const TCHAR* value, unsigned long data ) const;
 
   // Read and write binary data
+  // Note: if the size written (what is there) is different from the size
+  // you're reading, the type will come back undefined and you'll get the
+  // default data instead.
   void Read( const TCHAR* value, void* data, unsigned long size,
       const void* deflt ) const;
   void Write( const TCHAR* value, const void* data, unsigned long size ) const;

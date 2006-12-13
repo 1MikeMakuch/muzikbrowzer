@@ -97,9 +97,12 @@ class CSerialMFC : public CSerialWnd
 public:
 	// Open the serial communications for a particular COM port. You
 	// need to use the full devicename (i.e. "COM1") to open the port.
-	virtual LONG Open (LPCTSTR lpszDevice, CWnd* pwndDest, UINT nComMsg = WM_NULL, LPARAM lParam = 0, DWORD dwInQueue = 0, DWORD dwOutQueue = 0)
+	virtual LONG Open (LPCTSTR lpszDevice, CWnd* pwndDest, 
+		UINT nComMsg = WM_NULL, LPARAM lParam = 0, DWORD dwInQueue = 0, 
+		DWORD dwOutQueue = 0)
 	{ 
-		return CSerialWnd::Open(lpszDevice,pwndDest->GetSafeHwnd(),nComMsg,lParam,dwInQueue,dwOutQueue); 
+		return CSerialWnd::Open(lpszDevice,pwndDest->GetSafeHwnd(),
+			nComMsg,lParam,dwInQueue,dwOutQueue); 
 	}
 };
 

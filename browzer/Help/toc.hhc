@@ -73,6 +73,10 @@
 		<param name="Local" value="Html/ReqsNRecs.htm#Recs">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Remote Control">
+		<param name="Local" value="Html/RemoteControl.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
 		<param name="Name" value="Appendix">
 		<param name="Local" value="Html/Appendix.htm">
 		</OBJECT>

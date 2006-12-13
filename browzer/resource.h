@@ -140,6 +140,7 @@
 #define IDC_ALBUMS                      1037
 #define IDC_PLAYLIST_SONGS              1037
 #define IDC_MP3_EXTENSION               1037
+#define IDC_IRTYPE                      1037
 #define IDC_LIST3                       1038
 #define IDC_SONGS                       1038
 #define IDC_LIST4                       1039
@@ -456,6 +457,8 @@
 #define IDC_EXPORT_DIR                  2069
 #define IDC_EXPORT_FILE                 2070
 #define IDC_EXPORT_TMPL                 2071
+#define IDC_IRMAN_SETUP                 2072
+#define IDC_IR_READ_TEST_LABEL          2073
 #define IDS_UNKNOWN_ERROR               5000
 #define IDC_BUTTON_LOGO                 12052
 #define ID_XXX                          32775
@@ -521,7 +524,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        273
 #define _APS_NEXT_COMMAND_VALUE         32859
-#define _APS_NEXT_CONTROL_VALUE         2070
+#define _APS_NEXT_CONTROL_VALUE         2074
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

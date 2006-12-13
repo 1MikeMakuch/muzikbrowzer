@@ -17,13 +17,9 @@
 #include "PlayerApp.h"
 #include "InitDlg.h"
 #include "MusicDb.h"
-#include "irman.h"
-//#include "VirtualControl.h"
 #include "ExtendedListBox.h"
-//#include "MenuDialog.h"
 #include "MBConfig.h"
 #include "ColorStatic.h"
-//#include "MusicPlayer.h"
 #include "PictureStatic.h"
 #include "MyString.h"
 #include "Controls.h"
@@ -85,7 +81,7 @@ public:
 	void updatePlaylist(const BOOL save=TRUE);
 	void updatePlaylistPostEdit();
 	virtual BOOL PreTranslateMessage(MSG*);
-	Irman & irman() { return m_irman; }
+
     void PlayLoop();
     void initDb();
     void init();
@@ -141,7 +137,7 @@ private:
 	Controls m_BtnControls;
 	int m_PlaylistDuration;
 	CTransparentDialogDlg *_initdialog;
-	Irman m_irman;
+
 	CString m_AlbumArt;
 	UINT m_AdjustLibrary;
 	BOOL m_LibDrag;

@@ -5,7 +5,7 @@
     <meta name="description" content="MAKEHHP Helpfile Compiler Generated HTML File">
     <meta name="author" content="Muzikbrowzer">
     <meta name="publisher" content="Muzikbrowzer">
-    <meta name="copyright" content="Muzikbrowzer 2002-2006">
+    <meta name="copyright" content="Muzikbrowzer ">
     <meta name="date" content="2001-06-01T00:00:10+00:00">
     <meta name="robots" content="NONE">
     <title>User Guide</title>
@@ -27,7 +27,7 @@ associated with that function. <p class="text">
 	<li><i>Up/Down/Left/Right</i> navigate between Genres, Artists, Songs, Playlist
 	<li><i>Select</i> selects the highlighted Genre, Artist, Album or Song and adds
 		it to the Playlist. The first song begins playing.
-	<li><i>Menu</i> brings up a menu of choices available with the remote control. These are functionally equivalent to the corresponding functions  accessed by mouse clicking on the Menu button except for <i>Help</i>. <i>Help</i> displays a reference chart showing which remote control buttons perform what functions. This relies upon the Configuration settings you have entered in the Irman tab of the Configuration Dialog. When you choose <i>Save Playlist</i> with the remote control, the playlist is automatically named with the date/time. Note that you can rename it later by Loading and resaving it with the Keyboard/Mouse since that way lets you explicitly name the playlist.
+	<li><i>Menu</i> brings up a menu of choices available with the remote control. These are functionally equivalent to the corresponding functions  accessed by mouse clicking on the Menu button except for <i>Help</i>. <i>Help</i> displays a reference chart showing which remote control buttons perform what functions. This relies upon the  Settings you have entered in the Remote tab of the Settings dialog. When you choose <i>Save Playlist</i> with the remote control, the playlist is automatically named with the date/time. Note that you can rename it later in the Playlist editor.
 
 	<li><i>Exit</i> generally exits from subwindows. For example it will exit from
 	the Menu opened by pressing <i>Menu</i>
@@ -53,7 +53,8 @@ associated with that function. <p class="text">
 
 	<li>Pressing an alpha letter key will jump you to that position in the Genre, Artist,
 	Album window. For instance if you press 'Y' it'll take you to the Y's in your Genre,
-	Artist or Album window.
+	Artist or Album window. Continue typing the name of a Genre or Artist and it will
+	automatically locate the word typed.
 
 	<li>The Alt+Up/Alt+Down arrow keys have a special function inside the Playlist. They
 	allow you to reorder the songs in the Playlist. To do so first select a
@@ -61,17 +62,49 @@ associated with that function. <p class="text">
 	Alt+Down to move the selected song up or down in the Playlist.
 
 	<li>Delete key will delete a song in the Playlist. It has no function in the other windows.
-	<li>Right click on any Genre, Artist, Album or Song to access and optionally edit tag information. <i>Note: Any saved playlists that you have may become unusable after performing tag editing.</i>
-	<li>Menu. Click on the Menu button in the upper right corner of Muzikbrowzer to access the menu of the following functions:
+	<li>Right click on any Genre, Artist, Album or Song to access and optionally edit tag information. 
+	<li>Menu. Click on the Menu button in the upper left corner of Muzikbrowzer to access the menu of the following functions:
+
 		<ul class="text">
-		<li>Shuffle Playlist. "Shuffles" the Playlist in Artist/Album order. Takes the first song from each Album and adds them to the Playlist, then the second song from each Album and so forth. Successive shuffles on the same Playlist will always yield the same shuffled Playlist.
-		<li>Randomize Playlist. Scrambles up the Playlist in random order. Successively randomizing the Playlist will yield a different Playlist each time.
-		<li>Clear Playlist. Deletes all songs from the Playlist.
-		<li>Save Playlist. Allows you to save your Playlist for later use. 
-		<li>Load Playlist. Opens the LoadPlaylist Dialog allowing you to choose from your previously saved playlists. You can also delete a previously saved playlist from here.
-		<li>Pause, Play, Stop do the obvious.
+		<li>Open. Muzikbrowzer will open and begin playing any audio file on your disk.
+		<li>Music Library functions:
+			<ul>
+			<li>Add music. Add specific files/folders to your Muzikbrowzer library.
+			<li>Rebuild
+				<ul>
+				<li>Complete rebuild: Searches folders (specified in Settings/General) for music and rebuilds library
+				from scratch.
+				<li>Search for new music: Searches folders (specified in Settings/General) for music not currently
+				in the library and adds it. Use this when you copy music into the specified
+				Muzikbrowzer folders. This is an alternative to Add Music above, in case you
+				don't remember where all the new music is, as long as it's within the specified folders.
+				</ul>
+			<li>Export tags: Export audio file tags into a .csv file, importable into spreadsheet program.
+			</ul
+		<li>Skin: choose desired skin. For info on creating your own skin email <a href="support@muzikbrowzer.com">support@muzikbrowzer.com</a>
+		<li>Player:
+			<ul>
+			<li>Clear Playlist. Deletes all songs from the Playlist
+			<li>Fast Forward: Advances in current song
+			<li>Load Playlist. Opens the LoadPlaylist Dialog allowing you to choose from your previously saved playlists. 
+			<li>Next song, in playlist.
+			<li>Pause, Play, Stop do the obvious.
+			<li>Play. 
+			<li>Previous song, in playlist.
+			<li>Randomize Playlist. Scrambles up the Playlist in random order. Successively randomizing the Playlist will yield a different Playlist each time.
+			<li>Save Playlist. Allows you to save your Playlist for later use. Saves the playlists in industry standard .m3u format. These may be importable into other devices/software.
+			<li>Shuffle, the  playlist. "Shuffles" the Playlist in Artist/Album order. Takes the first song from each Album and adds them to the Playlist, then the second song from each Album and so forth. Successive shuffles on the same Playlist will always yield the same shuffled Playlist.
+			<li>Stop
+			<li>Reverse, skips backwards in current song playing.
+			<li>Volume up/down.
+			</ul>
+			Each of the above player functions has Alt-key keyboard shortcuts.
+		<li>Playlist editor. Allows you to modify/delete playlists.
+		<li>Settings. See <a href="Html/Configuration.htm" >Settings</a>
+		<li>Search. Allows you to search the Muzikbrowzer library by keyword(s).
 		<li>Help. You are here.
-		<li>Configuration. See <a href="Html/Configuration.htm" >Configuration</a>
+		<li>About. Displays version info, credits etc.
+		<li>Exit.
 		</ul>
 	<li>Progress slider. You can use the mouse to fast forward or rewind the song currently playing.
 	<li>Minimize, Maximize and Exit buttons appear at the upper right.
@@ -112,7 +145,7 @@ associated with that function. <p class="text">
 	<li>Albums are sorted by Year if the tag contains the year. Otherwise alphabetically.
 	<li>Songs are sorted by track number if the tag contains the track number. Otherwise by filename (this can be usefull if you don't have the track number in the tag but your song files are named with the track number as a prefix, i.e. '01-Here Comes The Sun', '02-Hey Jude', etc).
 	<li>Currently Muzikbrowzer does not "rip" or record from CD's into mp3 files.
-	<li>Certain operations write error and informational messages into the log file, Muzikbrowzer.log located in the directory specified in the Configuration dialog. This file may be helpfull in diagnosing problems.
+	<li>Certain operations write error and informational messages into the log file, Muzikbrowzer.log located in the directory specified in the Settings dialog. This file may be helpfull in diagnosing problems.
 	<li>While playing music Muzikbrowzer will display the song currently playing in the Playing status field at the bottom right. As you navigate around through different windows, the currently selected field will temporarily be displayed in this status field. After a few seconds the status field will go back to displaying the song currently playing.
 
 	<li>Album cover art is displayed for the song currently playing
@@ -146,7 +179,7 @@ associated with that function. <p class="text">
 			</td>
 		</tr>
 		</table>
-		 <P align=center><FONT size=1>Copyright 2002-2006 Pecan Ventures LLC - All rights reserved.
+		 <P align=center><FONT size=1>Copyright Pecan Ventures LLC - All rights reserved.
 		              </FONT></P>
     </body>
 </html>

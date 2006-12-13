@@ -53,10 +53,11 @@ RegistryKey::init(CString filename)
 RegistryKey::RegistryKey( HKEY base, const TCHAR* keyName )
 	: mKeyValPairs(NULL),key(NULL), m_keyname(keyName)
 {
-  if( RegCreateKeyEx( base, keyName, 0, _T(""), 0,
-                      KEY_QUERY_VALUE | KEY_SET_VALUE,
-                      NULL, &key, NULL ) != ERROR_SUCCESS )
+	if (RegCreateKeyEx( base, keyName, 0, _T(""), 0,
+			KEY_QUERY_VALUE | KEY_SET_VALUE,
+			NULL, &key, NULL ) != ERROR_SUCCESS ) {
 		key = NULL;
+	}
 	mFileName = "";
 }
 RegistryKey::RegistryKey( CString filename ) : mFileName(filename)
@@ -322,6 +323,10 @@ void RegistryKey::Write( const TCHAR* value, unsigned long data ) const
 }
 ///////////////////////////////////////////////////////////////////////
 // binary data
+// Read and write binary data
+// Note: if the size written (what is there) is different from the size
+// you're reading, the type will come back undefined and you'll get the
+// default data instead.
 ///////////////////////////////////////////////////////////////////////
 void RegistryKey::Read( const TCHAR* value, void* data,
 					   unsigned long desiredSize, const void* deflt ) const
@@ -346,15 +351,30 @@ void RegistryKey::Write( const TCHAR* value, const void* data,
 ///////////////////////////////////////////////////////////////////////
 bool RegistryKey::ReadData( const TCHAR* value, void* data, 
 	unsigned long& size, unsigned long desiredType ) const
+
+// Read and write binary data
+// Note: if the size written (what is there) is different from the size
+// you're reading, the type will come back undefined and you'll get the
+// default data instead.
 {
   if( key == NULL )
     return false;
 
   unsigned long type;
-  return RegQueryValueEx( key, value, 0, &type,
+//  return RegQueryValueEx( key, value, 0, &type,
+//                          static_cast< BYTE* >( data ),
+//                          &size ) == ERROR_SUCCESS &&
+//         type == desiredType;
+
+  BOOL r = RegQueryValueEx( key, value, 0, &type,
                           static_cast< BYTE* >( data ),
-                          &size ) == ERROR_SUCCESS &&
-         type == desiredType;
+                          &size );
+  if (ERROR_SUCCESS == r) {
+	  if (type == desiredType) {
+		  return TRUE;
+	  }
+  }
+  return FALSE;
 }
 
 bool RegistryKey::WriteData( const TCHAR* value, const void* data,

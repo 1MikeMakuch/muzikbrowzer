@@ -11,7 +11,7 @@
 
 #include "About.h"
 #include "ConfigFiles.h"
-#include "ConfigIrman.h"
+#include "RemoteReceiver.h"
 #include "DialogData.h"
 #include "FontCombo.h"
 #include "FontTipWnd.h"
@@ -29,7 +29,6 @@
 #include "WmaTagger.h"
 #include "PlayerApp.h"
 #include "SavePlaylistDlg.h"
-#include "SerialMFC.h"
 #include "TestHarness/TestHarness.h"
 #include "VirtualControl.h"
 #include "muzikbrowzerVersion.h"
@@ -629,7 +628,9 @@ BOOL CPlayerDlg::OnInitDialog()
 		MBMessageBox("Trial Expired","Your 60 day trial has expired.",FALSE);
 	}
 	CString menuFunc,menuDesc;
-	irman().getDescs(IR_MESSAGE_MENU, menuFunc, menuDesc);
+	RemoteReceiver * rrcvr = RemoteReceiver::reset(this, MB_SERIAL_MESSAGE);
+	if (rrcvr)
+		rrcvr->getDescs(IR_MESSAGE_MENU, menuFunc, menuDesc);
 	if (menuDesc == "") menuDesc = "Menu";
 	m_HelpMsg = "Press "; m_HelpMsg += menuDesc; m_HelpMsg += " for options.";
 	m_HelpMsg = "";
@@ -1086,9 +1087,10 @@ CPlayerDlg::resetControls() {
 	CWaitCursor c;
 	GetWindowRect(m_WindowRect);
 
-	irman().Close();
-	irman().init(RegKeyIrman, IR_MESSAGE_NUMBER_OF, this);
-	irman().Open();
+//	RemoteReceiver * rrcvr = RemoteReceiver::rrcvr();	
+//	rrcvr->Close();
+//	rrcvr->init(this);
+//	rrcvr->Open();
 
 	m_Skins.RemoveAll();
 	m_Config.getSkins(m_Skins);
@@ -2657,7 +2659,7 @@ BOOL CALLBACK KillScreenSaverFunc(HWND hwnd, LPARAM lParam)
   return TRUE;
 }
 
-bool EndScreenSaver()
+BOOL EndScreenSaver()
 {
 	OSVERSIONINFO osvi;
 	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
@@ -2707,7 +2709,18 @@ CPlayerDlg::OnPlayloop(WPARAM wParam, LPARAM lParam) {
 	PlayLoop();
 	return 0;
 }
+afx_msg LRESULT
+CPlayerDlg::OnSerialMsg (WPARAM wParam, LPARAM lParam) {
 
+	int key = 0;
+	BOOL more = TRUE;
+	RemoteReceiver * rrcvr = RemoteReceiver::rrcvr();	
+	if (rrcvr) {
+		rrcvr->HandleSerialMsg(wParam, lParam, key);
+		HandleIRMessage(key);
+	}
+	return 0;
+}
 int
 CPlayerDlg::HandleIRMessage(int key) {
 
@@ -2838,15 +2851,7 @@ CPlayerDlg::prevDlgCtrl() {
 		PrevDlgCtrl();
 }
 
-afx_msg LRESULT
-CPlayerDlg::OnSerialMsg (WPARAM wParam, LPARAM lParam) {
 
-	int key;
-	BOOL more = TRUE;
-	irman().HandleSerialMsg(wParam, lParam, key);
-	HandleIRMessage(key);
-	return 0;
-}
 
 void
 PostMyIdleMessage() {
@@ -2895,21 +2900,14 @@ void CPlayerDlg::OnMenuCheckem() {
 }
 // Configuration dlg
 void CPlayerDlg::OnMenuOptions() {
-	//    IRReaderStop();
-	irman().Close();
+	
 	m_Config.DoModal();
 	m_AlbumArt = m_Config.getSkin(MB_SKIN_ALBUMART);
 
-//  PlayerStatusTempSet(m_mlib.getLibraryCounts());
-//	resizeControls();
-//    redraw();
-	//    IRReaderStart();
-	irman().Close();
-	irman().init(RegKeyIrman, IR_MESSAGE_NUMBER_OF, this);
-	irman().Open();
-
 	CString menuFunc,menuDesc;
-	irman().getDescs(IR_MESSAGE_MENU, menuFunc, menuDesc);
+	RemoteReceiver * rrcvr = RemoteReceiver::reset(this, MB_SERIAL_MESSAGE);	
+	if (rrcvr)
+		rrcvr->getDescs(IR_MESSAGE_MENU, menuFunc, menuDesc);
 	if (menuDesc == "") menuDesc = "Menu";
 	m_HelpMsg = "Press "; m_HelpMsg += menuDesc; m_HelpMsg += " for options.";
 	m_HelpMsg = "";
@@ -2918,7 +2916,7 @@ void CPlayerDlg::OnMenuOptions() {
 	} else if (m_Config.trialMode() == 2) {
 		m_HelpMsg = " Trial Expired.";
 	}
-//	PlayerStatusSet(m_HelpMsg);
+
 }
 void
 CPlayerDlg::redraw() {
@@ -3121,22 +3119,31 @@ void CPlayerDlg::OnMenuHelp()
 {
 	CString msg,d1,d2,d3,r1,r2,r3;
 	int i,n;
+	BOOL AnyDefined = FALSE;
 	msg = "Use Up,Down,Left,Right to navigate,\r\nSelect to queue up music.\r\n";
-	n = irman().numOfKeys();
-	AutoBuf buf(200);
-	const char * HFORMAT = "%-12s %-12s | %-12s %-12s\r\n";
-	sprintf(buf.p, HFORMAT,
-		"Function","Remote Key", "Function", "Remote Key");
-	msg += buf.p;
-	msg += "-------------------------------------------------\r\n";
-	int first = 1;
-	for(i = 0 ; i < n ; i += 2) {
-		irman().getDescs(i, d1, r1);
-		irman().getDescs(i+1, d2, r2);
+	RemoteReceiver * rrcvr = RemoteReceiver::rrcvr();	
+	if (rrcvr) {
+		n = rrcvr->numOfKeys();
+		AutoBuf buf(200);
+		const char * HFORMAT = "%-12s %-12s | %-12s %-12s\r\n";
 		sprintf(buf.p, HFORMAT,
-			d1,r1,d2,r2);
+			"Function","Remote Key", "Function", "Remote Key");
 		msg += buf.p;
+		msg += "-------------------------------------------------\r\n";
+		int first = 1;
+
+		for(i = 0 ; i < n ; i += 2) {
+			rrcvr->getDescs(i, d1, r1);
+			rrcvr->getDescs(i+1, d2, r2);
+			if (r1.GetLength() || r2.GetLength())
+				AnyDefined = TRUE;
+			sprintf(buf.p, HFORMAT,
+				d1,r1,d2,r2);
+			msg += buf.p;
+		}
 	}
+	if (!AnyDefined) 
+		msg = "No Remote Control descriptions defined. See Settings/Remote.";
 	MBMessageBox("Remote Control Help", msg, FALSE, FALSE);
 }
 

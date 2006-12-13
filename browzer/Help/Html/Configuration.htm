@@ -5,7 +5,7 @@
     <meta name="description" content="MAKEHHP Helpfile Compiler Generated HTML File">
     <meta name="author" content="Muzikbrowzer">
     <meta name="publisher" content="Muzikbrowzer">
-    <meta name="copyright" content="Muzikbrowzer 2002-2006">
+    <meta name="copyright" content="Muzikbrowzer ">
     <meta name="date" content="2001-06-01T00:00:10+00:00">
     <meta name="robots" content="NONE">
     <title>Settings</title>
@@ -96,27 +96,40 @@
 <p>
 
 
-<a name="Irman">
-		<li><b>Irman</b>
+<a name="RemoteControl">
+		<li><b>Remote Control</b>
 		<ul class="text">
-		<li><b>Irman COM Port</b>. Choose the serial COM Port you have the
-			Irman infrared receiver plugged into. Usually 1 or 2. Choose Disabled 
-			if you do not have one.
-		<li><b>Initialize</b>. Click on Initialize after you have chosen a COM Port 
-			to test Muzikbrowzer communication with the Irman. On Success you should 
-			get an "Ok".
+		<li>Several remote control devices are supported including 
+		<a target=_blank href="http://www.evation.com">Irman</a>, 
+		<a target=_blank href="http://www.usbuirt.com">USB-UIRT</a>, 
+		<a target=_blank href="http://www.home-electro.com/">Tira</a>
+			<ul>
+			<li>Irman - no extra drivers necessary. Muzikbrowzer communicates directly with Irman.
+			<li>USB-UIRT Windows driver required. Download from 
+		<a target=_blank href="http://www.usbuirt.com">USB-UIRT</a>.
+			<li>Tira Windows driver required. 
+			</ul>
+			See the <a href="RemoteControl.htm">Remote Control</a> chapter for installation instructions for each of
+			the support remote control receiver devices.
+			These are univeral infrared receiver devices. The manufacturers claim that they
+			will "see" ir signals from most all remote controls. See specific manufacturer
+			information for details.
+		<li><b>Remote Receiver type</b>. Choose the type of remote control receiver
+		you have installed on your pc. 
+		<li><b>COM Port</b>.  In the case of a serial device (Irman) choose the COM port it's plugged into.  
+		<li><b>Initialize</b>. After you've installed your remote receiver device and installed
+		any necessary drivers, click on Initialize. Muzikbrowzer will test the
+		configured device.  When a device is successfully configured in Muzikbrowzer there
+		will be an "OK" displayed next to the Initialize button and you'll be able to go
+		into "Learn" mode and teach Muzikbrowzer your remote control's signal codes.
 
-		<li><b>Record</b>. Click Record to teach Muzikbrowzer your remote control codes.
-			According to <a target=_blank href="http://www.evation.com">Irman</a> most all infrared
-			remote controls will work with the Irman.
+		<li><b>Learn</b>. Click Learn to teach Muzikbrowzer your remote control codes.
 			<ul class="text">
-			<li>Click Record.
-			<li>Click the Up button on the Irman Settings Dialog. The <b>Code</b>
-			value should indicating <B><I>reading...</i></b>.
-			<li>Now press the button on your remote control which you choose to serve 
-				as the Up button. Upon receiving a signal the <b>Code</b> value
-				should display a sequence of hexidecimal digits corresponding to the
-				button pressed.
+			<li>Click Learn.
+			<li>Click the Up button on the Settings/Remote Dialog. 
+			<b><i>reading...</i></b> is displayed next to the Up button.
+			<li>Now press "Up" on your remote control.
+				Upon receiving a signal "Learned" is displayed next to the Up button.
 			<li>Description. Optional but suggested, enter a
 				brief description of each remote control button. For
 				example if you are using the numeric buttons as
@@ -126,25 +139,27 @@
 				the remote control menu Help button, to help you
 				remember which remote control buttons do what.
 
-			<li>Repeat for all remaining buttons on the dialog.
+			<li>Repeat for all remaining buttons, or the ones you choose to use. Not 
+			all are required.
 			</ul>
 
 
 			<i>Note: Apparently the volume buttons on many remote controls
 			operate differently than most of the rest of the remote
 			control buttons. Consequently you may find that the
-			Irman does not pick up the volume buttons on your remote
+			remote receiver device does not pick up the volume buttons on your remote
 			control consistently. If this happens, simply choose another pair of
 			buttons to serve as Vol Up/Down, or you may choose to leave the
 			volume on Muzikbrowzer set to maximum and only use the volume on
 			your stereo.</i>
 
 		<li><b>Test</b>. When you have <i>taught</i> Muzikbrowzer some or all of
-			your remote control codes click on <b>Test</b> to verify that the Irman
-			is correctly reading signals from your remote control and that each
+			your remote control codes click on <b>Test</b> to verify that the remote
+			receiver device and Muzikbrowzer
+			are correctly reading signals from your remote control and that each
 			button learned is distinguished from the others. 
 			When you click a remote control button and Muzikbrowzer successfully receives
-			the signal from the Irman, the description is displayed in the <b>Read</b>
+			the signal from the device, the description is displayed in the <b>Read</b>
 			window followed by an increment number. This number indicates how many
 			times Muzikbrowzer received that signal. (See Key Suppress below).
 			
@@ -174,7 +189,7 @@
 			entered it in the Purchase form (case sensitive).
 			<li>Your HostId must match also. If it does not for some reason 
 			you should 
-			send an email to <a href="mailto:support@muzikbrowzer.com">support@muzikbrowzer.com</a> explaining why you need a new license key.
+			send an email to <a href="mailto:support@muzikbrowzer.com">support@muzikbrowzer.com</a> and request a new license key.
 			</ul>
 
 <p>
@@ -184,9 +199,11 @@
 
 			<li>To enable Muzikbrowzer to play Ogg Vorbis (.ogg)
 			files you'll need to install an Ogg Vorbis 
-			filter. <a target=_blank href="http://www.vorbis.com">http://www.vorbis.com</a>.
+			plugin for Windows Media Player. You may find them here <a target=_blank href="http://www.vorbis.com">www.vorbis.com</a> or
+			<a target=_blank href="http://www.illiminable.com/ogg">illiminable.com/ogg</a>. 
 			Just download and install it and Muzikbrowzer will
-			be able to play ogg files.  </ul>
+			be able to play ogg files.  <i>Note: Muzikbrowzer uses Windows Media Player to play audio files. If WMP plays it, Muzikbrowzer will.</i>
+			</ul>
 
 
 
@@ -200,7 +217,7 @@
 			</td>
 		</tr>
 		</table>
-		 <P align=center><FONT size=1>Copyright 2002-2006 Pecan Ventures LLC - All rights reserved.
+		 <P align=center><FONT size=1>Copyright Pecan Ventures LLC - All rights reserved.
 		              </FONT></P>
     </body>
 </html>

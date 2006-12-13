@@ -7,10 +7,6 @@
 // ConfigIrman.h : header file
 //
 
-//class CPlayerDlg;
-//class Irman;
-#include "irman.h"
-
 /////////////////////////////////////////////////////////////////////////////
 // CConfigIrman dialog
 
@@ -116,6 +112,8 @@ protected:
 	afx_msg void OnIrnone();
 	afx_msg void OnIrhelpbutton();
 	afx_msg void OnSetfocusIrdelay();
+	afx_msg void OnSelchangeIrtype();
+	afx_msg void OnChangeIrdelay();
 	//}}AFX_MSG
 	afx_msg void OnRecordButton(UINT nID );
 	afx_msg LRESULT OnSerialMsg (WPARAM wParam, LPARAM lParam);
@@ -124,10 +122,12 @@ protected:
 	int HandleIRMessage(int key);
 
 private:
-	bool m_irrecording;
-	bool m_irtesting;
+	BOOL m_irrecording;
+	BOOL m_irtesting;
 	int m_lastkey;
 	int m_keycount;
+	BOOL m_NeedInit;
+	CString m_ComPort;
 };
 
 //{{AFX_INSERT_LOCATION}}

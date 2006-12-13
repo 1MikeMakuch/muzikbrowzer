@@ -266,7 +266,7 @@ insertSort(CStringList &list, const CString &string) {
         list.AddTail(string);
         return;
     }
-    bool inserted = false;
+    BOOL inserted = false;
     for (pos = list.GetHeadPosition(); pos != NULL; ) {
         CString lstring = list.GetAt(pos);
 

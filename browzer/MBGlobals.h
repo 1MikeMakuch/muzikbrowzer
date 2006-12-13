@@ -12,6 +12,8 @@
 
 #define MUZIKBROWZER "Muzikbrowzer"
 #define MBREGKEYIRMAN "Software\\Muzikbrowzer\\Irman"
+#define MBREGKEYUSBUIRT "Software\\Muzikbrowzer\\UsbUirt"
+#define MBREGKEYTIRA "Software\\Muzikbrowzer\\Tira"
 #define MBREGKEY "Software\\Muzikbrowzer"
 #define MBREGKEYLAST "Software\\Muzikbrowzer\\PreviousValues"
 

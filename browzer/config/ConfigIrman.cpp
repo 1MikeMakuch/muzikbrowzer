@@ -3,12 +3,13 @@
 
 #include "stdafx.h"
 
-#include "irman.h"
+#include "RemoteReceiver.h"
 #include "IRCodes.h"
 #include "ConfigIrman.h"
 #include "Registry.h"
 #include "MyString.h"
 #include "MBMessageBox.h"
+#include "MyLog.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -173,9 +174,9 @@ BEGIN_MESSAGE_MAP(CConfigIrman, CPropertyPage)
 	ON_BN_CLICKED(IDC_IRCOM7, OnIrcom7)
 	ON_BN_CLICKED(IDC_IRCOM8, OnIrcom8)
 	ON_EN_KILLFOCUS(IDC_IRDELAY, OnKillfocusIrdelay)
-	ON_BN_CLICKED(IDC_IRNONE, OnIrnone)
 	ON_BN_CLICKED(IDC_IRHELPBUTTON, OnIrhelpbutton)
-	ON_EN_SETFOCUS(IDC_IRDELAY, OnSetfocusIrdelay)
+	ON_LBN_SELCHANGE(IDC_IRTYPE, OnSelchangeIrtype)
+	ON_EN_CHANGE(IDC_IRDELAY, OnChangeIrdelay)
 	//}}AFX_MSG_MAP
 	ON_COMMAND_RANGE(IDC_IRRECORD_FIRST, IDC_IRRECORD_LAST, OnRecordButton)
 //    ON_MESSAGE(IR_MESSAGE, OnIRMessage)
@@ -190,35 +191,40 @@ END_MESSAGE_MAP()
 BOOL CConfigIrman::OnInitDialog() 
 {
 	CPropertyPage::OnInitDialog();
-	
-	irman().init(RegKeyIrman, IR_MESSAGE_NUMBER_OF, this);
-	
-	TCHAR * port = irman().comPort();
-	
-	CheckRadioButton( IDC_IRNONE, IDC_IRCOM8, IDC_IRNONE );
-    if( _tcslen( port ) == 4 && port[ 3 ] >= _T('1') &&
-		port[ 3 ] <= _T('8') ) {
-        CheckRadioButton( IDC_IRNONE, IDC_IRCOM8, 
-			IDC_IRCOM1 + port[ 3 ] - _T('1') );
-		OnIrinitialize();
+	m_NeedInit = FALSE;
+
+	OnIrinitialize();
+
+	RemoteReceiver * rrcvr = RemoteReceiver::rrcvr();
+	if (rrcvr) {
+		CString tmp;
+		tmp = rrcvr->comPort();
+		if (tmp.GetLength()) m_ComPort = tmp;
+		m_delay = rrcvr->Delay();
+    
+		CWnd * button;
+		int button_idx;
+		CString desc;
+		AutoBuf buf(30);
+		for (button_idx = 0 ; button_idx < rrcvr->numOfKeys() ; button_idx++) {
+			button = GetDlgItem(IDC_IRRECORD_DESC_FIRST + button_idx);
+			buf.p[0] = 0;
+			rrcvr->getRemoteDesc(button_idx, buf.p);
+			if (strlen(buf.p))
+				button->SetWindowText(buf.p);
+		}
 	}
-    m_delay = irman().Delay();
+
+	CListBox * irtype = (CListBox*)GetDlgItem(IDC_IRTYPE);
+	irtype->AddString("None");
+	irtype->AddString("Irman");
+	irtype->AddString("USB-UIRT");
+	irtype->AddString("Tira");
+	irtype->SetCurSel(RemoteReceiver::m_MBIrType);
+
+
 	UpdateData(FALSE);
-
-	CWnd * button;
-	int button_idx;
-	CString desc;
-	AutoBuf buf(30);
-	for (button_idx = 0 ; button_idx < irman().numOfKeys() ; button_idx++) {
-		button = GetDlgItem(IDC_IRRECORD_DESC_FIRST + button_idx);
-		buf.p[0] = 0;
-		irman().getRemoteDesc(button_idx, buf.p);
-		if (strlen(buf.p))
-			button->SetWindowText(buf.p);
-	}
-
 	EnableDisableDialog();
-
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
@@ -226,44 +232,114 @@ BOOL CConfigIrman::OnInitDialog()
 
 BOOL CConfigIrman::EnableDisableDialog() 
 {
-	CWnd * button;
+	CWnd * button, * desc;
 	int button_idx;
-	for (button_idx = 0 ; button_idx < irman().numOfKeys() ; button_idx++) {
+	RemoteReceiver * rrcvr = RemoteReceiver::rrcvr();	
+	for (button_idx = 0 ; button_idx < (IDC_IRRECORD_LAST - IDC_IRRECORD_FIRST)+1  ; button_idx++) {
 		button = GetDlgItem(IDC_IRRECORD_FIRST + button_idx);
-		if (irman().ready() == TRUE && m_irrecording == TRUE) {
+		desc = GetDlgItem(IDC_IRRECORD_DESC_FIRST + button_idx);
+		if (RemoteReceiver::m_MBIrType != RemoteReceiver::MB_IR_NONE 
+				&& (rrcvr && rrcvr->ready() == TRUE) 
+				&& m_irrecording == TRUE) {
 			button->EnableWindow(TRUE);
+			desc->EnableWindow(TRUE);
 		} else {
 			button->EnableWindow(FALSE);
+			desc->EnableWindow(FALSE);
 		}
 		CWnd * button_status_w = 
-			GetDlgItem(IDC_IRRECORD_STATUS_FIRST + button_idx);
-		CString msg = irman().code(button_idx);
-		if (msg == "000000000000") {
-			msg = "undefined";
+		GetDlgItem(IDC_IRRECORD_STATUS_FIRST + button_idx);
+		CString msg ;
+		if (rrcvr) {
+			msg = rrcvr->code(button_idx);
 		}
+		if (!msg.GetLength() || msg == "000000000000") {
+			//msg = "undefined";
+			msg = "";
+		} else 
+			msg = "Learned";
+
 		button_status_w->SetWindowText(msg);
 	}
 	UpdateData(TRUE);
 
 	button = GetDlgItem(IDC_IRRECORD);
-	if (irman().ready() == TRUE) {
+	if (!m_NeedInit && rrcvr && rrcvr->ready() == TRUE) {
 		button->EnableWindow(TRUE);
 		button = GetDlgItem(IDC_IRTEST);
 		button->EnableWindow(TRUE);
 		m_IRComPortStatus = "Ok";
+		GetDlgItem(IDC_IRDELAY)->EnableWindow(TRUE);
 		UpdateData(FALSE);
 	} else {
 		button->EnableWindow(FALSE);
 		button = GetDlgItem(IDC_IRTEST);
 		button->EnableWindow(FALSE);
+		GetDlgItem(IDC_IRDELAY)->EnableWindow(FALSE);
 	}
+	if (m_NeedInit)
+		m_IRComPortStatus = "Uninitialized";
+	if (RemoteReceiver::GetType() == RemoteReceiver::MB_IR_NONE)
+		m_IRComPortStatus = "";
+
 	button = GetDlgItem(IDC_IRINITIALIZE);
-	if (irman().portSet()) {
+	
+	if (RemoteReceiver::GetType() != RemoteReceiver::MB_IR_NONE
+			&& (m_NeedInit || (rrcvr && rrcvr->portSet()))) {
 		button->EnableWindow(TRUE);
 	} else {
 		button->EnableWindow(FALSE);
 	}
+
+	if (rrcvr) {
+		CString tmp;
+		tmp = rrcvr->comPort();
+		if (tmp.GetLength()) m_ComPort =tmp;
+	}
 	
+	CheckRadioButton( IDC_IRNONE, IDC_IRCOM8, IDC_IRNONE );
+    if( _tcslen( m_ComPort ) == 4 && m_ComPort[ 3 ] >= _T('1') &&
+		m_ComPort[ 3 ] <= _T('8') ) {
+        CheckRadioButton( IDC_IRNONE, IDC_IRCOM8, 
+			IDC_IRCOM1 + m_ComPort[ 3 ] - _T('1') );
+	}
+
+	if (RemoteReceiver::m_MBIrType == RemoteReceiver::MB_IR_IRMAN) {
+		GetDlgItem(IDC_IRMAN_SETUP)->ShowWindow(SW_NORMAL);
+//		GetDlgItem(IDC_IRNONE)->ShowWindow(SW_NORMAL);
+		GetDlgItem(IDC_IRCOM1)->ShowWindow(SW_NORMAL);
+		GetDlgItem(IDC_IRCOM2)->ShowWindow(SW_NORMAL);
+		GetDlgItem(IDC_IRCOM3)->ShowWindow(SW_NORMAL);
+		GetDlgItem(IDC_IRCOM4)->ShowWindow(SW_NORMAL);
+		GetDlgItem(IDC_IRCOM5)->ShowWindow(SW_NORMAL);
+		GetDlgItem(IDC_IRCOM6)->ShowWindow(SW_NORMAL);
+		GetDlgItem(IDC_IRCOM7)->ShowWindow(SW_NORMAL);
+		GetDlgItem(IDC_IRCOM8)->ShowWindow(SW_NORMAL);
+//		GetDlgItem(IDC_IRINITIALIZE)->ShowWindow(SW_NORMAL);
+//		GetDlgItem(IDC_IRCOMPORT_STATUS)->ShowWindow(SW_NORMAL);
+	} else {
+		GetDlgItem(IDC_IRMAN_SETUP)->ShowWindow(SW_HIDE);
+//		GetDlgItem(IDC_IRNONE)->ShowWindow(SW_HIDE);
+		GetDlgItem(IDC_IRCOM1)->ShowWindow(SW_HIDE);
+		GetDlgItem(IDC_IRCOM2)->ShowWindow(SW_HIDE);
+		GetDlgItem(IDC_IRCOM3)->ShowWindow(SW_HIDE);
+		GetDlgItem(IDC_IRCOM4)->ShowWindow(SW_HIDE);
+		GetDlgItem(IDC_IRCOM5)->ShowWindow(SW_HIDE);
+		GetDlgItem(IDC_IRCOM6)->ShowWindow(SW_HIDE);
+		GetDlgItem(IDC_IRCOM7)->ShowWindow(SW_HIDE);
+		GetDlgItem(IDC_IRCOM8)->ShowWindow(SW_HIDE);
+//		GetDlgItem(IDC_IRINITIALIZE)->ShowWindow(SW_HIDE);
+//		GetDlgItem(IDC_IRCOMPORT_STATUS)->ShowWindow(SW_HIDE);
+
+	}
+	if (m_irtesting) {
+		GetDlgItem(IDC_IR_READ_TEST_LABEL)->ShowWindow(SW_NORMAL);
+		GetDlgItem(IDC_IRTEST_STATUS)->ShowWindow(SW_NORMAL);
+	} else {
+		GetDlgItem(IDC_IR_READ_TEST_LABEL)->ShowWindow(SW_HIDE);
+		GetDlgItem(IDC_IRTEST_STATUS)->ShowWindow(SW_HIDE);
+	}
+	UpdateData(FALSE);	
 	return TRUE;
 }
 
@@ -274,19 +350,9 @@ void CConfigIrman::OnRecordButton(UINT nID )
 
 	if (m_irrecording) {
 		button_status_w->SetWindowText("reading...");
-		irman().SetKey(button);
-
-		//		int key;
-		//		CTime timer = CTime::GetCurrentTime();
-		//		while ((key = irman().Key()) == -1
-		//			&& (CTime::GetCurrentTime() - timer) < 10) {;}
-		//		if (key == button) {
-		//			// success
-		//			CString msg = irman().code(button);
-		//			button_status_w->SetWindowText(msg);
-		//		} else {
-		//			button_status_w->SetWindowText("error");
-		//		}
+		RemoteReceiver * rrcvr = RemoteReceiver::rrcvr();	
+		if (rrcvr)
+			rrcvr->SetKey(button);
 	}
 	SetModified(TRUE);
 }
@@ -295,8 +361,8 @@ void CConfigIrman::OnIrrecord()
 {
 	m_irrecording = TRUE;
 	m_irtesting = FALSE;
-//    IRReaderStart();
-	irman().Open();
+//	RemoteReceiver * rrcvr = RemoteReceiver::rrcvr();	
+//	rrcvr->Open();
 	EnableDisableDialog();
 	SetModified(TRUE);
 }
@@ -306,7 +372,11 @@ void CConfigIrman::OnIrtest()
 	m_irtesting = TRUE;
 	m_irrecording = FALSE;
 //    IRReaderStart();
-	irman().Open();
+//	RemoteReceiver * rrcvr = RemoteReceiver::rrcvr();	
+//	rrcvr->Open();
+	UpdateData(TRUE);
+	RemoteReceiver * rrcvr = RemoteReceiver::rrcvr();	
+	if (rrcvr) rrcvr->Delay(m_delay);
 	EnableDisableDialog();
 	SetModified(TRUE);
 }
@@ -315,42 +385,34 @@ void CConfigIrman::OnIrtest()
 void CConfigIrman::OnIrinitialize() 
 {
     m_IRComPortStatus = "Uninitialized";
-//	if (irman().ready() == TRUE) {
-		irman().Close();
-		EnableDisableDialog();	
-//	}
+
+	RemoteReceiver * rrcvr = RemoteReceiver::reset(this, MB_SERIAL_MESSAGE);
+
 	m_irrecording = FALSE;
 	m_irtesting = FALSE;
+
 	CButton * button;
 	button = (CButton*)GetDlgItem(IDC_IRRECORD);
 	button->SetCheck(0);
 	button = (CButton*)GetDlgItem(IDC_IRTEST);
 	button->SetCheck(0);
-	if (irman().portSet() == 0) {
-		// Port not set!
+
+	if (NULL == rrcvr) {
+		MBMessageBox("Remote Receiver Error","unable to initialize Remote Receiver.\r\nCheck muzikbrowzer.log for details.",TRUE,FALSE);
 		return;
 	}
-	bool o = irman().Open();
-	if (!o) {
-		// unable to open or initialize irman
-
-	    const TCHAR * error = _T( "Irman" );
-        ::MessageBox( NULL, _T( "unable to initialize Irman" ), error,
-                   MB_ICONEXCLAMATION | MB_OK );
-
-		return;
-	}
+	m_NeedInit = FALSE;
 	GetDlgItem(IDC_IRTEST_STATUS)->SetWindowText("");
 	m_keycount = 0;
-//	m_IRComPortStatus = "Ok";
 	UpdateData(FALSE);
 	EnableDisableDialog();
 	SetModified(TRUE);
 }
 void CConfigIrman::OnIrnone() 
 {
-	irman().Port("");
-	m_IRComPortStatus = "Uninitialized";
+	RemoteReceiver * rrcvr = RemoteReceiver::rrcvr();	
+	if (rrcvr) rrcvr->Port("");
+	m_IRComPortStatus = "";
 	UpdateData(FALSE);
 	EnableDisableDialog();	
 	SetModified(TRUE);
@@ -358,7 +420,8 @@ void CConfigIrman::OnIrnone()
 
 void CConfigIrman::OnIrcom1() 
 {
-	irman().Port("COM1");
+	RemoteReceiver * rrcvr = RemoteReceiver::rrcvr();	
+	if (rrcvr) rrcvr->Port("COM1");
 	m_IRComPortStatus = "Uninitialized";
 	UpdateData(FALSE);
 	EnableDisableDialog();
@@ -366,7 +429,8 @@ void CConfigIrman::OnIrcom1()
 }
 void CConfigIrman::OnIrcom2() 
 {
-	irman().Port("COM2");
+	RemoteReceiver * rrcvr = RemoteReceiver::rrcvr();	
+	if (rrcvr) rrcvr->Port("COM2");
 	m_IRComPortStatus = "Uninitialized";
 	UpdateData(FALSE);	
 	EnableDisableDialog();
@@ -375,7 +439,8 @@ void CConfigIrman::OnIrcom2()
 
 void CConfigIrman::OnIrcom3() 
 {
-	irman().Port("COM3");
+	RemoteReceiver * rrcvr = RemoteReceiver::rrcvr();	
+	if (rrcvr) rrcvr->Port("COM3");
 	m_IRComPortStatus = "Uninitialized";
 	UpdateData(FALSE);
 	EnableDisableDialog();
@@ -384,7 +449,8 @@ void CConfigIrman::OnIrcom3()
 
 void CConfigIrman::OnIrcom4() 
 {
-	irman().Port("COM4");
+	RemoteReceiver * rrcvr = RemoteReceiver::rrcvr();	
+	if (rrcvr) rrcvr->Port("COM4");
 	m_IRComPortStatus = "Uninitialized";
 	UpdateData(FALSE);	
 	EnableDisableDialog();
@@ -393,7 +459,8 @@ void CConfigIrman::OnIrcom4()
 
 void CConfigIrman::OnIrcom5() 
 {
-	irman().Port("COM5");
+	RemoteReceiver * rrcvr = RemoteReceiver::rrcvr();	
+	if (rrcvr) rrcvr->Port("COM5");
 	m_IRComPortStatus = "Uninitialized";
 	UpdateData(FALSE);	
 	EnableDisableDialog();
@@ -402,7 +469,8 @@ void CConfigIrman::OnIrcom5()
 
 void CConfigIrman::OnIrcom6() 
 {
-	irman().Port("COM6");
+	RemoteReceiver * rrcvr = RemoteReceiver::rrcvr();	
+	if (rrcvr) rrcvr->Port("COM6");
 	m_IRComPortStatus = "Uninitialized";
 	UpdateData(FALSE);	
 	EnableDisableDialog();
@@ -411,7 +479,8 @@ void CConfigIrman::OnIrcom6()
 
 void CConfigIrman::OnIrcom7() 
 {
-	irman().Port("COM7");
+	RemoteReceiver * rrcvr = RemoteReceiver::rrcvr();	
+	if (rrcvr) rrcvr->Port("COM7");
 	m_IRComPortStatus = "Uninitialized";
 	UpdateData(FALSE);	
 	EnableDisableDialog();
@@ -420,7 +489,8 @@ void CConfigIrman::OnIrcom7()
 
 void CConfigIrman::OnIrcom8() 
 {
-	irman().Port("COM8");
+	RemoteReceiver * rrcvr = RemoteReceiver::rrcvr();	
+	if (rrcvr) rrcvr->Port("COM8");
 	m_IRComPortStatus = "Uninitialized";
 	UpdateData(FALSE);	
 	EnableDisableDialog();
@@ -430,7 +500,8 @@ void CConfigIrman::OnIrcom8()
 void CConfigIrman::OnKillfocusIrdelay() 
 {
 	UpdateData(TRUE);
-	irman().Delay(m_delay);
+	RemoteReceiver * rrcvr = RemoteReceiver::rrcvr();	
+	if (rrcvr) rrcvr->Delay(m_delay);
 	SetModified(TRUE);
 }
 
@@ -440,7 +511,8 @@ CConfigIrman::HandleIRMessage(int key) {
 	if (!m_irtesting) {
 		return 0;
 	}
-	if (0 <= key && key < irman().numOfKeys()) {
+	RemoteReceiver * rrcvr = RemoteReceiver::rrcvr();	
+	if (rrcvr && 0 <= key && key < rrcvr->numOfKeys()) {
 		CWnd * functionButton = GetDlgItem(IDC_IRRECORD_FIRST + key);
 		if (key == m_lastkey) {
 			m_keycount++;
@@ -463,8 +535,9 @@ afx_msg LRESULT
 CConfigIrman::OnSerialMsg (WPARAM wParam, LPARAM lParam) {
 	int key;
 	BOOL more = TRUE;
-	while (more) {
-		more = irman().HandleSerialMsg(wParam, lParam, key);
+	RemoteReceiver * rrcvr = RemoteReceiver::rrcvr();	
+	while (rrcvr && more) {
+		more = rrcvr->HandleSerialMsg(wParam, lParam, key);
 		HandleIRMessage(key);
 	}
 	EnableDisableDialog();
@@ -477,26 +550,30 @@ void CConfigIrman::OnOK()
 	CWnd * button;
 	int button_idx;
 	CString desc;
-	for (button_idx = 0 ; button_idx < irman().numOfKeys() ; button_idx++) {
-		button = GetDlgItem(IDC_IRRECORD_DESC_FIRST + button_idx);
- 		button->GetWindowText(desc);
-		if (desc.GetLength()) {
-			irman().setRemoteDesc(button_idx, (const char*)desc);
-		}
+	RemoteReceiver * rrcvr = RemoteReceiver::rrcvr();	
+	if (rrcvr) {
+		for (button_idx = 0 ; button_idx < rrcvr->numOfKeys() ; button_idx++) {
+			button = GetDlgItem(IDC_IRRECORD_DESC_FIRST + button_idx);
+ 			button->GetWindowText(desc);
+			if (desc.GetLength()) {
+				rrcvr->setRemoteDesc(button_idx, (const char*)desc);
+			}
 
-		button = GetDlgItem(IDC_IRRECORD_FIRST + button_idx);
- 		button->GetWindowText(desc);
-		if (desc.GetLength()) {
-			irman().setKeyDesc(button_idx, (const char*)desc);
+			button = GetDlgItem(IDC_IRRECORD_FIRST + button_idx);
+ 			button->GetWindowText(desc);
+			if (desc.GetLength()) {
+				rrcvr->setKeyDesc(button_idx, (const char*)desc);
+			}
 		}
+		rrcvr->SaveKeys();
 	}
-	irman().SaveKeys();
 	m_irtesting = FALSE;
 	SetModified(FALSE);
 	CPropertyPage::OnOK();
 }
 BOOL CConfigIrman::OnApply() 
 {
+	OnOK();
 	return CPropertyPage::OnApply();
 }
 
@@ -548,4 +625,50 @@ void CConfigIrman::OnSetfocusIrdelay()
 {
 	OnIrinitialize() ;
 	
+}
+
+void CConfigIrman::OnSelchangeIrtype() 
+{
+	m_NeedInit = TRUE;
+	m_IRComPortStatus = "";
+	CListBox * irtype = (CListBox*)GetDlgItem(IDC_IRTYPE);
+	int sel = irtype->GetCurSel();
+	CString type;
+	irtype->GetText(sel, type);
+	logger.logd("irtype:"+type);	
+
+	if ("Irman" == type) {
+		RemoteReceiver::SetType(RemoteReceiver::MB_IR_IRMAN);
+		RegistryKey reg( HKEY_LOCAL_MACHINE, RegKeyIrman );
+		m_ComPort = reg.ReadCString("Port","");
+		m_delay = (unsigned long)reg.Read("InterKeyDelay",0);
+	} else if ("USB-UIRT" == type) {
+		RemoteReceiver::SetType(RemoteReceiver::MB_IR_USBUIRT);
+		RegistryKey reg( HKEY_LOCAL_MACHINE, RegKeyUsbUirt );
+		m_delay = (unsigned long)reg.Read("InterKeyDelay",0);
+	} else if ("Tira" == type) {
+		RemoteReceiver::SetType(RemoteReceiver::MB_IR_TIRA);
+		RegistryKey reg( HKEY_LOCAL_MACHINE, RegKeyTira );
+		m_delay = (unsigned long)reg.Read("InterKeyDelay",0);
+	} else { // "None"
+		RemoteReceiver::SetType(RemoteReceiver::MB_IR_NONE);
+		m_IRComPortStatus = "";
+	}
+	UpdateData(FALSE);
+	if (RemoteReceiver::GetType() == RemoteReceiver::MB_IR_NONE) {
+		RemoteReceiver::reset(this,MB_SERIAL_MESSAGE);
+	}
+	EnableDisableDialog();
+	SetModified(TRUE);
+}
+
+
+
+
+
+void CConfigIrman::OnChangeIrdelay() 
+{
+	UpdateData(TRUE);
+	RemoteReceiver * rrcvr = RemoteReceiver::rrcvr();	
+	if (rrcvr) rrcvr->Delay(m_delay);
 }

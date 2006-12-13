@@ -1,267 +1,267 @@
 // usb-uirt interface
 
 #include "StdAfx.h"
-#include "irman_common.h"
-#define THE_IRMAN
-#include "irman.h"
+#include "UsbUirt.h"
+
 #include "Registry.h"
-#include <io.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 #include "MyLog.h"
 #include "MBMessageBox.h"
 #include "MyString.h"
 #include "Misc.h"
 #include "TestHarness/TestHarness.h"
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
 #endif
 
-class USBUIRT : public RemoteReceiver
+static UsbUirt * p2usbuirt = NULL;
+
+//////////////////////////////////////////////////////////////////////////////
+// Begin usbuirt sample code
+//////////////////////////////////////////////////////////////////////////////
+//HINSTANCE		hinstLib = NULL; 
+
+// Driver handle for UUIRT device
+//HUUHANDLE		hDrvHandle;
+
+//unsigned int	drvVersion;
+
+// Globals to hold last-learned IR-Code and its format...
+char	gIRCode[2048] = "0000 0071 0000 0032 0080 0040 0010 0010 0010 0030 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0030 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0030 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0030 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0030 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0010 0030 0010 0aad";
+int		gIRCodeFormat = UUIRTDRV_IRFMT_PRONTO;
+
+// Globals used during Learning...
+char	gLearnBuffer[2048];
+int		gLearnFormat;
+
+// UUIRT .dll funtion pointers. These will be assigned when calling LoadDLL()
+pfn_UUIRTOpen				fnUUIRTOpen;
+pfn_UUIRTClose				fnUUIRTClose;
+pfn_UUIRTGetDrvInfo			fn_UUIRTGetDrvInfo;
+pfn_UUIRTGetUUIRTInfo		fn_UUIRTGetUUIRTInfo;
+pfn_UUIRTGetUUIRTConfig		fn_UUIRTGetUUIRTConfig;
+pfn_UUIRTSetUUIRTConfig		fn_UUIRTSetUUIRTConfig;
+pfn_UUIRTSetReceiveCallback	fn_UUIRTSetReceiveCallback;
+pfn_UUIRTTransmitIR			fn_UUIRTTransmitIR;
+pfn_UUIRTLearnIR			fn_UUIRTLearnIR;
+
+/*****************************************************************************/
+/* unLoadDLL: Disconnects from .DLL and unloads it from memory				 */
+/*																			 */
+/* returns: none															 */
+/*																			 */
+/*****************************************************************************/
+void 
+UsbUirt::unLoadDLL(void)
 {
-public:
-	USBUIRT() {
-		OutputDebugString("USBUIRT::USBUIRT\r\n");
+
+	BOOL r;
+	if (m_hinstLib) {
+		r = FreeLibrary(m_hinstLib);
+		if (r) {
+			logger.logd("UsbUirt::unLoadDLL succeeded");
+		} else {
+			logger.log("UsbUirt::unLoadDLL failed");
+			DWORD err;
+			err = GetLastError();
+			logger.log(MBFormatError(err));
+		}
 	}
-	~USBUIRT()
-	{
-		OutputDebugString("USBUIRT::~USBUIRT\r\n");
-	}
-	BOOL Open() {return FALSE; }
-	void Close() { ; }
-	BOOL init(CWnd * wnd, const TCHAR * regKey=0, int numKeys=0) {
-		OutputDebugString("USBUIRT::init\r\n");
-		//RemoteReceiver::init(cwnd);
+	m_hinstLib = NULL;
+}
+
+/*****************************************************************************/
+/* loadDLL: Establish contact with the UUIRTDRV dll and assign function      */
+/*			entry points													 */
+/*																			 */
+/* returns: TRUE on success, FALSE on failure								 */
+/*																			 */
+/*****************************************************************************/
+BOOL 
+UsbUirt::loadDLL(void)
+{
+    // Get a handle to the DLL module.
+	//unLoadDLL();
+ 
+    m_hinstLib = LoadLibrary("uuirtdrv"); 
+ 
+    // If the handle is valid, try to get the function address.
+ 
+    if (m_hinstLib != NULL) 
+    { 
+        fnUUIRTOpen = (pfn_UUIRTOpen) GetProcAddress(m_hinstLib, "UUIRTOpen");
+        fnUUIRTClose = (pfn_UUIRTClose) GetProcAddress(m_hinstLib, "UUIRTClose");
+		fn_UUIRTGetDrvInfo  = (pfn_UUIRTGetDrvInfo) GetProcAddress(m_hinstLib, "UUIRTGetDrvInfo");
+		fn_UUIRTGetUUIRTInfo = (pfn_UUIRTGetUUIRTInfo) GetProcAddress(m_hinstLib, "UUIRTGetUUIRTInfo");
+		fn_UUIRTGetUUIRTConfig = (pfn_UUIRTGetUUIRTConfig) GetProcAddress(m_hinstLib, "UUIRTGetUUIRTConfig");
+		fn_UUIRTSetUUIRTConfig = (pfn_UUIRTSetUUIRTConfig) GetProcAddress(m_hinstLib, "UUIRTSetUUIRTConfig");
+		fn_UUIRTSetReceiveCallback = (pfn_UUIRTSetReceiveCallback) GetProcAddress(m_hinstLib, "UUIRTSetReceiveCallback");
+		fn_UUIRTTransmitIR = (pfn_UUIRTTransmitIR) GetProcAddress(m_hinstLib, "UUIRTTransmitIR");
+		fn_UUIRTLearnIR = (pfn_UUIRTLearnIR) GetProcAddress(m_hinstLib, "UUIRTLearnIR");
+
+		if (!fnUUIRTOpen || 
+			!fnUUIRTClose || 
+			!fn_UUIRTGetDrvInfo || 
+			!fn_UUIRTGetUUIRTInfo || 
+			!fn_UUIRTGetUUIRTConfig || 
+			!fn_UUIRTSetUUIRTConfig || 
+			!fn_UUIRTSetReceiveCallback || 
+			!fn_UUIRTTransmitIR || 
+			!fn_UUIRTLearnIR)
+		{
+			unLoadDLL();
+			return FALSE;
+		}
+
 		return TRUE;
 	}
-};
+	return FALSE;
+}
+
+/*****************************************************************************/
+/* IRReceiveCallback: Receive IR Callback Procedure						     */
+/*																			 */
+/* This procedure is called by the UUIRT .dll whenever an IRcode is received */
+/* The IRcode is passed to the callback in UIR format.						 */
+/*																			 */
+/*****************************************************************************/
+void WINAPI IRReceiveCallback (char *IREventStr, void *userData) {
+	p2usbuirt->IRReceiveCallback(IREventStr, userData);
+}
+//////////////////////////////////////////////////////////////////////////////
+// End usbuirt sample code
+//////////////////////////////////////////////////////////////////////////////
 
 
+UsbUirt::UsbUirt():m_hinstLib(NULL), m_hDrvHandle(NULL), m_drvVersion(0)
+	,m_OKreceived(FALSE)
+{
+	p2usbuirt = this;
+	m_codelength = 12;
 
-
-
-UsbUirt::UsbUirt()
-{}
+}
 UsbUirt::~UsbUirt( ) {
-
-    // Close everything down, and write back to the registry
     Close( );
-    delete[] m_keyCodes;
-
 }
 BOOL
-UsbUirt::init(CWnd * wmdMsgHndlr, const TCHAR * /*regKey*/, int /*numKeys*/) {
-	m_bPortReady = FALSE ;
-	m_portSet = FALSE;
-	m_ready = FALSE;
-	m_sComPort = "";
+UsbUirt::init(CWnd * wmdMsgHndlr, UINT wmsg, const TCHAR * /*regKey*/, int /*numKeys*/) {
+	m_portSet = TRUE;
 	m_regKey = RegKeyUsbUirt;
+	logger.logd("UsbUirt::init");
 
-	return RemoteReceiver::init(wmdMsgHndlr, m_regKey, IR_MESSAGE_NUMBER_OF);
+	return RemoteReceiver::init(wmdMsgHndlr,wmsg, m_regKey, IR_MESSAGE_NUMBER_OF);
 }
 BOOL UsbUirt::Open( ) {
+	logger.logd("UsbUirt::Open");
 	if (ready())
 		return TRUE;
 
-    if (!m_sComPort.GetLength()) {
-        return false;
-    }
-    const TCHAR * error = _T( "Error opening device" );
-
-	CSerialMFC::EPort e = CSerialMFC::CheckPort(m_sComPort);
-	if (e != CSerialMFC::EPortAvailable) {
-		CString msg;
-		msg << m_sComPort << " " << m_serial.EPortError(e);
-		MBMessageBox("serial i/o error", msg);
-		return false;
-	}
-	
-	LONG o = m_serial.Open(m_sComPort, m_wndMsgHndlr, MB_SERIAL_MESSAGE );
-	if (o != ERROR_SUCCESS) {
-		CString msg;
-		msg << "unable to open " << m_sComPort << " error ["
-			<< o << "] " << MBFormatError(o);
-		MBMessageBox("serial i/o error", msg);
-		return false;
-	}
-	
-	o = m_serial.Setup(CSerial::EBaud9600,CSerial::EData8,
-		CSerial::EParNone,CSerial::EStop1);
-	if (o != ERROR_SUCCESS) {
-		CString msg;
-		msg << "unable to Setup " << m_sComPort << " error ["
-			<< o << "] " << MBFormatError(o);
-		MBMessageBox("serial i/o error", msg);
-		return false;
-	}
-
-	o = m_serial.SetupHandshaking(CSerial::EHandshakeOff);
-	if (o != ERROR_SUCCESS) {
-		CString msg;
-		msg << "unable to Setup HandshakeOff " << m_sComPort << " error ["
-			<< o << "] " << MBFormatError(o);
-		MBMessageBox("serial i/o error", msg);
-		return false;
-	}
-	o = m_serial.SetupReadTimeouts(CSerial::EReadTimeoutNonblocking);
-	if (o != ERROR_SUCCESS) {
-		CString msg;
-		msg << "unable to Setup TimeoutNonblocking" << m_sComPort << " error ["
-			<< o << "] " << MBFormatError(o);
-		MBMessageBox("serial i/o error", msg);
-		return false;
-	}
-	
-	if (PowerOff( ) == FALSE)
+	if (!loadDLL()) {
+		MBMessageBox("Error", "Unable to load USB-UIRT drivers.",TRUE,FALSE);
+		Close();
 		return FALSE;
-	Sleep( 200 );
-	if (PowerOn( ) == FALSE)
+	} else 
+		logger.logd("UsbUirt::Open dll loaded");
+
+	if (!fn_UUIRTGetDrvInfo(&m_drvVersion)) {
+		MBMessageBox("Error", "Unable to retrieve version from USB-UIRT driver.",TRUE,FALSE);
+		Close();
 		return FALSE;
+	} else 
+		logger.logd("UsbUirt::Open got version");
 
-	Sleep( 100 );	// Time for the output to settle
-	Flush( );		// Remove power up garbage
+	if (m_drvVersion != 0x0100) {
+		MBMessageBox("Error", "USB-UIRT invalid version",TRUE,FALSE);
+		Close();
+		return FALSE;
+	} else 
+		logger.logd("UsbUirt::Open good version");
+
+	m_hDrvHandle = fnUUIRTOpen();
+	if (m_hDrvHandle == INVALID_HANDLE_VALUE)
+	{
+		DWORD err;
+		err = GetLastError();
+		if (err == UUIRTDRV_ERR_NO_DLL)
+		{
+			MBMessageBox("Error", "Unable to find USB-UIRT Driver. Please make sure driver is Installed!",TRUE,FALSE);
+		}
+		else if (err == UUIRTDRV_ERR_NO_DEVICE)
+		{
+			MBMessageBox("Error", "Unable to connect to USB-UIRT device!  Please ensure device is connected to the computer!",TRUE,FALSE);
+		}
+		else if (err == UUIRTDRV_ERR_NO_RESP)
+		{
+			MBMessageBox("Error", "Unable to communicate with USB-UIRT device!  Please check connections and try again.  If you still have problems, try unplugging and reconnecting your USB-UIRT.  If problem persists, contact Technical Support!",TRUE,FALSE);
+		}
+		else if (err == UUIRTDRV_ERR_VERSION)
+		{
+			MBMessageBox("Error", "Your USB-UIRT's firmware is not compatible with this API DLL. Please verify you are running the latest API DLL and that you're using the latest version of USB-UIRT firmware!  If problem persists, contact Technical Support!",TRUE,FALSE);
+		}
+		else
+		{
+			MBMessageBox("Error", "Unable to initialize USB-UIRT (unknown error)!\n",TRUE,FALSE);
+		}
+
+		unLoadDLL();
+		return FALSE;
+	} else 
+		logger.logd("UsbUirt::Open fnUUirtOPen succeeded");
 	
-	m_serial.Write("I"); // These strings must be ASCII, not Unicode
-	Sleep( 2 );			 // Need to have >500us between the 'I' & the 'R'
-	m_serial.Write("R");
-	m_OKreceived = 0;
+	ready(TRUE);
 
-	// Need to check that we receive "OK" back from UsbUirt
+
+	fn_UUIRTSetReceiveCallback(m_hDrvHandle, &::IRReceiveCallback, (void *)0xA5A5A5A5);		
+	m_OKreceived = TRUE;
 
 	return RemoteReceiver::Open();
 }
 void
 UsbUirt::Close( ) {
-	m_serial.Close();
+	if (ready()) {
+		fnUUIRTClose(m_hDrvHandle);
+	}
+	unLoadDLL();
 	ready(FALSE);
 }
+void WINAPI
+UsbUirt::IRReceiveCallback(char *IREventStr, void *userData) {
+	char buf[1000];
+	sprintf(buf,"UsbUirt Code = %s, UserData = %08x!!!", IREventStr, 
+		(UINT32)userData);
+	logger.logd(buf);
+
+	int returnCode = -1;
+	DWORD tick = 0;
+	int code = -1;
+
+	KeyCode key;
+
+	if (IREventStr && strlen(IREventStr) && strlen(IREventStr) <= m_codelength) {
+		//memcpy(key.m_code,IREventStr,m_codelength);
+		strcpy((char*)key.m_code,IREventStr);
+		code = lookup(key);
+		tick = GetTickCount();
+		if ((-1 != code && -1 != m_lastcode 
+			&& m_lastcode != code)
+			|| (tick - m_lasttick) > m_interKeyDelay) {
+			returnCode = code;
+			m_lastcode = code;
+			m_lasttick = tick;
+		}
+
+		if (returnCode != -1) {
+			m_wndMsgHndlr->PostMessage(m_wmsg, returnCode, LPARAM(0));
+		}
+		logger.logd("delay " + numToString(m_interKeyDelay));
+	}
+}
+
 int
 UsbUirt::HandleSerialMsg(WPARAM wParam, LPARAM lParam, int & returnCode) {
 
-	BOOL more = FALSE;
-	returnCode = -1;
-	CString msg;
-
-	DWORD tick = 0;
-	int code = -1;
-	char buf[100];
-
-	DWORD bytesRead;
-	KeyCode key;
-
-	bytesRead = 0;
-	m_serial.Read(key.m_code, sizeof(key.m_code), &bytesRead);
-	if (bytesRead) {
-		unsigned int i; unsigned char ch;
-		CString received;
-		for (i = 0 ; i < bytesRead; ++i) {
-			ch = key.m_code[i];
-			sprintf(buf, "%02x ", ch);
-			received += buf;
-		}
-		if (bytesRead == IRMAN_CODE_LENGTH) {
-			code = lookup(key);
-		} else if (m_OKreceived == 0 && bytesRead == 2
-				&& key.m_code[0] == 'O' && key.m_code[1] == 'K') {
-			m_OKreceived = 1;
-			m_ready = TRUE;
-		}
-	}
-
-	tick = GetTickCount();
-	if ((-1 != code && -1 != m_lastcode 
-		&& m_lastcode != code)
-		|| (tick - m_lasttick) > m_interKeyDelay) {
-		returnCode = code;
-		m_lastcode = code;
-		m_lasttick = tick;
-	}
+	returnCode = wParam;
 	return 0;
 }
-
-void
-UsbUirt::Port( const CString comPort ) {
-
-    // Reopen the port if the name changed - I could have checked the new
-    // and old names and if they were the same, skip the reopen. However,
-    // this way, I can force a recover from a "stuck" I/O port...
-    Close( );
-	RemoteReceiver::Port(comPort);
-
-}
-
-// Power the UsbUirt device by twiddling the control lines
-BOOL
-UsbUirt::PowerOff( ) {
-	BOOL o = m_serial.EscapeCommFunction(CLRDTR);
-	if (o == FALSE) {
-		DWORD e = GetLastError();
-		CString msg;
-		msg << "unable to CLRDTR UsbUirt " << m_sComPort << " error ["
-			<< e << "] " << MBFormatError(e);
-		MBMessageBox("serial i/o error", msg);
-		return FALSE;
-	}
-	o = m_serial.EscapeCommFunction(CLRRTS);
-	if (o == FALSE) {
-		DWORD e = GetLastError();
-		CString msg;
-		msg << "unable to CLRRTS UsbUirt " << m_sComPort << " error ["
-			<< e << "] " << MBFormatError(e);
-		MBMessageBox("serial i/o error", msg);
-		return FALSE;
-	}
-	return TRUE;
-}
-
-BOOL
-UsbUirt::PowerOn( ) {
-
-	BOOL o = m_serial.EscapeCommFunction(SETDTR);
-	if (o == FALSE) {
-		DWORD e = GetLastError();
-		CString msg;
-		msg << "unable to SETDTR UsbUirt " << m_sComPort << " error ["
-			<< e << "] " << MBFormatError(e);
-		MBMessageBox("serial i/o error", msg);
-		return FALSE;
-	}
-	o = m_serial.EscapeCommFunction(SETRTS);
-	if (o == FALSE) {
-		DWORD e = GetLastError();
-		CString msg;
-		msg << "unable to SETRTS UsbUirt " << m_sComPort << " error ["
-			<< e << "] " << MBFormatError(e);
-		MBMessageBox("serial i/o error", msg);
-		return FALSE;
-	}
-	return TRUE;
-}
-
-// Throw away anything in the COM port buffers, and set the ignore time
-// to start from now.
-BOOL
-UsbUirt::Flush( ) {
-
-	LONG e = m_serial.Purge();
-	if (e != ERROR_SUCCESS) {
-		CString msg;
-		msg << "unable to PurgeComm " << m_sComPort << " error ["
-			<< e << "] " << MBFormatError(e);
-		MBMessageBox("serial i/o error", msg);
-		return false;
-	}
-//	m_keyTime = GetTickCount( );
-	return TRUE;
-}
-
-
-
-
-/////////////////////////////////////////////////////////////////////////
-
