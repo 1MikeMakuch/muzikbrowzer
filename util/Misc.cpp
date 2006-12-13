@@ -101,44 +101,6 @@ void CRectHeight(CRect & rect, int newheight) {
 	rect.bottom = rect.top + newheight;
 }
 
-//TEST(ConfigFileParser, ParseTest1)
-//{
-//	stack<PKVPAIR> kvstack;
-//	char * file = "..\\testdata\\ConfigFileParser.testdat";
-//	ConfigFileParser(file, &kvstack);
-//	AutoBuf buf(1000);
-//
-//	logger.ods("ConfigFileParserTest");
-//
-//	int i;
-//	AutoBuf keyb(1000);
-//	AutoBuf valb(1000);
-//	AutoBuf lbuf(1000);
-//	char * k,*v;
-//	int result;
-//	for (i = 10 ; i > 0 ; i--) {
-//		CHECK(kvstack.empty() == FALSE);
-//		sprintf(keyb.p,"key%d",i);
-//		sprintf(valb.p,"val%d",i);
-//		k = kvstack.top()->key;
-//		v = kvstack.top()->val;
-//		sprintf(lbuf.p,"[%s]=[%s]",k,v);
-//		logger.ods(lbuf.p);
-//		result = strcmp(keyb.p,k);
-//		if (0 != result) {
-//			CHECK(0 == result);
-//		}
-//		result = strcmp(valb.p,v);
-//		if (0 != result) {
-//			CHECK(0 == result);
-//		}
-//		free(k);free(v);
-//		kvstack.pop();
-//
-//	}
-//	CHECK(kvstack.empty() == TRUE);
-//}
-
 const char * val10 = "0	 !\"$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
 const char * val11 = "100 , 100 , 100";
 
@@ -166,6 +128,11 @@ TEST(ConfigFileParser2, ParseTest2)
 	AutoBuf valb(1000);
 	AutoBuf lbuf(1000);
 	int result;
+	
+	CHECK(kvstack.empty() != TRUE);
+	if (kvstack.empty())
+		return;
+
 	const char * k = kvstack.top().key();
 	const char * v = kvstack.top().val();
 

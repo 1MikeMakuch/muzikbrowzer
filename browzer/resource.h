@@ -459,6 +459,7 @@
 #define IDC_EXPORT_TMPL                 2071
 #define IDC_IRMAN_SETUP                 2072
 #define IDC_IR_READ_TEST_LABEL          2073
+#define IDC_ABOUT_COPYRIGHT             2074
 #define IDS_UNKNOWN_ERROR               5000
 #define IDC_BUTTON_LOGO                 12052
 #define ID_XXX                          32775
@@ -517,14 +518,16 @@
 #define ID__PLAYER_REVERSESKIP          32855
 #define ID_EXPORT_TAGS                  32856
 #define ID_OPEN_FILE_BUTTON             32857
+#define ID_ALPHA_UP                     32859
+#define ID_ALPHA_DOWN                   32860
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        273
-#define _APS_NEXT_COMMAND_VALUE         32859
-#define _APS_NEXT_CONTROL_VALUE         2074
+#define _APS_NEXT_COMMAND_VALUE         32861
+#define _APS_NEXT_CONTROL_VALUE         2075
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

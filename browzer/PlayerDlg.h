@@ -368,6 +368,8 @@ public:
 	afx_msg void      OnMenuButton();
 	afx_msg void      OnMenuCheckem();
 	afx_msg void      OnMenuClearplaylist();
+	afx_msg void      OnAlphaUp();
+	afx_msg void      OnAlphaDown();
 	afx_msg void      OnMenuEditPlaylist();
 	afx_msg void      OnMenuExit();
 	afx_msg void      OnMenuExportLibrary();

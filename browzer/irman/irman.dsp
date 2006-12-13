@@ -42,7 +42,7 @@ RSC=rc.exe
 # PROP Intermediate_Dir "Release"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /Yu"stdafx.h" /FD /c
-# ADD CPP /nologo /MT /W3 /GX /Zi /O2 /I "..\\" /I "..\..\\" /I "..\controls" /I "..\..\util" /I "..\irman" /I "..\..\id3lib-3.8.3\include" /I "..\id3utils" /I "..\Serial" /I "..\config" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D ID3LIB_LINKOPTION=1 /D "_WIN32_DCOM" /FR /FD /c
+# ADD CPP /nologo /MT /W3 /GX /Zi /O2 /I "..\\" /I "..\..\\" /I "..\controls" /I "..\..\util" /I "..\irman" /I "..\..\id3lib-3.8.3\include" /I "..\id3utils" /I "..\Serial" /I "..\config" /I "..\..\3rdparty\USBUIRT" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D ID3LIB_LINKOPTION=1 /D "_WIN32_DCOM" /FR /FD /c
 # SUBTRACT CPP /YX /Yc /Yu
 # ADD BASE RSC /l 0x409 /d "NDEBUG" /d "_AFXDLL"
 # ADD RSC /l 0x409 /d "NDEBUG"
@@ -91,7 +91,7 @@ LIB32=link.exe -lib
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MTd /W3 /GX /Z7 /Od /I "..\\" /I "..\..\\" /I "..\controls" /I "..\..\util" /I "..\irman" /I "..\..\id3lib-3.8.3\include" /I "..\id3utils" /I "..\Serial" /I "..\config" /D ID3LIB_LINKOPTION=1 /D "TEST_HARNESS" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_WIN32_DCOM" /FR /FD /GZ /c
 # SUBTRACT BASE CPP /YX /Yc /Yu
-# ADD CPP /nologo /MTd /W3 /GX /Zi /Od /I "..\\" /I "..\..\\" /I "..\controls" /I "..\..\util" /I "..\irman" /I "..\..\id3lib-3.8.3\include" /I "..\id3utils" /I "..\Serial" /I "..\config" /D ID3LIB_LINKOPTION=1 /D "TEST_HARNESS" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_WIN32_DCOM" /FR /FD /GZ /c
+# ADD CPP /nologo /MTd /W3 /GX /Zi /Od /I "..\\" /I "..\..\\" /I "..\controls" /I "..\..\util" /I "..\irman" /I "..\..\id3lib-3.8.3\include" /I "..\id3utils" /I "..\Serial" /I "..\config" /I "..\..\3rdparty\USBUIRT" /D ID3LIB_LINKOPTION=1 /D "TEST_HARNESS" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_WIN32_DCOM" /FR /FD /GZ /c
 # SUBTRACT CPP /YX /Yc /Yu
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"

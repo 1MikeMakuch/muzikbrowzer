@@ -62,8 +62,22 @@ BOOL About::OnInitDialog()
     m_hyperlink.SubclassDlgItem(IDC_HYPERLINK, this); 
     CString v = MUZIKBROWZER;
     v += " version ";
-    v += MUZIKBROWZER_VERSION;
+ 
+	CString version = String::extract(MUZIKBROWZER_VERSION,""," ");
+	CString date = String::extract(MUZIKBROWZER_VERSION," ","");
+	v += version + "\r\n" + " build " + date;
     m_ProdVersion.SetWindowText(v);
+
+
+	
+	CString cw = "Copyright (C) 2001-";
+
+	CString mx;
+	CTime t = CTime::GetCurrentTime();
+	mx = t.Format("%Y");
+
+	cw += mx + " Pecan Ventures, LLC";
+	GetDlgItem(IDC_ABOUT_COPYRIGHT)->SetWindowText(cw);
 
 	// hide the Easter Egg button
 	m_EasterEgg.DrawTransparent(TRUE);

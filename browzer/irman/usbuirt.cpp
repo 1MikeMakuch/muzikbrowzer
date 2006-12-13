@@ -228,16 +228,17 @@ UsbUirt::Close( ) {
 }
 void WINAPI
 UsbUirt::IRReceiveCallback(char *IREventStr, void *userData) {
-	char buf[1000];
-	sprintf(buf,"UsbUirt Code = %s, UserData = %08x!!!", IREventStr, 
-		(UINT32)userData);
-	logger.logd(buf);
+//	char buf[1000];
+//	sprintf(buf,"UsbUirt Code = %s, UserData = %08x!!!", IREventStr, 
+//		(UINT32)userData);
+//	logger.logd(buf);
 
 	int returnCode = -1;
 	DWORD tick = 0;
 	int code = -1;
 
 	KeyCode key;
+//	logger.logd("xyzzy:" + numToString(m_lasttick) + " " + numToString(m_interKeyDelay));
 
 	if (IREventStr && strlen(IREventStr) && strlen(IREventStr) <= m_codelength) {
 		//memcpy(key.m_code,IREventStr,m_codelength);
@@ -255,7 +256,7 @@ UsbUirt::IRReceiveCallback(char *IREventStr, void *userData) {
 		if (returnCode != -1) {
 			m_wndMsgHndlr->PostMessage(m_wmsg, returnCode, LPARAM(0));
 		}
-		logger.logd("delay " + numToString(m_interKeyDelay));
+//		logger.logd("delay " + numToString(m_interKeyDelay));
 	}
 }
 

@@ -158,7 +158,7 @@ Irman::HandleSerialMsg(WPARAM wParam, LPARAM lParam, int & returnCode) {
 		m_lastcode = code;
 		m_lasttick = tick;
 	}
-	logger.logd("delay " + numToString(m_interKeyDelay));
+//	logger.logd("delay " + numToString(m_interKeyDelay));
 	return 0;
 }
 

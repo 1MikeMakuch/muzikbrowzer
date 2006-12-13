@@ -214,6 +214,7 @@ CPlayerDlg::~CPlayerDlg() {
 		m_CtlColors.GetNextAssoc( pos, key, (void*&)hbr);
 		BOOL r = ::DeleteObject((HBRUSH)hbr);
 	}
+	RemoteReceiver::destroy();
 }
 
 
@@ -344,6 +345,8 @@ BEGIN_MESSAGE_MAP(CPlayerDlg, CDialogClassImpl)
 	ON_COMMAND(ID_MENU_CLEARPLAYLIST,        OnMenuClearplaylist)
 	ON_COMMAND(ID_PMENU_CLEAR,               OnMenuClearplaylist)
 	ON_COMMAND(ID__PLAYER_CLEAR,             OnMenuClearplaylist)
+	ON_COMMAND(ID_ALPHA_UP,					 OnAlphaUp)
+	ON_COMMAND(ID_ALPHA_DOWN,				 OnAlphaDown)
 	ON_COMMAND(ID_MENU_EDITPL,               OnMenuEditPlaylist)
 	ON_COMMAND(ID_MENU_EXIT,                 OnMenuExit)
 	ON_COMMAND(ID_PMENU_EXIT,                OnMenuExit)
@@ -1962,6 +1965,7 @@ CPlayerDlg::initDb() {
 void CPlayerDlg::OnSysCommand(UINT nID, LONG lParam)
 {
 //	logger.ods("OnSysCommand:" + numToString(nID) + " " + numToString(lParam));
+
 	if ((nID & 0xFFF0) == IDM_ABOUTBOX)	{
 		CRect rect;
 		GetWindowRect(rect);
@@ -1975,21 +1979,24 @@ void CPlayerDlg::OnSysCommand(UINT nID, LONG lParam)
 		switch(lParam) {
 		case 'm': case 'M': 
 			OnButtonMenu(); break;
-		case 'r': case 'R':  OnMenuButton();	break;
-		case 's': case 'S': Stop();				break;
-		case 'p': case 'P': Play();				break;
 		case 'a': case 'A': Pause();			break;
-		case 'i': case 'I': OnPreviousSong();	break;
-		case 'n': case 'N': OnNextSong();		break;
-		case 'd': case 'D': OnMenuRandomizePlaylist();	break;
-		case 'h': case 'H': OnMenuShuffleplaylist();	break;
 		case 'c': case 'C': OnMenuClearplaylist();		break;
-		case 'l': case 'L': OnMenuLoadplaylist();		break;
-		case 'v': case 'V': OnMenuSaveplaylist();		break;
-		case 'u': case 'U': OnVolUp();			break;
-		case 'o': case 'O': OnVolDown();		break;
-		case 'f': case 'F': OnFastForward();	break;
+		case 'd': case 'D': OnMenuRandomizePlaylist();	break;
 		case 'e': case 'E': OnReverse();		break;
+		case 'f': case 'F': OnFastForward();	break;
+		case 'h': case 'H': OnMenuShuffleplaylist();	break;
+		case 'i': case 'I': OnPreviousSong();	break;
+		case 'j': case 'J': HandleIRMessage(IR_MESSAGE_ALPHAUP); break;
+		case 'k': case 'K': HandleIRMessage(IR_MESSAGE_ALPHADOWN); break;
+		case 'l': case 'L': OnMenuLoadplaylist();		break;
+		case 'n': case 'N': OnNextSong();		break;
+		case 'o': case 'O': OnVolDown();		break;
+		case 'p': case 'P': Play();				break;
+		case 'r': case 'R': OnMenuButton();	break;
+		case 's': case 'S': Stop();				break;
+		case 'u': case 'U': OnVolUp();			break;
+		case 'v': case 'V': OnMenuSaveplaylist();		break;
+
 //		case 'z': case 'Z': OnVerify();		break;
 		}
     } else {
@@ -2922,7 +2929,12 @@ void
 CPlayerDlg::redraw() {
 	resetControls();
 }
-
+void CPlayerDlg::OnAlphaUp() {
+	HandleIRMessage(IR_MESSAGE_ALPHAUP);
+}
+void CPlayerDlg::OnAlphaDown() {
+	HandleIRMessage(IR_MESSAGE_ALPHADOWN);
+}
 void CPlayerDlg::OnMenuClearplaylist() 
 {
     m_mlib._playlist.reset();
