@@ -491,8 +491,8 @@ HRESULT PrintAttribute( WORD wIndex,
                         BYTE * pbValue,
                         DWORD dwValueLen )
 {
-    WCHAR pwszValue[256];
-    WCHAR wszNum[256];
+    WCHAR pwszValue[5000];
+    WCHAR wszNum[5000];
 
     ZeroMemory( pwszValue, sizeof( pwszValue ) );
     ZeroMemory( wszNum, sizeof( wszNum ) );

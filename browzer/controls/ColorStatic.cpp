@@ -411,6 +411,7 @@ void CColorStatic::OnPaint() {
 	}
 
     if (m_text1.GetLength()) {
+		
 		CFont * oldfont = dc.SelectObject(&m_font);
 		CSize cs = dc.GetTextExtent(m_text1);
 

@@ -3365,6 +3365,12 @@ void CPlayerDlg::PlayLoop() {
 				msg += m_mlib._playlist[m_PlaylistCurrent]->getId3("TALB");
 				msg += " in ";
 				msg += m_mlib._playlist[m_PlaylistCurrent]->getId3("TCON");
+
+				CString comments = m_mlib.getComments(file);
+				if (comments.GetLength()) {
+					msg += ". ";
+					msg += comments;
+				}
 				CurrentTitleSet(msg);
 				if (m_Config.trialMode() == 1) {
 					PlayerStatusTempSet("Trial Mode. See Settings/License.");

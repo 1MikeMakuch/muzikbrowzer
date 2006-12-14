@@ -54,16 +54,14 @@ OggTag::read(const CString & file) {
             free(decoded_value);
 
 			CString key = String::field(ucomment,"=",1);
-			CString value = String::extract(ucomment,"=","");
+			CString newvalue = String::extract(ucomment,"=","");
+			CString oldvalue;
 			key.MakeLower();
+			oldvalue = getVal(key);
+			newvalue = oldvalue + newvalue + " ";
 			if (key.GetLength()) {
-				m_tags.SetAt(key, value);
-//			} else {
-//				key = "extra.";
-//				key += numToString(ectr++);
-//				m_tags.SetAt(key, value);
+				m_tags.SetAt(key, newvalue);
 			}
-
         }
     }
 	if (vc->vendor) {

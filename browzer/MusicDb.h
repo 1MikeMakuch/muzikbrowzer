@@ -353,6 +353,7 @@ class MusicLib
 	     int	getAlbums(const CString &, const CString &, CExtendedListBox&, BOOL albumsortalpha=TRUE);
 	     int	getArtists(const CString &, CExtendedListBox&);
 	 CString	getDbLocation() { return m_dir; };
+	 CString 	getComments(const CString & file);
 	     int	getGenres(CExtendedListBox&);
 	     int	getGenres(CStringList&);
 	 CString	getLibraryCounts();

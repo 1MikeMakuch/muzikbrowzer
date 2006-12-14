@@ -1346,7 +1346,11 @@ MusicLib::createSongFromFile(const CString & mp3file,
 	CString tlen;
 	Song song = new CSong;
 	FExtension fext(mp3file);
-	if (fext == "mp3") {
+	if (fext == "mp3"
+		|| fext == "mpg"
+		|| fext == "mp1"
+		|| fext == "mp2"
+		) {
 
 		ID3_Tag * id3 = new ID3_Tag;
 		size_t tagsize = id3->Link(mp3file, ID3TT_ALL);
@@ -4535,82 +4539,41 @@ MSongLib::setSongVal(const CString & key, const CString & value,
 	m_dirty = 1;
 	return r;
 }
-//TEST(setSongVal, MSongLib)
-//{
-//	MSongLib songlib;
-//	songlib.init();
-//	songlib.setDbLocation(".");
-//
-//	Song song = new CSong;
-//	song->setId3("TALB", CString("Big Ones"));
-//	song->setId3("TCON", CString("rock"));
-//	song->setId3("TIT2", CString("Walk On Water"));
-//	song->setId3("TLEN", CString("295366"));
-//	song->setId3("TPE1", CString("Aerosmith"));
-//	song->setId3("TRCK", CString("1"));
-//
-//	songlib.addSong(song);
-////	songlib.writeToFile();
-//
-//	songlib.setSongVal("TLEN", "12345", "rock", "Aerosmith", "Big Ones", "Walk On Water");
-////	songlib.writeToFile();
-//	
-//}
+CString 
+MusicLib::getComments(const CString & file) {
 
-//	MRecord song = getSong(genrename, artistname, albumname, songname);
-//	CString val = song.lookupVal(key);
-//TEST(removeSong, MSongLib)
-//{
-//	MSongLib songlib;
-//	songlib.init();
-//	songlib.setDbLocation(CString("."));
-//	
-//	Song song = new CSong;
-//	song->setId3("TALB", CString("Big Ones"));
-//	song->setId3("TCON", CString("rock"));
-//	song->setId3("TIT2", CString("Walk On Water"));
-//	song->setId3("TLEN", CString("295366"));
-//	song->setId3("TPE1", CString("Aerosmith"));
-//	song->setId3("TRCK", CString("1"));
-//
-//	songlib.addSong(song);
-////	songlib.addAllGenre();
-////	songlib.writeToFile();
-//
-//	songlib.removeSong(song);
-////	songlib.writeToFile();
-//
-//	songlib.addSong(song);
-////	songlib.writeToFile();
-//
-//	songlib.addSong(song);
-//	songlib.removeGenre("rock");
-////	songlib.writeToFile();
-//}
+	CString comment ;
 
-//TEST(garbageCollect, MSongLib)
-//{
-//	ID3_Tag id3old;
-//	ID3_AddArtist(&id3old, "Aerosmith");
-//	ID3_AddAlbum(&id3old, "Big Ones");
-//	ID3_AddTitle(&id3old, "Walk On Water");
-//	ID3_AddGenre(&id3old, "rock");
-//	ID3_AddComment(&id3old, "xyzzy");
-//
-//	ID3_Tag id3new (id3old);
-//	ID3_AddArtist(&id3new, "Aerosmithxxx", true);
-//
-//	MSongLib songlib;
-//	songlib.init();
-//	songlib.setDbLocation(CString("."));
-//	
-//	Song song = new CSong;
-//	song->setId3("TALB", CString("Big Ones"));
-//	song->setId3("TCON", CString("rock"));
-//	song->setId3("TIT2", CString("Walk On Water"));
-//	song->setId3("TPE1", CString("Aerosmith"));
-//
-//	songlib.addSong(song);
-//
-//
-//}
+	FExtension fext(file);
+	if (fext == "mp3"
+		|| fext == "mpg"
+		|| fext == "mp1"
+		|| fext == "mp2"
+		|| fext == "wma"
+		) {
+		WmaTag wma;
+		wma.read(file);
+		comment = wma.getVal("Description");
+		CString tmp = wma.getVal("WM/Lyrics");
+		if (tmp.GetLength()) {
+			comment += " Lyrics: "+tmp;
+		}
+		tmp = wma.getVal("WM/Composer");
+		if (tmp.GetLength()) {
+			comment += " Composer(s): "+tmp;
+		}
+		tmp = wma.getVal("Author");
+		if (tmp.GetLength()) {
+			comment += " Author(s): "+tmp;
+		}
+	} else if (fext == "ogg") {
+		OggTag ogg;
+		ogg.read(file);
+		comment = ogg.getVal("description");
+		comment += " "+ogg.getVal("comment");
+	}
+	return comment;
+}
+
+
+

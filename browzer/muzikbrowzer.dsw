@@ -365,6 +365,9 @@ Package=<4>
     Begin Project Dependency
     Project_Dep_Name regset
     End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name oggtagger
+    End Project Dependency
 }}}
 
 ###############################################################################
