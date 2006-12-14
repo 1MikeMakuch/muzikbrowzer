@@ -4,6 +4,8 @@
 #include "TestHarness/TestHarness.h"
 #include "WmaTagger.h"
 #include "MyLog.h"
+#include <afxtempl.h>
+#include "SortedArray.h"
 
 //******************************************************************************
 //
@@ -933,14 +935,10 @@ WmaTag::read(const CString & file, const BOOL durationOnly) {
 				out = "PrintAttributeString";
                 break;
             }
-
-			if (durationOnly) {
-				if ("Duration" == key)
-					break;
-			} else {
-				setVal(key, val);
+			setVal(key, val);
+			if (durationOnly && "Duration" == key) {
+				break;
 			}
-
         }
         
         hr = pEditor->Close();
@@ -971,18 +969,37 @@ WmaTag::read(const CString & file, const BOOL durationOnly) {
 
 CString
 WmaTag::getInfo() {
-	CString out;
+	CSortedArray<CString, CString &> tagsList;
 	POSITION pos;
+	CString out;
+	
 	CString key,val;
 	for(pos = m_tags.GetStartPosition(); pos != NULL; ) {
 		m_tags.GetNextAssoc(pos, key, val);
-		out += key;
-		out += "=";
-		out += val;
-		out += "\r\n";
+		tagsList.Add(key);
 	}
+	tagsList.SetCompareFunction(String::CompareCase);
+	tagsList.Sort();
+
+	for (int i=0; i < tagsList.GetSize(); i++) {
+		CString& rkey = tagsList.ElementAt(i);
+		CString val = getVal(rkey);
+		out += rkey + " = " + val + "\r\n";
+	}
+
+
+//	POSITION pos;
+//	CString key,val;
+//	for(pos = m_tags.GetStartPosition(); pos != NULL; ) {
+//		m_tags.GetNextAssoc(pos, key, val);
+//		out += key;
+//		out += "=";
+//		out += val;
+//		out += "\r\n";
+//	}
 	return out;
 }
+
 
 CString
 WmaTag::getVal(const CString & srcKey) {
@@ -991,6 +1008,16 @@ WmaTag::getVal(const CString & srcKey) {
 	CString key(srcKey);
 //	key.MakeLower();
 	if (m_tags.Lookup(key, val) != 0) {
+		if ("Duration" == key) {
+			if (val.GetLength()) {
+				float d = atof(val);
+				if (d > 10000) {
+					d = d / 10000;
+					int d2 = (int)d;
+					val = numToString(d2);
+				}
+			}
+		}
 		return val;
 	} else {
 		return "";

@@ -34,5 +34,6 @@ void Genre_addGenre(ID3_Tag & id3, const char * genre);
 
 CString
 displayTag(ID3_Tag *id3, BOOL showLabels=FALSE, CString file = "");
+CString displayTag2(ID3_Tag *id3, BOOL showLabels=FALSE, CString file = "");
 
 #endif /* _ID3LIB_MISC_SUPPORT_H_ */

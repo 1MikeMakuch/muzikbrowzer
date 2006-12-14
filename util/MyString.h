@@ -62,7 +62,16 @@ class String {
 	static BOOL endsWith(const CString & string, const CString & end);
 	static BOOL contains(const CString & string, const CString & contain);
 
-
+	static int String::CompareNoCase(CString& element1, 
+		CString& element2) 
+	{
+		return element1.CompareNoCase(element2);
+	}
+	static int String::CompareCase(CString& element1, 
+		CString& element2) 
+	{
+		return element1.Compare(element2);
+	}
 };
 
 class AutoBuf {

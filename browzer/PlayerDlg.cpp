@@ -43,6 +43,8 @@
 #include "GetTextField.h"
 #include "MusicPlayerWMP.h"
 #include "ExportDlg.h"
+#include "oggtagger/oggtagger.h"
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -3248,7 +3250,8 @@ void CPlayerDlg::PlayLoop() {
                 first = 0;
             } else {
 				CurrentTitleSet("");
-				recordTLEN();
+				// No longer needed, WmaTag guarantees it's in the db.
+				//recordTLEN();
 				resetPosition();
 				InputClose();
 // this prevents repeat!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -3391,7 +3394,7 @@ CPlayerDlg::calcDuration() {
 		CString sDuration = m_mlib._playlist[i]->getId3("TLEN");
 		logger.ods("Duration "+sDuration);
 		if (sDuration != "") {
-			// TLEN is in milliseconds
+			// TLEN is in milliseconds but we're counting up seconds
 			int millis = atoi((LPCTSTR)sDuration);
 			if (millis > 999)
 				duration = millis / 1000;
@@ -4648,10 +4651,17 @@ void CPlayerDlg::displayAlbumArt(const CString & file) {
 
 TEST(WmaTag2, read2)
 {
-	CString file = "c:\\mkm\\src\\muzik\\browzer\\testdata\\x.wma";
+	CString file = "..\\testdata\\x.wma";
 	WmaTag wma(file);
-	CString info = wma.getInfo();
-	CString x;
+//	CString info = wma.getInfo();
+	file = "..\\testdata\\01.ogg";
+	OggTag ogg(file);
+//	info = ogg.getInfo();
+	file = "..\\testdata\\311AllMixedUp.mp3";
+	ID3_Tag id3;
+	id3.Link(file, ID3TT_ALL);
+//	info = ::displayTag2(&id3, FALSE, file);
+//	MBMessageBox("test",info);
 }
 
 void CPlayerDlg::OnMusicButton() {

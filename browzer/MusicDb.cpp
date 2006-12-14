@@ -1382,15 +1382,16 @@ MusicLib::createSongFromFile(const CString & mp3file,
 #endif
 		delete id3;
 		WmaTag wma; // WMASDK does a better job of calcing duration
-		//CString tlen = wma.read(mp3file,TRUE);
-		// Wma returns time in milliseconds * 10000. We store in millis
+		// Wma returns time in milliseconds * 10000. We store in milliseconds
 		wma.read(mp3file,TRUE);
 		tlen = wma.getVal("Duration");
+// getVal now converts duration to milliseconds
+//		if (tlen.GetLength()) {
+//			float d = atof(tlen);
+//			d = d / 10000;
+//			int d2 = (int)d;
+//			tlen= numToString(d2);
 		if (tlen.GetLength()) {
-			float d = atof(tlen);
-			d = d / 10000;
-			int d2 = (int)d;
-			tlen= numToString(d2);
 			song->setId3("TLEN", tlen);
 		}
 	} else if (fext == "ogg") {
@@ -2110,12 +2111,13 @@ MusicLib::createSongFromWma(WmaTag * wma) {
 	year = wma->getVal("WM/Year");
 	track = wma->getVal("WM/TrackNumber");
 	duration = wma->getVal("Duration");
-	if (duration.GetLength()) {
-		float d = atof(duration);
-		d = d / 10000;
-		int d2 = (int)d;
-		duration = numToString(d2);
-	}
+// getVal now converts duration to milliseconds
+//	if (duration.GetLength()) {
+//		float d = atof(duration);
+//		d = d / 10000;
+//		int d2 = (int)d;
+//		duration = numToString(d2);
+//	}
 
     CString cgenre = Genre_normalize(genre);
 

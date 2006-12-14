@@ -7,6 +7,9 @@
 #include "utf8.h"
 #include "util/MyString.h"
 #include "TestHarness/TestHarness.h"
+#include <afxtempl.h>
+#include "SortedArray.h"
+
 //#include "MBGlobals.h"
 
 OggTag::OggTag() {}
@@ -104,30 +107,41 @@ OggTag::getInfo() {
 	CString kv,key,val;
 
 	CString out;
+	CSortedArray<CString, CString &> tagsList;
 	for(i = 0 ; i < vc->comments; ++i) {
-		out += vc->user_comments[i];
-		out += "\r\n";
+		tagsList.Add(CS(vc->user_comments[i]));
+		//out += vc->user_comments[i];
+		//out += "\r\n";
 	}
 	if (vc->vendor) {
-		out += vc->vendor;
-		out += "\r\n";
+		tagsList.Add(CS(vc->vendor));
 	}
 
-	out += "duration: ";
-	out += numToString(getTime());
-	out += "\r\n";
+	tagsList.Add("Duration="+numToString(getTime()));
 
 	vorbis_info * vi = ov_info(&ogg, -1);
-	out += "ogg encoding version ";
-	out += numToString(vi->version);
-	out += "\r\n";
-	out += "ogg channels ";
-	out += numToString(vi->channels);
-	out += "\r\n";
-	out += "ogg sample rate ";
-	out += numToString(vi->rate);
-	out += "\r\n";
+//	out += "ogg encoding version ";
+//	out += numToString(vi->version);
+	tagsList.Add("ogg encoding version "+numToString(vi->version));
+//	out += "\r\n";
+//	out += "ogg channels ";
+//	out += numToString(vi->channels);
+	tagsList.Add("ogg channels "+numToString(vi->channels));
+//	out += "\r\n";
+//	out += "ogg sample rate ";
+//	out += numToString(vi->rate);
+	tagsList.Add("ogg sample rate "+numToString(vi->rate));
+//	out += "\r\n";
 	ov_clear(&ogg);
+
+	tagsList.SetCompareFunction(String::CompareCase);
+	tagsList.Sort();
+
+	for (i=0; i < tagsList.GetSize(); i++) {
+		CString& rkey = tagsList.ElementAt(i);
+		out += rkey + "\r\n";
+	}
+
 	return out;
 }
 
