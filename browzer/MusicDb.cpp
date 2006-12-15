@@ -30,13 +30,11 @@
 #include "util/Misc.h"
 
 
-#pragma hack
-// xxx make the increment large before shipping!
 #define MMEMORY_SIZE_INCREMENT 5000
 #define MMEMORY_RESERVE_BYTES 100
 
 #ifdef _DEBUG
-#define MB_GARBAGE_INTERVAL 0
+#define MB_GARBAGE_INTERVAL 50
 #else
 #define MB_GARBAGE_INTERVAL 50
 #endif
@@ -2750,7 +2748,7 @@ MusicLib::IgetLibraryCounts() {
 
 
 BOOL
-MusicLib::apic(const CString & file, uchar *& rawdata, size_t & nDataSize) {
+MusicLib::apic(const CString & file, uchar *& rawdata, size_t & nDataSize, const CString & album) {
 
 	//	if (m_picCache.read(file, rawdata, nDataSize)) {
 	//		return TRUE;
@@ -2810,6 +2808,29 @@ MusicLib::apic(const CString & file, uchar *& rawdata, size_t & nDataSize) {
 	// not in folder.jpg so look for cover.jpg in dir
 	folderjpg = FileUtil::dirname(file);
 	folderjpg += "\\cover.jpg";
+	fd = _open(folderjpg, _O_RDONLY|_O_BINARY);
+	if (fd > 0) {
+		struct _stat statbuf;
+		int fs = _stat(folderjpg, &statbuf );
+		if (fs != 0) {
+			close(fd);
+			return FALSE;
+		}
+
+		nDataSize = statbuf.st_size;
+		rawdata = new BYTE [ nDataSize ];
+		int r = _read(fd, (void*) rawdata, nDataSize);
+		close(fd);
+		if (r != nDataSize) {
+			delete rawdata;
+			return FALSE;
+		}
+//		m_picCache.write(file, rawdata, nDataSize);
+		return TRUE;
+	}
+	// not in cover.jpg so look for albumname.jpg in dir
+	folderjpg = FileUtil::dirname(file);
+	folderjpg += "\\" + album + ".jpg";
 	fd = _open(folderjpg, _O_RDONLY|_O_BINARY);
 	if (fd > 0) {
 		struct _stat statbuf;

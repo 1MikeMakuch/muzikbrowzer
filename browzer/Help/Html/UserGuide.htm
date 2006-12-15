@@ -142,11 +142,22 @@ associated with that function. <p class="text">
 
 	</table>
 	</p>
+<a name="TagEdit">
+<li>Tag Editing.<br>
+	<ul><li>Access the tag editor by right-clicking in any library column. If you right-click on a Genre you can rename that Genre. If you right click on an Artist you can rename that artist or the genre, etc. Right clicking on "all" in the Album column allows you to change the artist and/or genre for all the albums displayed, enabling simple and powerful cleanup of tag data.
+	<li>
+	Tag editing is a two step process. First by right clicking on a particular library item you're choosing "search" criteria. If "all" is chosen then the "all" will act as a wildcard during the search.
+	<li>Edit the data fields on the right side of the Tag editor dialog to reflect the changes you wish to make. Click Next.
+	<li>A search is performed and you are presented with the list of files matching the search criteria. At this point either confirm or cancel.
+	<li>Muzikbrowzers database periodically performs a <i>garbage collection</i>, once every 50 edits performed. This process will take a few minutes to complete. When it occurs a dialog will indicate it's progress. I intend to eliminate this annoyance in a future release.
+
+	</ul>
 <a name="Miscellaneous">
 <li>Miscellaneous
 	<ul class="text">
 	<li>Genres and Artists are sorted alphabetically.
-	<li>Albums are sorted by Year if the tag contains the year. Otherwise alphabetically.
+	<li>Albums are sorted by Year if the tag contains the year, or alphabetically.
+	This behavior can be selected in the Settings/General tab.
 	<li>Songs are sorted by track number if the tag contains the track number. Otherwise by filename (this can be usefull if you don't have the track number in the tag but your song files are named with the track number as a prefix, i.e. '01-Here Comes The Sun', '02-Hey Jude', etc).
 	<li>Currently Muzikbrowzer does not "rip" or record from CD's into mp3 files.
 	<li>Certain operations write error and informational messages into the log file, Muzikbrowzer.log located in the directory specified in the Settings dialog. This file may be helpfull in diagnosing problems.
@@ -160,8 +171,9 @@ associated with that function. <p class="text">
 	be displayed as songs are played in Muzikbrowzer. Note that you must
 	obtain the album cover picture via software other than Muzikbrowzer.
 	If no album art picture is found in the tag Muzikbrowzer
-	will look in the folder of the audio file for a file called "folder.jpg" or "cover.jpg". This follows
-	Windows XP convention.
+	will look in the folder of the audio file for a file called "folder.jpg" or "cover.jpg" 
+	This follows Windows XP convention.
+	And lastly [AlbumName].jpg following MediaMonkey convention.
 
 	<li>The Player Status field is the smaller field to the left of the Playing Status field. It shows the current status of the player, i.e. Playing, Paused etc.
 	<li>Screen savers: Muzikbrowzer attempts to wakeup your screen saver in response to pressing a remote control button, just as if you have pressed a keyboard key or moved the mouse.

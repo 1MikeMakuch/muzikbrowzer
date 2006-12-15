@@ -2300,7 +2300,7 @@ BOOL CPlayerDlg::UpdateSongs()
 		Song song = m_mlib.getSong(_selectedGenre, _selectedArtist,
 			_selectedAlbum, _selectedSong);
 		CString file = song->getId3("FILE");
-		displayAlbumArt(file);
+		displayAlbumArt(file,song->getId3("TALB"));
 	}
 	if (lastsel != sel)	m_LastThingQueuedUp = ""; lastsel = sel;
 	return updated;
@@ -2317,7 +2317,7 @@ void CPlayerDlg::OnSelchangePlaylist()
     m_Playlist.invalidate();
 
 	CString file = m_mlib._playlist[sel]->getId3("FILE");
-	displayAlbumArt(file);
+	displayAlbumArt(file,m_mlib._playlist[sel]->getId3("TALB"));
 }
 void CPlayerDlg::OnKillfocusVirtuals() 
 {
@@ -3295,7 +3295,7 @@ void CPlayerDlg::PlayLoop() {
 //				Play();
 //				adjustVolume();
 				good = 1;
-				displayAlbumArt(file);
+				displayAlbumArt(file,m_mlib._playlist[m_PlaylistCurrent]->getId3("TALB"));
 			} else {
 				good = 0;
 				if (!FileUtil::IsReadable(file)) {
@@ -4620,7 +4620,7 @@ void CPlayerDlg::InputClose() {
 void CPlayerDlg::killAlbumArt() {
 	m_Picture.unload();
 }
-void CPlayerDlg::displayAlbumArt(const CString & file) {
+void CPlayerDlg::displayAlbumArt(const CString & file, const CString & album) {
 //	return;
 
 	if (""== file) {
@@ -4637,7 +4637,7 @@ void CPlayerDlg::displayAlbumArt(const CString & file) {
 	killAlbumArt();
 	size_t size = 0;
 	uchar * data = NULL;
-	BOOL pic = m_mlib.apic(file, data, size);
+	BOOL pic = m_mlib.apic(file, data, size,album);
 
 	if (!first && pic && size > 50) {
 		m_Picture.load(data,size);

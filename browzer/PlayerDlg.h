@@ -208,7 +208,7 @@ private:
 	void ShowBetaWarning();
 	void HelpInfo(BOOL userormain);
 	void recordTLEN();
- 	void displayAlbumArt(const CString & file = "");
+ 	void displayAlbumArt(const CString & file = "", const CString & album="");
  	void killAlbumArt();
 	void ShowSearchDlg();
 	void UpdateRects();

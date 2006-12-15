@@ -335,7 +335,7 @@ class MusicLib
 	    UINT	addSongToDb(int & ctr, int t, Song &, const CString & file = "");
 	     int	addSongToPlaylist(const CString &, const CString &, const CString &, const CString &);
 	     int	addSongToPlaylist(const Song &);
-	    BOOL	apic(const CString & file, uchar *& rawdata, size_t & size);
+	    BOOL	apic(const CString & file, uchar *& rawdata, size_t & size, const CString & album);
 	     int	clearPlaylist();
   static int    CompareByFilenameNoCase(CString& element1, CString& element2) ;
   static int    CompareByNum(CString& element1, CString& element2) ;
