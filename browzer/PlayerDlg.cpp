@@ -2000,6 +2000,11 @@ void CPlayerDlg::OnSysCommand(UINT nID, LONG lParam)
 		case 'v': case 'V': OnMenuSaveplaylist();		break;
 
 //		case 'z': case 'Z': OnVerify();		break;
+		case 'b': case 'B': {
+				m_mlib.garbageCollectTest();
+				OnSelchangeGenres();
+			}
+			break;
 		case 'z': case 'Z': OnMusicScan();		break;
 		}
     } else {

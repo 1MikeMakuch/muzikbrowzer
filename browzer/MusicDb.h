@@ -352,6 +352,7 @@ class MusicLib
 		void	exportTxt(ExportDlg *, MyLog *, Song);
 		void	exportHtml(ExportDlg *, MyLog *, Song, CString & tmpl);
 		CString expQE(const CString & entry, const CString in);
+		void    garbageCollectTest();
 	     int	getAlbums(const CString &, const CString &, CExtendedListBox&, BOOL albumsortalpha=TRUE);
 	     int	getArtists(const CString &, CExtendedListBox&);
 	 CString	getDbLocation() { return m_dir; };
@@ -418,6 +419,7 @@ private:
         int scanDirectory(int * abortf, CStringList &, const CString &,
 			BOOL scanNew, BOOL bAdd);
         int garbageCollect(InitDlg * dialog, BOOL test=FALSE);
+
 		CString IgetLibraryCounts();
         
 };

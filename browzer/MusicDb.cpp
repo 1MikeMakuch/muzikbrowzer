@@ -1937,18 +1937,20 @@ MusicLib::garbageCollect(InitDlg * dialog, BOOL test) {
 								newSongLib.addSong(song);
 								++ctr;
 
-								time(&now);
-								elapsed = now - starttime;
-								if (elapsed > 0) {
-									songspersec = (float)ctr / (float)elapsed;
-									eta = (totalMp3s / songspersec) - elapsed;
-									if (ctr > 50 && lastupdate < now) {
-										etaS = msg + " Remaining: ";
-										etaS += String::secs2HMS(eta);
-										dialog->SetLabel(etaS);
-										lastupdate = now;
-									}
-								}
+					if (dialog) {
+						time(&now);
+						elapsed = now - starttime;
+						if (elapsed > 0) {
+							songspersec = (float)ctr / (float)elapsed;
+							eta = (totalMp3s / songspersec) - elapsed;
+							if (ctr > 50 && lastupdate < now) {
+								etaS = msg + " Remaining: ";
+								etaS += String::secs2HMS(eta);
+								dialog->SetLabel(etaS);
+								lastupdate = now;
+							}
+						}
+					}
 							}
 						}
 					}
@@ -4873,4 +4875,79 @@ MusicLib::getComments(const CString & file) {
 }
 
 
+
+void
+MusicLib::garbageCollectTest() {
+	for(int i=0 ; i < 10; ++i) {
+	logger.ods("garbageCollectTest:"+numToString(i));
+	
+	Playlist songs;
+	m_pSearchFiles = new MFiles();
+	CString tmp;
+	int at = 0;
+	MList genreList = m_SongLib.genreList();
+	MList::Iterator genreIter(genreList);
+    while (genreIter.more()) {
+		MRecord genre =genreIter.next();
+
+		if (genre.label() == "MBTest") {
+
+			MList artistList(genre);
+			MList::Iterator artistIter(artistList);
+			while (artistIter.more()) {
+				MRecord artist = artistIter.next();
+				MList albumList(artist);
+				MList::Iterator albumIter(albumList);
+				while (albumIter.more()) {
+					MRecord album = albumIter.next();
+					MList songList(album);
+					MList::Iterator songIter(songList);
+					while (songIter.more()) {
+						MRecord song = songIter.next();
+						tmp = song.lookupVal("FILE");
+						if (!m_pSearchFiles->contains(tmp, at)) {
+							songs.append(song.createSong());
+							m_pSearchFiles->add(at, tmp);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	m_pSearchFiles->removeAll();
+	delete m_pSearchFiles;
+	m_pSearchFiles = NULL;
+	PlaylistNode *p;
+    for (p = songs.head(); p != (PlaylistNode*)0; p = songs.next(p)) {
+		CString file = p->_item->getId3("FILE");
+		Song addsong = new CSong(p->_item);
+		Song delsong = new CSong(p->_item);
+
+		CString oldArtist = addsong->getId3("TPE1");
+		CString newArtist(oldArtist);
+		if (newArtist.Right(1) != "x") {
+			newArtist += "x";
+		} else if (newArtist.Right(1) == "x") {
+			newArtist = newArtist.Left(newArtist.GetLength()-1);
+		}
+		logger.ods("change "+oldArtist+" to "+newArtist);
+
+		addsong->setId3(CS("TPE1"), newArtist);
+
+		CString oneresult = writeSongToFile(addsong);
+		logger.ods("garbageCollectTest: " + file + " " + oneresult);
+
+		m_SongLib.removeSong(delsong);
+		m_SongLib.addSong(addsong);
+
+	}
+	m_SongLib.m_garbagecollector++;
+	logger.ods("gc:"+numToString(m_SongLib.m_garbagecollector));
+    garbageCollect(NULL);
+	writeDb();
+	if (m_SongLib.m_garbagecollector < 1)
+		return;
+	}
+}
 
