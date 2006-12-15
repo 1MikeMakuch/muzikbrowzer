@@ -4875,7 +4875,9 @@ MusicLib::getComments(const CString & file) {
 }
 
 
-
+#ifndef _DEBUG
+void MusicLib::garbageCollectTest() {};
+#else
 void
 MusicLib::garbageCollectTest() {
 	for(int i=0 ; i < 10; ++i) {
@@ -4951,3 +4953,5 @@ MusicLib::garbageCollectTest() {
 	}
 }
 
+
+#endif
