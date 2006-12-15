@@ -226,17 +226,17 @@ class MFiles {
 		}
 		~MFiles(){}
 		void add(const CString & file,
-			const CString & genre,
-			const CString & artist,
-			const CString & album,
-			const CString & title,
-			const CString & tlen);
+			const CString & genre="",
+			const CString & artist="",
+			const CString & album="",
+			const CString & title="",
+			const CString & tlen="");
 		void add(int at, const CString & file,
-			const CString & genre,
-			const CString & artist,
-			const CString & album,
-			const CString & title,
-			const CString & tlen);
+			const CString & genre="",
+			const CString & artist="",
+			const CString & album="",
+			const CString & title="",
+			const CString & tlen="");
 		void remove(const CString & file);
 		void remove(int at);
 		BOOL contains(const CString & file, int & at);
@@ -265,6 +265,7 @@ class MSongLib {
 		~MSongLib();
 		void init(BOOL rebuild);
 		int addSong(Song &song);
+		int addSong0(Song &song);
 		MList artistList(const CString & genrename);
 		MList albumList(const CString & genrename,
 			const CString & artistname);
@@ -313,6 +314,7 @@ class MSongLib {
 		int validate();
 	public:
 		void dump(CString name="");
+		void dumpRecords(CString x);
 };
 
 typedef MPtr<MSongLib> MSongLibP;
@@ -411,6 +413,7 @@ private:
         int m_totalMp3s;
         CStringList m_mp3Extensions;
 		CString m_libCounts;
+		MFiles * m_pSearchFiles;
 
         int scanDirectory(int * abortf, CStringList &, const CString &,
 			BOOL scanNew, BOOL bAdd);

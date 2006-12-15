@@ -292,6 +292,17 @@ String::stripws(const CString & string) {
 	news = String::replace(news,"","	");
 	return news;
 }
+void
+String::trimLR(CString & string) {
+	string.TrimLeft();
+	string.TrimRight();
+}
+TEST(StringTrimLR, stringtrimlr)
+{
+	CString x(" x x ");
+	String::trimLR(x);
+	CHECK("x x" == x);
+}
 
 AutoBuf::AutoBuf(int size) {
     p = new char[size];

@@ -430,9 +430,9 @@ BOOL CPlayerDlg::OnInitDialog()
 
 #ifdef _DEBUG
 #ifndef _DEBUGBC
-	MBUtil::system(this,"rm /cygdrive/c/mkm/bmps/*");
-	Sleep(1000);
-	logger.ods("system done and slept");
+//	MBUtil::system(this,"rm /cygdrive/c/mkm/bmps/*");
+//	Sleep(1000);
+//	logger.ods("system done and slept");
 #endif
 #endif
 
@@ -2000,11 +2000,15 @@ void CPlayerDlg::OnSysCommand(UINT nID, LONG lParam)
 		case 'v': case 'V': OnMenuSaveplaylist();		break;
 
 //		case 'z': case 'Z': OnVerify();		break;
+		case 'z': case 'Z': OnMusicScan();		break;
 		}
     } else {
 		CDialogClassImpl::OnSysCommand(nID, lParam);
 	}
 }
+#pragma hack
+// get rid of the 'z' above before release.
+
 void CPlayerDlg::OnVerify() {
 	CString msg = m_mlib.JustVerify();
 }
@@ -3554,6 +3558,7 @@ void CPlayerDlg::OnUserEditSong()
     m_mlib.getGenres(genreList);
 
 	if (mWindowFlag > 4) {
+		PlayerStatusTempSet("not allowed");
 		return;
 	}
 	Song song = new CSong;
@@ -3584,6 +3589,10 @@ void CPlayerDlg::OnUserEditSong()
         }
 		song->setId3(CS("TCON"), _selectedGenre);
     }
+	if (mWindowFlag  < 3 && MBALL == _selectedGenre && MBALL == _selectedArtist) {
+		PlayerStatusTempSet("not allowed");
+		return;
+	}
 
 	dialog = new ModifyIDThree(&genreList, song, mWindowFlag);
 
@@ -3602,6 +3611,8 @@ void CPlayerDlg::OnUserEditSong()
 		}
 		DBLOCKED = FALSE;
 	}
+
+
 	delete dialog;    	
 
 }

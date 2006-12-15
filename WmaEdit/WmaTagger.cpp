@@ -883,7 +883,7 @@ WmaTag::write() {
 
     WCHAR               * pwszAttribName    = NULL;
     WORD                wAttribNameLen      = 0;
-    WMT_ATTR_DATATYPE   AttribType			= (WMT_ATTR_DATATYPE)1;
+    WMT_ATTR_DATATYPE   wAttribType			= (WMT_ATTR_DATATYPE)1;
     BYTE                * pbAttribValue     = NULL;
     WORD                wAttribValueLen     = 0;
     DWORD               dwAttribValueLen	= 0;
@@ -922,7 +922,9 @@ WmaTag::write() {
 					// set
 					LPTSTR  ptszAttribName  = (char*)(LPCTSTR)key;
 					LPTSTR  ptszAttribValue = (char*)(LPCTSTR)val;
-							ConvertMBtoWC(ptszAttribName, &pwszAttribName);
+
+#ifdef adf
+					ConvertMBtoWC(ptszAttribName, &pwszAttribName);
 					ConvertMBtoWC(ptszAttribValue, &pwszAttribValue);
 					wAttribValueLen = ( wcslen( pwszAttribValue) + 1) *
 						sizeof (WCHAR);
@@ -930,9 +932,33 @@ WmaTag::write() {
 		
 					hr = pHeaderInfo->SetAttribute( wStreamNum,
 													pwszAttribName,
-													AttribType,                                        
+													wAttribType,                                        
 													pbAttribValue,
 													wAttribValueLen );
+#endif
+
+					hr = ConvertMBtoWC( ptszAttribName, &pwszAttribName );
+					if( FAILED( hr ) )
+					{
+						out += "ConvertMBtoWC";
+						break;
+					}
+            
+					hr = ConvertMBtoWC( ptszAttribValue, &pwszAttribValue );
+					if( FAILED( hr ) )
+					{
+						out += "ConvertMBtoWC";
+						break;
+					}
+            
+					hr = SetAttrib( pwszInFile, 
+									wStreamNum, 
+									pwszAttribName, 
+									wAttribType, 
+									pwszAttribValue );
+
+
+
 					if( FAILED( hr ) )
 					{
 						out += "SetAttribute";
@@ -951,7 +977,7 @@ WmaTag::write() {
 					hr = pHeaderInfo3->AddAttribute( wStreamNum,
 													 pwszAttribName,
 													 NULL,
-													 AttribType, 
+													 wAttribType, 
 													 wLangIndex,
 													 pbAttribValue,
 													 dwAttribValueLen );

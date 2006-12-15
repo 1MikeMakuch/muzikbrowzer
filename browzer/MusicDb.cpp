@@ -36,12 +36,12 @@
 #define MMEMORY_RESERVE_BYTES 100
 
 #ifdef _DEBUG
-#define MB_GARBAGE_INTERVAL 1
+#define MB_GARBAGE_INTERVAL 0
 #else
 #define MB_GARBAGE_INTERVAL 50
 #endif
 
-#define MB_DB_VERSION 4
+#define MB_DB_VERSION 5
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -207,7 +207,7 @@ CSong::Contains(const CString & keyword) {
 /////////////////////////////////////////////////////////////////////////////////
 
 MusicLib::MusicLib(InitDlg *id): _id(id), m_totalMp3s(0),
-	m_Searching(FALSE)
+	m_Searching(FALSE),m_pSearchFiles(NULL)
 {
 //	init();
 }
@@ -900,7 +900,11 @@ MusicLib::getSongs(const CString & genrename,
         NameNum * nn = new NameNum(song.label(), itrack, song.i());
         namenums.Add(nn);
     }
-    NameNum::bsort(namenums);
+	if (MBALL == albumname) {
+		NameNum::bsort(namenums,TRUE);
+	} else {
+		NameNum::bsort(namenums,FALSE);
+	}
     int i;
     for (i = 0 ; i < namenums.GetSize(); ++i) {
         box.AddString(((NameNum*)namenums[i])->m_name);
@@ -1714,7 +1718,8 @@ MusicLib::export(ExportDlg * exp) {
 			MList::Iterator albumIter(albumList);
 			while (albumIter.more()) {
 				MRecord album = albumIter.next();
-				albumCSList.Add(album.label());
+				if (MBALL != album.label())
+					albumCSList.Add(album.label());
 			}
 			artistCSList.SetCompareFunction(CompareByFilenameNoCase);
 			artistCSList.Sort();
@@ -1924,25 +1929,27 @@ MusicLib::garbageCollect(InitDlg * dialog, BOOL test) {
 //							logger.log("garbage collect:" + numToString(ctr));
 						}
 						MRecord album = albumIter.next();
-						MList songList = m_SongLib.songList(genre.label(),
-							artist.label(), album.label());
-						MList::Iterator songIter(songList);
-						while (songIter.more()) {
-							MRecord songr = songIter.next();
-							Song song = songr.createSong();
-							newSongLib.addSong(song);
-							++ctr;
+						if (album.label() != MBALL) {
+							MList songList = m_SongLib.songList(genre.label(),
+								artist.label(), album.label());
+							MList::Iterator songIter(songList);
+							while (songIter.more()) {
+								MRecord songr = songIter.next();
+								Song song = songr.createSong();
+								newSongLib.addSong(song);
+								++ctr;
 
-							time(&now);
-							elapsed = now - starttime;
-							if (elapsed > 0) {
-								songspersec = (float)ctr / (float)elapsed;
-								eta = (totalMp3s / songspersec) - elapsed;
-								if (ctr > 50 && lastupdate < now) {
-									etaS = msg + " Remaining: ";
-									etaS += String::secs2HMS(eta);
-									dialog->SetLabel(etaS);
-									lastupdate = now;
+								time(&now);
+								elapsed = now - starttime;
+								if (elapsed > 0) {
+									songspersec = (float)ctr / (float)elapsed;
+									eta = (totalMp3s / songspersec) - elapsed;
+									if (ctr > 50 && lastupdate < now) {
+										etaS = msg + " Remaining: ";
+										etaS += String::secs2HMS(eta);
+										dialog->SetLabel(etaS);
+										lastupdate = now;
+									}
 								}
 							}
 						}
@@ -2014,15 +2021,17 @@ MusicLib::iSearch(const CString keyword, MSongLib & db, MSongLib & results) {
 				MList::Iterator albumIter(albumList);
 				while (albumIter.more()) {
 					MRecord album = albumIter.next();
-					MList songList = db.songList(genre.label(),
-						artist.label(), album.label());
-					MList::Iterator songIter(songList);
-					while (songIter.more()) {
-						MRecord songr = songIter.next();
-						Song song = songr.createSong();
-						if (song->Contains(keyword)) {
-							results.addSong(song);
-							found++;
+					if (album.label() != MBALL) {
+						MList songList = db.songList(genre.label(),
+							artist.label(), album.label());
+						MList::Iterator songIter(songList);
+						while (songIter.more()) {
+							MRecord songr = songIter.next();
+							Song song = songr.createSong();
+							if (song->Contains(keyword)) {
+								results.addSong(song);
+								found++;
+							}
 						}
 					}
 				}
@@ -2459,9 +2468,11 @@ MusicLib::modifyID3(Song oldSong, Song newSong) {
 
 	dialog->EndDialog(0);
 	delete dialog;
+	logger.log(msg);
 	int r = MBMessageBox("Confirmation", msg, FALSE, TRUE);
 	if (r == 0) {
-		MBMessageBox("Notice","Edit not performed");
+		logger.log("Edit cancelled");
+		//MBMessageBox("Notice","Edit not performed");
 		return FALSE;
 	}
 
@@ -2486,9 +2497,10 @@ MusicLib::modifyID3(Song oldSong, Song newSong) {
 		p != (PlaylistNode*)0; p = songs.next(p))
     {
 		CString file = p->_item->getId3("FILE");
+		ctr++;
 
         dialog->UpdateStatus(file);
-        dialog->ProgressPos(ctr++);
+        dialog->ProgressPos(ctr);
 		// Added this in April 2006, finding it now in Nov. Checking it in. We'll see!
 		dialog->UpdateWindow();
 
@@ -2583,6 +2595,11 @@ MusicLib::searchForMp3s(Playlist & songs, const CString & genrename_,
 	const CString & artistname, const CString & albumname,
 	const CString & songname) {
 
+	if (m_pSearchFiles) {
+		delete m_pSearchFiles;
+	}
+	m_pSearchFiles = new MFiles();
+
 	if (genrename_ == "")
 		return;
 	CString genrename = Genre_normalize(genrename_);
@@ -2600,6 +2617,9 @@ MusicLib::searchForMp3s(Playlist & songs, const CString & genrename_,
 	} else {
 		searchForArtists(songs, artistList);
 	}
+	m_pSearchFiles->removeAll();
+	delete m_pSearchFiles;
+	m_pSearchFiles = NULL;
 }
 
 void
@@ -2630,9 +2650,15 @@ MusicLib::searchForSongs(Playlist & songs, MList & songList,
 		songs.append(song.createSong());
 	} else {
 		MList::Iterator songIter(songList);
+		CString tmp;
+		int at=0;
 		while (songIter.more()) {
 			MRecord song = songIter.next();
-			songs.append(song.createSong());
+			tmp = song.lookupVal("FILE");
+			if (!m_pSearchFiles->contains(tmp, at)) {
+				songs.append(song.createSong());
+				m_pSearchFiles->add(at, tmp);
+			}
 		}
 	}
 }
@@ -2694,13 +2720,15 @@ MusicLib::IgetLibraryCounts() {
 					MList albumList(artist);
 					MList::Iterator albumIter(albumList);
 					while (albumIter.more()) {
-						++albumcount;
 						MRecord album = albumIter.next();
-						MList songList(album);
-						MList::Iterator songIter(songList);
-						while (songIter.more()) {
-							songIter.next();
-							++songcount;
+						if (album.label() != MBALL) {
+							++albumcount;
+							MList songList(album);
+							MList::Iterator songIter(songList);
+							while (songIter.more()) {
+								songIter.next();
+								++songcount;
+							}
 						}
 					}
 
@@ -3782,11 +3810,12 @@ MFiles::add(int at, const CString & file,
 			const CString & title,
 			const CString & tlen) {
 	m_files.InsertAt(at, file);
-	
-	MTags tags(genre,artist,album,title,tlen);
-	AutoBuf buf;
-	tags.serialize(buf);
-	m_tags.InsertAt(at, buf.p);
+	if (genre.GetLength()) {
+		MTags tags(genre,artist,album,title,tlen);
+		AutoBuf buf;
+		tags.serialize(buf);
+		m_tags.InsertAt(at, buf.p);
+	}
 }
 void
 MFiles::remove(const CString & file) {
@@ -3963,6 +3992,74 @@ MSongLib::init(BOOL rebuild) {
 		m_files.removeAll();
 }
 int
+MSongLib::addSong0(Song & song) {
+	//PMemory m_mem(MBTESTFILE);
+	++m_songcount;
+    CString artistname, albumname, titlename, genrename,year,track,file,tlen;
+
+	file = song->getId3("FILE");
+
+	// Prevent same file being added more than once
+	// Now gonna manage it nicely, being used by loadplaylist et al
+	int at;
+	if (m_files.contains(file, at)) {
+//		m_files.remove(at);
+		return 0;
+	} 
+	m_dirty = 1;
+
+	artistname = song->getId3("TPE1");
+	albumname = song->getId3("TALB");
+	titlename = song->getId3("TIT2");
+    genrename = song->getId3("TCON");
+	tlen = song->getId3("TLEN");
+
+	m_files.add(at, file,genrename,artistname,albumname,titlename,tlen);
+
+	// Add to main db list by genre
+	MList genreList(m_mem);
+	MList artistList = genreList.list(genrename);
+	MList albumList = artistList.list(artistname);
+	MList titleList = albumList.list(albumname);
+	MList id3List = titleList.list(titlename, 1);
+
+	// Add to ' all' Genre list
+	MList allArtistsList = genreList.list(MBALL);
+	MList allAlbumList = allArtistsList.list(artistname);
+	MList allTitleList = allAlbumList.list(albumname);
+	allTitleList.prepend(titlename);
+
+	// Add id3 list...
+	MRecord titleRecord = titleList.record(titlename);
+	MRecord allTitleRecord = allTitleList.record(titlename);
+    AutoBuf buf(1000);
+    POSITION pos;
+    for (pos = song->_obj.GetStartPosition(); pos != NULL;) {
+        CString key,val;
+        song->_obj.GetNextAssoc(pos, key, val);
+        if (val != "") {
+		    sprintf(buf.p, "%s %s", (LPCTSTR)key, (LPCTSTR)val);
+			id3List.prepend(buf.p);
+        }
+    }
+
+	// Share the id3 tags with both Genre lists
+	allTitleRecord.ptr() = titleRecord.ptr();
+
+	// Now add to the ' all' artists list
+	MList allAllAlbumList = allArtistsList.list(MBALL);
+	MList allAllTitleList = allAllAlbumList.list(albumname);
+	allAllTitleList.prepend(titlename);
+	MRecord allAllTitleRecord = allAllTitleList.record(titlename);
+
+	// Share the id3 tags with both Genre lists
+	allAllTitleRecord.ptr() = titleRecord.ptr();
+
+
+
+    return 1;
+}
+int
 MSongLib::addSong(Song & song) {
 	//PMemory m_mem(MBTESTFILE);
 	++m_songcount;
@@ -3987,22 +4084,40 @@ MSongLib::addSong(Song & song) {
 
 	m_files.add(at, file,genrename,artistname,albumname,titlename,tlen);
 
+	// Add to main db list: Genre/Artist
 	MList genreList(m_mem);
 	MList artistList = genreList.list(genrename);
 	MList albumList = artistList.list(artistname);
 	MList titleList = albumList.list(albumname);
 	MList id3List = titleList.list(titlename, 1);
 
+	// Add to ' all' Genre list: all/Artist
 	MList allArtistsList = genreList.list(MBALL);
 	MList allAlbumList = allArtistsList.list(artistname);
 	MList allTitleList = allAlbumList.list(albumname);
 	allTitleList.prepend(titlename);
 
+	// Add to ' all' Artist list by Genre: Genre/all
+	MList allAlbumsForGenreList = artistList.list(MBALL);
+	MList allTitlesForGenreList = allAlbumsForGenreList.list(albumname);
+	allTitlesForGenreList.prepend(titlename);
+
+	// Add to ' all' Album list by Artist: Genre/all/all
+	MList allTitlesForArtistList = albumList.list(MBALL);
+	allTitlesForArtistList.prepend(titlename);
+	
+	// and to ' all' Genres by Artist: all/Artist/all
+	MList allTitlesForAllGenreArtistList = allAlbumList.list(MBALL);
+	allTitlesForAllGenreArtistList.prepend(titlename);
+
+	// Add id3 list...
 	MRecord titleRecord = titleList.record(titlename);
 	MRecord allTitleRecord = allTitleList.record(titlename);
-
+	MRecord allTitlesForGenreRecord = allTitlesForGenreList.record(titlename);
+	MRecord allTitlesForArtistRecord = allTitlesForArtistList.record(titlename);
+	MRecord allTitlesForAllGenreArtistRecord = 
+		allTitlesForAllGenreArtistList.record(titlename);
     AutoBuf buf(1000);
-
     POSITION pos;
     for (pos = song->_obj.GetStartPosition(); pos != NULL;) {
         CString key,val;
@@ -4012,16 +4127,29 @@ MSongLib::addSong(Song & song) {
 			id3List.prepend(buf.p);
         }
     }
-	allTitleRecord.ptr() = titleRecord.ptr();
 
+	// Share the id3 tags with both Genre lists
+	allTitleRecord.ptr() = titleRecord.ptr();
+	allTitlesForGenreRecord.ptr() = titleRecord.ptr();
+	allTitlesForArtistRecord.ptr() = titleRecord.ptr();
+	allTitlesForAllGenreArtistRecord.ptr() = titleRecord.ptr();
+
+	// Now add to the ' all' artists list
 	MList allAllAlbumList = allArtistsList.list(MBALL);
 	MList allAllTitleList = allAllAlbumList.list(albumname);
 	allAllTitleList.prepend(titlename);
 	MRecord allAllTitleRecord = allAllTitleList.record(titlename);
+
+	// Share the id3 tags with both Genre lists
 	allAllTitleRecord.ptr() = titleRecord.ptr();
+
+
 
     return 1;
 }
+//#define DUMPRECORDS( ___XXX___ ) dumpRecords( ___XXX___ );
+#define DUMPRECORDS(__XXX___) ;
+
 void
 MSongLib::removeSong(Song & song2remove) {
     CString artistname, albumname, songname, genrename;
@@ -4030,118 +4158,239 @@ MSongLib::removeSong(Song & song2remove) {
 	songname = song2remove->getId3("TIT2");
     genrename = song2remove->getId3("TCON");
 	CString filename = song2remove->getId3("FILE");
+	DUMPRECORDS("0");
 
+	// Genre/Artist/Album removeall
 	MList genreList(m_mem);
-	MList artistList = genreList.list(genrename);
-	MList albumList = artistList.list(artistname);
-	MList songList = albumList.list(albumname);
-	MList * tagList = NULL;
 	MRecord * song = NULL;
-	if (filename.GetLength()) {
-		MList::Iterator songIter(songList);
-		BOOL found = FALSE;
-		while (songIter.more() && !found) {
-			if (song != NULL)
-				delete song;
-			song = new MRecord (songIter.next() );
-			CString sfile = song->lookupVal("FILE");
-			if (filename == sfile) {
-				tagList = new MList ( *song );
-				found = TRUE;
+	{
+		MList artistList = genreList.list(genrename);
+		MList albumList = artistList.list(artistname);
+		MList songList = albumList.list(albumname);
+		MList * tagList = NULL;
+
+		if (filename.GetLength()) {
+			MList::Iterator songIter(songList);
+			BOOL found = FALSE;
+			while (songIter.more() && !found) {
+				if (song != NULL)
+					delete song;
+				song = new MRecord (songIter.next() );
+				CString sfile = song->lookupVal("FILE");
+				if (filename == sfile) {
+					tagList = new MList ( *song );
+					found = TRUE;
+				}
 			}
+		} else {
+			tagList = new MList (songList.list(songname));
+			song = new MRecord ( albumList.record(songname));
 		}
-	} else {
-		tagList = new MList (songList.list(songname));
-		song = new MRecord ( albumList.record(songname));
-	}
-	if (tagList != NULL) {
-		MList::Iterator tagIter(*tagList);
-		while (tagIter.more()) {
-			tagList->remove(tagIter.next().label());
-		}
-		delete tagList;
-	}
-	songList.remove(*song);
-	delete song;
-
-	if (songList.count() == 0) {
-		albumList.remove(albumname);
-		if (albumList.count() == 0) {
-			artistList.remove(artistname);
-			if (artistList.count() == 0) {
-				genreList.remove(genrename);
+		if (tagList != NULL) {
+			MList::Iterator tagIter(*tagList);
+			while (tagIter.more()) {
+				tagList->remove(tagIter.next().label());
 			}
+			delete tagList;
 		}
-	}
+		songList.remove(*song);
+		delete song;
 
-	// all/artist removeall
-	MList allArtistList = genreList.list(MBALL);
-	MList allAlbumList = allArtistList.list(artistname);
-	MList allSongList = allAlbumList.list(albumname);
-//	allSongList.remove();
-
-	song = NULL;
-	if (filename.GetLength()) {
-		MList::Iterator songIter(allSongList);
-		BOOL found = FALSE;
-		while (songIter.more() && !found) {
-			if (song)
-				delete song;
-			song = new MRecord (songIter.next() );
-			CString sfile = song->lookupVal("FILE");
-			if (filename == sfile) {
-				found = TRUE;
-			}
-		}
-	} else {
-		song = new MRecord ( allAlbumList.record(songname));
-	}
-	allSongList.remove(*song);
-	delete song;
-
-	if (allSongList.count() == 0) {
-		allAlbumList.remove(albumname);
-		if (allAlbumList.count() == 0) {
-			allArtistList.remove(artistname);
-			if (allArtistList.count() == 0) {
-				genreList.remove(MBALL);
+		if (songList.count() == 0) {
+			albumList.remove(albumname);
+			if (albumList.count() == 0) {
+				artistList.remove(artistname);
+				if (artistList.count() == 0) {
+					genreList.remove(genrename);
+				}
 			}
 		}
 	}
+	DUMPRECORDS("1");
 
-	// all/all removeall
-	MList allAllArtistList = genreList.list(MBALL);
-	MList allAllAlbumList = allAllArtistList.list(MBALL);
-	MList allAllSongList = allAllAlbumList.list(albumname);
+	{
+		// all/Artist/Album removeall
+		MList artistList = genreList.list(MBALL);
+		MList albumList = artistList.list(artistname);
+		MList songList = albumList.list(albumname);
 
-	song = NULL;
-	if (filename.GetLength()) {
-		MList::Iterator songIter(allAllSongList);
-		BOOL found = FALSE;
-		while (songIter.more() && !found) {
-			if (song)
-				delete song;
-			song = new MRecord (songIter.next() );
-			CString sfile = song->lookupVal("FILE");
-			if (filename == sfile) {
-				found = TRUE;
+		song = NULL;
+		if (filename.GetLength()) {
+			MList::Iterator songIter(songList);
+			BOOL found = FALSE;
+			while (songIter.more() && !found) {
+				if (song)
+					delete song;
+				song = new MRecord (songIter.next() );
+				CString sfile = song->lookupVal("FILE");
+				if (filename == sfile) {
+					found = TRUE;
+				}
+			}
+		} else {
+			song = new MRecord ( albumList.record(songname));
+		}
+		songList.remove(*song);
+		delete song;
+
+		if (songList.count() == 0) {
+			albumList.remove(albumname);
+			if (albumList.count() == 0) {
+				artistList.remove(artistname);
+				if (artistList.count() == 0) {
+					genreList.remove(MBALL);
+				}
 			}
 		}
-	} else {
-		song = new MRecord ( allAllAlbumList.record(songname));
 	}
-	allAllSongList.remove(*song);
-	delete song;
+	DUMPRECORDS("2");
+	{
+		// all/all/Album removeall
+		MList artistList = genreList.list(MBALL);
+		MList albumList = artistList.list(MBALL);
+		MList songList = albumList.list(albumname);
 
-	if (allAllSongList.count() == 0) {
-		allAllAlbumList.remove(albumname);
-		if (allAllAlbumList.count() == 0) {
-			allAllArtistList.remove(MBALL);
-			if (allAllArtistList.count() == 0) {
-				genreList.remove(MBALL);
+		song = NULL;
+		if (filename.GetLength()) {
+			MList::Iterator songIter(songList);
+			BOOL found = FALSE;
+			while (songIter.more() && !found) {
+				if (song)
+					delete song;
+				song = new MRecord (songIter.next() );
+				CString sfile = song->lookupVal("FILE");
+				if (filename == sfile) {
+					found = TRUE;
+				}
+			}
+		} else {
+			song = new MRecord ( albumList.record(songname));
+		}
+		songList.remove(*song);
+		delete song;
+
+		if (songList.count() == 0) {
+			albumList.remove(albumname);
+			if (albumList.count() == 0) {
+				artistList.remove(MBALL);
+				if (artistList.count() == 0) {
+					genreList.remove(MBALL);
+				}
 			}
 		}
 	}
+	DUMPRECORDS("3");
+	{
+		// Genre/all/Album remove
+		MList artistList = genreList.list(genrename);
+		MList albumList = artistList.list(MBALL);
+		MList songList = albumList.list(albumname);
+		song = NULL;
+		if (filename.GetLength()) {
+			MList::Iterator songIter(songList);
+			BOOL found = FALSE;
+			while (songIter.more() && !found) {
+				if (song)
+					delete song;
+				song = new MRecord (songIter.next() );
+				CString sfile = song->lookupVal("FILE");
+				if (filename == sfile) {
+					found = TRUE;
+				}
+			}
+		} else {
+			song = new MRecord ( albumList.record(songname));
+		}
+		songList.remove(*song);
+		delete song;
+
+		if (songList.count() == 0) {
+			albumList.remove(albumname);
+			if (albumList.count() == 0) {
+				artistList.remove(MBALL);
+				if (artistList.count() == 0) {
+					genreList.remove(genrename);
+				}
+			}
+		}
+
+	}
+	DUMPRECORDS("4");
+	{
+		// Genre/Artist/all
+		MList artistList = genreList.list(genrename);
+		MList albumList = artistList.list(artistname);
+		MList songList = albumList.list(MBALL);
+		song = NULL;
+		if (filename.GetLength()) {
+			MList::Iterator songIter(songList);
+			BOOL found = FALSE;
+			while (songIter.more() && !found) {
+				if (song)
+					delete song;
+				song = new MRecord (songIter.next() );
+				CString sfile = song->lookupVal("FILE");
+				if (filename == sfile) {
+					found = TRUE;
+				}
+			}
+		} else {
+			song = new MRecord ( albumList.record(songname));
+		}
+		if (song) {
+			songList.remove(*song);
+			delete song;
+		}
+
+		if (songList.count() == 0) {
+			albumList.remove(MBALL);
+			if (albumList.count() == 0) {
+				artistList.remove(artistname);
+				if (artistList.count() == 0) {
+					genreList.remove(genrename);
+				}
+			}
+		}
+	}
+	DUMPRECORDS("5");
+	{
+		// all/Artist/all
+		MList artistList = genreList.list(MBALL);
+		MList albumList = artistList.list(artistname);
+		MList songList = albumList.list(MBALL);
+		song = NULL;
+		if (filename.GetLength()) {
+			MList::Iterator songIter(songList);
+			BOOL found = FALSE;
+			while (songIter.more() && !found) {
+				if (song)
+					delete song;
+				song = new MRecord (songIter.next() );
+				CString sfile = song->lookupVal("FILE");
+				if (filename == sfile) {
+					found = TRUE;
+				}
+			}
+		} else {
+			song = new MRecord ( albumList.record(songname));
+		}
+		if (song) {
+			songList.remove(*song);
+			delete song;
+		}
+
+		if (songList.count() == 0) {
+			albumList.remove(MBALL);
+			if (albumList.count() == 0) {
+				artistList.remove(artistname);
+				if (artistList.count() == 0) {
+					genreList.remove(MBALL);
+				}
+			}
+		}
+	}
+	DUMPRECORDS("6");
+
 	m_files.remove(filename);
 }
 void
@@ -4390,7 +4639,34 @@ CString MusicLib::JustVerify() {
 
 	return vr;
 }
-
+void
+MSongLib::dumpRecords(CString msg) {
+	logger.ods("dumpRecords:"+msg);
+	MList genrelist = genreList();
+	MList::Iterator genreIter(genrelist);
+    while (genreIter.more()) {
+		MRecord genre =genreIter.next();
+		MList artistList(genre);
+		MList::Iterator artistIter(artistList);
+		while (artistIter.more()) {
+			MRecord artist = artistIter.next();
+			MList albumList(artist);
+			MList::Iterator albumIter(albumList);
+			while (albumIter.more()) {
+				MRecord album = albumIter.next();
+				MList songList(album);
+				MList::Iterator songIter(songList);
+				while (songIter.more()) {
+					MRecord song = songIter.next();
+					char buf[500];
+					sprintf(buf,"%20s %20s %20s %20s",
+						genre.label(), artist.label(), album.label(),song.label());
+					logger.ods(buf);
+				}
+			}
+		}
+	}
+}
 CString
 MSongLib::verify(CString msg, int & total_albums, int & total_songs, const int totalMp3s) {
     CString results, contents, removed;

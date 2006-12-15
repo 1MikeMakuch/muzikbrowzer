@@ -520,13 +520,14 @@
 #define ID_OPEN_FILE_BUTTON             32857
 #define ID_ALPHA_UP                     32859
 #define ID_ALPHA_DOWN                   32860
+#define ID_MENU_TAG_EDIT                32861
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        273
-#define _APS_NEXT_COMMAND_VALUE         32861
+#define _APS_NEXT_COMMAND_VALUE         32862
 #define _APS_NEXT_CONTROL_VALUE         2075
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

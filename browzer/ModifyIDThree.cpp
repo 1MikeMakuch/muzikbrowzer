@@ -75,19 +75,34 @@ BOOL ModifyIDThree::OnInitDialog()
     m_Album.EnableWindow(FALSE);
 
 //    CString genre = id3_GetGenre(mID3_Tag);
-	CString genre = m_Song->getId3(CS("TCON"));
+	CString oldgenre = m_Song->getId3(CS("TCON"));
 
-    genre = Genre_normalize((LPCTSTR)genre);
+    oldgenre = Genre_normalize((LPCTSTR)oldgenre);
 
-	CString artist = m_Song->getId3(CS("TPE1"));
-	CString album = m_Song->getId3(CS("TALB"));
-	CString title = m_Song->getId3(CS("TIT2"));
+	CString oldartist = m_Song->getId3(CS("TPE1"));
+	CString oldalbum = m_Song->getId3(CS("TALB"));
+	CString oldtitle = m_Song->getId3(CS("TIT2"));
 	CString track = m_Song->getId3(CS("TRCK"));
 	CString year = m_Song->getId3(CS("TYER"));
 	CString file = m_Song->getId3("FILE");
 	m_File.SetWindowText(file);
+	CString newgenre, newartist, newalbum, newtitle;
+	newgenre = oldgenre;
+	newartist = oldartist;
+	newalbum = oldalbum;
+	newtitle = oldtitle;
 
-	m_OldGenre.SetWindowText(genre);
+	if (MBALL == newartist) {
+		newartist = "";
+	}
+	if (MBALL == newalbum) {
+		newalbum = "";
+	}
+	if (MBALL == newgenre) {
+		newgenre = "";
+	}
+
+	m_OldGenre.SetWindowText(oldgenre);
     POSITION pos;
 	CString tmpGenre;
     for (pos = mGenreList->GetHeadPosition(); pos != NULL; ) {
@@ -95,34 +110,37 @@ BOOL ModifyIDThree::OnInitDialog()
         m_Genre.AddString(tmpGenre);
         mGenreList->GetNext(pos);
     }
-    m_Genre.SelectString(0, genre );
+    m_Genre.SelectString(0, newgenre );
 
     int x = m_Genre.GetCount();
 
-    if (mWindowFlag >= 1 && genre != MBALL ) {
+    if (mWindowFlag >= 1 /*&& genre != MBALL */) {
         m_Genre.EnableWindow(TRUE);
     }
 
     if (mWindowFlag >= 2) {
         m_Artist.EnableWindow(TRUE);
-		m_Artist.SetWindowText(artist);
-		m_OldArtist.SetWindowText(artist);
-		if (artist == MBALL)
-			m_Artist.EnableWindow(FALSE);
+		m_Artist.SetWindowText(newartist);
+		m_OldArtist.SetWindowText(oldartist);
+//		if (artist == MBALL)
+//			m_Artist.EnableWindow(FALSE);
     }
     if (mWindowFlag >= 3) {
         m_Album.EnableWindow(TRUE);
         m_Year.EnableWindow(TRUE);
-		m_Album.SetWindowText(album);
-		m_OldAlbum.SetWindowText(album);
+		m_Album.SetWindowText(newalbum);
+		m_OldAlbum.SetWindowText(oldalbum);
 		m_Year.SetWindowText(year);
 		m_OldYear.SetWindowText(year);
+//		if (album == MBALL) {
+//			m_Album.EnableWindow(FALSE);
+//		}
     }
     if (mWindowFlag >= 4) {
         m_Title.EnableWindow(TRUE);
         m_Track.EnableWindow(TRUE);
-	    m_Title.SetWindowText(title);
-		m_OldTitle.SetWindowText(title);
+	    m_Title.SetWindowText(newtitle);
+		m_OldTitle.SetWindowText(oldtitle);
 		m_Track.SetWindowText(track);
 		m_OldTrack.SetWindowText(track);
     }
@@ -161,35 +179,46 @@ void ModifyIDThree::OnOK()
     m_Year.GetWindowText(year);
     m_Track.GetWindowText(track);
 
+	String::trimLR(genre);
+	String::trimLR(artist);
+	String::trimLR(album);
+	String::trimLR(title);
+	String::trimLR(year);
+	String::trimLR(track);
+
+	CString mball(MBALL);
+	String::trimLR(mball);
+
+
+	if ("" == genre || !genre.CompareNoCase(mball)) 
+		genre = oldGenre;
+	if ("" == artist ||!artist.CompareNoCase(mball)) 
+		artist = oldArtist;
+	if ("" == album || !album.CompareNoCase(mball)) 
+		album = oldAlbum;
 
     if (oldGenre != genre) {
-//        Genre_addGenre(m_newID3_Tag, (LPCTSTR) genre);
 		m_newSong->setId3(CS("TCON"), genre);
 		somethingchanged = 1;
     }
     if (oldArtist != artist) {
-//        ID3_AddArtist(&m_newID3_Tag, (LPCTSTR) artist, true);
 		m_newSong->setId3(CS("TPE1"), artist);
 		somethingchanged = 1;
     }
     if (oldAlbum != album) {
-//        ID3_AddAlbum(&m_newID3_Tag, (LPCTSTR) album, true);
 		m_newSong->setId3(CS("TALB"), album);
 		somethingchanged = 1;
     }
     if (oldTitle != title) {
-//        ID3_AddTitle(&m_newID3_Tag, (LPCTSTR) title, true);
 		m_newSong->setId3(CS("TIT2"), title);
 		somethingchanged = 1;
     }
     if (oldYear != year) {
-//        ID3_AddYear(&m_newID3_Tag, (LPCTSTR) year, true);
 		m_newSong->setId3(CS("TYER"), year);
 		somethingchanged = 1;
     }
     if (oldTrack != track) {
         int t = atoi((LPCTSTR)track);
-//        ID3_AddTrack(&m_newID3_Tag, t, 0, true);
 		m_newSong->setId3(CS("TRCK"), track);
 		somethingchanged = 1;
     }
@@ -203,7 +232,6 @@ void ModifyIDThree::OnOK()
 
 void ModifyIDThree::OnCancel() 
 {
-	// TODO: Add extra cleanup here
 	
 	CDialog::OnCancel();
 }
