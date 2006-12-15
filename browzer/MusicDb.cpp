@@ -1183,7 +1183,7 @@ MusicLib::scanDirectories(const CStringList & directories,
             ++good_count;
         }
 		_id->UpdateStatus2(genre + ", " + artist + ", " + album 
-			+ ", " + track + ", " + songn);
+			+ ", " + track /*+ ", " + songn*/);
 		added_count += addSongToDb(ctr, m_totalMp3s, song, mp3file);
 		added += mp3file + "\r\n";
 		mp3Files.GetNext(pos);
@@ -1226,8 +1226,8 @@ MusicLib::scanDirectories(const CStringList & directories,
 	}
 
 	results += good_results;
-    results += error_results;
-    results += verify_results1;
+//    results += error_results;
+//    results += verify_results1;
 
     if (mp3Files.GetCount() == good_count) {
 		if (added_count) {
@@ -1238,12 +1238,12 @@ MusicLib::scanDirectories(const CStringList & directories,
 		}
 	} else {
 		sprintf(buf.p, 
-			"\r\n%d audio files found, %d had incomplete audio tags\r\n",
+			"\r\n%d audio files found, %d had incomplete audio tags.\r\nThey show up as \"unknown\" in the Muzikbrowzer Library\r\nso that you may easily identify them and edit.",
 			mp3Files.GetCount(), mp3Files.GetCount()-good_count);
 		results += buf.p;
 	}
 
-#ifdef _DEBUG
+#ifdef asdf
 	results += "### This info only appears in DEBUG build ###\r\n";
 	results += "\r\ntlen_method_1_count: ";
 	results += tlen_method_1_count;

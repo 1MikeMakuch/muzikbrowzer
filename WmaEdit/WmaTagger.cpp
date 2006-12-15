@@ -854,15 +854,21 @@ WmaTag::setVal(const CString & srcKey, const CString & srcVal) {
 		CString key(srcKey);
 		CString val(srcVal);
 
-		if (val.GetAt(0) == '"') {
-			val = val.Right(val.GetLength()-1);
+//		if (val.GetAt(0) == '"') {
+//			val = val.Right(val.GetLength()-1);
+//		}
+//		if (val.GetAt(val.GetLength()-1) == '"') {
+//			val = val.Left(val.GetLength()-1);
+//		}
+		// Doing this because wmasdk reads both id3v1 and id3v2 tags
+		// and the comments in id3v1 are cut off.
+		if (exists(key)) {
+			CString tmp = getVal(key);
+			if (tmp.GetLength() < val.GetLength())
+			m_tags.SetAt(key, val);
+		} else {
+			m_tags.SetAt(key, val);
 		}
-		if (val.GetAt(val.GetLength()-1) == '"') {
-			val = val.Left(val.GetLength()-1);
-		}
-
-//		key.MakeLower();
-		m_tags.SetAt(key, val);
 	}
 }
 
