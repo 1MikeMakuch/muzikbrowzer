@@ -58,7 +58,9 @@ OggTag::read(const CString & file) {
 			CString oldvalue;
 			key.MakeLower();
 			oldvalue = getVal(key);
-			newvalue = oldvalue + newvalue + " ";
+			if (oldvalue.GetLength() && newvalue.GetLength())
+				newvalue = " " + newvalue;
+			newvalue = oldvalue + newvalue;
 			if (key.GetLength()) {
 				m_tags.SetAt(key, newvalue);
 			}
