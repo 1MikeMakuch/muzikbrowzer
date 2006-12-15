@@ -293,14 +293,23 @@ String::stripws(const CString & string) {
 	return news;
 }
 void
-String::trimLR(CString & string) {
-	string.TrimLeft();
-	string.TrimRight();
+String::trimLR(CString & string, const CString & trim) {
+	if (trim.GetLength() == 0) {
+		string.TrimLeft();
+		string.TrimRight();
+	} else {
+		string.TrimLeft(trim);
+		string.TrimRight(trim);
+	}
 }
 TEST(StringTrimLR, stringtrimlr)
 {
 	CString x(" x x ");
 	String::trimLR(x);
+	CHECK("x x" == x);
+
+	x = "\" x x \"";
+	String::trimLR(x,"\" ");
 	CHECK("x x" == x);
 }
 

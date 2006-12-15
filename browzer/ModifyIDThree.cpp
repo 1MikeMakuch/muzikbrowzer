@@ -82,15 +82,24 @@ BOOL ModifyIDThree::OnInitDialog()
 	CString oldartist = m_Song->getId3(CS("TPE1"));
 	CString oldalbum = m_Song->getId3(CS("TALB"));
 	CString oldtitle = m_Song->getId3(CS("TIT2"));
-	CString track = m_Song->getId3(CS("TRCK"));
-	CString year = m_Song->getId3(CS("TYER"));
+	CString oldtrack = m_Song->getId3(CS("TRCK"));
+	CString oldyear = m_Song->getId3(CS("TYER"));
 	CString file = m_Song->getId3("FILE");
 	m_File.SetWindowText(file);
-	CString newgenre, newartist, newalbum, newtitle;
+	CString newgenre, newartist, newalbum, newtitle, newtrack, newyear;
 	newgenre = oldgenre;
 	newartist = oldartist;
 	newalbum = oldalbum;
 	newtitle = oldtitle;
+	newtrack = oldtrack;
+	newyear = oldyear;
+
+	oldgenre = "\"" + oldgenre + "\"";
+	oldartist = "\"" + oldartist + "\"";
+	oldalbum = "\"" + oldalbum + "\"";
+	oldtitle = "\"" + oldtitle + "\"";
+	oldtrack = "\"" + oldtrack + "\"";
+	oldyear = "\"" + oldyear + "\"";
 
 	if (MBALL == newartist) {
 		newartist = "";
@@ -130,8 +139,8 @@ BOOL ModifyIDThree::OnInitDialog()
         m_Year.EnableWindow(TRUE);
 		m_Album.SetWindowText(newalbum);
 		m_OldAlbum.SetWindowText(oldalbum);
-		m_Year.SetWindowText(year);
-		m_OldYear.SetWindowText(year);
+		m_Year.SetWindowText(newyear);
+		m_OldYear.SetWindowText(oldyear);
 //		if (album == MBALL) {
 //			m_Album.EnableWindow(FALSE);
 //		}
@@ -141,8 +150,8 @@ BOOL ModifyIDThree::OnInitDialog()
         m_Track.EnableWindow(TRUE);
 	    m_Title.SetWindowText(newtitle);
 		m_OldTitle.SetWindowText(oldtitle);
-		m_Track.SetWindowText(track);
-		m_OldTrack.SetWindowText(track);
+		m_Track.SetWindowText(newtrack);
+		m_OldTrack.SetWindowText(oldtrack);
     }
 	
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -178,7 +187,14 @@ void ModifyIDThree::OnOK()
     m_Title.GetWindowText(title);
     m_Year.GetWindowText(year);
     m_Track.GetWindowText(track);
-
+	
+	String::trimLR(oldGenre," \"");
+	String::trimLR(oldArtist," \"");
+	String::trimLR(oldAlbum," \"");
+	String::trimLR(oldTitle," \"");
+	String::trimLR(oldYear," \"");
+	String::trimLR(oldTrack," \"");
+	
 	String::trimLR(genre);
 	String::trimLR(artist);
 	String::trimLR(album);
