@@ -1264,14 +1264,6 @@ int
 MusicLib::scanDirectory(int * abortflag, CStringList &mp3Files,
 					   const CString & directory, BOOL scanNew, BOOL bAdd) {
 
-	// this kludge added so that; if file names appear in the mp3dirlist
-	// we'll add 'em. This can happen via Menu/Music/Add
-	FExtension ext(directory);
-	if (m_mp3Extensions.Find(String::downcase(ext.ext())) != NULL) {
-		insertSort(mp3Files, directory);
-		return 0;
-	} // end of kludge
-
     CString glob(directory);
 	if (glob[glob.GetLength()-1] == '\\') {
 		glob += "*.*";
@@ -1287,7 +1279,11 @@ MusicLib::scanDirectory(int * abortflag, CStringList &mp3Files,
     BOOL bWorking = finder.FindFile(glob);
 	DWORD r;
 	if (!bWorking) {
-		r = GetLastError();
+		// check if it was a file
+		glob = directory;
+		bWorking = finder.FindFile(glob);
+		if (!bWorking)
+			r = GetLastError();
 	}
 	CTime mtime;
     while (bWorking)
