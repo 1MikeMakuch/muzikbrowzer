@@ -112,15 +112,13 @@ void CPlayerApp::RunTestHarness() {
 
 	TestResult tr;
 	TestRegistry::runAllTests(tr);
-#ifdef _DEBUG
+
 	if (tr.failures() > 0) {
 		MBMessageBox("Muzikbrowzer Test Results", tr.results());
 	} else {
 		logger.log("Test Results");
 		logger.log(tr.results());
 	}
-#else
-	logger.log("Test Results");
-	logger.log(tr.results());
-#endif
+	logger.log("Tests Complete");
+
 }

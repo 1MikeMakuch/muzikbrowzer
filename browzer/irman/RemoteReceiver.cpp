@@ -37,16 +37,16 @@ class Tira : public RemoteReceiver
 {
 public:
 	Tira() {
-		OutputDebugString("Tira::Tira\r\n");
+		logger.logd("Tira::Tira");
 	}
 	~Tira()
 	{
-		OutputDebugString("Tira::~Tira\r\n");
+		logger.logd("Tira::~Tira");
 	}
 	BOOL Open() {return FALSE; }
 	void Close() {  }
 	BOOL init(CWnd * wnd, UINT msg, const TCHAR * regKey=0, int numKeys=0) {
-		OutputDebugString("Tira::init\r\n");
+		logger.logd("Tira::init");
 		//RemoteReceiver::init(cwnd);
 		return TRUE;
 	}
@@ -99,17 +99,17 @@ RemoteReceiver::RemoteReceiver() : m_lasttick(0), m_keyCodes(NULL)
 	,m_setKey(-1),m_wndMsgHndlr(NULL),m_interKeyDelay(0),m_wmsg(0)
 	,m_codelength(0),m_lastcode(0)
 {
-	OutputDebugString("RemoteReceiver::RemoteReceiver\r\n");
+	logger.logd("RemoteReceiver::RemoteReceiver");
 }
 RemoteReceiver::~RemoteReceiver()
 {
-	OutputDebugString("RemoteReceiver::~RemoteReceiver\r\n");
+	logger.logd("RemoteReceiver::~RemoteReceiver");
 	if (m_keyCodes)
 		delete [] m_keyCodes;
 }
 BOOL
 RemoteReceiver::init(CWnd * wndMsgHndlr, UINT wmsg, const TCHAR * regKey, int numKeys) {
-	OutputDebugString("RemoteReceiver::init\r\n");
+	logger.logd("RemoteReceiver::init");
 	m_bPortReady = FALSE ;
 	m_ready = FALSE;
 	m_sComPort = "";

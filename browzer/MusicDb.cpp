@@ -2681,7 +2681,7 @@ MusicLib::dumpPL(int playlistCurrent) {
         buf += " ";
     }
     buf += "\r\n";
-    OutputDebugString(buf);
+    logger.ods(buf);
 
 }
 void

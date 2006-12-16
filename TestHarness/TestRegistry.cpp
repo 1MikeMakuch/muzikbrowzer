@@ -3,6 +3,7 @@
 #include "Test.h"
 #include "TestResult.h"
 #include "TestRegistry.h"
+#include "MyLog.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -38,11 +39,11 @@ void TestRegistry::run (TestResult& result) {
 	for (std::vector<Test *>::iterator it = tests.begin ();
 			it != tests.end (); ++it) {
 		CString name = (*it)->name();
-		OutputDebugString("TestHarness: " + name + "\r\n");
+		logger.logd("TestHarness: " + name);
 		(*it)->run (result);
 	}
 	result.endTests ();
-	OutputDebugString("TestHarness ended\r\n");
+	logger.logd("TestHarness ended");
 }
 
 

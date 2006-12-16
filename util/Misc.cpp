@@ -593,7 +593,7 @@ BOOL MBUtil::system(CWnd * cwnd, const CString & command, UINT msg2post) {
 	CString tmp ;
 
 	tmp += command;
-	OutputDebugString(tmp + "\r\n");
+	logger.logd(tmp);
 
     script.Write((LPCTSTR)tmp, tmp.GetLength());
 	script.Write("\n", 1);
@@ -608,7 +608,7 @@ BOOL MBUtil::system(CWnd * cwnd, const CString & command, UINT msg2post) {
 	 { /* failed */
 		DWORD err = ::GetLastError();
 		CString errstr = MBFormatError(err);
-		OutputDebugString(errstr);
+		logger.logd(errstr);
 //		logger.ods("MBUtil::system error");
 		return FALSE;
 	 }

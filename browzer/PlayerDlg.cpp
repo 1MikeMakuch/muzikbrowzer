@@ -1681,7 +1681,7 @@ CPlayerDlg::resetControls() {
 	counter++;
 	CString msg("resetControls ");
 	msg += numToString(counter) + "\r\n";
-	OutputDebugString(msg);
+	logger.logd(msg);
 	
 	UpdateRects();
 

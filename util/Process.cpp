@@ -105,7 +105,7 @@ BOOL Process::run()
 	 delete this;
 	 return FALSE;
 	} /* failed to start */
-	 OutputDebugString("Process.Run()\r\n");
+	 logger.logd("Process.Run()");
 
      target->PostMessage(UPM_PROCESS_HANDLE, (WPARAM)procinfo.hProcess, (LPARAM)pid);
      
