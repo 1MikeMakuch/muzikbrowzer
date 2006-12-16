@@ -58,10 +58,12 @@ OggTag::read(const CString & file) {
 			CString oldvalue;
 			key.MakeLower();
 			oldvalue = getVal(key);
-			if (oldvalue.GetLength() && newvalue.GetLength())
-				newvalue = " " + newvalue;
-			newvalue = oldvalue + newvalue;
-			if (key.GetLength()) {
+			if ((!key.CompareNoCase("description") 
+					|| !key.CompareNoCase("comments"))
+					&& oldvalue.GetLength() && newvalue.GetLength()) {
+				newvalue = oldvalue + " " + newvalue;
+			}
+			if (key.GetLength() && newvalue.GetLength()) {
 				m_tags.SetAt(key, newvalue);
 			}
         }
