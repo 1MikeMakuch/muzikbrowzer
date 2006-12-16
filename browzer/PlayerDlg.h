@@ -233,6 +233,7 @@ private:
 
 	BOOL m_Maximized;
 	CString m_LastAlbumArtFile;
+	CString m_LastGAA;
 	CSize m_InitialSize;
 	BOOL m_FixedSize;
 	CPoint m_LastSized;

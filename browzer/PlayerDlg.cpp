@@ -4636,6 +4636,10 @@ void CPlayerDlg::displayAlbumArt(const CString & file, const CString & album) {
 
 	if (file == m_LastAlbumArtFile) return;
 
+	CString tmp = _selectedGenre + _selectedArtist + _selectedAlbum;
+	if (m_LastGAA == tmp)
+		return;
+
 	static BOOL first = TRUE;
 	// first time up show the dflt skin art
 
@@ -4658,6 +4662,7 @@ void CPlayerDlg::displayAlbumArt(const CString & file, const CString & album) {
 		delete [] data;
 
 	m_LastAlbumArtFile = file;
+	m_LastGAA = tmp;
 
 //	RedrawWindow();
 
