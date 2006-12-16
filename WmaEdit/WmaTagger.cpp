@@ -811,18 +811,8 @@ WmaTag::getVal(const CString & srcKey) {
 
 	CString val;
 	CString key(srcKey);
-//	key.MakeLower();
 	if (m_tags.Lookup(key, val) != 0) {
-		if ("Duration" == key) {
-			if (val.GetLength()) {
-				float d = atof(val);
-				if (d > 10000) {
-					d = d / 10000;
-					int d2 = (int)d;
-					val = numToString(d2);
-				}
-			}
-		}
+
 		return val;
 	} else {
 		return "";
@@ -832,7 +822,6 @@ BOOL
 WmaTag::exists(const CString & srcKey) {
 	CString val;
 	CString key(srcKey);
-//	key.MakeLower();
 	if (m_tags.Lookup(key, val) != 0) {
 		return TRUE;
 	} else {
@@ -854,24 +843,161 @@ WmaTag::setVal(const CString & srcKey, const CString & srcVal) {
 		CString key(srcKey);
 		CString val(srcVal);
 
-//		if (val.GetAt(0) == '"') {
-//			val = val.Right(val.GetLength()-1);
-//		}
-//		if (val.GetAt(val.GetLength()-1) == '"') {
-//			val = val.Left(val.GetLength()-1);
-//		}
-		// Doing this because wmasdk reads both id3v1 and id3v2 tags
-		// and the comments in id3v1 are cut off.
+		// Not sure the best thing to do here, so I'm getting the COMM
+		// (or any other tag) with the most info in it!
 		if (exists(key)) {
 			CString tmp = getVal(key);
 			if (tmp.GetLength() < val.GetLength())
 			m_tags.SetAt(key, val);
 		} else {
+			if ("Duration" == key) {
+				if (val.GetLength()) {
+					float d = atof(val);
+					if (d > 10000) {
+						d = d / 10000;
+						int d2 = (int)d;
+						val = numToString(d2);
+					}
+				}
+			}
 			m_tags.SetAt(key, val);
 		}
 	}
 }
 
+CString
+WmaTag::write() {
+	CString error="WmaTag::write error ";
+	CString out;
+	char buf[500];
+	WmaTag old(m_file);
+
+	WORD				wStreamNum			= 0;
+	WCHAR				* pwszInFile		= NULL;//(WCHAR*)(LPCTSTR)m_file;
+    HRESULT             hr                  = S_OK;
+
+    IWMMetadataEditor   * pEditor           = NULL;
+    IWMHeaderInfo		* pHeaderInfo       = NULL;
+    IWMHeaderInfo3      * pHeaderInfo3		= NULL;
+
+    WCHAR               * pwszAttribName    = NULL;
+    WORD                wAttribNameLen      = 0;
+    WMT_ATTR_DATATYPE   wAttribType			= (WMT_ATTR_DATATYPE)1;
+    BYTE                * pbAttribValue     = NULL;
+    WORD                wAttribValueLen     = 0;
+    DWORD               dwAttribValueLen	= 0;
+    WORD				wLangIndex			= 0;
+
+	strcpy(buf,(LPCTSTR)m_file);
+    LPTSTR				ptszInFile			= buf;
+
+	WCHAR   * pwszAttribValue   = NULL;
+
+    do
+    {
+#ifndef UNICODE
+        hr = ConvertMBtoWC( ptszInFile, &pwszInFile );
+        if( FAILED( hr ) )
+        {
+			out += "ConvertMBtoWC";
+            break;
+        }
+#endif
+        hr = EditorOpenFile( pwszInFile, &pEditor, &pHeaderInfo,
+			&pHeaderInfo3 );
+        if(FAILED( hr ) )
+        {
+			out += "EditorOpenFile";
+            break;
+        }
+
+		POSITION pos;
+		CString key,val,oldval;
+		for(pos = m_tags.GetStartPosition(); pos != NULL;) {
+			m_tags.GetNextAssoc(pos, key, val);
+			oldval = old.getVal(key);
+			if (val != oldval) {
+				if (old.exists(key)) {
+					// set
+					LPTSTR  ptszAttribName  = (char*)(LPCTSTR)key;
+					LPTSTR  ptszAttribValue = (char*)(LPCTSTR)val;
+
+					ConvertMBtoWC(ptszAttribName, &pwszAttribName);
+					ConvertMBtoWC(ptszAttribValue, &pwszAttribValue);
+					wAttribValueLen = ( wcslen( pwszAttribValue) + 1) *
+						sizeof (WCHAR);
+					pbAttribValue = (BYTE *)pwszAttribValue;
+		
+					hr = pHeaderInfo->SetAttribute( wStreamNum,
+													pwszAttribName,
+													wAttribType,                                        
+													pbAttribValue,
+													wAttribValueLen );
+
+					if( FAILED( hr ) )
+					{
+						out += "SetAttribute";
+						break;
+					}
+				} else {
+					// add
+					LPTSTR  ptszAttribName  = (char*)(LPCTSTR)key;
+					LPTSTR  ptszAttribValue = (char*)(LPCTSTR)val;
+					ConvertMBtoWC(ptszAttribName, &pwszAttribName);
+					ConvertMBtoWC(ptszAttribValue, &pwszAttribValue);
+					dwAttribValueLen = ( wcslen( pwszAttribValue) + 1) *
+						sizeof (WCHAR);
+					pbAttribValue = (BYTE *)pwszAttribValue;
+		
+					hr = pHeaderInfo3->AddAttribute( wStreamNum,
+													 pwszAttribName,
+													 NULL,
+													 wAttribType, 
+													 wLangIndex,
+													 pbAttribValue,
+													 dwAttribValueLen );
+					if( FAILED( hr ) )
+					{
+						out += "AddAttribute";
+//						break;
+					}
+				}
+			}
+#ifndef UNICODE
+			SAFE_ARRAYDELETE( pwszAttribName );
+			SAFE_ARRAYDELETE( pwszAttribValue );
+#endif
+		}
+		hr = pEditor->Flush();
+		if( FAILED( hr ) )
+		{
+			_stprintf(buf, _T( "WMA:Could not flush the file %ws ( hr=0x%08x ).\n" ), 
+				pwszInFile, hr );
+			logger.log(buf);
+			out += buf;
+			break;
+		}
+
+		hr = pEditor->Close();
+		if( FAILED( hr ) )
+		{
+			_stprintf(buf, _T( "WMA:Could not close the file %ws ( hr=0x%08x ).\n" ), 
+				pwszInFile, hr );
+			logger.log(buf);
+			out += buf;
+			break;
+		}
+	} while (FALSE);
+#ifndef UNICODE
+	SAFE_ARRAYDELETE( pwszInFile );
+#endif
+	if (out != "") {
+		return CString(error + out);
+	} else {
+		return "";
+	}
+}
+#ifdef asdf
 CString
 WmaTag::write() {
 	CString error="WmaTag::write error ";
@@ -1028,3 +1154,4 @@ WmaTag::write() {
 		return "";
 	}
 }
+#endif
