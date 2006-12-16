@@ -6,7 +6,7 @@
 #define THE_PLAYER
 #include "PlayerDlg.h"
 
-#define LOGOWNER
+//#define LOGOWNER
 #include "MyLog.h"
 
 #include "About.h"
@@ -449,8 +449,8 @@ BOOL CPlayerDlg::OnInitDialog()
 	CString lfile = lpath + "\\" + MUZIKBROWZER;
 	lfile += ".log";
 	
-    logger.open(lfile);
-	logger.log(CS("Muzikbrowzer version: ") + CS(MUZIKBROWZER_VERSION));
+//    logger.open(lfile);
+//	logger.log(CS("Muzikbrowzer version: ") + CS(MUZIKBROWZER_VERSION));
 
 	logger.ods("Begin InitDialog");
 	CDialogClassImpl::OnInitDialog();

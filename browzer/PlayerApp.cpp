@@ -8,8 +8,10 @@
 #include "controls/TransparentDialogDlg.h"
 #include "TestHarness/TestHarness.h"
 #include "MBMessageBox.h"
+#include "Registry.h"
+#include "muzikbrowzerVersion.h"
 
-//#include "InitDlg.h"
+#define LOGOWNER
 #include "MyLog.h"
 
 #ifdef _DEBUG
@@ -68,6 +70,11 @@ BOOL CPlayerApp::InitInstance()
 	// If you are not using these features and wish to reduce the size
 	//  of your final executable, you should remove from the following
 	//  the specific initialization routines you do not need.
+	RegistryKey reg(HKEY_LOCAL_MACHINE, RegKey);
+	CString lfile = reg.ReadCString(RegDbLocation,"C:\\Program Files\\Muzikbrowzer");
+	lfile += "\\Muzikbrowzer.log";
+	logger.open(lfile);
+	logger.log(CS("Muzikbrowzer version: ") + CS(MUZIKBROWZER_VERSION));
 #ifdef _DEBUG
 	RunTestHarness();
 	//return FALSE;
@@ -109,6 +116,7 @@ BOOL CPlayerApp::InitInstance()
 }
 
 void CPlayerApp::RunTestHarness() {
+
 
 	TestResult tr;
 	TestRegistry::runAllTests(tr);

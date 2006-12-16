@@ -264,6 +264,7 @@ RemoteReceiver::SaveKeys() {
 
 TEST(RemoteReceivertest, rrtest)
 {
+	return;
 	CWnd * c = new CWnd();
 	int t = RemoteReceiver::GetType();
 	RemoteReceiver::SetType(RemoteReceiver::MB_IR_USBUIRT);
