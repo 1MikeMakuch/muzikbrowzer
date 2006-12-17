@@ -48,6 +48,7 @@ public:
 //	virtual int CompareItem(LPCOMPAREITEMSTRUCT lpCIS);
     int GetSelectedItemFromPoint(CPoint &);
     virtual int CompareItem( LPCOMPAREITEMSTRUCT lpCompareItemStruct );
+	virtual void MeasureItem(LPMEASUREITEMSTRUCT);
     void changeFont(LPLOGFONT);
     void initFont();
 
@@ -80,7 +81,7 @@ public:
 	void initBgDc();
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CExtendedListBox)
-protected:
+	protected:
 	//}}AFX_VIRTUAL
 public:
 	CString m_id;

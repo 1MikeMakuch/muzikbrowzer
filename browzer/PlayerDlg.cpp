@@ -1083,10 +1083,78 @@ CPlayerDlg::setColors() {
 
 }
 
+BOOL RecreateListBox(CExtendedListBox* pList, LPVOID lpParam/*=NULL*/)
+{
+	if (pList == NULL)
+		return FALSE;
+	if (pList->GetSafeHwnd() == NULL)
+		return FALSE;
 
+	CWnd* pParent = pList->GetParent();
+	if (pParent == NULL)
+		return FALSE;
+
+	// get current attributes
+	DWORD dwStyle = pList->GetStyle();
+	DWORD dwStyleEx = pList->GetExStyle();
+	CRect rc;
+	pList->GetWindowRect(&rc);
+	pParent->ScreenToClient(&rc);	// map to client co-ords
+	UINT nID = pList->GetDlgCtrlID();
+	CFont* pFont = pList->GetFont();
+	CWnd* pWndAfter = pList->GetNextWindow(GW_HWNDPREV);
+
+	// create the new list box and copy the old list box items 
+	// into a new listbox along with each item's data, and selection state
+	CExtendedListBox listNew;
+	if (! listNew.CreateEx(dwStyleEx, _T("LISTBOX"), _T(""), dwStyle, 
+                                rc, pParent, nID, lpParam))
+	  return FALSE;
+	listNew.SetFont(pFont);
+	int nNumItems = pList->GetCount();
+	BOOL bMultiSel = (dwStyle & LBS_MULTIPLESEL || dwStyle & LBS_EXTENDEDSEL);
+	for (int n = 0; n < nNumItems; n++)
+	{
+		CString sText;
+		pList->GetText(n, sText);
+		int nNewIndex = listNew.AddString(sText);
+		listNew.SetItemData(nNewIndex, pList->GetItemData(n));
+		if (bMultiSel && pList->GetSel(n))
+			listNew.SetSel(nNewIndex);
+	}
+	if (! bMultiSel)
+	{
+		int nCurSel = pList->GetCurSel();
+		if (nCurSel != -1)
+		{
+			CString sSelText;
+			// get the selection in the old list
+			pList->GetText(nCurSel, sSelText);
+			// now find and select it in the new list
+			listNew.SetCurSel(listNew.FindStringExact(-1, sSelText));
+		}
+	}
+	// destroy the existing window, then attach the new one
+	pList->DestroyWindow();
+	HWND hwnd = listNew.Detach();
+	pList->Attach(hwnd);
+
+	// position correctly in z-order
+	pList->SetWindowPos(pWndAfter == NULL ? &CWnd::wndBottom
+                                 : pWndAfter, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+
+	return TRUE;
+}
 void
 CPlayerDlg::resetControls() {
 	if (!m_Ready2Reset) return;
+	
+	if (m_Config.AlbumSortAlpha()) {
+		m_Albums.ModifyStyle(0,LBS_SORT,0);
+	} else {
+		m_Albums.ModifyStyle(LBS_SORT,0);
+	}
+	RecreateListBox(&m_Albums,NULL);
 
 	static BOOL firsttime = TRUE;
 	CWaitCursor c;
@@ -1648,6 +1716,7 @@ CPlayerDlg::resetControls() {
 		m_Config.getSkin(MB_SKIN_SCROLLBACKGROUND),m_TransPanel);
 	setColors();
 	
+
 	m_Genres.invalidate();
 	m_Artists.invalidate();
 	m_Albums.invalidate();
@@ -2933,6 +3002,10 @@ void CPlayerDlg::OnMenuOptions() {
 		m_HelpMsg += " Trial Mode.";
 	} else if (m_Config.trialMode() == 2) {
 		m_HelpMsg = " Trial Expired.";
+	}
+	if (m_Config.resetNeeded()) {
+		resetControls();
+		OnSelchangeAlbums();
 	}
 
 }

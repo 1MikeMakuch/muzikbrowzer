@@ -93,7 +93,10 @@ BOOL MBConfig::OnInitDialog()
 	
 	return bResult;
 }
-
+BOOL
+MBConfig::resetNeeded() {
+	return m_Files->resetNeeded();
+}
 LPLOGFONT
 MBConfig::getTitlesFont() {
     return m_Display->getTitlesFont();

@@ -112,24 +112,16 @@ public:
 
 /////////////////////////////////////////////////////////////////////////////
 
+void CExtendedListBox::MeasureItem(LPMEASUREITEMSTRUCT)
+	{ ; }
+
+
 void CExtendedListBox::PreSubclassWindow() 
 {
 	CListBox::PreSubclassWindow();
 
-   ModifyStyle(0,SS_NOTIFY|LBS_NOSEL);
-
 	return;
 
-   CWnd *pParent = GetParent();
-   if (pParent)
-   {
-      CRect Rect;
-      GetClientRect(&Rect);
-      ClientToScreen(&Rect);
-      pParent->ScreenToClient(&Rect);
-      CDC *pDC = pParent->GetDC();
-      m_bmpBg.CreateCompatibleBitmap(pDC,Rect.Width(),Rect.Height());
-   }
 }
 // CExtendedListBox message handlers
 void CExtendedListBox::initBgDc() {
@@ -982,3 +974,4 @@ void CExtendedListBox::OnContextMenu(CWnd* pWnd, CPoint ScreenPnt)  {
 	RedrawWindow(0,0,RDW_FRAME|RDW_INVALIDATE|RDW_UPDATENOW);
 	CListBox::OnContextMenu(pWnd, ScreenPnt);
 }
+

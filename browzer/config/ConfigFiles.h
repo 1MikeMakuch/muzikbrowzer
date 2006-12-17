@@ -72,6 +72,8 @@ private:
 	BOOL m_AlbumSortAlpha;
 	BOOL m_AlbumSortDate;
 	BOOL m_LocDirModified;
+	BOOL m_InitialAlbumSortAlpha;
+	BOOL m_ResetNeeded;
 
     int m_ScanThread_continue;
 
@@ -91,6 +93,7 @@ public:
 	CString mbdir() { return m_path; };
 	void AddMusic();
 	void Scan(BOOL fornew);
+	BOOL resetNeeded() { return m_ResetNeeded; }
 
 
 };

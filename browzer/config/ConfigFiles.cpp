@@ -29,7 +29,7 @@ IMPLEMENT_DYNCREATE(CConfigFiles, CPropertyPage)
 CConfigFiles::CConfigFiles(CWnd *p, PlayerCallbacks * pcb) : CPropertyPage(CConfigFiles::IDD),
     /*m_PlayerDlg(p),*/ m_RunAtStartupUL(0), m_scanNew(FALSE),
 	m_AlbumSortAlpha(TRUE), m_AlbumSortDate(FALSE),
-	m_playercallbacks(pcb), m_bAdd(FALSE)
+	m_playercallbacks(pcb), m_bAdd(FALSE), m_ResetNeeded(FALSE)
 
 {
 	//{{AFX_DATA_INIT(CConfigFiles)
@@ -558,9 +558,11 @@ BOOL CConfigFiles::OnInitDialog()
 	if (m_AlbumSortAlpha) {
 		CheckRadioButton(IDC_ALBUMSORT_DATE,IDC_ALBUMSORT_ALPHA,
 			IDC_ALBUMSORT_ALPHA);
+		m_InitialAlbumSortAlpha = TRUE;
 	} else {
 		CheckRadioButton(IDC_ALBUMSORT_DATE,IDC_ALBUMSORT_ALPHA,
 			IDC_ALBUMSORT_DATE);
+		m_InitialAlbumSortAlpha = FALSE;
 	}
 
     UpdateWindow();
@@ -627,7 +629,10 @@ void CConfigFiles::OnOK()
 	if (m_LocDirModified) {
 		(*m_playercallbacks->initDb)();
 	}
-
+	if (m_AlbumSortAlpha != m_InitialAlbumSortAlpha) {
+		m_ResetNeeded = TRUE;
+		//MBMessageBox("Notice","Changes to the \"Album sort\" parameter will take effect\r\nthe next time you start Muzikbrowzer. Alternatively hit \"F5\".",FALSE);
+	}
 }
 void CConfigFiles::OnCancel() 
 {
