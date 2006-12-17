@@ -51,6 +51,7 @@ public:
 	virtual void MeasureItem(LPMEASUREITEMSTRUCT);
     void changeFont(LPLOGFONT);
     void initFont();
+	void centerCurSel();
 
     
     afx_msg void OnNcCalcSize(BOOL bCalcValidRects,

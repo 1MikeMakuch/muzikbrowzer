@@ -3359,6 +3359,7 @@ void CPlayerDlg::PlayLoop() {
 				return;
 			}
             m_Playlist.SetCurSel(m_PlaylistCurrent);
+			m_Playlist.centerCurSel();
 			m_Playlist.invalidate();
             CString file = m_mlib._playlist[m_PlaylistCurrent]->getId3("FILE");
 

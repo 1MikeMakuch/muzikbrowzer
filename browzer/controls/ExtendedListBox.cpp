@@ -111,7 +111,8 @@ public:
 };
 
 /////////////////////////////////////////////////////////////////////////////
-
+// Had to add this when I added the RecreateListBox. Strange why
+// it wasn't required previously.
 void CExtendedListBox::MeasureItem(LPMEASUREITEMSTRUCT)
 	{ ; }
 
@@ -975,3 +976,15 @@ void CExtendedListBox::OnContextMenu(CWnd* pWnd, CPoint ScreenPnt)  {
 	CListBox::OnContextMenu(pWnd, ScreenPnt);
 }
 
+void CExtendedListBox::centerCurSel() {
+    CRect wrect;
+    GetWindowRect( wrect ) ;
+    int iheight = GetItemHeight(0);
+    int pagelen = wrect.Height() / iheight;
+
+	int sel = GetCurSel();
+	int top = sel - (pagelen / 2) + 1;
+	if (top < 0) top = 0;
+	SetTopIndex(top);
+
+}
