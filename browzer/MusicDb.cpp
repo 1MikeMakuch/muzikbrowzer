@@ -849,7 +849,7 @@ MusicLib::getAlbums(const CString & genrename, const CString & artistname,
 			MRecord firstSong = songIter.next();
 			CString year = firstSong.lookupVal("TYER");
 			int iyear = 0;
-			if (year != "") {
+			if (year != "" && album.label() != MBALL) {
 				iyear = atoi((LPCTSTR)year);
 			}
 			NameNum * nn = new NameNum(album.label(), iyear, firstSong.i());
@@ -862,10 +862,21 @@ MusicLib::getAlbums(const CString & genrename, const CString & artistname,
 		NameNum::bsort(namenums, FALSE);
 	}
     int i;
+	// Add MBALL first if it's there
     for (i = 0 ; i < namenums.GetSize(); ++i) {
-        box.AddString(((NameNum*)namenums[i])->m_name);
-		box.SetItemData(i, ((NameNum*)namenums[i])->m_p);
-        delete (NameNum*)namenums[i];
+		if (!((NameNum*)namenums[i])->m_name.Compare(MBALL)) {
+			box.AddString(((NameNum*)namenums[i])->m_name);
+			box.SetItemData(i, ((NameNum*)namenums[i])->m_p);
+//			delete (NameNum*)namenums[i];
+			i = namenums.GetSize()+1;
+		}
+    }
+    for (i = 0 ; i < namenums.GetSize(); ++i) {
+		if (((NameNum*)namenums[i])->m_name.Compare(MBALL)) {
+			box.AddString(((NameNum*)namenums[i])->m_name);
+			box.SetItemData(i, ((NameNum*)namenums[i])->m_p);
+			delete (NameNum*)namenums[i];
+		}
     }
 	return 0;
 }
