@@ -243,6 +243,10 @@ SOURCE=.\SMTP.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\SortedArray.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\StdAfx.h
 # End Source File
 # Begin Source File

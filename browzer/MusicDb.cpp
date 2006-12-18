@@ -2284,7 +2284,19 @@ MusicLib::savePlaylist(const CStringArray & list, const CString & name) {
 
 
 }
+void
+MusicLib::getRandomPlaylist() {
+	srand( (unsigned)time( NULL ) );
+	for(int i = 0 ; i < 100; ++i) {
+		float ratio = rand() / (float)RAND_MAX;
+		int pos = (int)(ratio * m_SongLib.m_files.getLength());
+		
 
+		Song s = m_SongLib.m_files.getSong(m_SongLib.m_files.getAt(pos));
+		if (s->GetCount())
+			addSongToPlaylist(s);
+	}
+}
 void
 MusicLib::RandomizePlaylist() {
     shufflePlaylist();

@@ -3183,8 +3183,14 @@ void CPlayerDlg::OnMenuShuffleplaylist()
 
 void CPlayerDlg::OnMenuRandomizePlaylist() 
 {
-	m_mlib.RandomizePlaylist();
-    m_Playlist.ResetContent();
+	CWaitCursor cw;
+	if (m_mlib._playlist.size()) {
+		m_mlib.RandomizePlaylist();
+
+	} else {
+		m_mlib.getRandomPlaylist();
+	}
+	m_Playlist.ResetContent();
 	m_mlib.getPlaylist(m_Playlist);
 	m_Playlist.SetCurSel(0);
 	UpdateWindow();
@@ -4846,8 +4852,14 @@ CPlayerDlg::OnHoverMsg1(WPARAM wParam, LPARAM lParam) {
 		msg = "Clear playlist";break;
 	case MB_HOVER_SAVE_MSG:
 		msg = "Save playlist";break;
-	case MB_HOVER_RANDOM_MSG:
-		msg = "Randomize playlist";break;
+	case MB_HOVER_RANDOM_MSG: {
+			if (m_mlib._playlist.size()) {
+				msg = "Randomize playlist";
+			} else {
+				msg = "Randomly add 100 songs to playlist";
+			}
+		}
+		break;
 	case MB_HOVER_PLAY_MSG:
 		msg = "Play";break;
 	case MB_HOVER_STOP_MSG:

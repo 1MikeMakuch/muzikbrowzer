@@ -361,6 +361,7 @@ class MusicLib
 	     int	getPlaylist(CExtendedListBox &);
 	     int	getPlaylistNames(CExtendedListBox &);
 	     int	getPlaylistNames(CStringList &);
+		 void	getRandomPlaylist();
 		 int	getSongCount();
 	 CString	getSongFileName(const int i);
 	    Song	getSong(const CString & genre, const CString & artist, const CString & album, const CString & title);
