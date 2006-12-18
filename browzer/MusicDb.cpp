@@ -1656,7 +1656,6 @@ MusicLib::export(ExportDlg * exp) {
 		}
 	}
 
-
 	MList genreList = m_SongLib.genreList();
 	MList::Iterator genreIter(genreList);
 	while (genreIter.more()) {
@@ -1669,7 +1668,6 @@ MusicLib::export(ExportDlg * exp) {
 	genreCSList.SetCompareFunction(String::CompareNoCase);
 	genreCSList.Sort();
 	CString genreRefs;
-
 
 	if (exp->m_Html) {
 		for (int i=0; i<genreCSList.GetSize(); i++)
@@ -1812,17 +1810,6 @@ MusicLib::export(ExportDlg * exp) {
 
 }
 
-
-
-int MusicLib::CompareByNum(CString& element1, CString& element2) 
-{
-	int i1,i2;
-	if (element1.GetLength())
-		i1 = atoi(element1);
-	if (element2.GetLength())
-		i2 = atoi(element2);
-  return (i1  < i2);
-}
 void
 MusicLib::exportCsv(ExportDlg * exp, MyLog * log, Song song) {
 	CString entry;
@@ -2741,8 +2728,7 @@ MusicLib::IgetLibraryCounts() {
 		MRecord genre = genreIter.next();
 		if (genre.label() != MBALL) {
 			++genrecount;
-		}
-		if (genre.label() == MBALL) {
+		} else {
 			MList artistList(genre);
 			MList::Iterator artistIter(artistList);
 			while (artistIter.more()) {
