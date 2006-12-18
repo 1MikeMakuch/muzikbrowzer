@@ -757,7 +757,8 @@ MusicLib::getArtists(const CString & genrename, CExtendedListBox & box) {
 	
 	while (artistIter.more()) {
 		MRecord artist = artistIter.next();
-		box.AddString(artist.label());
+		if (artistList.count() > 2 || artist.label() != MBALL)
+			box.AddString(artist.label());
 	}
 
 	return 0;
@@ -863,14 +864,16 @@ MusicLib::getAlbums(const CString & genrename, const CString & artistname,
 	}
     int i;
 	// Add MBALL first if it's there
-    for (i = 0 ; i < namenums.GetSize(); ++i) {
-		if (!((NameNum*)namenums[i])->m_name.Compare(MBALL)) {
-			box.AddString(((NameNum*)namenums[i])->m_name);
-			box.SetItemData(i, ((NameNum*)namenums[i])->m_p);
-//			delete (NameNum*)namenums[i];
-			i = namenums.GetSize()+1;
+	if (namenums.GetSize() > 2) {
+		for (i = 0 ; i < namenums.GetSize(); ++i) {
+			if (!((NameNum*)namenums[i])->m_name.Compare(MBALL)) {
+				box.AddString(((NameNum*)namenums[i])->m_name);
+				box.SetItemData(i, ((NameNum*)namenums[i])->m_p);
+	//			delete (NameNum*)namenums[i];
+				i = namenums.GetSize()+1;
+			}
 		}
-    }
+	}
     for (i = 0 ; i < namenums.GetSize(); ++i) {
 		if (((NameNum*)namenums[i])->m_name.Compare(MBALL)) {
 			box.AddString(((NameNum*)namenums[i])->m_name);
