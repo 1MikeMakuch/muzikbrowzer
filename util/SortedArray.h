@@ -1,276 +1,381 @@
+
 /*
-Module : SortedArray.H
+Module : SortedArray.h
 Purpose: Interface for an MFC template class which provides sorting and ordered insertion
-         derived from the MFC class CArray
+         derived from the MFC class CArray or ATL class CSimpleArray
 Created: PJN / 25-12-1999
 History: PJN / 12-01-2000 Fixed a stack overflow in CSortedArray::Sort
          PJN / 21-02-2000 Fixed a number of problems in CSortedArray::Find
          PJN / 22-02-2000 Fixed a problem in CSortedArray::Find when there are no items in the array
          PJN / 29-02-2000 Fixed a problem in CSortedArray::Sort when there are no items in the array
+         PJN / 27-08-2000 1. Fixed another stack overflow problem in CSortedArray::Sort.
+                          2. Fixed a problem in CSortedArray::Sort where the comparison function
+                          was returning negative values, 0 and positive values instead of -1, 0 & 1.
+                          Thanks to Ted Crow for finding both of these problems.
+         PJN / 01-10-2001 Fixed another bug in Sort!. Thanks to Jim Johnson for spotting this.
+         PJN / 29-05-2002 1. Fixed a problem in CSortedArray::OrderedInsert. Thanks to John Young
+                          for spotting and fixing this problem.
+                          2. Updated copyright and usage instructions
+         PJN / 06-12-2002 1. Rewrote the Sort method following reports of further problems by 
+                          Serhiy Pavlov and Brian Rhodes
+         PJN / 11-12-2002 1. Optimized code by replacing all calls to CArray<>::ElementAt with CArray<>::GetData
+         PJN / 24-01-2003 1. Made CSortedArray::Find method const. Thanks to Serhiy Pavlov for reporting this.
+         PJN / 18-08-2003 1. Made the class optionally independent of MFC. If the class detects than MFC is 
+                          not being included, then the code will use CSimpleArray instead of CArray. This is 
+                          a class provided in ATL as a substitute for CArray. Please note that the function
+                          "OrderedInsert" is not available when using CSimpleArray as the parent class as 
+                          CSimpleArray does not implement an "InsertAt" method.
+         PJN / 03-11-2003 1. Now includes a new class "CSimpleArrayEx" which provides InsertAt support
+                          for ATL's CSimpleArray class. This is now used by CSortedArray, rather than directly
+                          using CSimpleArray
+         PJN / 16-10-2004 1. Class now compiles cleanly on VC 7 if "Detect 64 bit portability issues" is enabled
+                          as well as "Force conformance in for loops" is enabled.
+         PJN / 22-12-2004 1. ASSERT / ATLASSERT and INT_PTR / int typedefs are now all done in one place. Thanks
+                          to Serhiy Pavlov for suggesting this.
+                          2. All functions are now declared in the class declaration
+                          3. Reworked the classes to break the actual comparison code into a new traits class. 
+                          You now have the choice of using a traits class which specifies the comparison function
+                          via a function (CSortedArrayCompareFunction) or via a functor (CSortedArrayCompareFunctor).
+                          Backward compatibility is kept by defined a class called CSortedArray which uses
+                          a traits class which uses a function. If you want to use the new faster functor version
+                          of the class then simply replace all instances of CSortedArray with CSortedArrayEx. 
+                          Thanks to Serhiy Pavlov for this really nice addition.
+                          4. Made CSortedArray::Find method non const again to allow use of GetData function. 
+                          5. Updated the sample app to perform some speed tests on ATL Vs MFC and function 
+                          pointer Vs Functor implementations.
+         PJN / 11-10-2005 1. Updated the Find function to allow <0, 0 and >0 values to be allowed for the return
+                          value from the comparison function / functor. This allows CString::Compare to be easily
+                          used for comparison. Thanks to Serhiy Pavlov for reporting this.
+                          2. Removed unused constructor from CSimpleArrayEx class.
+                          3. Updated copyright details.
+         PJN / 07-07-2006 1. Updated copyright details.
+                          2. Minor update to the sample app to allow it to clean compile on VC 2005.
+                          3. Updated the documentation to use the same style as the web site.
+         PJN / 29-07-2006 1. Provided a new UniqueSort method which in addition to performing the standard sorting
+                          of the array also removes any duplicates found. Thanks to John Cullen for suggesting this 
+                          new feature.
 
-Copyright (c) 1999 - 2000 by PJ Naughter.  
+Copyright (c) 1999 - 2006 by PJ Naughter (Web: www.naughter.com, Email: pjna@naughter.com)
+
 All rights reserved.
+
+Copyright / Usage Details:
+
+You are allowed to include the source code in any product (commercial, shareware, freeware or otherwise) 
+when your product is released in binary form. You are allowed to modify the source code in any way you want 
+except you cannot modify the copyright details at the top of each module. If you want to distribute source 
+code with your application, then you are only allowed to distribute versions released by the author. This is 
+to maintain a single distribution point for the source code. 
 
 */
 
 
-////////////////////////////////// Macros ///////////////////////////
+////////////////////////////////// Macros / Includes ////////////////
 
 #ifndef __SORTEDARRAY_H__
 #define __SORTEDARRAY_H__
 
+#ifdef _AFX
 #ifndef __AFXTEMPL_H__
 #include <afxtempl.h> 
-#pragma message("To avoid this message, please put afxtempl.h in your PCH")
+#pragma message("To avoid this message, please put afxtempl.h in your PCH (normally stdafx.h)")
+#endif
+#else
+#include "SimpleArrayEx.h"
 #endif
 
+#if defined(_AFX) && (_MFC_VER >= 0x700)
+  typedef INT_PTR CSA_INT;
+#else
+  typedef int CSA_INT;
+#endif
+
+#ifndef ASSERT
+#define ASSERT ATLASSERT
+#endif
 
 
 /////////////////////////// Classes /////////////////////////////////
 
-//Class which implements sorting for its parent class CArray
-
-
+//Class which provides a compare function via a class declaration. Used
+//when deriving from CSortedArrayBase. It is a so called traits class
 template<class TYPE, class ARG_TYPE>
-class CSortedArray : public CArray<TYPE, ARG_TYPE>
+class CSortedArrayCompareFunction
 {
 public:
-//Constructors / Destructors
-  CSortedArray();
-
 //Typedefs
-  typedef int COMPARE_FUNCTION(ARG_TYPE element1, ARG_TYPE element2); 
+  typedef int COMPARE_FUNCTION(ARG_TYPE element1, ARG_TYPE element2);
   typedef COMPARE_FUNCTION* LPCOMPARE_FUNCTION;
 
+//Constructors / Destructors
+  CSortedArrayCompareFunction() : m_pCompareFunction(NULL)
+  {
+  }
+
 //Methods
-  int  OrderedInsert(ARG_TYPE newElement, int nCount=1);
-  void Sort(int nLowIndex=0, int nHighIndex=-1);
-  int  Find(ARG_TYPE element, int nLowIndex=0, int nHighIndex=-1);
-  void SetCompareFunction(LPCOMPARE_FUNCTION lpfnCompareFunction) { m_lpfnCompareFunction = lpfnCompareFunction; };
-  LPCOMPARE_FUNCTION GetCompareFunction() const { return m_lpfnCompareFunction; };
+  void SetCompareFunction(LPCOMPARE_FUNCTION pCompareFunction)
+  {
+    ASSERT(pCompareFunction);
+    m_pCompareFunction = pCompareFunction;
+  }
+
+  LPCOMPARE_FUNCTION GetCompareFunction() const 
+  { 
+    return m_pCompareFunction; 
+  }
+
+#ifdef _DEBUG
+  BOOL IsCompareFunctionValid() const 
+  { 
+    return (m_pCompareFunction != NULL); 
+  }
+#endif
 
 protected:
-  LPCOMPARE_FUNCTION m_lpfnCompareFunction;
-  void swap(ARG_TYPE element1, ARG_TYPE element2);
+//Member variables
+  LPCOMPARE_FUNCTION m_pCompareFunction;
 };
 
-
-template<class TYPE, class ARG_TYPE>
-CSortedArray<TYPE, ARG_TYPE>::CSortedArray()
+//Class which provides a compare function via a functor. Used
+//when deriving from CSortedArrayBase. It is a so called traits class
+template<class COMPARE_TYPE>
+class CSortedArrayCompareFunctor
 {
-  m_lpfnCompareFunction = NULL; 
-}
-
-template<class TYPE, class ARG_TYPE>
-void CSortedArray<TYPE, ARG_TYPE>::swap(ARG_TYPE element1, ARG_TYPE element2)
-{
-  TYPE temp = element1;
-  element1 = element2;
-  element2 = temp;
-}
-
-template<class TYPE, class ARG_TYPE>
-int CSortedArray<TYPE, ARG_TYPE>::OrderedInsert(ARG_TYPE newElement, int nCount)
-{
-  ASSERT(m_lpfnCompareFunction != NULL); //Did you forget to call SetCompareFunction prior to calling this function
-
-  int nLowIndex = 0;
-  int nHighIndex = GetUpperBound();
-
-  //if there are no elements in the array then just insert it at the begining
-  if (nHighIndex == -1)
+public:
+//methods
+  void SetCompareFunction(const COMPARE_TYPE& pCompareFunctor)
   {
-    InsertAt(0, newElement, nCount);
-    return 0;
+    m_pCompareFunction = pCompareFunctor;
   }
 
-  //do a binary chop to find the location where the element should be inserted
-  int nInsertIndex = -1;
-  do
+  COMPARE_TYPE GetCompareFunction() const 
+  { 
+    return m_pCompareFunction; 
+  }
+
+#ifdef _DEBUG
+  BOOL IsCompareFunctionValid() const 
+  { 
+    return TRUE; 
+  }
+#endif
+
+protected:
+//Member variables
+  COMPARE_TYPE m_pCompareFunction;
+};
+
+//Base class which implements sorting for its parent class CArray / CSimpleArray
+template<class TYPE, class ARG_TYPE, class COMPARE_TYPE>
+#ifdef _AFX
+class CSortedArrayBase : public CArray<TYPE, ARG_TYPE>, public COMPARE_TYPE
+#else
+class CSortedArrayBase : public CSimpleArrayEx<TYPE, ARG_TYPE>, public COMPARE_TYPE
+#endif
+{
+public:
+//Methods
+  CSA_INT OrderedInsert(ARG_TYPE newElement, CSA_INT nCount = 1)
   {
-    int nCompareLow = m_lpfnCompareFunction(newElement, ElementAt(nLowIndex));
-    int nCompareHigh = m_lpfnCompareFunction(newElement, ElementAt(nHighIndex));  
-    if (nCompareLow <= 0)
-      nInsertIndex = nLowIndex;
-    else if (nCompareHigh == 0)
-      nInsertIndex = nHighIndex;
-    else if (nCompareHigh == 1)
-      nInsertIndex = nHighIndex+1;
-    else
-    {
-      ASSERT(nLowIndex < nHighIndex);
+	  ASSERT(IsCompareFunctionValid()); 	//Did you forget to call SetCompareFunction prior to calling this function?
 
-      int nCompareIndex;
-      if (nHighIndex == (nLowIndex+2))
-        nCompareIndex = nLowIndex+1;
-      else
-        nCompareIndex = ((nHighIndex - nLowIndex)/2) + nLowIndex;
+	  CSA_INT lo = 0;
+	  CSA_INT hi = GetSize() - 1;
 
-      int nCompare = m_lpfnCompareFunction(newElement, ElementAt(nCompareIndex));
-      switch (nCompare)
+    TYPE* pData = GetData();
+	  
+	  //Find the insert location (mid) for the new element.
+	  CSA_INT mid = hi / 2;
+
+	  while (hi >= lo)
+	  {
+      ASSERT(pData); //Note we do not do the ASSERT outside of the loop because
+                     //the value "pData" cannot be NULL in a fresh new array. But
+                     //in this case we will not end up executing this code. Also
+                     //since it is an ASSERT it will be completely optimized away
+                     //in release mode builds so it has no impact on performance
+
+		  int res = m_pCompareFunction(newElement, pData[mid]);
+
+		  if (!res)
+			  break;
+
+		  if (res < 0)
+			  hi = mid - 1;	//Insert in the lower half...
+		  else 
+        lo = mid + 1; //Insert in the upper half...
+		  mid = ((hi - lo) / 2) + lo;
+	  }
+
+  #ifdef _AFX
+	  InsertAt(mid, newElement, nCount);
+  #else
+    if (!InsertAt(mid, newElement, nCount))
+      return -1;
+  #endif
+	  return mid;
+  }
+
+  void Sort(CSA_INT nLowIndex = 0, CSA_INT nHighIndex = -1)
+  {
+    CSA_INT nSize = GetSize();
+
+    //Sort all the data?
+	  if (nHighIndex == -1)
+      nHighIndex = nSize - 1;     
+
+    //quick exit                  
+    if ((nLowIndex == nHighIndex) || (nSize == 0))
+      return;               
+
+    //Validate the required values for this function
+    ASSERT(nHighIndex <= (nSize - 1));
+    ASSERT(IsCompareFunctionValid());
+
+    //Do the actual quicksort  
+    if (nLowIndex < nHighIndex)
+    {    
+      CSA_INT i = nLowIndex;
+      CSA_INT j = nHighIndex;
+      TYPE* pData = GetData();
+
+      ASSERT(pData);
+
+      TYPE center = pData[(nLowIndex + nHighIndex)/2];
+
+      while (i <= j)
       {
-        case -1:
+        while ((m_pCompareFunction(pData[i], center) < 0) && (i < nHighIndex)) 
+          ++i;
+        while ((m_pCompareFunction(pData[j], center) > 0) && (j > nLowIndex)) 
+          --j;
+    
+        if (i <= j)
         {
-          if ((nHighIndex - nLowIndex) == 1)
-            nHighIndex = nLowIndex;
-          else
-            nLowIndex = nCompareIndex;
-          break;
+          TYPE x  = pData[i];
+          pData[i] = pData[j];
+          pData[j] = x;
+          ++i; 
+          --j;
         }
-        case 0:
-        {
-          nInsertIndex = nCompareIndex;
-          break;
-        }
-        case 1:
-        {
-          if ((nHighIndex - nLowIndex) == 1)
-            nLowIndex = nHighIndex;
-          else
-            nHighIndex = nCompareIndex;
-          break;
-        }
-        default:
-        {
-          ASSERT(FALSE); //Your compare function has been coded incorrectly. It should
-                         //return -1, 0 or 1 similiar to the way the C Runtime function
-                         //"qsort" works
-          break;
-        }
-      }
+      } 
+  
+      if (nLowIndex  < j) 
+        Sort(nLowIndex , j);
+      if (nHighIndex > i) 
+        Sort(i, nHighIndex);
     }
   }
-  while (nInsertIndex == -1);
   
-  //Do the actual insert
-  InsertAt(nInsertIndex, newElement, nCount);
-  return nInsertIndex;
-}
-
-template<class TYPE, class ARG_TYPE>
-int CSortedArray<TYPE, ARG_TYPE>::Find(ARG_TYPE element, int nLowIndex, int nHighIndex)
-{
-  ASSERT(m_lpfnCompareFunction != NULL); //Did you forget to call SetCompareFunction prior to calling this function
-
-  //If there are no items in the array, then return immediately
-  if (GetSize() == 0)
-    return -1;
-
-  int left = nLowIndex;
-  int right = nHighIndex;
-  if (right == -1)
-    right = GetUpperBound();
-  ASSERT(left <= right);
-
-  if (left == right) //Straight comparision fewer than 2 elements to search
+  void UniqueSort(CSA_INT nLowIndex = 0, CSA_INT nHighIndex = -1)
   {
-    BOOL bFound = (m_lpfnCompareFunction(ElementAt(left), element) == 0);
-    if (bFound)
-      return left;
-    else
-      return -1;
+    CSA_INT nSize = GetSize();
+  
+    //Sort all the data?
+	  if (nHighIndex == -1)
+      nHighIndex = nSize - 1;     
+ 
+    //quick exit                  
+    if ((nLowIndex == nHighIndex) || (nSize == 0))
+      return;               
+
+    //First sort the requested elements, using the "Sort" method
+    Sort(nLowIndex, nHighIndex);
+    
+    //Now remove any duplicates
+    TYPE* pData = GetData();
+    ASSERT(pData);
+    for (CSA_INT i=nHighIndex; i>nLowIndex; i--)
+    {
+      if (m_pCompareFunction(pData[i], pData[i-1]) == 0)
+        RemoveAt(i);
+    }
   }
 
-  //do a binary chop to find the location where the element should be inserted
-  int nFoundIndex = -1;
-  while (nFoundIndex == -1 && left != right)
+  CSA_INT Find(ARG_TYPE element, CSA_INT nLowIndex = 0, CSA_INT nHighIndex = -1)
   {
-    int nCompareIndex;
-    if (right == (left+2))
-      nCompareIndex = left+1;
-    else
-      nCompareIndex = ((right - left)/2) + left;
+    ASSERT(IsCompareFunctionValid()); //Did you forget to call SetCompareFunction prior to calling this function
 
-    int nCompare = m_lpfnCompareFunction(ElementAt(nCompareIndex), element);
-    switch (nCompare)
+    CSA_INT nSize = GetSize();
+
+    //If there are no items in the array, then return immediately
+    if (nSize == 0)
+      return -1;
+
+    CSA_INT left = nLowIndex;
+    CSA_INT right = nHighIndex;
+    TYPE* pData = GetData();
+
+    if (right == -1)
+      right = nSize - 1;
+
+    ASSERT(left <= right);
+    ASSERT(pData);
+  
+    if (left == right) //Straight comparison fewer than 2 elements to search
+      return (m_pCompareFunction(pData[left], element) == 0) ? left : -1;
+
+    //do a binary chop to find the location where the element should be inserted
+    CSA_INT nFoundIndex = -1;
+    while ((nFoundIndex == -1) && (left != right))
     {
-      case -1:
+      CSA_INT nCompareIndex;
+
+      if (right == (left + 2))
+        nCompareIndex = left+1;
+      else
+        nCompareIndex = ((right - left) >> 1) + left;
+
+      int nCompare = m_pCompareFunction(pData[nCompareIndex], element);
+
+      if (nCompare < 0)
       {
         if ((right - left) == 1)
         {
-          if (m_lpfnCompareFunction(ElementAt(right), element) == 0)
+          if (m_pCompareFunction(pData[right], element) == 0)
             nFoundIndex = right;
-          else if (m_lpfnCompareFunction(ElementAt(left), element) == 0)
+          else if (m_pCompareFunction(pData[left], element) == 0)
             nFoundIndex = left;
           else
             left = right;
         }
         else
           left = nCompareIndex;
-        break;
       }
-      case 0:
-      {
-        nFoundIndex = nCompareIndex;
-        break;
-      }
-      case 1:
+      else if (nCompare > 0)
       {
         if ((right - left) == 1)
         {
-          if (m_lpfnCompareFunction(ElementAt(right), element) == 0)
+          if (m_pCompareFunction(pData[right], element) == 0)
             nFoundIndex = right;
-          else if (m_lpfnCompareFunction(ElementAt(left), element) == 0)
+          else if (m_pCompareFunction(pData[left], element) == 0)
             nFoundIndex = left;
           else
             right = left;
         }
         else
           right = nCompareIndex;
-        break;
       }
-      default:
+      else
       {
-        ASSERT(FALSE); //Your compare function has been coded incorrectly. It should
-                       //return -1, 0 or 1 similiar to the way the C Runtime function
-                       //"qsort" works
-        break;
+        nFoundIndex = nCompareIndex;
       }
     }
-  }
   
-  return nFoundIndex;
-}
-
-
-
-template<class TYPE, class ARG_TYPE>
-void CSortedArray<TYPE, ARG_TYPE>::Sort(int nLowIndex, int nHighIndex)
-{
-  ASSERT(m_lpfnCompareFunction != NULL); //Did you forget to call SetCompareFunction prior to calling this function
-
-  //If there are no items in the array, then return immediately
-  if (GetSize() == 0)
-    return;
-
-  int left = nLowIndex;
-  int right = nHighIndex;
-  if (right == -1)
-    right = GetUpperBound();
-
-	if (right-left <= 0) //Do nothing if fewer than 2 elements are to be sorted
-		return;
-
-	// (not really needed, just to optimize)
-	if (right-left == 1)  //Do a simple comparison if only 2 elements
-	{
-		if (m_lpfnCompareFunction(ElementAt(right), ElementAt(left)) == -1)
-			swap(ElementAt(left), ElementAt(right));
-		return;
-	}
-
-  swap(ElementAt(left), ElementAt((left+right)/2));      //move partition element to begining 
-  int last = left;
-
-  for (int i=left+1; i<=right; i++) //Partition
-  {
-    if (m_lpfnCompareFunction(ElementAt(i), ElementAt(left)) == -1)
-      swap(ElementAt(++last), ElementAt(i));
+    return nFoundIndex;
   }
+};
 
-  swap(ElementAt(left), ElementAt(last)); //Restore partition element
-  Sort(left, last-1);
-  Sort(last+1, right);  
-}
+//A derivation of CSortedArrayBase which provides the compare function via a pointer embedded in 
+template<class TYPE, class ARG_TYPE>
+class CSortedArray : public CSortedArrayBase<TYPE, ARG_TYPE, CSortedArrayCompareFunction<TYPE, ARG_TYPE> >
+{
+};
+
+//A derivation of CSortedArrayBase which provides the compare function via a functor
+template<class TYPE, class ARG_TYPE, class COMPARE_TYPE>
+class CSortedArrayEx : public CSortedArrayBase<TYPE, ARG_TYPE, CSortedArrayCompareFunctor<COMPARE_TYPE> >
+{
+};
 
 #endif //__SORTEDARRAY_H__

@@ -2068,13 +2068,13 @@ void CPlayerDlg::OnSysCommand(UINT nID, LONG lParam)
 		case 'u': case 'U': OnVolUp();			break;
 		case 'v': case 'V': OnMenuSaveplaylist();		break;
 
-//		case 'z': case 'Z': OnVerify();		break;
+		case 'z': case 'Z': OnVerify();		break;
 //		case 'b': case 'B': {
 //				m_mlib.garbageCollectTest();
 //				OnSelchangeGenres();
 //			}
 			break;
-		case 'z': case 'Z': OnMusicScan();		break;
+//		case 'z': case 'Z': OnMusicScan();		break;
 		}
     } else {
 		CDialogClassImpl::OnSysCommand(nID, lParam);
@@ -2989,6 +2989,7 @@ void CPlayerDlg::OnMenuCheckem() {
 void CPlayerDlg::OnMenuOptions() {
 	
 	m_Config.DoModal();
+	PlayerStatusClear();
 	m_AlbumArt = m_Config.getSkin(MB_SKIN_ALBUMART);
 
 	CString menuFunc,menuDesc;
@@ -3026,7 +3027,7 @@ void CPlayerDlg::OnMenuClearplaylist()
     updatePlaylist(FALSE);
     Stop();
     InputClose();
-    CString libcounts = m_mlib.getLibraryCounts();
+    //CString libcounts = m_mlib.getLibraryCounts();
 	resetPosition();
 	PlayerStatusClear();
 	_selectedPlaylistSong = "";
@@ -3865,8 +3866,8 @@ CPlayerDlg::PlayerStatusTempSet(LPCTSTR lpmsg) {
 void
 CPlayerDlg::PlayerStatusTempSet(CString & cmsg) {
 	CString msg(cmsg);
-	if (MBALL == msg)
-		msg = m_mlib.getLibraryCounts();		
+//	if (MBALL == msg)
+//		msg = m_mlib.getLibraryCounts();		
 	m_PlayerStatus.setText(msg/*,TRUE*/);
     m_PlayerStatusTime = CTime::GetCurrentTime();
 	StartStatusTimer();
@@ -4255,12 +4256,14 @@ void
 CPlayerDlg::OnMusicAdd() {
 	OnSearchClear();
 	m_Config.AddMusic();
+	PlayerStatusClear();
 //	return 0;
 }
 void 
 CPlayerDlg::OnMusicScan() {
 	OnSearchClear();
 	m_Config.Scan();
+	PlayerStatusClear();
 //	return 0;
 }
 void

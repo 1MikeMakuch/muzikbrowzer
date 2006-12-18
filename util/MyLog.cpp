@@ -113,7 +113,8 @@ MyLog::log(const CString &m1, const CString &m2,
 		}
 	}
 	mx += "\r\n";
-	OutputDebugString(mx);
+	if (!m_NoODS)
+		OutputDebugString(mx);
 	_file.Write(mx,mx.GetLength());
     _file.Flush();
 }

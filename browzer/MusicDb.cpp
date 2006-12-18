@@ -1568,6 +1568,27 @@ MusicLib::writeSongToFile(Song song) {
 	return result;
 }
 
+TEST(MLIBSortTest,test) 
+{
+	return;
+	CSortedArray<CString, CString&> artistCSList;
+	for(int i=0;i < 1000;i++) {
+		artistCSList.Add("xyzzy         "+numToString(i));
+	}
+	artistCSList.Add(CS("Blessid Union Of Souls"));
+	artistCSList.Add(CS("Blessid Union of Souls"));
+	artistCSList.Add(CS("Blessid Union of Souls"));
+	artistCSList.Add(CS("Blessid Union Of Souls"));
+
+	artistCSList.SetCompareFunction(String::CompareCase);
+	artistCSList.Sort();
+	for (int j=0; j<artistCSList.GetSize(); j++) {
+		CString& artist = artistCSList.ElementAt(j);
+		logger.ods(numToString(j)+" "+artist);
+	}
+
+}
+
 void
 MusicLib::export(ExportDlg * exp) {
 	CString filehtm = exp->m_Folder + exp->m_File + ".htm";
@@ -1610,6 +1631,7 @@ MusicLib::export(ExportDlg * exp) {
 	ExpCsv.m_trim = FALSE;
 	ExpTxt.m_trim = FALSE;
 	ExpHtm.m_trim = FALSE;
+
 	if (exp->m_Commas) {
 		if (!ExpCsv.open(filecsv,TRUE)) {
 			MBMessageBox("Error", filecsv + " is unwriteable.",TRUE,FALSE);
@@ -1644,7 +1666,7 @@ MusicLib::export(ExportDlg * exp) {
 	}
 
 	//Now sort the genres 
-	genreCSList.SetCompareFunction(CompareByFilenameNoCase);
+	genreCSList.SetCompareFunction(String::CompareNoCase);
 	genreCSList.Sort();
 	CString genreRefs;
 
@@ -1673,7 +1695,7 @@ MusicLib::export(ExportDlg * exp) {
 				if (artist.label() != MBALL)
 					artistCSList.Add(artist.label());
 			}
-			artistCSList.SetCompareFunction(CompareByFilenameNoCase);
+			artistCSList.SetCompareFunction(String::CompareNoCase);
 			artistCSList.Sort();
 
 			artistRefs += "\r\n\r\n<p><a name=\""+ String::stripws(genre)
@@ -1703,7 +1725,6 @@ MusicLib::export(ExportDlg * exp) {
 
 	CString tmp;
 	int ctr = 0;
-
 	for (int i=0; i<genreCSList.GetSize(); i++) {
 		CSortedArray<CString, CString&> artistCSList;
 		CString& genre = genreCSList.ElementAt(i);
@@ -1714,7 +1735,7 @@ MusicLib::export(ExportDlg * exp) {
 			if (artist.label() != MBALL)
 				artistCSList.Add(artist.label());
 		}
-		artistCSList.SetCompareFunction(CompareByFilenameNoCase);
+		artistCSList.SetCompareFunction(String::CompareNoCase);
 		artistCSList.Sort();
 		for (int j=0; j<artistCSList.GetSize(); j++) {
 			CString& artist = artistCSList.ElementAt(j);
@@ -1722,12 +1743,12 @@ MusicLib::export(ExportDlg * exp) {
 			MList albumList = m_SongLib.albumList(genre, artist);
 			MList::Iterator albumIter(albumList);
 			while (albumIter.more()) {
-				MRecord album = albumIter.next();
-				if (MBALL != album.label())
-					albumCSList.Add(album.label());
+				MRecord albumr = albumIter.next();
+				if (MBALL != albumr.label())
+					albumCSList.Add(albumr.label());
 			}
-			artistCSList.SetCompareFunction(CompareByFilenameNoCase);
-			artistCSList.Sort();
+			albumCSList.SetCompareFunction(String::CompareNoCase);
+			albumCSList.Sort();
 			for (int k=0; k<albumCSList.GetSize(); k++) {
 				CString& album = albumCSList.ElementAt(k);
 				if (exp->m_Html) {
@@ -1787,12 +1808,12 @@ MusicLib::export(ExportDlg * exp) {
 	}
 	dialog->EndDialog(0);
 	delete dialog;
+	logger.ods("exported " + numToString(ctr) + " songs");
+
 }
 
-int MusicLib::CompareByFilenameNoCase(CString& element1, CString& element2) 
-{
-  return element1.CompareNoCase(element2);
-}
+
+
 int MusicLib::CompareByNum(CString& element1, CString& element2) 
 {
 	int i1,i2;
@@ -1829,7 +1850,9 @@ MusicLib::exportCsv(ExportDlg * exp, MyLog * log, Song song) {
 	if (exp->m_Mp3File) {
 		entry = expQE(entry, song->getId3("FILE"));
 	}
+	log->m_NoODS = TRUE;
 	log->log(entry);
+	log->m_NoODS = FALSE;
 }
 CString 
 MusicLib::expQE(const CString & entry, const CString in) {
@@ -2718,6 +2741,8 @@ MusicLib::IgetLibraryCounts() {
 		MRecord genre = genreIter.next();
 		if (genre.label() != MBALL) {
 			++genrecount;
+		}
+		if (genre.label() == MBALL) {
 			MList artistList(genre);
 			MList::Iterator artistIter(artistList);
 			while (artistIter.more()) {
@@ -4661,11 +4686,11 @@ CString MusicLib::JustVerify() {
     CString vr = m_SongLib.verify(msg, num_albums1, num_songs1,m_totalMp3s);
 
 
-    InitDlg * dialog = new InitDlg(1,0);
-	dialog->ShowWindow(SW_SHOWNORMAL);
-
-	garbageCollect(dialog, TRUE);
-	dialog->EndDialog(IDOK);
+//    InitDlg * dialog = new InitDlg(1,0);
+//	dialog->ShowWindow(SW_SHOWNORMAL);
+//
+//	garbageCollect(dialog, TRUE);
+//	dialog->EndDialog(IDOK);
 
 	return vr;
 }
@@ -4697,6 +4722,7 @@ MSongLib::dumpRecords(CString msg) {
 		}
 	}
 }
+#ifdef asdf
 CString
 MSongLib::verify(CString msg, int & total_albums, int & total_songs, const int totalMp3s) {
     CString results, contents, removed;
@@ -4813,6 +4839,130 @@ MSongLib::verify(CString msg, int & total_albums, int & total_songs, const int t
 //	m_files.removeAll();
 	dialog->EndDialog(IDOK);
 	delete dialog;
+    return results;
+}
+#endif
+CString
+MSongLib::verify(CString msg, int & total_albums, int & total_songs, const int totalMp3s) {
+    CString results, contents, removed;
+    int num_genres = 0;
+    int total_artists = 0;
+	int total_song_count = 0;
+
+	CString sGenre,sArtist,sAlbum,sTitle,sFile;
+	
+
+	time_t starttime,elapsed,eta,now,lastupdate;
+	lastupdate=0;
+	float songspersec;
+	time(&starttime);
+	CString etaS;
+
+    InitDlg * dialog = new InitDlg(1,0);
+	dialog->SetLabel(msg);
+	dialog->ShowWindow(SW_SHOWNORMAL);
+//	dialog->SendUpdateStatus(2, "", 0, count());
+	dialog->ProgressRange(0, count());
+	dialog->UpdateWindow();
+
+	int ctr=1;
+	int StatusUpdateDelay = 50;
+#ifdef _DEBUG
+	StatusUpdateDelay = 0;
+#endif
+	MyLog ExpCsv;
+	ExpCsv.open("c:\\mkm\\verifyfiles",TRUE);
+	ExpCsv.m_NoODS = TRUE;
+	ExpCsv.m_DTStamp = FALSE;
+	ExpCsv.m_trim = FALSE;
+    AutoBuf buf(1000);
+    contents = "\r\nLibrary contains:\r\n";
+	MList genrelist = genreList();
+	MList::Iterator genreIter(genrelist);
+    while (genreIter.more()) {
+		MRecord genre(genreIter.next());
+		int num_artists = 0;
+		int num_albums = 0;
+		int num_songs = 0;
+		if (genre.label() != MBALL) {
+			num_genres++;
+			MList artistList(genre);
+			MList::Iterator artistIter(artistList);
+			while (artistIter.more()) {
+				MRecord artist(artistIter.next());
+				if (artist.label() != MBALL) {
+					num_artists++;
+					MList albumList(artist);
+					MList::Iterator albumIter(albumList);
+					while (albumIter.more()) {
+						MRecord album(albumIter.next());
+						if (album.label() != MBALL) {
+							num_albums++;
+							MList songList(album);
+							MList::Iterator songIter(songList);
+							while (songIter.more()) {
+								MRecord songr = songIter.next();
+								Song song = songr.createSong();
+								num_songs++;
+
+								sGenre = song->getId3("TCON");
+								sArtist = song->getId3("TPE1");
+								sAlbum = song->getId3("TALB");
+								sTitle = song->getId3("TIT2");
+								sFile = song->getId3("FILE");
+ExpCsv.log(sFile);
+if (!sGenre.GetLength()
+	|| !sArtist.GetLength()
+	|| !sAlbum.GetLength()
+	|| !sTitle.GetLength()
+	|| !sFile.GetLength()
+	|| sGenre != genre.label()
+	|| sArtist != artist.label()
+	|| sAlbum != album.label()
+	|| sTitle != songr.label()
+	) {
+	contents += "Error: ["+genre.label()+"] ["+artist.label()+"] ["+album.label()+"] ["+songr.label()+"]\r\n";
+	contents += "["+sGenre+"] ["+sArtist+"] ["+sAlbum+"] ["+sTitle+"] ["+sFile+"]\r\n\r\n";
+}
+
+								time(&now);
+								elapsed = now - starttime;
+								if (elapsed > 0) {
+									songspersec = (float)ctr / (float)elapsed;
+									eta = (totalMp3s / songspersec) - elapsed;
+									if (ctr > StatusUpdateDelay && lastupdate < now) {
+										etaS = msg + " Remaining: ";
+										etaS += String::secs2HMS(eta);
+										dialog->SetLabel(etaS);
+										lastupdate = now;
+									}
+								}
+								dialog->ProgressPos(total_song_count++);
+								dialog->UpdateWindow();
+								ctr++;
+							}
+						}
+					}
+				}
+			}
+			total_artists += num_artists;
+			total_albums += num_albums;
+			total_songs += num_songs;
+			sprintf(buf.p, "%s %d artists, %d albums, %d songs\r\n", (LPCTSTR)genre.label(),
+				num_artists, num_albums, num_songs);
+			contents += buf.p;
+		}
+    }
+
+    sprintf(buf.p, "totals %d genres, %d artists, %d albums, %d songs\r\n",
+        num_genres, total_artists, total_albums, total_songs);
+    contents += buf.p;
+
+	results += contents;
+
+	dialog->EndDialog(IDOK);
+	delete dialog;
+	MBMessageBox("Verify",results,FALSE);
     return results;
 }
 

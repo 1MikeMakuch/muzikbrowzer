@@ -4,7 +4,8 @@
 
 class MyLog {
 	public:
-		MyLog():m_ready(FALSE),m_DTStamp(TRUE),m_trim(TRUE){};
+		MyLog():m_ready(FALSE),m_DTStamp(TRUE),m_trim(TRUE),
+		m_NoODS(FALSE){};
 		~MyLog();
 		BOOL open(CString, BOOL trunc=FALSE);
 		void close();
@@ -36,10 +37,12 @@ class MyLog {
 		CString _pathfile;
 		BOOL m_DTStamp;
 		BOOL m_trim;
+		BOOL m_NoODS;
 	private:
 		BOOL m_ready;
 		CFile _file;
 		void trimIt();
+
 
 
 };
