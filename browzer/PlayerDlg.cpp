@@ -4714,7 +4714,7 @@ void CPlayerDlg::displayAlbumArt(const CString & file, const CString & album) {
 	if (file == m_LastAlbumArtFile) return;
 
 	CString tmp = _selectedGenre + _selectedArtist + _selectedAlbum;
-	if (m_LastGAA == tmp)
+	if (m_LastGAA == tmp && _selectedAlbum != MBALL)
 		return;
 
 	static BOOL first = TRUE;
