@@ -80,8 +80,9 @@ private:
     void ScanThreadStart(ThreadParams &);
     void ScanThreadStop();
     void StoreReg();
-	void StoreReg2();
+	void WriteFolders();
     void ReadReg();
+	void ReadFolders();
     void init();
     void setRunAtStartup();
 	void dirScan(CStringList &);

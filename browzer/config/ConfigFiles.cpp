@@ -310,9 +310,11 @@ void CConfigFiles::OnLocationButton()
 				m_path = path;
 				SetModified(TRUE);
 				m_LocDirModified = TRUE;
-				return;
+//				return;
 			}
 		}
+		ReadFolders();
+		UpdateData(FALSE);
 	}	
 }
 
@@ -321,12 +323,7 @@ void CConfigFiles::ReadReg() {
     RegistryKey reg( HKEY_LOCAL_MACHINE, RegKey );
 
     CString Location;
-    m_origMP3DirList.RemoveAll();
-	m_slMP3DirList.RemoveAll();
-
     AutoBuf buf(1000);
-    unsigned long numdirs/*,numExtensions*/;
-
     reg.Read(RegDbLocation, buf.p, 999, "");
     Location = buf.p;
 
@@ -351,16 +348,7 @@ void CConfigFiles::ReadReg() {
         m_path = m_origMdbLocation;
     }
 
-    numdirs = reg.Read(RegNumDirs, 0);
-
-    unsigned long i;
-    for (i = 0 ; i < numdirs ; ++i) {
-        sprintf(buf.p, "%s%02d", RegDirKey, i);
-        TCHAR dir[1000];
-        reg.Read(buf.p, dir, 999, "");
-        m_origMP3DirList.AddTail(dir);
-		m_slMP3DirList.AddTail(dir);
-    }
+	ReadFolders();
 
     m_RunAtStartupUL = reg.Read(RegRunAtStartup, 0);
 	unsigned long x = reg.Read(RegAlbumSort, 0);
@@ -376,10 +364,36 @@ void CConfigFiles::ReadReg() {
 
 
 }
-void CConfigFiles::StoreReg2() {
+void CConfigFiles::ReadFolders() {
+	m_origMP3DirList.RemoveAll();
+	m_slMP3DirList.RemoveAll();
+	if (::IsWindow(m_MP3DirList.m_hWnd))
+		m_MP3DirList.ResetContent();
+	RegistryKey dreg(m_path + "\\Muzikbrowzer.folders");
+	dreg.ReadFile();
+	unsigned long numdirs/*,numExtensions*/;
+    numdirs = dreg.Read(RegNumDirs, 0);
+    AutoBuf buf(1000);
+    unsigned long i;
+    for (i = 0 ; i < numdirs ; ++i) {
+        sprintf(buf.p, "%s%02d", RegDirKey, i);
+        CString dir;
+        //dreg.Read(buf.p, dir, 999, "");
+		dir = dreg.ReadCString(buf.p,"");
+		if (dir.GetLength()) {
+			m_origMP3DirList.AddTail(dir);
+			m_slMP3DirList.AddTail(dir);
+			if (::IsWindow(m_MP3DirList.m_hWnd))
+				m_MP3DirList.AddString(dir);
+		}
+    }
+
+}
+void CConfigFiles::WriteFolders() {
     AutoBuf buf(1000);
     unsigned long num = m_slMP3DirList.GetCount();
-    RegistryKey reg( HKEY_LOCAL_MACHINE, RegKey );
+//    RegistryKey reg( HKEY_LOCAL_MACHINE, RegKey );
+	RegistryKey reg(m_path + "\\Muzikbrowzer.folders");
     reg.Write(RegNumDirs, num);
 
     m_origMP3DirList.RemoveAll();
@@ -395,6 +409,7 @@ void CConfigFiles::StoreReg2() {
 		reg.Write(buf.p, dir);
 		i++;
     }
+	reg.WriteFile();
 }
 
 void CConfigFiles::StoreReg() {
@@ -407,7 +422,7 @@ void CConfigFiles::StoreReg() {
 
     const TCHAR * location = (LPCTSTR) Location;
 
-	StoreReg2();
+	WriteFolders();
     RegistryKey reg( HKEY_LOCAL_MACHINE, RegKey );
     reg.Write(RegDbLocation, location);
 
@@ -636,19 +651,20 @@ void CConfigFiles::OnOK()
 }
 void CConfigFiles::OnCancel() 
 {
-    m_MP3DirList.ResetContent();
-	m_slMP3DirList.RemoveAll();
+//	m_MP3DirList.ResetContent();
+//	m_slMP3DirList.RemoveAll();
 
-    POSITION pos;
-
-    for (pos = m_origMP3DirList.GetHeadPosition(); pos != NULL; ) {
-        CString dir = m_origMP3DirList.GetAt(pos);
-        m_MP3DirList.AddString(dir);
-		m_slMP3DirList.AddTail(dir);
-	    m_origMP3DirList.GetNext(pos);
-    }
-    m_MdbLocation.SetWindowText(m_origMdbLocation);
-    StoreReg();
+//	POSITION pos;
+//	for (pos = m_origMP3DirList.GetHeadPosition(); pos != NULL; ) {
+//		CString dir = m_origMP3DirList.GetAt(pos);
+//		m_MP3DirList.AddString(dir);
+//		m_slMP3DirList.AddTail(dir);
+//		m_origMP3DirList.GetNext(pos);
+//	}
+	m_MdbLocation.SetWindowText(m_origMdbLocation);
+	m_path = m_origMdbLocation;
+	ReadFolders();
+	StoreReg();
 //    UpdateData(FALSE);
 	CPropertyPage::OnCancel();
 }
@@ -677,7 +693,7 @@ void CConfigFiles::AddMusic() {
 			if (path.GetLength())
 				m_slMP3DirList.AddTail(path);
 		}
-		StoreReg2();
+		WriteFolders();
 		m_bAdd = TRUE;
 		dirScan(list);
 		m_bAdd = FALSE;

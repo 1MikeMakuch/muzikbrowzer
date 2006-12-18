@@ -22,15 +22,15 @@ const static TCHAR RegKey[] = _T(MBREGKEY);
 const static TCHAR RegKeyPrevVals[] = _T(MBREGKEYLAST);
 
 const static TCHAR RegDbLocation[] = _T( "DbLocation" );
-const static TCHAR RegDirKey[] = _T("Dir_");
+const static TCHAR RegDirKey[] = _T("Dir");
 const static TCHAR RegNumDirs[] = _T("NumDirs");
 const static TCHAR RegNumMp3Extensions[] = _T("NumMp3Extensions");
-const static TCHAR RegMp3ExtensionsKey[] = _T("Mp3Extension_");
+const static TCHAR RegMp3ExtensionsKey[] = _T("Mp3Extension");
 
-const static TCHAR RegWindowX1[] = _T("TopLeft_x");
-const static TCHAR RegWindowY1[] = _T("TopLeft_y");
-const static TCHAR RegWindowX2[] = _T("BottomRight_x");
-const static TCHAR RegWindowY2[] = _T("BottomRight_y");
+const static TCHAR RegWindowX1[] = _T("TopLeftx");
+const static TCHAR RegWindowY1[] = _T("TopLefty");
+const static TCHAR RegWindowX2[] = _T("BottomRightx");
+const static TCHAR RegWindowY2[] = _T("BottomRighty");
 const static TCHAR RegWindowMaximized[] = _T("Maximized");
 const static TCHAR RegWindowsFontTitles[] = _T("FontTitles");
 const static TCHAR RegWindowsFontPanel[] = _T("FontPanel");
