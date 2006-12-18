@@ -29,7 +29,8 @@ IMPLEMENT_DYNCREATE(CConfigFiles, CPropertyPage)
 CConfigFiles::CConfigFiles(CWnd *p, PlayerCallbacks * pcb) : CPropertyPage(CConfigFiles::IDD),
     /*m_PlayerDlg(p),*/ m_RunAtStartupUL(0), m_scanNew(FALSE),
 	m_AlbumSortAlpha(TRUE), m_AlbumSortDate(FALSE),
-	m_playercallbacks(pcb), m_bAdd(FALSE), m_ResetNeeded(FALSE)
+	m_playercallbacks(pcb), m_bAdd(FALSE), m_ResetNeeded(FALSE),
+	m_OrigRunAtStartup(FALSE)
 
 {
 	//{{AFX_DATA_INIT(CConfigFiles)
@@ -67,6 +68,7 @@ BEGIN_MESSAGE_MAP(CConfigFiles, CPropertyPage)
 	ON_BN_CLICKED(IDC_DIRSCAN_NEW, OnDirscanNew)
 	ON_BN_CLICKED(IDC_ALBUMSORT_DATE, OnAlbumsortDate)
 	ON_BN_CLICKED(IDC_ALBUMSORT_ALPHA, OnAlbumsortAlpha)
+	ON_BN_CLICKED(IDC_RUNATSTARTUP, OnRunatstartup)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -425,6 +427,7 @@ void CConfigFiles::StoreReg() {
 	WriteFolders();
     RegistryKey reg( HKEY_LOCAL_MACHINE, RegKey );
     reg.Write(RegDbLocation, location);
+	m_origMdbLocation = location;
 
     if (m_RunAtStartup.GetCheck() == 0) {
         m_RunAtStartupUL = 0;
@@ -433,9 +436,11 @@ void CConfigFiles::StoreReg() {
         m_RunAtStartupUL = 1;
         reg.Write(RegRunAtStartup, (unsigned long) 1);
     }
+	m_OrigRunAtStartup = (BOOL)m_RunAtStartupUL;
 
     setRunAtStartup();
 	reg.Write(RegAlbumSort, (unsigned long)m_AlbumSortAlpha);
+	m_InitialAlbumSortAlpha = m_AlbumSortAlpha;
 
 
 }
@@ -565,9 +570,12 @@ BOOL CConfigFiles::OnInitDialog()
 
     if (m_RunAtStartupUL) {
         m_RunAtStartup.SetCheck(1);
+		m_OrigRunAtStartup = TRUE;
     } else {
         m_RunAtStartup.SetCheck(0);
+		m_OrigRunAtStartup = FALSE;
     }
+	
 
 
 	if (m_AlbumSortAlpha) {
@@ -633,6 +641,8 @@ BOOL CConfigFiles::AlbumSortAlpha()
 
 BOOL CConfigFiles::OnApply() 
 {
+	StoreReg();
+	SetModified(FALSE);
 	return CPropertyPage::OnApply();
 }
 
@@ -664,6 +674,24 @@ void CConfigFiles::OnCancel()
 	m_MdbLocation.SetWindowText(m_origMdbLocation);
 	m_path = m_origMdbLocation;
 	ReadFolders();
+
+	if (m_InitialAlbumSortAlpha) {
+		CheckRadioButton(IDC_ALBUMSORT_DATE,IDC_ALBUMSORT_ALPHA,
+			IDC_ALBUMSORT_ALPHA);
+		m_AlbumSortDate = FALSE;
+		m_AlbumSortAlpha = TRUE;
+	} else {
+		CheckRadioButton(IDC_ALBUMSORT_DATE,IDC_ALBUMSORT_ALPHA,
+			IDC_ALBUMSORT_DATE);
+		m_AlbumSortDate = TRUE;
+		m_AlbumSortAlpha = FALSE;
+	}
+
+    if (m_OrigRunAtStartup) {
+        m_RunAtStartup.SetCheck(1);
+    } else {
+        m_RunAtStartup.SetCheck(0);
+    }
 	StoreReg();
 //    UpdateData(FALSE);
 	CPropertyPage::OnCancel();
@@ -702,3 +730,10 @@ void CConfigFiles::AddMusic() {
 
 
 
+
+void CConfigFiles::OnRunatstartup() 
+{
+	UpdateData(FALSE);
+	SetModified(TRUE);
+	
+}

@@ -56,6 +56,7 @@ protected:
 	afx_msg void OnDirscanNew();
 	afx_msg void OnAlbumsortDate();
 	afx_msg void OnAlbumsortAlpha();
+	afx_msg void OnRunatstartup();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 private:
@@ -69,6 +70,7 @@ private:
     CStringList m_origMP3DirList;
 	CStringList m_slMP3DirList;
     unsigned long m_RunAtStartupUL;
+	BOOL m_OrigRunAtStartup;
 	BOOL m_AlbumSortAlpha;
 	BOOL m_AlbumSortDate;
 	BOOL m_LocDirModified;
