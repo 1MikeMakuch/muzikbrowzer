@@ -1281,30 +1281,41 @@ CPlayerDlg::resetControls() {
 	m_BtnControls.add(2,0, "pos slider",		IDC_POSITION_SLIDER);
 
 	int labelheight=0;
-//	int textheight=0;
-//	int curplayheight = 0;
 	int statusheight = 0;
-	int i;
 
 	double GenresWidthPct;
 	double ArtistsWidthPct ;
 	double AlbumsWidthPct;
-	m_Config.getRegistry("LibGenresWidth", i, 0);
+	double SongsWidthPct;
 
-	GenresWidthPct = (double)i / (double)100;		
-	if (GenresWidthPct < .1 || .60 < GenresWidthPct) {
-		GenresWidthPct = 0.15;
-	}
-	m_Config.getRegistry("LibArtistsWidth", i, 0);
-	ArtistsWidthPct = (double)i / (double)100;
-	if (ArtistsWidthPct < .1 || .60 < ArtistsWidthPct) {
-		ArtistsWidthPct = (double)(1 - GenresWidthPct) / (double)3;
-	}
-	m_Config.getRegistry("LibAlbumsWidth", i, 0);
-	AlbumsWidthPct = (double)i / (double)100;
-	if (AlbumsWidthPct < .1 || .60 < AlbumsWidthPct) {
-		AlbumsWidthPct = (double)(1 - (GenresWidthPct + ArtistsWidthPct)) / (double)2;
-	}
+	CString tmp ;
+	m_Config.getRegistry("LibGenresWidth",tmp,".25");
+
+//	Now using the hard limits to enforce
+	GenresWidthPct = atof(tmp);
+//	if (GenresWidthPct < .1 || .60 < GenresWidthPct) {
+//		GenresWidthPct = 0.15;
+//	}
+
+	m_Config.getRegistry("LibArtistsWidth",tmp,".25");
+	ArtistsWidthPct = atof(tmp);
+//	if (ArtistsWidthPct < .1 || .60 < ArtistsWidthPct) {
+//		ArtistsWidthPct = (double)(1 - GenresWidthPct) / (double)3;
+//	}
+
+	m_Config.getRegistry("LibAlbumsWidth",tmp,".25");
+	AlbumsWidthPct = atof(tmp);
+//	if (AlbumsWidthPct < .1 || .60 < AlbumsWidthPct) {
+//		AlbumsWidthPct = (double)(1 - (GenresWidthPct + ArtistsWidthPct)) / (double)2;
+//	}
+
+	SongsWidthPct = 1 - (GenresWidthPct + ArtistsWidthPct + AlbumsWidthPct);
+//	if (SongsWidthPct < .1 || .60 < SongsWidthPct) {
+//		GenresWidthPct = 0.25;
+//		ArtistsWidthPct = 0.25 ;
+//		AlbumsWidthPct = 0.25;
+//		SongsWidthPct = 0.25;
+//	}
 
 	int fixedy = bordervert * 3;
 	int y = border;
@@ -1555,9 +1566,11 @@ CPlayerDlg::resetControls() {
 	m_BtnControls.move(p,x,y,p->row,p->col);
 	int statusbottom = y + p->height;
 
+	int tw=0;
 	p = m_BtnControls.getObj(IDC_GENRES);		
-	p->width = (m_BtnControls.dialogrect.Width()
-		- (2 * (borderpanel + border))) * GenresWidthPct;
+	m_LibRemainingWidth = (m_BtnControls.dialogrect.Width() - 
+		((2 * (borderpanel + border)) + (3 * borderhorz)));
+	p->width = m_LibRemainingWidth * GenresWidthPct;
 	p->labelheight = labelheight;
 	p->height = (y - bordervert) - (genrey + labelheight);
 	y = genrey;
@@ -1571,8 +1584,7 @@ CPlayerDlg::resetControls() {
 	x += p->width + borderhorz;
 
 	p = m_BtnControls.getObj(IDC_ARTISTS);
-	p->width = (m_BtnControls.dialogrect.Width()
-		- (2 * (borderpanel + border))) * ArtistsWidthPct;
+	p->width = m_LibRemainingWidth * ArtistsWidthPct;
 	p->labelheight = labelheight;
 	p->height = pheight;
 	m_BtnControls.move(p,x,y,p->row,p->col);
@@ -1581,8 +1593,7 @@ CPlayerDlg::resetControls() {
 	x += p->width + borderhorz;
 	
 	p = m_BtnControls.getObj(IDC_ALBUMS);
-	p->width = (m_BtnControls.dialogrect.Width()
-		- (2 * (borderpanel + border))) * AlbumsWidthPct;
+	p->width = m_LibRemainingWidth * AlbumsWidthPct;
 	p->labelheight = labelheight;
 	p->height = pheight;
 	m_BtnControls.move(p,x,y,p->row,p->col);
@@ -1595,7 +1606,10 @@ CPlayerDlg::resetControls() {
 	p->height = pheight;
 	m_BtnControls.move(p,x,y,p->row,p->col);
 	m_LibHeight = pheight;
-	
+
+	double pctSongs = 1 - (GenresWidthPct + ArtistsWidthPct + AlbumsWidthPct);
+	m_Config.setRegistry("LibSongsWidth", numToString(pctSongs));
+
 	CDC * cdc = GetDC();
 
 	FreeResources();
@@ -4005,7 +4019,10 @@ void CPlayerDlg::OnNcLButtonUp(UINT nHitTest, CPoint point)
 		ReleaseCapture();
 		m_LibDrag = FALSE;
 		m_LibDragRect = CRect(0,0,0,0);
+		if (m_LibDragPoint == CPoint(0,0))
+			m_LibDragPoint = point;
 		AdjustLibraryWidths(point);
+		
 	} else {
 		CDialogClassImpl::OnNcLButtonUp(nHitTest, point);
 	}
@@ -4027,7 +4044,7 @@ void CPlayerDlg::OnNcMouseMove(UINT nHitTest, CPoint point)
 
 		CPoint cpoint(point);
 		ScreenToClient(&cpoint);
-		CRect rect;
+		CRect rect,lrect;
 		RedrawWindow();
 		int hardright = 0;
 		int hardleft = 0;
@@ -4042,6 +4059,7 @@ void CPlayerDlg::OnNcMouseMove(UINT nHitTest, CPoint point)
 				} 
 				hardleft = m_GenresLabelRect.left + 50;
 				hardright = m_ArtistsLabelRect.right-50;
+				lrect = m_GenresLabelRect;
 			break;
 		case 2: {
 				rect = m_ArtistsLabelInt;
@@ -4051,6 +4069,7 @@ void CPlayerDlg::OnNcMouseMove(UINT nHitTest, CPoint point)
 				} 
 				hardleft = m_ArtistsLabelRect.left + 50;
 				hardright = m_AlbumsLabelRect.right-50;
+				lrect = m_ArtistsLabelRect;
 				break;
 		case 3: {
 				rect = m_AlbumsLabelInt;
@@ -4060,6 +4079,7 @@ void CPlayerDlg::OnNcMouseMove(UINT nHitTest, CPoint point)
 				} 
 				hardleft = m_AlbumsLabelRect.left + 50;
 				hardright = m_SongsLabelRect.right - 50;
+				lrect = m_AlbumsLabelRect;
 				break;
 		default: {
 				doit = FALSE;
@@ -4067,9 +4087,10 @@ void CPlayerDlg::OnNcMouseMove(UINT nHitTest, CPoint point)
 		}
 		if (rect.right < hardleft)
 			rect.right = hardleft;
-		if (rect.right > hardright)
+		if (rect.right > hardright) {
 			rect.right = hardright;
-		if (rect.right > m_LibraryRect.right-20)
+		}
+		if (rect.right > m_LibraryRect.right-50)
 			doit = FALSE;
 		if (doit) {
 			CDC * cdc = GetWindowDC();
@@ -4079,88 +4100,101 @@ void CPlayerDlg::OnNcMouseMove(UINT nHitTest, CPoint point)
 			cdc->DrawDragRect(rect,rbs,m_LibDragRect,rbs);
 			ReleaseDC(cdc);
 			m_LibDragRect = rect;
+			m_LibDragPoint = rect.BottomRight();
+
+			double x = ((double)(rect.right - lrect.left) / (double)m_LibRemainingWidth)*100;
+			PlayerStatusTempSet(String::substring(numToString(x),0,5) + "%");
+
 		}
 	} else {
 		CDialogClassImpl::OnNcMouseMove(nHitTest, point);
 	}
 }
 
-//DrawDragRect( LPCRECT lpRect, SIZE size, LPCRECT lpRectLast, 
-//			 SIZE sizeLast, CBrush* pBrush = NULL, CBrush* 
-//			 pBrushLast = NULL );
-
 void
 CPlayerDlg::AdjustLibraryWidths(CPoint &apoint) {
-	Control * p1,*p2 ;
-	CPoint point(apoint);
-	ScreenToClient(&point);
+	Control * p1,*p2, *p3, *p4 ;
+	CPoint point = m_LibDragPoint;
+
 	int sw,dx;
+	int bpanel = m_reg.Read("BorderPanel",5);
 
 	int dw = m_BtnControls.dialogrect.Width() 
-		- (m_Config.getDlgBorderWidth()* 2);
-	int pct;
+		- (((bpanel + m_Config.getDlgBorderWidth())* 2) + (m_Config.getDlgBorderHorz()*3));
+	double pctGenre,pctArtist,pctAlbum;
+	p1 = m_BtnControls.getObj(IDC_GENRES);
+	p2 = m_BtnControls.getObj(IDC_ARTISTS);
+	p3 = m_BtnControls.getObj(IDC_ALBUMS);
+	p4 = m_BtnControls.getObj(IDC_SONGS);
+	int tw = p1->width + p2->width + p3->width + p4->width;
+
+	int neww =0;
 
 	switch(m_AdjustLibrary) {
 		case 1: 
-			p1 = m_BtnControls.getObj(IDC_GENRES);
-			p2 = m_BtnControls.getObj(IDC_ARTISTS);
 			sw = p1->width;
 			p1->width = point.x - p1->x;
 			if (p1->width < 50) p1->width = 50;
 			if (p1->width + p1->x > p2->x + p2->width)
 				p1->width = ((p2->x + p2->width) - 50) - p1->x;
+
 			dx = sw - p1->width;
 			m_BtnControls.move(p1,p1->x,p1->y,p1->row,p1->col);
 
-			pct = int((double)100 * ((double)p1->width / (double)dw));
-			m_Config.setRegistry("LibGenresWidth", pct);
+			pctGenre = ((double)p1->width / (double)dw);
+			m_Config.setRegistry("LibGenresWidth", numToString(pctGenre));
 
-			p2->width += dx;
-			p2->x -= dx;
+			neww = tw - (p1->width + p3->width + p4->width);
+			p2->width = neww;
+			p2->x -= neww;
 			m_BtnControls.move(p2,p2->x,p2->y,p2->row,p2->col);
 			
-			pct = int((double)100 * ((double)p2->width / (double)dw));
-			m_Config.setRegistry("LibArtistsWidth", pct);
+			pctArtist = ((double)p2->width / (double)(tw));
+
+			m_Config.setRegistry("LibArtistsWidth", numToString(pctArtist));
 			m_Genres.initBgDc();
 			m_Artists.initBgDc();
 			break;
 		case 2:
-			p1 = m_BtnControls.getObj(IDC_ARTISTS);
-			p2 = m_BtnControls.getObj(IDC_ALBUMS);
-			sw = p1->width;
-			p1->width = point.x - p1->x;
-			if (p1->width < 50) p1->width = 50;
-			if (p1->width + p1->x > p2->x + p2->width)
-				p1->width = ((p2->x + p2->width) - 50) - p1->x;
-			dx = sw - p1->width;
-			m_BtnControls.move(p1,p1->x,p1->y,p1->row,p1->col);
-			pct = int((double)100 * ((double)p1->width / (double)dw));
-			m_Config.setRegistry("LibArtistsWidth", pct);
+			sw = p2->width;
+			p2->width = point.x - p2->x;
+			if (p2->width < 50) p2->width = 50;
+			if (p2->width + p2->x > p3->x + p3->width)
+				p2->width = ((p3->x + p3->width) - 50) - p2->x;
 
-			p2->width += dx;
-			p2->x -= dx;
+			dx = sw - p2->width;
 			m_BtnControls.move(p2,p2->x,p2->y,p2->row,p2->col);
-			pct = int((double)100 * ((double)p2->width / (double)dw));
-			m_Config.setRegistry("LibAlbumsWidth", pct);
+
+			pctArtist = ((double)p2->width / (double)dw);
+			m_Config.setRegistry("LibArtistsWidth", numToString(pctArtist));
+
+			neww = tw - (p1->width + p2->width + p4->width);
+			p3->width = neww;
+			p3->x -= neww;
+			m_BtnControls.move(p3,p3->x,p3->y,p3->row,p3->col);
+			
+			pctAlbum = ((double)p3->width / (double)(tw));
+
+			m_Config.setRegistry("LibAlbumsWidth", numToString(pctAlbum));
 			m_Artists.initBgDc();
 			m_Albums.initBgDc();
 			break;
 		case 3:
-			p1 = m_BtnControls.getObj(IDC_ALBUMS);
-			p2 = m_BtnControls.getObj(IDC_SONGS);
-			sw = p1->width;
-			p1->width = point.x - p1->x;
-			if (p1->width < 50) p1->width = 50;
-			if (p1->width + p1->x > p2->x + p2->width)
-				p1->width = ((p2->x + p2->width) - 50) - p1->x;
-			dx = sw - p1->width;
-			m_BtnControls.move(p1,p1->x,p1->y,p1->row,p1->col);
-			pct = int((double)100 * ((double)p1->width / (double)dw));
-			m_Config.setRegistry("LibAlbumsWidth", pct);
+			sw = p3->width;
+			p3->width = point.x - p3->x;
+			if (p3->width < 50) p3->width = 50;
+			if (p3->width + p3->x > p4->x + p4->width)
+				p3->width = ((p4->x + p4->width) - 50) - p3->x;
+			dx = sw - p3->width;
+			m_BtnControls.move(p3,p3->x,p3->y,p3->row,p3->col);
+			pctAlbum = ((double)p3->width / (double)dw);
+			m_Config.setRegistry("LibAlbumsWidth", numToString(pctAlbum));
 
-			p2->width += dx;
-			p2->x -= dx;
-			m_BtnControls.move(p2,p2->x,p2->y,p2->row,p2->col);
+			neww = tw - (p1->width + p2->width + p3->width);
+			p4->width = neww;
+			p4->x -= neww;
+
+			m_BtnControls.move(p4,p4->x,p4->y,p4->row,p4->col);
 			m_Albums.initBgDc();
 			m_Songs.initBgDc();
 			break;

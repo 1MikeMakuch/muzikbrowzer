@@ -173,6 +173,7 @@ int MBMessageBox(CString title, CString msg, BOOL log, BOOL enableCancel)
     int r = mb->DoModal(); // 1 for OK, 0 for Cancel
 	if (thePlayer)
 		*thePlayer->m_Dialog = thePlayer;
+
     delete mb;
 	return r;
 }

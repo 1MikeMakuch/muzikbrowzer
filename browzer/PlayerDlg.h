@@ -142,6 +142,7 @@ private:
 	UINT m_AdjustLibrary;
 	BOOL m_LibDrag;
 	CRect m_LibDragRect;
+	CPoint m_LibDragPoint;
 public:
     MBConfig m_Config;
 	CRect getWindowRect() { return m_WindowRect; }
@@ -448,6 +449,7 @@ protected:
 	int m_CheckGoodCount;
 	int m_CheckBadCount;
 	BOOL m_Ready2Reset;
+	int m_LibRemainingWidth;
 
 	DECLARE_MESSAGE_MAP()
 

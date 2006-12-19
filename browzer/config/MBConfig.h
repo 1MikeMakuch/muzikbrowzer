@@ -115,7 +115,7 @@ public:
 	BOOL AlbumSortAlpha();
 	void getRegistry(const CString & key, int & value, const int dflt);
 	void setRegistry(const CString & key, const int value);
-	void getRegistry(const CString & key, CString & value);
+	void getRegistry(const CString & key, CString & value, const CString &dflt="");
 	void setRegistry(const CString & key, const CString & value);
 	int trialMode();
 	int trialLeft();

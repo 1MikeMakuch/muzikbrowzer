@@ -878,8 +878,8 @@ MusicLib::getAlbums(const CString & genrename, const CString & artistname,
 		if (((NameNum*)namenums[i])->m_name.Compare(MBALL)) {
 			box.AddString(((NameNum*)namenums[i])->m_name);
 			box.SetItemData(i, ((NameNum*)namenums[i])->m_p);
-			delete (NameNum*)namenums[i];
 		}
+		delete (NameNum*)namenums[i];
     }
 	return 0;
 }

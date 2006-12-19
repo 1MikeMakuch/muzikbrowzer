@@ -231,10 +231,11 @@ void MBConfig::setRegistry(const CString & key, const int value) {
 	reg.Write((LPCTSTR)key, value);
 }
 
-void MBConfig::getRegistry(const CString & key, CString & value) {
+void MBConfig::getRegistry(const CString & key, CString & value, const CString & dflt) {
 	RegistryKey reg( HKEY_LOCAL_MACHINE, RegKey );
 	AutoBuf buf(1000);
-	reg.Read((LPCTSTR)key, buf.p, 999, "");
+	reg.Read((LPCTSTR)key, buf.p, 999, dflt);
+	value = buf.p;
 }
 
 void MBConfig::setRegistry(const CString & key, const CString & value) {

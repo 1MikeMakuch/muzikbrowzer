@@ -73,6 +73,7 @@ OggTag::read(const CString & file) {
 	}
 	m_time = (long) ov_time_total(ogg, -1);
 	ov_clear(ogg);
+	fclose(OF);
 	delete ogg;
 	return "";
 }
