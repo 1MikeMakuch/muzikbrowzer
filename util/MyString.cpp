@@ -302,6 +302,16 @@ String::trimLR(CString & string, const CString & trim) {
 		string.TrimRight(trim);
 	}
 }
+BOOL 
+String::equalUpToMin(const CString & string1, const CString & string2, 
+					 BOOL ignorecase) {
+	int min = __min(string1.GetLength(), string2.GetLength());
+	if (ignorecase)
+		return !strnicmp(string1,string2,min);
+	else
+		return !strncmp(string1,string2,min);
+
+}
 TEST(StringTrimLR, stringtrimlr)
 {
 	CString x(" x x ");
@@ -312,7 +322,15 @@ TEST(StringTrimLR, stringtrimlr)
 	String::trimLR(x,"\" ");
 	CHECK("x x" == x);
 }
+TEST(String, EqualUpToMin)
+{
+	CString one,two;
+	one = "Abcd";
+	two = "abcdefg";
+	CHECK(TRUE == String::equalUpToMin(one,two,TRUE));
+	CHECK(FALSE == String::equalUpToMin(one,two,FALSE));
 
+}
 AutoBuf::AutoBuf(int size) {
     p = new char[size];
 	memset(p, 0, size-1);

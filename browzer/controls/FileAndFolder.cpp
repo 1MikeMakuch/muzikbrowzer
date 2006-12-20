@@ -6,6 +6,10 @@
 #include "FileAndFolder.h"
 #include "SortedArray.h"
 #include "MBGlobals.h"
+#include "MyLog.h"
+#include "MyString.h"
+#include "TestHarness/TestHarness.h"
+#include "FileUtils.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -148,6 +152,8 @@ CFileAndFolder::ShowDefault() {
 	}
 	CString drive = m_default.Left(3);
 	HTREEITEM htree = m_Tree.GetNextItem(TVI_ROOT, TVGN_ROOT);
+	FindDefault(htree);
+	return;
 	while (htree) {
 		CString idrive = m_Tree.getItemText(htree);
 		if (idrive.CompareNoCase(drive) == 0) {
@@ -158,6 +164,47 @@ CFileAndFolder::ShowDefault() {
 		htree = m_Tree.GetNextItem(htree, TVGN_NEXT);
 	}
 }
+void
+CFileAndFolder::FindDefault(HTREEITEM htree, const CString path) {
+
+	
+	while (htree) {
+		CString partialPath = m_Tree.getItemText(htree);
+		logger.ods("Find:"+partialPath);
+		CString pathSoFar ;
+		if (path.GetLength()) {
+			if (!String::endsWith(path,"\\")) {
+				pathSoFar = path + "\\" + partialPath;
+			} else {
+				pathSoFar = path + partialPath;
+			}
+		} else {
+			pathSoFar = partialPath;
+		}
+
+		if (FileUtil::IsParentPath(m_default,pathSoFar)) {
+			DisplayPath(partialPath, htree);
+			m_Tree.Expand(htree,TVE_EXPAND);
+			if (m_default.CompareNoCase(pathSoFar) == 0) {
+				return;
+			}
+			htree = m_Tree.GetChildItem(htree);
+
+			FindDefault(htree, pathSoFar);
+		}
+		htree = m_Tree.GetNextItem(htree, TVGN_NEXT);
+	}
+}
+#ifdef asdf
+TEST(CFileAndFolder,test)
+{
+	CDialog d;
+	CString dflt("N:\\musictests\\AeroClips");
+	CFileAndFolder dialog(&d, dflt);
+	dialog.DoModal();
+	exit(0);
+}
+#endif
 CString CFileAndFolder::GetFullPath(HTREEITEM htree) {
 	CString path,tmp;
 	path = m_Tree.getItemText(htree);

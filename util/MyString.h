@@ -62,6 +62,8 @@ class String {
 
 	static BOOL endsWith(const CString & string, const CString & end);
 	static BOOL contains(const CString & string, const CString & contain);
+	static BOOL equalUpToMin(const CString & string1, const CString & string2,
+		BOOL ignorecase=FALSE);
 
 	static int String::CompareNoCase(CString& element1, 
 		CString& element2) 

@@ -297,3 +297,55 @@ TEST(FileUtilFileToString,StringToFile)
 	CString s2 = FileUtil::FileToString(f);
 	CHECK(s2 == s);
 }
+BOOL 
+FileUtil::IsParentPath(const CString & fullPath,
+					   const CString & candParent) {
+	CString path(fullPath);
+	if (String::endsWith(path,"\\"))
+		path.TrimRight("\\");
+	CString parent(candParent);
+	if (String::endsWith(parent,"\\"))
+		parent.TrimRight("\\");
+	int dirs = String::delCount(parent,"\\");
+	CString fPath;
+	CString fCand;
+	for(int i=1; i<=dirs; ++i) {
+		fPath += String::field(path,"\\",i) + "\\";
+		fCand += String::field(parent,"\\",i) + "\\";
+	}
+	return (fPath.CompareNoCase(fCand)==0);
+}
+CString
+FileUtil::ParentDir(const CString & path) {
+
+	CString parent;
+	CString fpath(path);
+	if (String::endsWith(fpath,"\\"))
+		fpath.TrimRight("\\");
+	int dirs = String::delCount(fpath,"\\");
+	for(int i=1; i<dirs; ++i) {
+		parent += String::field(fpath,"\\",i) + "\\";
+	}
+	if (String::endsWith(parent,"\\"))
+		parent.TrimRight("\\");
+	return parent;
+}
+
+TEST(FileUtil,IsParentPath) 
+{
+	CString path("c:\\mkm\\musictests\\Aerosmith");
+	CString partial("c:\\mkm\\music");
+	CHECK(FALSE == FileUtil::IsParentPath(path,partial));
+	partial = path;
+	CHECK(TRUE == FileUtil::IsParentPath(path,partial));
+	partial = "c:\\";
+	CHECK(TRUE == FileUtil::IsParentPath(path,partial));
+}
+
+TEST(FileUtil, ParentDir)
+{
+	CString path("c:\\mkm\\music");
+	CHECK("c:\\mkm" == FileUtil::ParentDir(path));
+	path = "c:\\mkm\\";
+	CHECK("c:" == FileUtil::ParentDir(path));
+}

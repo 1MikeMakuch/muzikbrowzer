@@ -100,6 +100,7 @@ protected:
 	CString GetFullPath(HTREEITEM htree);
 	void resizeControls();
 	void ShowDefault();
+	void FindDefault(HTREEITEM htree, const CString path="");
 	void ReadCachedDrives();
 	void WriteCachedDrives();
 	void OnViewCachedDrives();

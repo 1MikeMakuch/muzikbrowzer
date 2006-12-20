@@ -9,6 +9,8 @@
 #include "ConfigFiles.h"
 #include "MyString.h"
 #include "FileAndFolder.h"
+#include "FileUtils.h"
+
 //#define _WIN32_DCOM
 #include "GetTextField.h"
 #include <objbase.h>
@@ -257,7 +259,7 @@ void CConfigFiles::OnDiradd()
 		s = 0;
 	if (s = m_MP3DirList.GetCount()) {
 		m_MP3DirList.GetText(s-1, dflt);
-		dflt = String::upDir(dflt);
+		dflt = FileUtil::ParentDir(String::upDir(dflt));
 	}
 
 	CFileAndFolder dialog(this, dflt);
@@ -289,7 +291,7 @@ void CConfigFiles::OnLocationButton()
     // open a file
 	CString dflt;
 	m_MdbLocation.GetWindowText(dflt);
-	CFileAndFolder dialog(this, dflt);
+	CFileAndFolder dialog(this, FileUtil::ParentDir(dflt));
 	dialog.SetShowFiles(FALSE);
 	dialog.setTitle("Set location of Muzikbrowzer files");
 	dialog.setMsg("... where Muzikbrowzer's files, playlists, skins reside");
