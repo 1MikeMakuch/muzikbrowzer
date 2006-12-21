@@ -209,13 +209,6 @@ const CString MBConfig::getCurrentSkin() {
 //MBConfig::getGenreWidthPct() {
 //	return m_Display->getGenreWidthPct();
 //}
-void MBConfig::AddMusic() {
-	m_Files->AddMusic();
-}
-void MBConfig::Scan(BOOL fornew) {
-	m_Files->Scan(fornew);
-}
-
 
 BOOL
 MBConfig::AlbumSortAlpha() {
@@ -308,3 +301,15 @@ BOOL MBConfig::OnCommand(WPARAM wParam, LPARAM lParam)
 	return TRUE;
 }
 
+void
+MBConfig::GetDirs(CStringList & dirs) {
+	m_Files->GetDirs(dirs);
+}
+void
+MBConfig::AddFolders(const CStringList & dirs) {
+	m_Files->AddFolders(dirs);
+}
+void
+MBConfig::DelFolders(const CStringList & dirs) {
+	m_Files->DelFolders(dirs);
+}

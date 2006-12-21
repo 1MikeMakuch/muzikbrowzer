@@ -127,9 +127,10 @@ public:
 	int getPanelWidth() ;
 	void ReadReg(RegistryKey &);
 	BOOL verifySkin();
+	void GetDirs(CStringList & dirs);
+	void AddFolders(const CStringList & dirs);
+	void DelFolders(const CStringList & dirs);
 
-	void AddMusic();
-	void Scan(BOOL fornew=FALSE);
 	BOOL resetNeeded();
 };
 

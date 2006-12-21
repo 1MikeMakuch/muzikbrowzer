@@ -305,7 +305,6 @@ BEGIN
                     WS_HSCROLL
     PUSHBUTTON      "Add",IDC_DIRADD,139,69,36,11
     PUSHBUTTON      "Remove",IDC_DIRREMOVE,180,68,36,11
-    PUSHBUTTON      "Complete Rebuild",IDC_DIRSCAN,24,145,63,13
     PUSHBUTTON      "Edit",IDC_LOCATION_BUTTON,302,105,33,13
     LTEXT           "",IDC_MDB_LOCATION,19,105,273,14,NOT WS_GROUP,
                     WS_EX_CLIENTEDGE
@@ -314,16 +313,15 @@ BEGIN
                     IDC_STATIC,12,90,331,35
     CONTROL         "Yes",IDC_RUNATSTARTUP,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,252,146,40,8
-    GROUPBOX        "Music Library maintenance",IDC_STATIC,12,129,209,35
-    PUSHBUTTON      "Search folders for new music",IDC_DIRSCAN_NEW,105,145,
-                    98,13
     GROUPBOX        "Run muzikbrowzer at Start up?",IDC_STATIC,233,129,110,
                     35
     CONTROL         "Date",IDC_ALBUMSORT_DATE,"Button",BS_AUTORADIOBUTTON | 
-                    WS_GROUP,49,169,28,10
+                    WS_GROUP,17,143,28,10
     CONTROL         "Alpha",IDC_ALBUMSORT_ALPHA,"Button",BS_AUTORADIOBUTTON | 
-                    WS_GROUP,85,169,30,10
-    LTEXT           "Album sort",IDC_STATIC,8,170,37,9
+                    WS_GROUP,17,155,30,10
+    LTEXT           "Sort albums by",IDC_STATIC,15,132,48,9
+    CONTROL         "Hide Genre column?",IDC_HIDE_GENRE,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,96,131,83,16
 END
 
 IDD_CONFIG_IRMAN DIALOG DISCARDABLE  0, 0, 402, 199
@@ -694,6 +692,20 @@ BEGIN
     PUSHBUTTON      "Browse",ID_EXPORT_TEMPLATE_BROWSE,72,149,50,14,WS_GROUP
 END
 
+IDD_PROGRESS_DLG DIALOG DISCARDABLE  0, 0, 375, 86
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Muzikbrowzer Progress"
+FONT 8, "MS Sans Serif"
+BEGIN
+    PUSHBUTTON      "Abort",IDC_PROGRESS_ABORT,319,14,41,14,NOT WS_TABSTOP
+    CONTROL         "Progress1",IDC_PROGRESS_PROGRESS,"msctls_progress32",
+                    WS_BORDER,8,64,343,14
+    LTEXT           "",IDC_PROGRESS_STATUS,8,45,343,14,SS_CENTERIMAGE | 
+                    SS_SUNKEN | NOT WS_GROUP
+    LTEXT           "",IDC_PROGRESS_LABEL2,8,26,295,14,NOT WS_GROUP
+    LTEXT           "",IDC_PROGRESS_LABEL,8,7,295,14,NOT WS_GROUP
+END
+
 
 #ifndef _MAC
 /////////////////////////////////////////////////////////////////////////////
@@ -912,6 +924,14 @@ BEGIN
         RIGHTMARGIN, 193
         TOPMARGIN, 7
         BOTTOMMARGIN, 165
+    END
+
+    IDD_PROGRESS_DLG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 368
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 79
     END
 END
 #endif    // APSTUDIO_INVOKED

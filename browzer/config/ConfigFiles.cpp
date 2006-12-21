@@ -29,9 +29,9 @@ static char THIS_FILE[] = __FILE__;
 IMPLEMENT_DYNCREATE(CConfigFiles, CPropertyPage)
 
 CConfigFiles::CConfigFiles(CWnd *p, PlayerCallbacks * pcb) : CPropertyPage(CConfigFiles::IDD),
-    /*m_PlayerDlg(p),*/ m_RunAtStartupUL(0), m_scanNew(FALSE),
+    /*m_PlayerDlg(p),*/ m_RunAtStartupUL(0),
 	m_AlbumSortAlpha(TRUE), m_AlbumSortDate(FALSE),
-	m_playercallbacks(pcb), m_bAdd(FALSE), m_ResetNeeded(FALSE),
+	m_playercallbacks(pcb), m_ResetNeeded(FALSE),
 	m_OrigRunAtStartup(FALSE)
 
 {
@@ -65,9 +65,7 @@ BEGIN_MESSAGE_MAP(CConfigFiles, CPropertyPage)
 	ON_BN_CLICKED(IDC_DIRADD, OnDiradd)
 	ON_LBN_SELCHANGE(IDC_DIRLIST, OnSelchangeDirlist)
 	ON_BN_CLICKED(IDC_DIRREMOVE, OnDirremove)
-	ON_BN_CLICKED(IDC_DIRSCAN, OnDirscan)
 	ON_BN_CLICKED(IDC_LOCATION_BUTTON, OnLocationButton)
-	ON_BN_CLICKED(IDC_DIRSCAN_NEW, OnDirscanNew)
 	ON_BN_CLICKED(IDC_ALBUMSORT_DATE, OnAlbumsortDate)
 	ON_BN_CLICKED(IDC_ALBUMSORT_ALPHA, OnAlbumsortAlpha)
 	ON_BN_CLICKED(IDC_RUNATSTARTUP, OnRunatstartup)
@@ -112,143 +110,18 @@ void CConfigFiles::OnDirremove()
 
 }
 
-class ThreadParams {
-public:
-
-	CString (*scanDirectories)(const CStringList & directories,
-						  InitDlg * initDlg, BOOL scanNew, BOOL bAdd);
-    CStringList * m_dirs;
-    InitDlg * m_InitDialog;
-    CString m_result;
-	BOOL m_scanNew;
-	BOOL m_bAdd;
-};
-
-static int ScanThread_done = 0;
-
-static UINT
-ScanThread(LPVOID pParam) {
-    ThreadParams *tp = (ThreadParams *)pParam;
-
-	ScanThread_done = 0;
-	//::Sleep(2000);
-	tp->m_result = (*tp->scanDirectories)(*(tp->m_dirs), 
-		tp->m_InitDialog, tp->m_scanNew, tp->m_bAdd);
-    tp->m_InitDialog->SendUpdateStatus(4, "", 0,0); // EndDialog;
-
-    ScanThread_done = 1;
-    return 0;
-}
-
 void
-CConfigFiles::ScanThreadStart(ThreadParams &tp) {
-
-    AfxBeginThread(ScanThread, (LPVOID) &tp);
-
-    return;
-}
-
-void
-CConfigFiles::ScanThreadStop() {
-}
-
-void CConfigFiles::OnDirscan() 
-{
-
-	Scan(FALSE);
-}
-void CConfigFiles::OnDirscanNew() 
-{
-	Scan(TRUE);
-}
-void CConfigFiles::Scan(BOOL fornew) {
-	m_bAdd=FALSE;
-	CString title = "Confirmation";
-	CString text;
-	if (fornew) {
-		text = "Search the music folders below for new music and\r\nadd to Library?\r\n\r\n";
-	} else {
-		text = "Search the music folders below for all music and\r\nrebuild Library from scratch?\r\n\r\n";
-	}
-
+CConfigFiles::GetDirs(CStringList & dirs) {
 	POSITION pos;
 	CString dir;
 	for (pos = m_slMP3DirList.GetHeadPosition(); pos != NULL; ) {
         dir = m_slMP3DirList.GetAt(pos);
-		text += dir + "\r\n";
+		dirs.AddTail(dir);
 		m_slMP3DirList.GetNext(pos);
     }
-
-	int r = MBMessageBox("Confirmation", text, FALSE, TRUE);
-	if (r == 0) {
-		MBMessageBox("Notice","Search not performed");
-		return ;
-	}
-
-	CStringList x;
-	if (fornew) {
-		m_scanNew = TRUE;
-		dirScan(x);	
-	} else {
-		m_scanNew = FALSE;
-		dirScan(x);	
-	}
 }
 
 
-void CConfigFiles::dirScan(CStringList & mp3list) {
-
-    CStringList dirs;
-	CStringList * pcsl;
-    CString dir;
-    int n = m_slMP3DirList.GetCount();
-	if (n < 1) {
-		MBMessageBox("Search", "You must enter at least one directory in Settings.",FALSE);
-		return;
-	}
-	if (m_bAdd) {
-		pcsl = &mp3list;
-	} else {
-		pcsl = &m_slMP3DirList;
-	}
-
-	POSITION pos;
-	for (pos = pcsl->GetHeadPosition(); pos != NULL; ) {
-        dir = pcsl->GetAt(pos);
-        dirs.AddTail(dir);
-		pcsl->GetNext(pos);
-    }
-    ThreadParams tp;
-	// Create worker thread
-	CWinThread * pThread = AfxBeginThread(ScanThread, &tp,
-		THREAD_PRIORITY_NORMAL, 0, CREATE_SUSPENDED);
-
-	InitDlg *m_InitDialog = new InitDlg(0,1, pThread);
-
-    //tp.m_mlib = &m_PlayerDlg->m_mlib;
-	tp.scanDirectories = m_playercallbacks->scanDirectories;
-    tp.m_dirs = &dirs;
-    tp.m_InitDialog = m_InitDialog;
-	tp.m_scanNew = m_scanNew;
-	tp.m_bAdd = m_bAdd;
-
-	m_InitDialog->DoModal(); // main thread handles dlg
-
-    CString scaninfo = tp.m_result;
-
-	(*m_playercallbacks->initDb)();
-
-    CString libcounts = (*m_playercallbacks->getLibraryCounts)();
-
-	(*m_playercallbacks->statusset)(libcounts);
-
-	(*m_playercallbacks->UpdateWindow)();
-
-    delete m_InitDialog;
-
-    MBMessageBox("Search Results", scaninfo, FALSE, FALSE);
-
-}
 void CConfigFiles::OnDiradd() 
 {
 
@@ -392,6 +265,28 @@ void CConfigFiles::ReadFolders() {
 		}
     }
 
+}
+void CConfigFiles::AddFolders(const CStringList & dirs) {
+	POSITION pos;
+	for(pos = dirs.GetHeadPosition(); pos != NULL;) {
+		m_slMP3DirList.AddTail(dirs.GetAt(pos));
+		dirs.GetNext(pos);
+	}
+	WriteFolders();
+}
+void CConfigFiles::DelFolders(const CStringList & dirs) {
+	CStringList list;
+	String::copyCStringList(list, m_slMP3DirList);
+	m_slMP3DirList.RemoveAll();
+
+	POSITION pos;
+	for(pos = list.GetHeadPosition(); pos != NULL;) {
+		CString tmp = list.GetAt(pos);
+		if (!String::CStringListContains(dirs,tmp))
+			m_slMP3DirList.AddTail(tmp);
+		list.GetNext(pos);
+	}
+	WriteFolders();
 }
 void CConfigFiles::WriteFolders() {
     AutoBuf buf(1000);
@@ -596,25 +491,12 @@ BOOL CConfigFiles::OnInitDialog()
 
     EnableDisableButtons(); 
 	m_LocDirModified = FALSE;
-	m_bAdd = FALSE;
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
 }
 
 void CConfigFiles::EnableDisableButtons() {
-    CString location;
-    m_MdbLocation.GetWindowText(location);
-    CWnd * scan = GetDlgItem(IDC_DIRSCAN);
-	CWnd * scannew = GetDlgItem(IDC_DIRSCAN_NEW);
-    if (m_MP3DirList.GetCount() < 1 || location.GetLength() < 1) {
-        scan->EnableWindow(FALSE);
-		scannew->EnableWindow(FALSE);
-    } else {
-        scan->EnableWindow(TRUE);
-		scannew->EnableWindow(TRUE);
-    }
-
 }
 
 void CConfigFiles::OnAlbumsortDate() 
@@ -698,40 +580,6 @@ void CConfigFiles::OnCancel()
 //    UpdateData(FALSE);
 	CPropertyPage::OnCancel();
 }
-
-
-void CConfigFiles::AddMusic() {
-	CString dflt;
-
-	if (!m_slMP3DirList.IsEmpty()) {
-		dflt = m_slMP3DirList.GetTail();
-		dflt = String::upDir(dflt);
-	}
-
-	CFileAndFolder dialog(this, dflt);
-
-	dialog.setTitle("Add music to Muzikbrowzer library");
-	dialog.setMsg("Select file(s)/folder(s) to be added.");
-	int ret;
-	ret = dialog.DoModal();
-	if (ret == IDOK) {
-		CStringList list;
-		dialog.GetPaths(list);
-		POSITION pos;
-		for(pos = list.GetHeadPosition(); pos != NULL;) {
-			CString path = list.GetNext(pos);
-			if (path.GetLength())
-				m_slMP3DirList.AddTail(path);
-		}
-		WriteFolders();
-		m_bAdd = TRUE;
-		dirScan(list);
-		m_bAdd = FALSE;
-	}
-}
-
-
-
 
 void CConfigFiles::OnRunatstartup() 
 {

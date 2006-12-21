@@ -15,7 +15,6 @@
 // Includes
 
 #include "PlayerApp.h"
-#include "InitDlg.h"
 #include "MusicDb.h"
 #include "ExtendedListBox.h"
 #include "MBConfig.h"

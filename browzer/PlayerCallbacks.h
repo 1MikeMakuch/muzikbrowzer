@@ -2,7 +2,6 @@
 #define __PLAYER_CALLBACKS_H__
 
 #include "stdafx.h"
-#include "InitDlg.h"
 //#include "MBConfig.h"
 
 //typedef void (*PlayerRedrawCallback)();
@@ -26,7 +25,6 @@ public:
 		setDbLocation = NULL;
 		Need2Erase = NULL;
 		mbconfig = NULL;
-		scanDirectories = NULL;
 		mbconfig = NULL;
 		musiclib = NULL;
 		playerdlg = NULL;
@@ -53,8 +51,6 @@ public:
 	BOOL (*OnPaintCallback)();
 	void (*SetSelected)(const CString text, DWORD data);
 
-	CString (*scanDirectories)(const CStringList & directories,
-						  InitDlg * initDlg, BOOL scanNew, BOOL bAdd);
 };
 
 #endif

@@ -864,3 +864,35 @@ TEST(Stringendswith,Stringendswithandcontains)
 	contain = "xcde";
 	CHECK(String::contains(string,contain) == FALSE);
 }
+void
+String::copyCStringList(CStringList & dest, const CStringList & src) {
+	POSITION pos;
+	for(pos = src.GetHeadPosition(); pos != NULL;) {
+		dest.AddTail(src.GetAt(pos));
+		src.GetNext(pos);
+	}
+}
+BOOL
+String::CStringListContains(const CStringList & list, const CString & string) {
+	POSITION pos;
+	for(pos = list.GetHeadPosition(); pos != NULL;) {
+		if (list.GetAt(pos) == string)
+			return TRUE;
+		list.GetNext(pos);
+	}
+	return FALSE;
+}
+TEST(CStringList,tests)
+{
+	CStringList list1,list2;
+	list1.AddTail("one");
+	list1.AddTail("two");
+	list1.AddTail("three");
+	String::copyCStringList(list2,list1);
+	CHECK(list2.GetHead() == "one");
+	CHECK(list2.GetTail() == "three");
+	CHECK(String::CStringListContains(list2,"two") == TRUE);
+	CHECK(String::CStringListContains(list2,"four") == FALSE);
+
+}
+

@@ -45,6 +45,7 @@
 #define MB_TV_MSG				(WM_APP + 18)
 #define MB_LISTMOVEUP			(WM_APP + 19)
 #define MB_LISTMOVEDN			(WM_APP + 20)
+#define MB_PROGRESS_DLG_MESSAGE	(WM_APP + 21)
 
 #define MB_HOVER_CANCEL_MSG		(WM_APP + 30)
 

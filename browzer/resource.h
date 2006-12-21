@@ -83,6 +83,7 @@
 #define IDC_CURSOR4                     270
 #define IDI_ICON1                       271
 #define IDD_EXPORT_DLG                  272
+#define IDD_PROGRESS_DLG                273
 #define IDC_VOLUME_BUTTON               1000
 #define IDC_STOP_BUTTON                 1001
 #define IDC_PLAY_BUTTON                 1002
@@ -460,6 +461,12 @@
 #define IDC_IRMAN_SETUP                 2072
 #define IDC_IR_READ_TEST_LABEL          2073
 #define IDC_ABOUT_COPYRIGHT             2074
+#define IDC_PROGRESS_ABORT              2075
+#define IDC_PROGRESS_PROGRESS           2076
+#define IDC_PROGRESS_STATUS             2077
+#define IDC_PROGRESS_LABEL2             2078
+#define IDC_PROGRESS_LABEL              2079
+#define IDC_HIDE_GENRE                  2080
 #define IDS_UNKNOWN_ERROR               5000
 #define IDC_BUTTON_LOGO                 12052
 #define ID_XXX                          32775
@@ -520,15 +527,14 @@
 #define ID_OPEN_FILE_BUTTON             32857
 #define ID_ALPHA_UP                     32859
 #define ID_ALPHA_DOWN                   32860
-#define ID_MENU_TAG_EDIT                32861
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        273
+#define _APS_NEXT_RESOURCE_VALUE        274
 #define _APS_NEXT_COMMAND_VALUE         32862
-#define _APS_NEXT_CONTROL_VALUE         2075
+#define _APS_NEXT_CONTROL_VALUE         2081
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

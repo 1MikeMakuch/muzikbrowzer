@@ -158,6 +158,10 @@ SOURCE=.\MyString.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\MyThread.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\Process.cpp
 # End Source File
 # Begin Source File
@@ -228,6 +232,10 @@ SOURCE=.\MyLog.h
 # Begin Source File
 
 SOURCE=.\MyString.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\MyThread.h
 # End Source File
 # Begin Source File
 

@@ -44,6 +44,7 @@
 #include "MusicPlayerWMP.h"
 #include "ExportDlg.h"
 #include "oggtagger/oggtagger.h"
+#include "FileAndFolder.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -89,11 +90,7 @@ void PlayerUpdateWindow() {
 void SetDbLocation(CString path) {
 	thePlayer->m_mlib.setDbLocation(path);
 }
-CString ScanDirectories(const CStringList & directories,
-						InitDlg * initDlg, BOOL scanNew, BOOL bAdd) {
-	return thePlayer->m_mlib.scanDirectories(directories, 
-											initDlg, scanNew, bAdd);
-}
+
 void Need2Erase(BOOL need) {
 	thePlayer->Need2Erase(need);
 }
@@ -125,7 +122,7 @@ CPlayerDlg::CPlayerDlg(CPlayerApp * theApp,
 					   CWnd* pParent /*=NULL*/)
 	: CDialogClassImpl(CPlayerDlg::IDD, pParent), m_PlayerApp(theApp), 
 //	_initdialog(ip),
-	m_mlib(NULL), m_PlaylistCurrent(-1),
+	m_mlib(), m_PlaylistCurrent(-1),
     m_MenuDlg(0), m_StopFlag(FALSE), m_PauseFlag(FALSE),m_LButtonDown(FALSE),
     m_Config("Configuration"), m_SavePlaylistFlag(TRUE),
 	m_PlaylistDuration(0), m_timerid(0), m_StatusTimerId(0),
@@ -170,7 +167,6 @@ CPlayerDlg::CPlayerDlg(CPlayerApp * theApp,
 	m_callbacks.statustempset = &::PlayerStatusTempSet;
 	m_callbacks.UpdateWindow = &::PlayerUpdateWindow;
 	m_callbacks.setDbLocation = &::SetDbLocation;
-	m_callbacks.scanDirectories = &::ScanDirectories;
 	m_callbacks.Need2Erase = &::Need2Erase;
 	m_callbacks.mbconfig = &::mbconfig;
 	m_callbacks.musiclib = &::musiclib;
@@ -2082,7 +2078,7 @@ void CPlayerDlg::OnSysCommand(UINT nID, LONG lParam)
 		case 'u': case 'U': OnVolUp();			break;
 		case 'v': case 'V': OnMenuSaveplaylist();		break;
 
-		case 'z': case 'Z': OnVerify();		break;
+//		case 'z': case 'Z': m_mlib.Scan(); break;
 //		case 'b': case 'B': {
 //				m_mlib.garbageCollectTest();
 //				OnSelchangeGenres();
@@ -4295,22 +4291,61 @@ CPlayerDlg::OnSkinPic(UINT wParam) {
 void
 CPlayerDlg::OnMusicAdd() {
 	OnSearchClear();
-	m_Config.AddMusic();
-	PlayerStatusClear();
-//	return 0;
+	CStringList dirs;
+	CString dflt;
+	m_Config.GetDirs(dirs);
+	if (!dirs.IsEmpty()) {
+		dflt = dirs.GetTail();
+		dflt = String::upDir(dflt);
+	}
+	CFileAndFolder dialog(this, dflt);
+	dialog.setTitle("Add music to Muzikbrowzer library");
+	dialog.setMsg("Select file(s)/folder(s) to be added.");
+	int ret;
+	ret = dialog.DoModal();
+	if (ret == IDOK) {
+		CStringList list;
+		dialog.GetPaths(list);
+		m_Config.AddFolders(list);
+
+		if (!m_mlib.Scan(list,FALSE,TRUE)) {
+			init(); // re-read db
+			m_Config.DelFolders(list);
+		} else {
+			initDb(); // just reinit the Player dlg
+		}
+		PlayerStatusClear();
+		PlayerStatusSet(m_mlib.getLibraryCounts());
+		UpdateWindow();
+	}
 }
 void 
 CPlayerDlg::OnMusicScan() {
 	OnSearchClear();
-	m_Config.Scan();
+	CStringList dirs;
+	m_Config.GetDirs(dirs);
+	if (!m_mlib.Scan(dirs,FALSE,FALSE)) {
+		init();
+	} else {
+		initDb();
+	}
 	PlayerStatusClear();
-//	return 0;
+	PlayerStatusSet(m_mlib.getLibraryCounts());
+	UpdateWindow();
 }
 void
 CPlayerDlg::OnMusicScanNew() {
 	OnSearchClear();
-	m_Config.Scan(TRUE);
-//	return 0;
+	CStringList dirs;
+	m_Config.GetDirs(dirs);
+	if (!m_mlib.Scan(dirs,TRUE,FALSE)) {
+		init();
+	} else {
+		initDb();
+	}
+	PlayerStatusClear();
+	PlayerStatusSet(m_mlib.getLibraryCounts());
+	UpdateWindow();
 }
 void CPlayerDlg::OnButtonMinimize() 
 {

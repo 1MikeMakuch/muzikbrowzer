@@ -70,8 +70,6 @@ CConfigDisplay::CConfigDisplay(CWnd * p, PlayerCallbacks * pcb)
 	m_ConfigCallbacks.statustempset = &::MBConfigStatusTempSet;
 	m_ConfigCallbacks.UpdateWindow = NULL;
 	m_ConfigCallbacks.setDbLocation = NULL;
-	m_ConfigCallbacks.scanDirectories = NULL;
-
 
     init();
 

@@ -4,15 +4,10 @@
 
 #include "stdafx.h"
 #include "MPtr.h"
-#include "InitDlg.h"
-//#include "Genres.h"
 #include "ExtendedListBox.h"
 #include "id3/tag.h"
-//#include "ID3ModifyStatus.h"
-//#include "vorbis/vorbisfile.h"
 #include "MBGlobals.h"
 #include "PicCache.h"
-//#include "WmaTagger.h"
 #include "MyString.h"
 
 class MyLog;
@@ -321,10 +316,11 @@ typedef MPtr<MSongLib> MSongLibP;
 
 class OggTag;
 class ExportDlg;
-class MusicLib
-{
+class ProgressDlg;
+class InitDlg;
+class MusicLib {
 	public:
-		MusicLib(InitDlg *);
+		MusicLib();
 		~MusicLib();
 
 	Playlist	_playlist;
@@ -332,7 +328,7 @@ class MusicLib
 	     int	addArtistToPlaylist(const CString &, const CString &);
 	     int	addFileToPlaylist(const CString & file);
 	     int	addGenreToPlaylist(const CString &);
-	    UINT	addSongToDb(int & ctr, int t, Song &, const CString & file = "");
+	    UINT	addSongToDb(ProgressDlg *pd, Song &, const CString & file = "");
 	     int	addSongToPlaylist(const CString &, const CString &, const CString &, const CString &);
 	     int	addSongToPlaylist(const Song &);
 	    BOOL	apic(const CString & file, uchar *& rawdata, size_t & size, const CString & album);
@@ -387,7 +383,8 @@ class MusicLib
 	    void	savePlaylist(const CString &);
 	    void	savePlaylist(const CStringArray & list, const CString & file);
 	    void	savePlaylist(Playlist & playlist, const CString & file);
-	 CString	scanDirectories(const CStringList & dirs, InitDlg*, BOOL scanNew, BOOL bAdd);
+		BOOL	Scan(CStringList & dirs, BOOL bNew, BOOL bAdd);
+	 CString	scanDirectories2(const CStringList & dirs, ProgressDlg*, BOOL scanNew, BOOL bAdd);
 	     int	Search(const CString name);
 	    void	SearchCancel();
 	    void	SearchClear();
@@ -409,7 +406,6 @@ private:
 		PicCache m_picCache;
         CString m_dir;
 		CString m_file;
-		InitDlg *_id;
         int m_totalMp3s;
         CStringList m_mp3Extensions;
 		CString m_libCounts;
@@ -417,7 +413,9 @@ private:
 
         int scanDirectory(int * abortf, CStringList &, const CString &,
 			BOOL scanNew, BOOL bAdd);
-        int garbageCollect(InitDlg * dialog, BOOL test=FALSE);
+        int scanDirectory2(ProgressDlg * pd, CStringList &, const CString &,
+			BOOL scanNew, BOOL bAdd);
+        int garbageCollect(InitDlg * dlg, BOOL test=FALSE);
 
 		CString IgetLibraryCounts();
         

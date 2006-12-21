@@ -7,7 +7,6 @@
 // ConfigFiles.h : header file
 //
 
-#include "InitDlg.h"
 #include "PlayerCallbacks.h"
 class ThreadParams;
 
@@ -50,10 +49,8 @@ protected:
 	afx_msg void OnDiradd();
 	afx_msg void OnSelchangeDirlist();
 	afx_msg void OnDirremove();
-	afx_msg void OnDirscan();
 	afx_msg void OnLocationButton();
 	virtual BOOL OnInitDialog();
-	afx_msg void OnDirscanNew();
 	afx_msg void OnAlbumsortDate();
 	afx_msg void OnAlbumsortAlpha();
 	afx_msg void OnRunatstartup();
@@ -77,26 +74,22 @@ private:
 	BOOL m_InitialAlbumSortAlpha;
 	BOOL m_ResetNeeded;
 
-    int m_ScanThread_continue;
-
-    void ScanThreadStart(ThreadParams &);
-    void ScanThreadStop();
     void StoreReg();
 	void WriteFolders();
     void ReadReg();
 	void ReadFolders();
     void init();
     void setRunAtStartup();
-	void dirScan(CStringList &);
+	
 public:
-	BOOL m_scanNew;
-	BOOL m_bAdd;
+
     void setDefaults();
 	BOOL AlbumSortAlpha();
 	CString mbdir() { return m_path; };
-	void AddMusic();
-	void Scan(BOOL fornew);
 	BOOL resetNeeded() { return m_ResetNeeded; }
+	void GetDirs(CStringList & dirs);
+	void AddFolders(const CStringList & dirs);
+	void DelFolders(const CStringList & dirs);
 
 
 };

@@ -75,6 +75,9 @@ class String {
 	{
 		return element1.Compare(element2);
 	}
+	static void copyCStringList(CStringList & dest, const CStringList & src);
+	static BOOL CStringListContains(const CStringList & list, 
+		const CString & string);
 };
 
 class AutoBuf {

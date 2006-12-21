@@ -2,14 +2,11 @@
 #include "stdafx.h"
 #include "MusicDb.h"
 #include "MyLog.h"
-//#include "Genres.h"
 #include "MyString.h"
 #include "id3/tag.h"
 #include "id3/misc_support.h"
-//#include "id3lib-3.8.0/src/mp3_header.h"
 #include "FExtension.h"
 #include "Registry.h"
-//#include "ID3ModifyStatus.h"
 #include "MBMessageBox.h"
 #include "MyID3LibMiscSupport.h"
 #include "Mp3Header.h"
@@ -28,7 +25,9 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include "util/Misc.h"
-
+#include "ProgressDlg.h"
+#include "MyThread.h"
+#include "InitDlg.h"
 
 #define MMEMORY_SIZE_INCREMENT 5000
 #define MMEMORY_RESERVE_BYTES 100
@@ -204,7 +203,7 @@ CSong::Contains(const CString & keyword) {
 
 /////////////////////////////////////////////////////////////////////////////////
 
-MusicLib::MusicLib(InitDlg *id): _id(id), m_totalMp3s(0),
+MusicLib::MusicLib(): m_totalMp3s(0),
 	m_Searching(FALSE),m_pSearchFiles(NULL)
 {
 //	init();
@@ -245,7 +244,6 @@ MusicLib::init() {
 
 	m_SongLib.init(TRUE);
 	int r = readDb();
-	_id = 0;
 	m_libCounts = "";
 	return r;
 
@@ -322,18 +320,16 @@ MusicLib::writeDb() {
 }
 
 UINT
-MusicLib::addSongToDb(int & ctr, int total, Song &song, const CString & file) {
+MusicLib::addSongToDb(ProgressDlg *pd, Song &song, const CString & file) {
 	CString dir;
 
 	static CString lastdir;
 
-	if (_id) {
-		ctr++;
+	if (pd) {
 		dir = FileUtil::dirname(file);
-
 		if (lastdir.Compare(dir) != 0) {
 			lastdir = dir;
-            _id->SendUpdateStatus(1, dir, 0,0);
+			pd->UpdateStatus(dir);
 		}
 	}
 
@@ -989,7 +985,7 @@ MusicLib::addFileToPlaylist(const CString & file) {
 			addSongToPlaylist(addsong);
 			CString x;int y;int t;
 			y = t = 0;
-			addSongToDb(y,t,addsong,x);
+			addSongToDb(NULL, addsong,x);
 			return 1;
 		} 
 	}
@@ -1089,40 +1085,86 @@ int
 MusicLib::clearPlaylist() {
     return _playlist.reset();
 }
+class MyScanThread : public MyThreadClass
+{
+public:
+	virtual void ThreadEntry(){}
+	virtual void ThreadExit(){}
+	virtual void Run() {
+		m_results = m_lib->scanDirectories2(m_dirs,m_pd,m_new,m_add);
+		m_pd->Abort();
+	}
 
+	CStringList m_dirs;
+	MusicLib * m_lib;
+	ProgressDlg * m_pd;
+	BOOL m_new;
+	BOOL m_add;
+	CString m_results;
+};
+BOOL
+MusicLib::Scan(CStringList & dirs, BOOL bnew, BOOL bAdd) {
+	CWaitCursor cw;
+	CString text,dir;
+	if (bnew) {
+		text = "Search the music folders below for new music and\r\nadd to Library?\r\n\r\n";
+	} else if (!bAdd) {
+		text = "Search the music folders below for all music and\r\nrebuild Library from scratch?\r\n\r\n";
+	}
+	MyScanThread scanThread;
+	POSITION pos;
+	for(pos = dirs.GetHeadPosition(); pos != NULL;) {
+		dir = dirs.GetAt(pos);
+		scanThread.m_dirs.AddTail(dir);
+		dirs.GetNext(pos);
+		text += dir + "\r\n";
+	}
+    int n = scanThread.m_dirs.GetCount();
+	if (n < 1) {
+		MBMessageBox("Search", "You must enter at least one directory in Settings.",FALSE);
+		return FALSE;
+	}
+
+	
+	if (!bAdd && MBMessageBox("Confirmation", text, FALSE, TRUE) == 0) {
+		return FALSE;
+	}
+
+	ProgressDlg pd(NULL,FALSE,TRUE);
+	scanThread.m_new = bnew;
+	scanThread.m_add = bAdd;
+	scanThread.m_lib = this;
+	scanThread.m_pd = &pd;
+	pd.SetThreadFunc(&scanThread);
+	pd.DoModal();
+	
+	if (!bAdd && !pd.m_Abort) // user didn't abort && rebuild or new
+		MBMessageBox("Search Results", scanThread.m_results, FALSE, FALSE);
+
+	return (!pd.m_Abort);
+
+}
 CString
-MusicLib::scanDirectories(const CStringList & directories,
-						  InitDlg * initDlg, BOOL scanNew, BOOL bAdd) {
-//	int x1,y1;
-//	x1=y1=0;
-//	CString msgx="Verify test";
-//	m_SongLib.verify(msgx,x1,y1,700);
-//	return "";
+MusicLib::scanDirectories2(const CStringList & directories,
+						  ProgressDlg * pd, BOOL scanNew, BOOL bAdd) {
 
 	SearchClear();
     CStringList mp3Files,mp3Extensions;
     CString good_results, error_results;
-    _id = initDlg;
 
     AutoBuf buf(1000);
 
-	if (bAdd || scanNew) {
-		// if no m_files present have to start from scratch
-		if (m_SongLib.m_files.read() == -1) {
-			m_SongLib.init(TRUE);
-		}
-	} else {
+	if (!bAdd && !scanNew) {
 		m_SongLib.init(TRUE); // does an m_files.removeAll()
 	}
     
     POSITION pos;
-    int * abortflag = &(InitDlg::m_Abort);
-    _id->SendUpdateStatus(0, "Searching folders for audio files", 0,0);
+	pd->SetTitle("Searching folders for audio files");
     for (pos = directories.GetHeadPosition(); pos != NULL; ) {
-        scanDirectory(abortflag, mp3Files, directories.GetAt(pos), 
+        scanDirectory2(pd, mp3Files, directories.GetAt(pos), 
 			scanNew, bAdd);
         directories.GetNext(pos);
-        if (InitDlg::m_Abort) {
+        if (pd->m_Abort) {
             error_results += "Aborted by user.";
 			return error_results;
             break;
@@ -1134,12 +1176,7 @@ MusicLib::scanDirectories(const CStringList & directories,
 		m_totalMp3s = mp3Files.GetCount();
 	}
 
-	// now done with m_files
-	m_SongLib.m_files.write();
-	// No longer clearing it, gonna be using it
-//	m_SongLib.m_files.removeAll();
-
-    _id->SendUpdateStatus(2, "", 0, m_totalMp3s);
+	pd->ProgressRange(0,m_totalMp3s);
 
     int good_count = 0;
     int ctr = 1;
@@ -1147,31 +1184,15 @@ MusicLib::scanDirectories(const CStringList & directories,
 	int tlen_method_2_count = 0;
 	int tlen_methods_failed_count = 0;
 	int added_count = 0;
-	CString added = "Files added:\r\n";
 
-    _id->SendUpdateStatus(0, "Adding music... ", 0,0);
-	time_t starttime,elapsed,eta,now,lastupdate;
-	lastupdate = 0;
-	float timeper;
-	time(&starttime);
-	CString etaS;
+	pd->SetTitle("Adding music...");
+
     for (pos = mp3Files.GetHeadPosition(); pos != NULL; ) {
-		time(&now);
-		elapsed = now - starttime;
-		timeper = (float)elapsed / (float)ctr;
-		eta = (timeper * m_totalMp3s) - elapsed;
-		etaS = "Adding music...   Remaining: ";
-		etaS += String::secs2HMS(eta);
-		if (ctr > 50 && lastupdate < now) {
-			_id->SendUpdateStatus(0, etaS, 0,0);
-			lastupdate = now;
-		}
 
         CString mp3file = mp3Files.GetAt(pos);
-        _id->SendUpdateStatus(3, "", ctr, 0);
-        if (InitDlg::m_Abort) {
+        if (pd->m_Abort) {
             error_results += "Aborted by user.";
-            break;
+            return "";
         }
 		Song song = createSongFromFile(mp3file,error_results,
 			tlen_method_1_count, tlen_method_2_count, 
@@ -1196,29 +1217,17 @@ MusicLib::scanDirectories(const CStringList & directories,
         } else {
             ++good_count;
         }
-		_id->UpdateStatus2(genre + ", " + artist + ", " + album 
-			+ ", " + track /*+ ", " + songn*/);
-		added_count += addSongToDb(ctr, m_totalMp3s, song, mp3file);
-		added += mp3file + "\r\n";
+		pd->ProgressPos(ctr);
+		ctr++;
+		pd->UpdateStatus2(genre + ", " + artist + ", " + album 
+			+ ", " + track);
+		added_count += addSongToDb(pd, song, mp3file);
 		mp3Files.GetNext(pos);
     }
 
     int num_albums1,num_songs1, num_albums2, num_songs2;
     num_albums1 = num_songs1 = num_albums2 = num_songs2 = 0;
 	CString msg;
-	if (scanNew) {
-		msg = "Looking for removed/renamed files.";
-	} else {
-		msg = "Verifying database.";
-	}
-	msg = "Verifying database.";
-//	_id->ShowWindow(SW_HIDE);
-
-    CString verify_results1 ;
-//	if (!bAdd) {
-//		// Verify on rebuild and search for new, but not Add
-//		verify_results1 = m_SongLib.verify(msg, num_albums1, num_songs1,m_totalMp3s);
-//	}
 
     writeDb();
 
@@ -1233,8 +1242,6 @@ MusicLib::scanDirectories(const CStringList & directories,
 	if (added_count) {
 		results += numToString(added_count);
 		results += " audio files added.\r\n";
-		if (scanNew)
-			results += added;
 	} else {
 		results += "No new audio files found.\r\n";
 	}
@@ -1257,17 +1264,6 @@ MusicLib::scanDirectories(const CStringList & directories,
 		results += buf.p;
 	}
 
-#ifdef asdf
-	results += "### This info only appears in DEBUG build ###\r\n";
-	results += "\r\ntlen_method_1_count: ";
-	results += tlen_method_1_count;
-	results += "\r\ntlen_method_2_count: ";
-	results += tlen_method_2_count;
-	results += "\r\ntlen_methods_failed_count: ";
-	results += tlen_methods_failed_count;
-	results += "\r\n";
-	results += "############ end of DEBUG info ##############\r\n";
-#endif
 	m_libCounts = "";
 	IgetLibraryCounts();
 
@@ -1275,7 +1271,7 @@ MusicLib::scanDirectories(const CStringList & directories,
 }
 
 int
-MusicLib::scanDirectory(int * abortflag, CStringList &mp3Files,
+MusicLib::scanDirectory2(ProgressDlg * pd, CStringList &mp3Files,
 					   const CString & directory, BOOL scanNew, BOOL bAdd) {
 
     CString glob(directory);
@@ -1285,8 +1281,8 @@ MusicLib::scanDirectory(int * abortflag, CStringList &mp3Files,
 		glob += "\\*.*";
 	}
     
-	if (_id) {
-        _id->SendUpdateStatus(1, directory, 0,0);
+	if (pd) {
+		pd->UpdateStatus(directory);
 	}
 
     CFileFind finder;
@@ -1302,7 +1298,7 @@ MusicLib::scanDirectory(int * abortflag, CStringList &mp3Files,
 	CTime mtime;
     while (bWorking)
     {
-        if (*abortflag) {
+        if (pd->m_Abort) {
             return 0;
         }
 
@@ -1315,7 +1311,7 @@ MusicLib::scanDirectory(int * abortflag, CStringList &mp3Files,
 					newDir += "\\";
 				}
                 newDir += fname;
-                scanDirectory(abortflag, mp3Files, newDir, scanNew, bAdd);
+                scanDirectory2(pd, mp3Files, newDir, scanNew, bAdd);
             } else {
 //				BOOL doit = TRUE;
 //				if (scanNew) {
@@ -1342,6 +1338,7 @@ MusicLib::scanDirectory(int * abortflag, CStringList &mp3Files,
     return 0;
 
 }
+
 Song
 MusicLib::createSongFromFile(const CString & mp3file) {
 	CString er;
@@ -2438,7 +2435,6 @@ MusicLib::modifyID3(Song oldSong, Song newSong) {
 	// old* vars need to be null to search as wildcard
 	{
 		CWaitCursor c;
-		_id = dialog;
 		searchForMp3s(songs, oldGenre, oldArtist, oldAlbum, oldTitle);
 	}
 	int count = songs.size();
@@ -2659,7 +2655,7 @@ MusicLib::searchForArtists(Playlist & songs, MList & artistList) {
 	MList::Iterator artistIter(artistList);
 	while (artistIter.more()) {
 		MRecord artist = artistIter.next();
-		if (_id) _id->UpdateStatus2(artist.label());
+		//if (_id) _id->UpdateStatus2(artist.label());
 		MList albumList(artist);
 		searchForAlbums(songs, albumList);
 	}
@@ -4685,13 +4681,6 @@ CString MusicLib::JustVerify() {
 	CString msg("Test Verifying");
 	IgetLibraryCounts() ;
     CString vr = m_SongLib.verify(msg, num_albums1, num_songs1,m_totalMp3s);
-
-
-//    InitDlg * dialog = new InitDlg(1,0);
-//	dialog->ShowWindow(SW_SHOWNORMAL);
-//
-//	garbageCollect(dialog, TRUE);
-//	dialog->EndDialog(IDOK);
 
 	return vr;
 }
