@@ -54,7 +54,7 @@ LoadX: 104
 LoadY: 168
 OtherBtn3d: 1
 OtherBtnHover: 1
-OtherColorBg: 19,152,213
+OtherColorBg: 255,255,0
 OtherColorBtnBgHover: 19,152,213
 OtherColorBtnBgOut: 0,0,0
 OtherColorBtnFgHover: 255,255,255

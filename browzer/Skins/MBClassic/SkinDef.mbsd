@@ -53,10 +53,10 @@ LoadWidth: 34
 LoadX: 60
 LoadY: 2
 OtherBtn3d: 1
-OtherBtnHover: 0
+OtherBtnHover: 1
 OtherColorBg: 0,0,0
-OtherColorBtnBgHover: 0,0,0
-OtherColorBtnBgOut: 50,50,50
+OtherColorBtnBgHover: 50,50,50
+OtherColorBtnBgOut: 75,75,75
 OtherColorBtnFgHover: 255,255,255
 OtherColorBtnFgOut: 200,200,200
 OtherColorFg: 255,255,255

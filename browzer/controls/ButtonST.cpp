@@ -897,6 +897,7 @@ void CButtonST::DrawTheText(CDC* pDC, LPCTSTR lpszText, RECT* rpItem, CRect* rpC
 		{
 			pDC->SetTextColor(m_crColors[BTNST_COLOR_FG_IN]);
 			pDC->SetBkColor(m_crColors[BTNST_COLOR_BK_IN]);
+			SendHoverMsg();
 		} // if
 		else 
 		{

@@ -43,7 +43,6 @@ ColorTransparentMain: 5,5,1
 ColorTransparentPanel: 5,5,0
 ControlBoxHeight: 116
 ControlBoxWidth: 231
-dest: G:\MyStuff\muzikbrowzer\skins\Candy Apple
 FontColHdr: FFFFFFF0 00000000 00000000 00000000 000002BC 00 00 00 00 00 00 00 00 Tahoma
 FontPanel: FFFFFFF0 00000000 00000000 00000000 000002BC 00 00 00 00 00 00 00 00 Tahoma
 FontTitles: FFFFFFF0 00000000 00000000 00000000 000002BC 00 00 00 00 00 00 00 00 Tahoma
@@ -59,9 +58,9 @@ LoadX: 23
 LoadY: 10
 OtherBtn3d: 1
 OtherBtnHover: 1
-OtherColorBg: 0,0,0
-OtherColorBtnBgHover: 150,150,150
-OtherColorBtnBgOut: 100,100,100
+OtherColorBg: 5,5,0
+OtherColorBtnBgHover: 200,0,0
+OtherColorBtnBgOut: 200,50,50
 OtherColorBtnFgHover: 255,255,255
 OtherColorBtnFgOut: 200,200,200
 OtherColorFg: 255,255,255

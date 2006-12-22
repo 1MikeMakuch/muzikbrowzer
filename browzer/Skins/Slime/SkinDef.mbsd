@@ -43,7 +43,6 @@ ColorTransparentMain: 255,5,0
 ColorTransparentPanel: 5,5,1
 ControlBoxHeight: 200
 ControlBoxWidth: 217
-dest: G:\MyStuff\muzikbrowzer\skins\Green
 FontColHdr: FFFFFFEE 00000000 00000000 00000000 000002BC 00 00 00 00 00 00 00 00 Verdana
 FontPanel: FFFFFFF0 00000000 00000000 00000000 000002BC 00 00 00 00 00 00 00 00 Verdana
 FontTitles: FFFFFFF0 00000000 00000000 00000000 000002BC 00 00 00 00 00 00 00 00 Verdana
@@ -63,9 +62,9 @@ MusicX: 0
 MusicY: 0
 OtherBtn3d: 1
 OtherBtnHover: 1
-OtherColorBg: 0,0,0
-OtherColorBtnBgHover: 150,150,150
-OtherColorBtnBgOut: 100,100,100
+OtherColorBg: 5,5,1
+OtherColorBtnBgHover: 0,200,0
+OtherColorBtnBgOut: 0,128,0
 OtherColorBtnFgHover: 255,255,255
 OtherColorBtnFgOut: 200,200,200
 OtherColorFg: 255,255,255

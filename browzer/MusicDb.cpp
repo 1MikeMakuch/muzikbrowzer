@@ -2049,21 +2049,23 @@ MusicLib::iSearch(const CString keyword, MSongLib & db, MSongLib & results) {
 			MList::Iterator artistIter(artistList);
 			while (artistIter.more()) {
 				MRecord artist = artistIter.next();
-				MList albumList = db.albumList(genre.label(),
-					artist.label());
-				MList::Iterator albumIter(albumList);
-				while (albumIter.more()) {
-					MRecord album = albumIter.next();
-					if (album.label() != MBALL) {
-						MList songList = db.songList(genre.label(),
-							artist.label(), album.label());
-						MList::Iterator songIter(songList);
-						while (songIter.more()) {
-							MRecord songr = songIter.next();
-							Song song = songr.createSong();
-							if (song->Contains(keyword)) {
-								results.addSong(song);
-								found++;
+				if (artist.label() != MBALL) {
+					MList albumList = db.albumList(genre.label(),
+						artist.label());
+					MList::Iterator albumIter(albumList);
+					while (albumIter.more()) {
+						MRecord album = albumIter.next();
+						if (album.label() != MBALL) {
+							MList songList = db.songList(genre.label(),
+								artist.label(), album.label());
+							MList::Iterator songIter(songList);
+							while (songIter.more()) {
+								MRecord songr = songIter.next();
+								Song song = songr.createSong();
+								if (song->Contains(keyword)) {
+									results.addSong(song);
+									found++;
+								}
 							}
 						}
 					}
@@ -2513,7 +2515,7 @@ MusicLib::preModifyID3(Song & oldSong, Song & newSong) {
 		}
     }
 	if (!writeable) {
-		unwmsg = "The following file(s) are unwriteable,\r\nperhaps because it is currently playing.\r\nEdit not performed.\r\n\r\n" + unwmsg;
+		unwmsg = "The following file(s) are unwriteable.\r\nEdit not performed.\r\n\r\n" + unwmsg;
 		MBMessageBox("Can't perform edit",unwmsg);
 		logger.log("modifyID3: Can't perform edit " + unwmsg);
 		return FALSE;

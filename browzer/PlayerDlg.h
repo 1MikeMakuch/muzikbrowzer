@@ -360,6 +360,9 @@ public:
 	afx_msg LRESULT   OnHoverMsg16(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT   OnHoverMsg17(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT   OnHoverMsg18(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT   OnHoverMsg19(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT   OnHoverMsg20(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT   OnHoverMsg21(WPARAM wParam, LPARAM lParam);
 	virtual BOOL      OnInitDialog();
 	afx_msg void      OnInitMenuPopup(CMenu *pPopupMenu, UINT nIndex,BOOL bSysMenu);
 	afx_msg void      OnKillfocusVirtuals();

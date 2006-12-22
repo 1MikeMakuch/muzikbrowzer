@@ -221,7 +221,7 @@ void CPlayerDlg::DoDataExchange(CDataExchange* pDX)
 	CDialogClassImpl::DoDataExchange(pDX);
 
 	//{{AFX_DATA_MAP(CPlayerDlg)
-	DDX_Control(pDX, IDC_SEARCH_STATUS, m_SearchStatus);
+	DDX_Control(pDX, IDC_SEARCH_STATUS,				m_SearchStatus);
 	DDX_Control(pDX, IDC_SEARCH_CLEAR,				m_SearchClear);
 	DDX_Control(pDX, IDC_SEARCH_CANCEL,				m_SearchCancel);
 	DDX_Control(pDX, IDC_SEARCH_GO,					m_SearchGo);
@@ -332,6 +332,9 @@ BEGIN_MESSAGE_MAP(CPlayerDlg, CDialogClassImpl)
 	ON_MESSAGE(MB_HOVER_STOP_MSG,            OnHoverMsg16)
 	ON_MESSAGE(MB_HOVER_VOLUME_MSG,          OnHoverMsg17)
 	ON_MESSAGE(MB_HOVER_WWW_MSG,             OnHoverMsg18)
+	ON_MESSAGE(MB_HOVER_SEARCH_MSG,          OnHoverMsg19)
+	ON_MESSAGE(MB_HOVER_SEARCHCLEAR_MSG,     OnHoverMsg20)
+	ON_MESSAGE(MB_HOVER_SEARCHCLOSE_MSG,     OnHoverMsg21)
 	ON_LBN_KILLFOCUS(IDC_ALBUMS,             OnKillfocusVirtuals)
 	ON_LBN_KILLFOCUS(IDC_ARTISTS,            OnKillfocusVirtuals)
 	ON_LBN_KILLFOCUS(IDC_GENRES,             OnKillfocusVirtuals)
@@ -619,7 +622,7 @@ BOOL CPlayerDlg::OnInitDialog()
 	// Removed this in April 2006, finding it now in Nov. Checking it in. We'll see!
 //	SetIcon(m_hIcon, FALSE);		// Set small ic
 
-	ShowBetaWarning();
+//	ShowBetaWarning();
 	StartStatusTimer();
 	if (m_Config.trialMode() == 1) {
 		PlayerStatusSet("Trial Mode. See Settings/License." );
@@ -787,7 +790,7 @@ void CPlayerDlg::setFont() {
 	m_AlbumsLabel.changeFont(lplf);
 	m_SongsLabel.changeFont(lplf);
 	m_PlaylistLabel.changeFont(lplf);
-	m_SearchStatus.changeFont(lplf);
+//	m_SearchStatus.changeFont(lplf);
 	CFont font;
 	font.CreateFontIndirect(lplf);
 	m_SearchEdit.SetFont(&font);
@@ -797,6 +800,7 @@ void CPlayerDlg::setFont() {
 	lplf = m_Config.getStatusFont();
 	m_PositionLabel.changeFont(lplf);
 	m_PlayerStatus.changeFont(lplf);
+	m_SearchStatus.changeFont(lplf);
 
 }
 void
@@ -846,8 +850,10 @@ CPlayerDlg::setColors() {
 	m_SongsLabel.SetColors(_LABEL_COLORS_);
 	m_PlaylistLabel.SetColors(_LABEL_COLORS_);
 //	m_SearchStatus.SetTransparent(m_TransPanel);
-	m_SearchStatus.SetColors(crColHdrFg,m_TransPanel,
-		m_TransPanel,m_TransPanel,m_TransPanel,m_TransPanel,FALSE);
+
+//	m_SearchStatus.SetColors(crColHdrFg,m_TransPanel,
+//		m_TransPanel,m_TransPanel,m_TransPanel,m_TransPanel,FALSE);
+//	m_SearchStatus.SetColors(_LABEL_COLORS_);
 
 	COLORREF	crTxNormalFg,	crTxNormalBg, 
 				crTxHighFg,		crTxHighBg,		
@@ -878,6 +884,7 @@ CPlayerDlg::setColors() {
 
 	m_PositionLabel.SetColors(_STATUS_COLORS_);
 	m_PlayerStatus.SetColors(_STATUS_COLORS_);
+	m_SearchStatus.SetColors(_STATUS_COLORS_);
 
 	m_PlayerStatus.SetTicking(TRUE);
 
@@ -1063,6 +1070,9 @@ CPlayerDlg::setColors() {
 	m_ButtonMaximize.SetHoverMsg(this, MB_HOVER_MAXIMIZE_MSG);
 	m_ButtonRestore.SetHoverMsg(this, MB_HOVER_RESTORE_MSG);
 	m_ButtonExit.SetHoverMsg(this, MB_HOVER_EXIT_MSG);
+	m_SearchGo.SetHoverMsg(this, MB_HOVER_SEARCH_MSG);
+	m_SearchCancel.SetHoverMsg(this, MB_HOVER_SEARCHCLOSE_MSG);
+	m_SearchClear.SetHoverMsg(this, MB_HOVER_SEARCHCLEAR_MSG);
 
 	m_LogoButton.SetKeepFocused(FALSE);
 	m_ButtonShuffle.SetKeepFocused(FALSE);
@@ -1075,6 +1085,9 @@ CPlayerDlg::setColors() {
 	m_ButtonStop.SetKeepFocused(FALSE);
 	m_ButtonPlay.SetKeepFocused(FALSE);
 	m_ButtonPause.SetKeepFocused(FALSE);
+	m_SearchGo.SetKeepFocused(FALSE);
+	m_SearchCancel.SetKeepFocused(FALSE);
+	m_SearchClear.SetKeepFocused(FALSE);
 
 
 }
@@ -1872,7 +1885,7 @@ CPlayerDlg::UpdateRects() {
 	CRectHeight(m_SearchGoRect,m_SearchEditRect.Height());
 	CRectHeight(m_SearchClearRect,m_SearchEditRect.Height());
 	CRectHeight(m_SearchCancelRect,m_SearchEditRect.Height());
-	CRectHeight(m_SearchStatusRect,m_SearchEditRect.Height());
+	CRectHeight(m_SearchStatusRect,m_SearchEditRect.Height()+4);
 
 //	CRectMove(m_SearchEditRect,m_GenresLabelRect.left,m_GenresLabelRect.top);
 	CRectMove(m_SearchGoRect,m_SearchEditRect.right + 5,m_SearchEditRect.top);
@@ -1880,7 +1893,7 @@ CPlayerDlg::UpdateRects() {
 	CRectMove(m_SearchCancelRect,m_SearchClearRect.right + 5,m_SearchEditRect.top);
 
 	CRectWidth(m_SearchStatusRect,
-		(m_SongsLabelRect.right - m_SearchCancelRect.right) -8);
+		(m_SongsLabelRect.right - m_SearchCancelRect.right) -4);
 	CRectMove(m_SearchStatusRect,m_SearchCancelRect.right + 5,
 		m_SearchEditRect.top); // +2 centers the text nicely with the buttons
 
@@ -2666,7 +2679,7 @@ void CPlayerDlg::OnDelete() {
             m_Playlist.GetText(sel,_selectedPlaylistSong);
             PlayerStatusTempSet(_selectedPlaylistSong);
             UpdateData(TRUE);
-            m_mlib.dumpPL(m_PlaylistCurrent);
+//            m_mlib.dumpPL(m_PlaylistCurrent);
         } else {
 			PlayerStatusClear();
 			_selectedPlaylistSong = "";
@@ -4953,6 +4966,12 @@ CPlayerDlg::OnHoverMsg1(WPARAM wParam, LPARAM lParam) {
 		msg = "Restore"; break;
 	case MB_HOVER_EXIT_MSG:
 		msg = "Exit"; break;
+	case MB_HOVER_SEARCH_MSG:
+		msg = "Search"; break;
+	case MB_HOVER_SEARCHCLEAR_MSG:
+		msg = "Clear search results"; break;
+	case MB_HOVER_SEARCHCLOSE_MSG:
+		msg = "Close Search"; break;
 	}
 	if (msg.GetLength())
 		PlayerStatusTempSet(msg);
@@ -4977,6 +4996,9 @@ LRESULT CPlayerDlg::OnHoverMsg15(WPARAM wParam, LPARAM lParam) { return OnHoverM
 LRESULT CPlayerDlg::OnHoverMsg16(WPARAM wParam, LPARAM lParam) { return OnHoverMsg1(wParam,lParam);}
 LRESULT CPlayerDlg::OnHoverMsg17(WPARAM wParam, LPARAM lParam) { return OnHoverMsg1(wParam,lParam);}
 LRESULT CPlayerDlg::OnHoverMsg18(WPARAM wParam, LPARAM lParam) { return OnHoverMsg1(wParam,lParam);}
+LRESULT CPlayerDlg::OnHoverMsg19(WPARAM wParam, LPARAM lParam) { return OnHoverMsg1(wParam,lParam);}
+LRESULT CPlayerDlg::OnHoverMsg20(WPARAM wParam, LPARAM lParam) { return OnHoverMsg1(wParam,lParam);}
+LRESULT CPlayerDlg::OnHoverMsg21(WPARAM wParam, LPARAM lParam) { return OnHoverMsg1(wParam,lParam);}
 
 
 void CPlayerDlg::OnInitMenuPopup(CMenu *pSysMenu, 

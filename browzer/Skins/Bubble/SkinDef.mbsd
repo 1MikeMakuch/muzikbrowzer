@@ -55,10 +55,10 @@ LoadY: 75
 OtherBtn3d: 1
 OtherBtnHover: 1
 OtherColorBg: 5,5,0
-OtherColorBtnBgHover: 5,5,0
-OtherColorBtnBgOut: 5,5,0
+OtherColorBtnBgHover: 75,175,255
+OtherColorBtnBgOut: 100,200,255
 OtherColorBtnFgHover: 255,255,255
-OtherColorBtnFgOut: 200,200,200
+OtherColorBtnFgOut: 225,225,225
 OtherColorFg: 255,255,255
 PauseHeight: 21
 PauseWidth: 24

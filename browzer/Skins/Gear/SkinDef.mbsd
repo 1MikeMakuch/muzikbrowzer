@@ -43,7 +43,6 @@ ColorTransparentMain: 5,5,0
 ColorTransparentPanel: 5,5,0
 ControlBoxHeight: 186
 ControlBoxWidth: 200
-dest: G:\MyStuff\muzikbrowzer\skins\Gear
 FontColHdr: FFFFFFF0 00000000 00000000 00000000 000002BC 00 00 00 00 00 00 00 00 Tahoma
 FontPanel: FFFFFFF0 00000000 00000000 00000000 000002BC 00 00 00 00 00 00 00 00 Tahoma
 FontTitles: FFFFFFF0 00000000 00000000 00000000 000002BC 00 00 00 00 00 00 00 00 Tahoma
@@ -59,9 +58,9 @@ LoadX: 5
 LoadY: 48
 OtherBtn3d: 1
 OtherBtnHover: 1
-OtherColorBg: 0,0,0
+OtherColorBg: 5,5,0
 OtherColorBtnBgHover: 0,0,0
-OtherColorBtnBgOut: 0,0,0
+OtherColorBtnBgOut: 61,61,61
 OtherColorBtnFgHover: 255,255,255
 OtherColorBtnFgOut: 200,200,200
 OtherColorFg: 255,255,255
@@ -99,12 +98,6 @@ StopHeight: 22
 StopWidth: 22
 StopX: 89
 StopY: 49
-TransBlueMain: 255
-TransBluePanel: 0
-TransGreenMain: 1
-TransGreenPanel: 255
-TransRedMain: 1
-TransRedPanel: 255
 VolumeHeight: 98
 VolumeWidth: 16
 VolumeX: 171
