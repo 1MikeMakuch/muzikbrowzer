@@ -15,7 +15,7 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 #ifdef _DEBUG
-#define MB_TESTING_DELAY 00
+#define MB_TESTING_DELAY 000
 #else
 #define MB_TESTING_DELAY 0
 #endif
@@ -127,6 +127,10 @@ ProgressDlg::ProgressRange(int beg, int end) {
 		SendUpdateStatus(40, "", beg, end);
 	}
 }
+void
+ProgressDlg::End() {
+	SendUpdateStatus(0);
+}
 void ProgressDlg::Abort() {
 	SendUpdateStatus(0);
 }
@@ -186,7 +190,7 @@ ProgressDlg::OnIDMessage(UINT wParam, LONG lParam) {
 		m_lower = m->mint1;
 		m_upper = m->mint2;
         m_InitProgress.SetRange32(m_lower,m_upper);
-
+		SetLabel("Estimating time remaining...");
 		m_lastupdate = 0;
 		time(&m_starttime);
         delete m;
@@ -194,15 +198,14 @@ ProgressDlg::OnIDMessage(UINT wParam, LONG lParam) {
         MsgInts * m = (MsgInts*)lParam;
         m_InitProgress.SetPos(m->mint1);
 
-		if (m->mint1 > (m_upper/10)) {
+		if (m->mint1 > (m_upper/15)) {
 			time(&m_now);
-			m_elapsed = m_now - m_starttime;
-			m_timeper = (float)m_elapsed / (float)m->mint1;
-			m_eta = (m_timeper * (m_upper - m->mint1));
-			m_etaS = "Estimated time remaining: ";
-			if (m_eta >= 0)
-				m_etaS += String::secs2HMS(m_eta);
 			if (m_lastupdate < m_now) {
+				m_elapsed = m_now - m_starttime;
+				m_timeper = (float)m_elapsed / (float)(m->mint1 > 0 ? m->mint1 : 1);
+				m_eta = (m_timeper * (m_upper - m->mint1));
+				m_etaS = "Estimated time remaining: ";
+				m_etaS += String::secs2HMS(m_eta);
 				SetLabel(m_etaS);
 				m_lastupdate = m_now;
 			}
@@ -266,8 +269,10 @@ BOOL ProgressDlg::OnInitDialog()
 
 	if (m_abortflag) {
 		m_AbortButton.EnableWindow(TRUE);
+		m_AbortButton.ShowWindow(SW_NORMAL);
 	} else {
 		m_AbortButton.EnableWindow(FALSE);
+		m_AbortButton.ShowWindow(SW_HIDE);
 	}
 	if (m_pThread) {
 		m_pThread->CreateNewThread();

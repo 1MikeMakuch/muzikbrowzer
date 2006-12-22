@@ -35,6 +35,7 @@ public:
 		m_pThread = pt;
 	}
 	void Abort();
+	void End();
 
 // Dialog Data
 	//{{AFX_DATA(ProgressDlg)
@@ -74,7 +75,11 @@ protected:
 	int m_abortflag;
 	MyThreadClass * m_pThread;
 
-	time_t m_starttime,m_elapsed,m_eta,m_now,m_lastupdate;
+	time_t m_starttime;
+	time_t m_elapsed;
+	time_t m_eta;
+	time_t m_now;
+	time_t m_lastupdate;
 	float m_timeper;
 	CString m_etaS;
 	int m_lower,m_upper;

@@ -3697,7 +3697,7 @@ void CPlayerDlg::OnUserEditSong()
 	if (ret == IDOK) {
 		DBLOCKED = TRUE;
 		OnSearchClear();
-        ret = m_mlib.modifyID3(song, dialog->m_newSong);
+        ret = m_mlib.preModifyID3(song, dialog->m_newSong);
 		if (ret) {
 			initDb();
 			DBLOCKED = FALSE;

@@ -371,7 +371,8 @@ class MusicLib {
 	     int	loadOldPlaylist(const CString & name, CStringList & playlist);
 	     int	loadPlaylist(const CString & name, CString & errormsg);
 	MSongLib	m_SongLib;
-	    BOOL	modifyID3(Song old, Song newSong);
+	    BOOL	preModifyID3(Song & old, Song & newSong);
+		BOOL	modifyID3(ProgressDlg *p, Playlist & songs, Song & newsong, CString & results);
 	    void	movePlaylistDown(int plc, int sel);
 	    void	MovePlaylistsToDir();
 	    void	movePlaylistUp(int plc, int sel);
@@ -415,7 +416,7 @@ private:
 			BOOL scanNew, BOOL bAdd);
         int scanDirectory2(ProgressDlg * pd, CStringList &, const CString &,
 			BOOL scanNew, BOOL bAdd);
-        int garbageCollect(InitDlg * dlg, BOOL test=FALSE);
+        int garbageCollect(ProgressDlg * dlg, BOOL test=FALSE);
 
 		CString IgetLibraryCounts();
         

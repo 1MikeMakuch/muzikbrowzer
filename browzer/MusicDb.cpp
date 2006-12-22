@@ -1085,6 +1085,8 @@ int
 MusicLib::clearPlaylist() {
     return _playlist.reset();
 }
+
+// Thread wrapper invoked by ProgressDlg
 class MyScanThread : public MyThreadClass
 {
 public:
@@ -1092,7 +1094,7 @@ public:
 	virtual void ThreadExit(){}
 	virtual void Run() {
 		m_results = m_lib->scanDirectories2(m_dirs,m_pd,m_new,m_add);
-		m_pd->Abort();
+		m_pd->End(); // invokes EndDialog
 	}
 
 	CStringList m_dirs;
@@ -1104,7 +1106,7 @@ public:
 };
 BOOL
 MusicLib::Scan(CStringList & dirs, BOOL bnew, BOOL bAdd) {
-	CWaitCursor cw;
+
 	CString text,dir;
 	if (bnew) {
 		text = "Search the music folders below for new music and\r\nadd to Library?\r\n\r\n";
@@ -1136,7 +1138,7 @@ MusicLib::Scan(CStringList & dirs, BOOL bnew, BOOL bAdd) {
 	scanThread.m_lib = this;
 	scanThread.m_pd = &pd;
 	pd.SetThreadFunc(&scanThread);
-	pd.DoModal();
+	pd.DoModal();	// InitDlg invokes the run method
 	
 	if (!bAdd && !pd.m_Abort) // user didn't abort && rebuild or new
 		MBMessageBox("Search Results", scanThread.m_results, FALSE, FALSE);
@@ -1895,7 +1897,8 @@ MusicLib::exportHtml(ExportDlg * exp, MyLog * log, Song song, CString & tmpl) {
 	log->log(entry);
 }
 int
-MusicLib::garbageCollect(InitDlg * dialog, BOOL test) {
+MusicLib::garbageCollect(ProgressDlg * dialog, BOOL test) {
+
 	SearchClear();
 	if (m_SongLib.m_garbagecollector < MB_GARBAGE_INTERVAL && !test) {
 		logger.log("garbageCollect not done");
@@ -1906,18 +1909,12 @@ MusicLib::garbageCollect(InitDlg * dialog, BOOL test) {
 	int totalMp3s = m_SongLib.count();
 	CString msg;
 	if (dialog) {
-		msg = "Performing database maintenance.";
-		dialog->SetLabel(msg);
+		msg = "Performing database maintenance";
+		dialog->SetTitle(msg);
 		dialog->ProgressRange(0,totalMp3s);
-		// Added this in April 2006, finding it now in Nov. Checking it in. We'll see!
-		dialog->UpdateStatus(CS(""));
+		dialog->UpdateStatus("");
+		dialog->UpdateStatus2("");
 	}
-
-	time_t starttime,elapsed,eta,now,lastupdate;
-	lastupdate=0;
-	float songspersec;
-	time(&starttime);
-	CString etaS;
 
 	int ctr = 0;
 	MSongLib newSongLib;
@@ -1939,9 +1936,6 @@ MusicLib::garbageCollect(InitDlg * dialog, BOOL test) {
 					while (albumIter.more()) {
 						if (dialog) {
 							dialog->ProgressPos(ctr);
-							// Added this in April 2006, finding it now in Nov. Checking it in. We'll see!
-							dialog->UpdateWindow();
-//							logger.log("garbage collect:" + numToString(ctr));
 						}
 						MRecord album = albumIter.next();
 						if (album.label() != MBALL) {
@@ -1953,21 +1947,6 @@ MusicLib::garbageCollect(InitDlg * dialog, BOOL test) {
 								Song song = songr.createSong();
 								newSongLib.addSong(song);
 								++ctr;
-
-					if (dialog) {
-						time(&now);
-						elapsed = now - starttime;
-						if (elapsed > 0) {
-							songspersec = (float)ctr / (float)elapsed;
-							eta = (totalMp3s / songspersec) - elapsed;
-							if (ctr > 50 && lastupdate < now) {
-								etaS = msg + " Remaining: ";
-								etaS += String::secs2HMS(eta);
-								dialog->SetLabel(etaS);
-								lastupdate = now;
-							}
-						}
-					}
 							}
 						}
 					}
@@ -1976,8 +1955,6 @@ MusicLib::garbageCollect(InitDlg * dialog, BOOL test) {
 		}
 	}
 	m_SongLib = newSongLib;
-//	m_SongLib.addAllGenre();
-//	writeDb();
 	return 1;
 }
 void
@@ -2405,8 +2382,29 @@ MusicLib::shufflePlaylist() {
         newplaylist.remove(newplaylist.head());
     }
 }
+
+// thread wrapper, ProgressDlg invokes it
+class ModifyId3Thread : public MyThreadClass
+{
+public:
+	ModifyId3Thread(Playlist & pl, Song & newSong):
+	  m_songs(pl), m_newSong(newSong){}
+	virtual void ThreadEntry(){}
+	virtual void ThreadExit(){}
+	virtual void Run() {
+		m_lib->modifyID3(m_pd, m_songs, m_newSong, m_results);
+		m_pd->End();
+	}
+	
+	ProgressDlg * m_pd;
+	MusicLib * m_lib;
+	Playlist & m_songs;
+	Song & m_newSong;
+	CString m_results;
+
+};
 BOOL
-MusicLib::modifyID3(Song oldSong, Song newSong) {
+MusicLib::preModifyID3(Song & oldSong, Song & newSong) {
 	logger.log("modifyID3");
 	SearchClear();
     CString oldGenre, oldArtist, oldAlbum, oldTitle, oldYear, oldTrack;
@@ -2424,25 +2422,15 @@ MusicLib::modifyID3(Song oldSong, Song newSong) {
     oldYear = oldSong->getId3("TYER");
     newYear = newSong->getId3("TYER");
 
-    InitDlg * dialog = new InitDlg(1,0);
-	CString msg = "Gathering files...";
-	dialog->SetLabel(msg);
-	dialog->ShowWindow(SW_SHOWNORMAL);
-	dialog->UpdateWindow();
-
 	Playlist songs;
     if (oldGenre == "") oldGenre = MBALL;
 	// old* vars need to be null to search as wildcard
-	{
-		CWaitCursor c;
-		searchForMp3s(songs, oldGenre, oldArtist, oldAlbum, oldTitle);
-	}
+	searchForMp3s(songs, oldGenre, oldArtist, oldAlbum, oldTitle);
+
 	int count = songs.size();
 	logger.log("modifyID3: songs to modify = " + numToString(count) );
 
-	dialog->ProgressRange(0, count);
-
-	msg = "The following files will be modified.\r\nClick OK to continue or Cancel to abort.\r\n\r\nChange:\r\n";
+	CString msg = "The following files will be modified.\r\nClick OK to continue or Cancel to abort.\r\n\r\nChange:\r\n";
 	AutoBuf buf(1000);
 	CString fmt = "%-7s From:\t%s\r\n        To:\t%s\r\n";
 	if (newGenre.GetLength()) {
@@ -2486,16 +2474,13 @@ MusicLib::modifyID3(Song oldSong, Song newSong) {
 		}
     }
 	if (!writeable) {
-		dialog->EndDialog(0);
-		delete dialog;
 		unwmsg = "The following file(s) are unwriteable,\r\nperhaps because it is currently playing.\r\nEdit not performed.\r\n\r\n" + unwmsg;
 		MBMessageBox("Can't perform edit",unwmsg);
 		logger.log("modifyID3: Can't perform edit " + unwmsg);
 		return FALSE;
 	}
 
-	dialog->EndDialog(0);
-	delete dialog;
+
 	logger.log(msg);
 	int r = MBMessageBox("Confirmation", msg, FALSE, TRUE);
 	if (r == 0) {
@@ -2504,24 +2489,35 @@ MusicLib::modifyID3(Song oldSong, Song newSong) {
 		return FALSE;
 	}
 
-	msg = "Modifying audio tags";
-	dialog = new InitDlg(1,0);
-	dialog->m_InitLabel.setText("Modifying audio files...");
-	dialog->SetLabel(msg);
-	dialog->ShowWindow(SW_SHOWNORMAL);
-	dialog->UpdateWindow();
-	dialog->ProgressRange(0, count);
+	ProgressDlg pd(NULL,FALSE,FALSE);
 
-	CString result;
+	ModifyId3Thread id3thread(songs, newSong);
+	id3thread.m_lib = this;
+	id3thread.m_pd = &pd;
+
+	pd.SetThreadFunc(&id3thread);
+	pd.DoModal();	// InitDlg invokes the run method, when it's done
+						// it calls EndDialog
+	if (id3thread.m_results.GetLength())
+		MBMessageBox(CString("alert"), id3thread.m_results,TRUE);
+
+	return TRUE;
+}
+
+BOOL
+MusicLib::modifyID3(ProgressDlg *dialog, Playlist & songs, Song & newSong, CString & results) {
+
+    CString newGenre = newSong->getId3("TCON",0);
+    CString newArtist = newSong->getId3("TPE1",0);
+    CString newAlbum = newSong->getId3("TALB",0);
+    CString newTitle = newSong->getId3("TIT2",0);
+    CString newTrack = newSong->getId3("TRCK");
+    CString newYear = newSong->getId3("TYER");
+
+	dialog->SetTitle("Modifying tags...");
+	dialog->ProgressRange(0,songs.size());
     int ctr = 1;
-
-	time_t starttime,elapsed,eta,now,lastupdate;
-	lastupdate=0;
-	float timeper;
-	time(&starttime);
-	CString etaS;
-
-    for (p = songs.head();
+    for (PlaylistNode * p = songs.head();
 		p != (PlaylistNode*)0; p = songs.next(p))
     {
 		CString file = p->_item->getId3("FILE");
@@ -2529,8 +2525,6 @@ MusicLib::modifyID3(Song oldSong, Song newSong) {
 
         dialog->UpdateStatus(file);
         dialog->ProgressPos(ctr);
-		// Added this in April 2006, finding it now in Nov. Checking it in. We'll see!
-		dialog->UpdateWindow();
 
 		int updateFlag = 0;
 		Song addsong = new CSong(p->_item);
@@ -2563,45 +2557,22 @@ MusicLib::modifyID3(Song oldSong, Song newSong) {
 			Song delsong = new CSong(p->_item);
 			CString oneresult = writeSongToFile(addsong);
 			if (oneresult.GetLength()) {
-				result += oneresult;
-				result += "\r\n";
+				results += oneresult;
+				results += "\r\n";
 			} else {
-#pragma hack
-				// hack alert m_files only used for scanning/verifying,
-				// so keep it empty cause addSong will pre-exit if...
-				// not any more
-//				m_SongLib.m_files.removeAll();
 				m_SongLib.removeSong(delsong);
 				m_SongLib.addSong(addsong);
 				updatePlaylist(delsong,addsong);
 				logger.log("modifyID3: updated " + addsong->getId3("FILE"));
 			}
-			time(&now);
-			elapsed = now - starttime;
-			timeper = (float)elapsed / (float)ctr;
-			eta = (timeper * count) - elapsed;
-			etaS = "Modifying audio tags. Remaining: ";
-			etaS += String::secs2HMS(eta);
-			if (ctr > 10 && lastupdate < now) {
-				dialog->SetLabel(etaS);
-				lastupdate = now;
-			}
-
 
         }
     }
-	if (result.GetLength()) {
-//		result += "\r\nYou'll need to re-scan";
-		MBMessageBox(CString("alert"), result);
-		logger.log("modifyID3: " + result);
-	}
+
 	m_SongLib.m_garbagecollector++;
     garbageCollect(dialog);
 	writeDb();
-	dialog->EndDialog(0);
-	delete dialog;
-	// playlists are now filename only
-	//modifyPlaylists(oldSong, newSong);
+
     return TRUE;
 }
 void
