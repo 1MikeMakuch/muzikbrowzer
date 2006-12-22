@@ -488,6 +488,7 @@ BOOL CPlayerDlg::OnInitDialog()
 		::PlaySound("Muzikbrowzer.wav",NULL,
 			SND_ASYNC | SND_FILENAME | SND_NODEFAULT | SND_NOWAIT);
 	}
+	MyUtil::seed(); // just do this once at startup for any/all rand calls
 
 // App mutex
 	CString amemsg,ammsg;
@@ -3211,7 +3212,7 @@ void CPlayerDlg::OnMenuRandomizePlaylist()
 		m_mlib.RandomizePlaylist();
 
 	} else {
-		m_mlib.getRandomPlaylist();
+		m_mlib.getRandomPlaylist(_selectedGenre);
 	}
 	m_Playlist.ResetContent();
 	m_mlib.getPlaylist(m_Playlist);
@@ -3221,6 +3222,7 @@ void CPlayerDlg::OnMenuRandomizePlaylist()
     m_PlaylistCurrent = -1;
 	SavePlaylist("Last");
 	PlayLoop();	
+	calcDuration();
 }
 
 void CPlayerDlg::OnMenuPause() 
@@ -4801,7 +4803,7 @@ void CPlayerDlg::displayAlbumArt(const CString & file, const CString & album) {
 
 	if (file == m_LastAlbumArtFile) return;
 
-	CString tmp = _selectedGenre + _selectedArtist + _selectedAlbum;
+	CString tmp = _selectedGenre + _selectedArtist + album;
 	if (m_LastGAA == tmp && _selectedAlbum != MBALL)
 		return;
 
@@ -4938,7 +4940,7 @@ CPlayerDlg::OnHoverMsg1(WPARAM wParam, LPARAM lParam) {
 			if (m_mlib._playlist.size()) {
 				msg = "Randomize playlist";
 			} else {
-				msg = "Randomly add 100 songs to playlist from selected Genre";
+				msg = "Add " + numToString(MB_RANDOM_PICKS) + " random songs to playlist from selected Genre";
 			}
 		}
 		break;

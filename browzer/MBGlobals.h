@@ -111,4 +111,6 @@
 #define MB_MIN_WIDTH 500
 #define MB_MIN_HEIGHT 400
 
+#define MB_RANDOM_PICKS 100
+
 #endif

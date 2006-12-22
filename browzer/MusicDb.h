@@ -334,6 +334,7 @@ class MusicLib {
 	     int	addSongToPlaylist(const Song &);
 	    BOOL	apic(const CString & file, uchar *& rawdata, size_t & size, const CString & album);
 	     int	clearPlaylist();
+unsigned int	countSongsInGenre(const CString & genre, CArray<unsigned int, unsigned int> & array);
 	    Song	createSongFromFile(const CString & mp3file);
 	    Song	createSongFromFile(const CString & mp3file, CString & error_results, int & t1, int & t2, int & fc);
 	    Song	createSongFromId3(ID3_Tag *);
@@ -361,7 +362,7 @@ class MusicLib {
 	     int	getPlaylist(CExtendedListBox &);
 	     int	getPlaylistNames(CExtendedListBox &);
 	     int	getPlaylistNames(CStringList &);
-		 void	getRandomPlaylist();
+		 void	getRandomPlaylist(const CString & genre=MBALL);
 		 int	getSongCount();
 	 CString	getSongFileName(const int i);
 	    Song	getSong(const CString & genre, const CString & artist, const CString & album, const CString & title);

@@ -1047,17 +1047,19 @@ MusicLib::addArtistToPlaylist(const CString & genrename,
     CObArray namenums;
     while (albumIter.more()) {
 		MRecord album = albumIter.next();
-		MList songs(album);
-		MList::Iterator songIter(songs);
-		if (songIter.more()) {
-			MRecord firstSong = songIter.next();
-			CString year = firstSong.lookupVal("TYER");
-			int iyear = 0;
-			if (year != "") {
-				iyear = atoi((LPCTSTR)year);
+		if (album.label() != MBALL) {
+			MList songs(album);
+			MList::Iterator songIter(songs);
+			if (songIter.more()) {
+				MRecord firstSong = songIter.next();
+				CString year = firstSong.lookupVal("TYER");
+				int iyear = 0;
+				if (year != "") {
+					iyear = atoi((LPCTSTR)year);
+				}
+				NameNum *snn = new NameNum(album.label(), iyear);
+				namenums.Add(snn);
 			}
-	        NameNum *snn = new NameNum(album.label(), iyear);
-		    namenums.Add(snn);
 		}
     }
     NameNum::bsort(namenums);
@@ -1075,7 +1077,9 @@ MusicLib::addGenreToPlaylist(const CString & genrename) {
 	MList artistList = m_SongLib.artistList(genrename);
 	MList::Iterator artistIter(artistList);
 	while (artistIter.more()) {
-		addArtistToPlaylist(genrename, artistIter.next().label());
+		MRecord artist = artistIter.next();
+		if (artist.label() != MBALL)
+			addArtistToPlaylist(genrename, artist.label());
 	}
 	return 0;
 }
@@ -2299,24 +2303,59 @@ MusicLib::savePlaylist(const CStringArray & list, const CString & name) {
 
 
 }
-void
-MusicLib::getRandomPlaylist() {
-	srand( (unsigned)time( NULL ) );
-	for(int i = 0 ; i < 100; ++i) {
-		float ratio = rand() / (float)RAND_MAX;
-		int pos = (int)(ratio * m_SongLib.m_files.getLength());
-		
+unsigned int
+MusicLib::countSongsInGenre(const CString & genre, 
+		CArray<unsigned int, unsigned int> & array) {
+	unsigned int ctr = 0;
+	MList artistList = m_SongLib.artistList(genre);
+	MList::Iterator artistIter(artistList);
+	while (artistIter.more()) {
+		MRecord artist = artistIter.next();
+		if (artist.label() != MBALL) {
+			MList albumList = m_SongLib.albumList(genre,
+				artist.label());
+			MList::Iterator albumIter(albumList);
+			while (albumIter.more()) {
+				MRecord album = albumIter.next();
+				if (album.label() != MBALL) {
+					MList songList = m_SongLib.songList(genre,
+						artist.label(), album.label());
+					MList::Iterator songIter(songList);
+					while (songIter.more()) {
+						MRecord song = songIter.next();
+						array.SetAtGrow(ctr, song.i());
+						++ctr;
+					}
+				}
+			}
+		}
+	}
+	return ctr;
+}
 
-		Song s = m_SongLib.m_files.getSong(m_SongLib.m_files.getAt(pos));
-		if (s->GetCount())
-			addSongToPlaylist(s);
+void
+MusicLib::getRandomPlaylist(const CString & genre) {
+	CArray<unsigned int, unsigned int> array;
+	int songsNgenre = countSongsInGenre(genre,array);
+	if (songsNgenre < MB_RANDOM_PICKS) {
+		addGenreToPlaylist(genre);
+		RandomizePlaylist();
+	} else {
+		for(int i = 0 ; i < 100; ++i) {
+			float ratio = rand() / (float)RAND_MAX;
+			int rpos = (int)(ratio * (array.GetSize()-1));
+			int spos = array.GetAt(rpos);
+			Song song = m_SongLib.getSong(spos);
+			array.RemoveAt(rpos);
+			addSongToPlaylist(song);
+		}
 	}
 }
+
 void
 MusicLib::RandomizePlaylist() {
     shufflePlaylist();
     Playlist newplaylist;
-    srand( (unsigned)time( NULL ) );
     while (_playlist.size() > 0) {
         float ratio = rand() / (float)RAND_MAX;
         int pos = (int)(ratio * _playlist.size());
@@ -2329,54 +2368,6 @@ MusicLib::RandomizePlaylist() {
         newplaylist.remove(newplaylist.head());
     }
 }
-#ifdef asdf
-void
-MusicLib::shufflePlaylist() {
-    int n = _playlist.size();
-    int i;
-    char buf[100];
-    CMapStringToOb map;
-    CStringList *list;
-    for (i = 0; i < n; ++i) {
-        Song song = _playlist[i];
-        CString artist = song->getId3("TPE1");
-        if (map.Lookup(artist, (CObject *&) list) == 0) {
-            list = new CStringList;
-            map.SetAt(artist, list);
-//            delete list;
-        }
-        sprintf(buf, "%d", i);
-        CString spos = buf;
-        list->AddTail(spos);
-    }
-
-    Playlist newplaylist;
-    POSITION pos;
-    CString artist;
-    pos = map.GetStartPosition();
-    while (pos != NULL) {
-        map.GetNextAssoc(pos, artist, (CObject *&)list);
-
-        if (list->IsEmpty()) {
-            map.RemoveKey((LPCTSTR)artist);
-            delete list;
-        } else {
-            CString mappos = list->RemoveHead();
-            int ppos = atoi((LPCTSTR)mappos);
-            Song song = _playlist[ppos];
-            newplaylist.append(song);
-        }
-        if (pos == NULL) {
-            pos = map.GetStartPosition();
-        }
-    }
-    _playlist.reset();
-    while (newplaylist.head()) {
-        _playlist.append(newplaylist.head()->_item);
-        newplaylist.remove(newplaylist.head());
-    }
-}
-#endif
 void
 MusicLib::shufflePlaylist() {
     int n = _playlist.size();
