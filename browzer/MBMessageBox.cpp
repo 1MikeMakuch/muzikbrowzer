@@ -22,7 +22,7 @@ MBMessageBoxImpl::MBMessageBoxImpl(CString & title, CString & info,
 		BOOL log, BOOL enableCancel, CWnd* pParent /*=NULL*/)
 	: CDialog(MBMessageBoxImpl::IDD, pParent), m_title(title),m_info(info),
 	m_log(log), m_EnableCancel(enableCancel), m_Parent(pParent),
-	m_Control(new VirtualControl),m_MessageBoxPtr(0)
+	m_Control(new VirtualControl),m_MessageBoxPtr(0),m_tabStop(0)
 {
 	//{{AFX_DATA_INIT(MBMessageBoxImpl)
 		// NOTE: the ClassWizard will add member initialization here
@@ -62,6 +62,11 @@ END_MESSAGE_MAP()
 BOOL MBMessageBoxImpl::OnInitDialog() 
 {
 	CDialog::OnInitDialog();
+
+	if (m_tabStop) {
+		m_MessageBox.SetTabStops(m_tabStop);
+		m_MessageBox2.SetTabStops(m_tabStop);
+	}
 
 	m_MessageBox.ShowWindow(SW_HIDE);
 	m_MessageBox2.ShowWindow(SW_HIDE);
@@ -105,7 +110,7 @@ BOOL MBMessageBoxImpl::OnInitDialog()
         /* pitch and family */ 		FIXED_PITCH,
         /* facename */ 				0
 		);
-		maxrect = CRect(0,0,800,600);
+		maxrect = CRect(0,0,640,480);
 	}
 	m_MessageBox.SetFont(&mfont);
 	m_MessageBox2.SetFont(&mfont);
@@ -162,13 +167,21 @@ BOOL MBMessageBoxImpl::OnInitDialog()
 	return FALSE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
 }
+void
+MBMessageBoxImpl::SetTabStop(const unsigned int s) {
+	m_tabStop = s;
+}
 
-int MBMessageBox(CString title, CString msg, BOOL log, BOOL enableCancel)
+int MBMessageBox(CString title, CString msg, BOOL log, BOOL enableCancel,
+				 const unsigned int tabstops)
 {
     MBMessageBoxImpl * mb = new MBMessageBoxImpl(title, msg, log, 
 		enableCancel);
 	if (thePlayer)
 		*thePlayer->m_Dialog = mb;
+
+	if (tabstops)
+		mb->SetTabStop(tabstops);
 
     int r = mb->DoModal(); // 1 for OK, 0 for Cancel
 	if (thePlayer)

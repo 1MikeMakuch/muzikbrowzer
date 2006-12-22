@@ -42,10 +42,12 @@ public:
 	void ShowSizeGrip(BOOL bShow = TRUE);	// show or hide the size grip
 	void CalcMsgRect(CRect &);
 
+
 // Implementation
 
 public:
 	VirtualControl * m_Control;
+	void SetTabStop(const unsigned int s);
 
 	// Generated message map functions
 	//{{AFX_MSG(MBMessageBoxImpl)
@@ -73,6 +75,7 @@ private:
 	SIZE m_sizeGrip;		// holds grip size
 	CScrollBar m_wndGrip;
 	CWnd * m_Parent;
+	unsigned int m_tabStop;
 
 	static LRESULT CALLBACK 
 		GripWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -87,7 +90,7 @@ private:
 
 // returns 1 for OK and 0 for Cancel
 int MBMessageBox(CString title, CString msg, BOOL log = TRUE, 
-				 BOOL enableCancel=FALSE);
+				 BOOL enableCancel=FALSE, const unsigned int tabstops=0);
 
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.

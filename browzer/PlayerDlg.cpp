@@ -3246,16 +3246,16 @@ void CPlayerDlg::OnMenuHelp()
 	CString msg,d1,d2,d3,r1,r2,r3;
 	int i,n;
 	BOOL AnyDefined = FALSE;
-	msg = "Use Up,Down,Left,Right to navigate,\r\nSelect to queue up music.\r\n";
+	msg = "Use Up,Down,Left,Right to navigate,\r\nSelect to queue up music.\r\n\r\n";
 	RemoteReceiver * rrcvr = RemoteReceiver::rrcvr();	
 	if (rrcvr) {
 		n = rrcvr->numOfKeys();
 		AutoBuf buf(200);
-		const char * HFORMAT = "%-12s %-12s | %-12s %-12s\r\n";
+		const char * HFORMAT = "%s\t%s\t| %s\t%s\r\n";
 		sprintf(buf.p, HFORMAT,
-			"Function","Remote Key", "Function", "Remote Key");
+			    "Function","On Remote", "Function", "On Remote");
 		msg += buf.p;
-		msg += "-------------------------------------------------\r\n";
+		msg += "_______________________________________\r\n";
 		int first = 1;
 
 		for(i = 0 ; i < n ; i += 2) {
@@ -3270,7 +3270,7 @@ void CPlayerDlg::OnMenuHelp()
 	}
 	if (!AnyDefined) 
 		msg = "No Remote Control descriptions defined. See Settings/Remote.";
-	MBMessageBox("Remote Control Help", msg, FALSE, FALSE);
+	MBMessageBox("Remote Control Help", msg, FALSE, FALSE,60);
 }
 
 void CPlayerDlg::OnNextSong() {
@@ -4938,7 +4938,7 @@ CPlayerDlg::OnHoverMsg1(WPARAM wParam, LPARAM lParam) {
 			if (m_mlib._playlist.size()) {
 				msg = "Randomize playlist";
 			} else {
-				msg = "Randomly add 100 songs to playlist";
+				msg = "Randomly add 100 songs to playlist from selected Genre";
 			}
 		}
 		break;
