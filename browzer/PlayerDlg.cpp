@@ -2625,35 +2625,35 @@ void CPlayerDlg::OnMenuButton()
     }
 
     switch (r) {
-    case 0:     // exit
+    case 10:     // exit
 //        OnMenuExit();
         break;
-    case 1:     // shuffle
+    case 11:     // shuffle
         OnMenuShuffleplaylist();
         break;
-    case 2:     // randomize
+    case 12:     // randomize
         OnMenuRandomizePlaylist();
         break;
-    case 3:     // clear
+    case 13:     // clear
         OnMenuClearplaylist();
         break;
-    case 4:
+    case 14:
         SetSavePlaylistFlag(FALSE);
         OnMenuSaveplaylist();
         break;
-    case 5:      // load
+    case 15:      // load
         OnMenuLoadplaylist();
         break;
-    case 6:     // pause
+    case 16:     // pause
         OnMenuPause();
         break;
-    case 7:     // play
+    case 17:     // play
         OnMenuPlay();
         break;
-    case 8:     // stop
+    case 18:     // stop
         OnMenuStop();
         break;
-    case 9:     // help
+    case 19:     // help
         OnMenuHelp();
     }
 }

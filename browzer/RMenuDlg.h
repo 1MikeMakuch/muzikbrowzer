@@ -32,16 +32,16 @@ public:
 // Dialog Data
 	//{{AFX_DATA(RMenuDlg)
 	enum { IDD = IDD_MENU_DIALOG };
-	CButtonST	m_Stop;
-	CButtonST	m_Shuffle;
-	CButtonST	m_Save;
-	CButtonST	m_Random;
-	CButtonST	m_Play;
-	CButtonST	m_Pause;
-	CButtonST	m_Load;
-	CButtonST	m_Help;
 	CButtonST	m_Exit;
+	CButtonST	m_Shuffle;
+	CButtonST	m_Random;
 	CButtonST	m_Clear;
+	CButtonST	m_Save;
+	CButtonST	m_Load;
+	CButtonST	m_Pause;
+	CButtonST	m_Play;
+	CButtonST	m_Stop;
+	CButtonST	m_Help;
 	//}}AFX_DATA
 
 // Overrides
@@ -49,18 +49,19 @@ public:
 	//{{AFX_VIRTUAL(RMenuDlg)
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+	virtual BOOL PreTranslateMessage(MSG*);
 	//}}AFX_VIRTUAL
 public:
     int nextbutton() { 
         m_currentbutton++;
         if (m_currentbutton > m_maxbutton) {
-            m_currentbutton = 0;
+            m_currentbutton = m_minbutton;
         }
         return m_currentbutton;
     }
     int prevbutton() {
         m_currentbutton--;
-        if (m_currentbutton < 0) {
+        if (m_currentbutton < m_minbutton) {
             m_currentbutton = m_maxbutton;
         }
         return m_currentbutton;
@@ -91,6 +92,7 @@ protected:
 public:
 	void OnExit();
 private:
+	int m_minbutton;
     int m_maxbutton;
     int m_currentbutton;
 

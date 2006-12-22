@@ -26,8 +26,9 @@ RMenuDlg::RMenuDlg(CWnd* pParent, PlayerCallbacks * pcb)
 				
 	: CDialogSK(RMenuDlg::IDD, pParent), 
 	m_parentcallbacks(pcb),
-    m_maxbutton(9),
-    m_currentbutton(0), m_Control(new VirtualControl),
+    m_maxbutton(19),
+	m_minbutton(10),
+    m_currentbutton(10), m_Control(new VirtualControl),
 	m_reg(pcb->mbconfig()->getSkin(MB_SKIN_DEF))
 {
 	//{{AFX_DATA_INIT(RMenuDlg)
@@ -204,62 +205,90 @@ BOOL RMenuDlg::OnInitDialog()
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
 }
+BOOL RMenuDlg::PreTranslateMessage(MSG* pMsg)
+{	// disable ESC & ENTER from killing the dialog
+	// returning TRUE says msg has been processed, don't further process
+    if (pMsg->message == WM_KEYDOWN) {
+        if (pMsg->wParam == VK_RETURN) {
+			OnControlClick();
+			return TRUE;
+		} else if (pMsg->wParam == VK_ESCAPE) {
+			return TRUE;
+        }
+    }
+	return CDialog::PreTranslateMessage(pMsg);
+}
 void RMenuDlg::OnMenuExit() 
 {
 //	((CPlayerDlg*)m_pParentWnd)->OnMenuExit();
-	EndDialog(0);
+	EndDialog(10);
 }
 void RMenuDlg::OnMenuShuffleplaylist() 
 {
-	((CPlayerDlg*)m_pParentWnd)->OnMenuShuffleplaylist();
-	EndDialog(0);
+	//((CPlayerDlg*)m_pParentWnd)->OnMenuShuffleplaylist();
+	EndDialog(11);
 }
 void RMenuDlg::OnMenuRandomizePlaylist() 
 {
-	// TODO: Add your control notification handler code here
+	EndDialog(12);
 	
 }
 void RMenuDlg::OnMenuClearplaylist() 
 {
-    ((CPlayerDlg*)m_pParentWnd)->OnMenuClearplaylist();
-    EndDialog(0);
+    //((CPlayerDlg*)m_pParentWnd)->OnMenuClearplaylist();
+    EndDialog(13);
 }
 void RMenuDlg::OnMenuSavePlaylist() 
 {
-    ((CPlayerDlg*)m_pParentWnd)->SetSavePlaylistFlag(FALSE);
-	((CPlayerDlg*)m_pParentWnd)->OnMenuSaveplaylist();
-	EndDialog(0);	
+    //((CPlayerDlg*)m_pParentWnd)->SetSavePlaylistFlag(FALSE);
+	//((CPlayerDlg*)m_pParentWnd)->OnMenuSaveplaylist();
+	EndDialog(14);	
 }
 void RMenuDlg::OnMenuLoadplaylist() 
 {
-	((CPlayerDlg*)m_pParentWnd)->OnMenuLoadplaylist();
-	EndDialog(0);
+	//((CPlayerDlg*)m_pParentWnd)->OnMenuLoadplaylist();
+	EndDialog(15);
 }
 void RMenuDlg::OnMenuPause() 
 {
-	((CPlayerDlg*)m_pParentWnd)->OnMenuPause();
-	EndDialog(0);
+	//((CPlayerDlg*)m_pParentWnd)->OnMenuPause();
+	EndDialog(16);
 }
 void RMenuDlg::OnMenuPlay() 
 {
-	((CPlayerDlg*)m_pParentWnd)->OnMenuPlay();
-	EndDialog(0);
+	//((CPlayerDlg*)m_pParentWnd)->OnMenuPlay();
+	EndDialog(17);
 }
 void RMenuDlg::OnMenuStop() 
 {
-	((CPlayerDlg*)m_pParentWnd)->OnMenuStop();
-	EndDialog(0);
+	//((CPlayerDlg*)m_pParentWnd)->OnMenuStop();
+	EndDialog(18);
 }
 void RMenuDlg::OnMenuHelp() 
 {
-	((CPlayerDlg*)m_pParentWnd)->OnMenuHelp();
-	EndDialog(0);
+	//((CPlayerDlg*)m_pParentWnd)->OnMenuHelp();
+	EndDialog(19);
 }
 void RMenuDlg::OnControlClick() {
+	CWnd *fw = GetFocus();
+
+	if (fw == &m_Exit)			m_currentbutton = 10;
+	else if (fw == &m_Shuffle)	m_currentbutton = 11;
+	else if (fw == &m_Random)	m_currentbutton = 12;
+	else if (fw == &m_Clear)	m_currentbutton = 13;
+	else if (fw == &m_Save)		m_currentbutton = 14;
+	else if (fw == &m_Load)		m_currentbutton = 15;
+	else if (fw == &m_Pause)	m_currentbutton = 16;
+	else if (fw == &m_Play)		m_currentbutton = 17;
+	else if (fw == &m_Stop)		m_currentbutton = 18;
+	else if (fw == &m_Help)		m_currentbutton = 19;
+	else						m_currentbutton = 10;
+
+
 	EndDialog(m_currentbutton);
 }
 void RMenuDlg::OnExit() {
-	EndDialog(0);
+	EndDialog(10);
 }
 
 
