@@ -27,7 +27,6 @@
 #include "util/Misc.h"
 #include "ProgressDlg.h"
 #include "MyThread.h"
-#include "InitDlg.h"
 
 #define MMEMORY_SIZE_INCREMENT 5000
 #define MMEMORY_RESERVE_BYTES 100
@@ -1138,7 +1137,7 @@ MusicLib::Scan(CStringList & dirs, BOOL bnew, BOOL bAdd) {
 	scanThread.m_lib = this;
 	scanThread.m_pd = &pd;
 	pd.SetThreadFunc(&scanThread);
-	pd.DoModal();	// InitDlg invokes the run method
+	pd.DoModal();	// OnInitDialog invokes the run method
 	
 	if (!bAdd && !pd.m_Abort) // user didn't abort && rebuild or new
 		MBMessageBox("Search Results", scanThread.m_results, FALSE, FALSE);
@@ -1249,8 +1248,6 @@ MusicLib::scanDirectories2(const CStringList & directories,
 	}
 
 	results += good_results;
-//    results += error_results;
-//    results += verify_results1;
 
     if (mp3Files.GetCount() == good_count) {
 		if (added_count) {
@@ -1590,9 +1587,44 @@ TEST(MLIBSortTest,test)
 	}
 
 }
+// thread wrapper, ProgressDlg invokes it
+class ExportThread : public MyThreadClass
+{
+public:
+	ExportThread(MyLog & html, MyLog & csv, 
+		CSortedArray<CString, CString&> & genrelist,
+		ExportDlg * exp, CString & HtmlTmplAlbumHead, CString & HtmlTmplSongs,
+		CString & HtmlTmplAlbumTail, CString & HtmlTmplTail)
+			: m_HtmlLog(html),m_CsvLog(csv),m_genrelist(genrelist),
+			m_exp(exp),
+			m_tmp1(HtmlTmplAlbumHead),
+			m_tmp2(HtmlTmplSongs),
+			m_tmp3(HtmlTmplAlbumTail),
+			m_tmp4(HtmlTmplTail)
+	{}
 
+	virtual void ThreadEntry(){}
+	virtual void ThreadExit(){}
+	virtual void Run() {
+		m_lib->export(m_pd, m_exp,m_HtmlLog,m_CsvLog,m_genrelist,
+			m_tmp1,m_tmp2,m_tmp3,m_tmp4);
+		m_pd->End();
+	}
+	
+	ProgressDlg * m_pd;
+	MusicLib * m_lib;
+	MyLog & m_HtmlLog;
+	MyLog & m_CsvLog;
+	CSortedArray<CString, CString&> & m_genrelist;
+	ExportDlg * m_exp;
+	CString & m_tmp1;
+	CString & m_tmp2;
+	CString & m_tmp3;
+	CString & m_tmp4;
+
+};
 void
-MusicLib::export(ExportDlg * exp) {
+MusicLib::preExport(ExportDlg * exp) {
 	CString filehtm = exp->m_Folder + exp->m_File + ".htm";
 	CString filetxt = exp->m_Folder + exp->m_File + ".txt";
 	CString filecsv = exp->m_Folder + exp->m_File + ".csv";
@@ -1711,18 +1743,31 @@ MusicLib::export(ExportDlg * exp) {
 
 		ExpHtm.log(HtmlTmplHead);
 	}
+	ExportThread et(ExpHtm,ExpCsv,genreCSList,exp,
+				 HtmlTmplAlbumHead,
+				 HtmlTmplSongs,
+				 HtmlTmplAlbumTail,
+				 HtmlTmplTail		
+		);
+	ProgressDlg pd(NULL,FALSE,TRUE);
+	et.m_pd = &pd;
+	et.m_lib = this;
 
-	InitDlg *dialog = new InitDlg(1,0);
-	dialog->SetLabel("Exporting tag data");
-	dialog->ShowWindow(SW_SHOWNORMAL);
-	dialog->ProgressRange(0, m_totalMp3s);
-	time_t starttime,elapsed,eta,now,lastupdate;
-	lastupdate=0;
-	float timeper;
-	time(&starttime);
-	CString etaS;
-
-
+	pd.SetThreadFunc(&et);
+	pd.DoModal();
+}
+void
+MusicLib::export(ProgressDlg * dialog, ExportDlg * exp, 
+				 MyLog & ExpHtm, 
+				 MyLog & ExpCsv, 
+				 CSortedArray<CString, CString&> & genreCSList,
+				 CString & HtmlTmplAlbumHead,
+				 CString & HtmlTmplSongs,
+				 CString & HtmlTmplAlbumTail,
+				 CString & HtmlTmplTail
+				 ) {
+	dialog->SetTitle("Export tag data");
+	dialog->ProgressRange(0,m_totalMp3s);
 	CString tmp;
 	int ctr = 0;
 	for (int i=0; i<genreCSList.GetSize(); i++) {
@@ -1764,6 +1809,7 @@ MusicLib::export(ExportDlg * exp) {
 				}
 				dialog->ProgressPos(ctr);
 
+
 				CObArray namenums;			
 				MList songList = m_SongLib.songList(genre, artist, album);
 				MList::Iterator songIter(songList);
@@ -1776,6 +1822,9 @@ MusicLib::export(ExportDlg * exp) {
 					}
 					NameNum * nn = new NameNum(songr.label(), itrack, songr.i());
 					namenums.Add(nn);
+					ctr++;
+					if (dialog->m_Abort)
+						return;
 				}
 				NameNum::bsort(namenums);
 				for (int l = 0 ; l < namenums.GetSize(); ++l) {
@@ -1786,17 +1835,9 @@ MusicLib::export(ExportDlg * exp) {
 					if (exp->m_Html)
 						exportHtml(exp, &ExpHtm,song, HtmlTmplSongs);
 					delete (NameNum*) namenums[l];
+					if (dialog->m_Abort)
+						return;
 
-					time(&now);
-					elapsed = now - starttime;
-					timeper = (float)elapsed / (float)ctr;
-					eta = (timeper * m_totalMp3s) - elapsed;
-					etaS = "Exporting tag data. Remaining: ";
-					etaS += String::secs2HMS(eta);
-					if (ctr++ > 5 && lastupdate < now) {
-						dialog->SetLabel(etaS);
-						lastupdate = now;
-					}
 				}
 				if (exp->m_Html)
 					ExpHtm.log(HtmlTmplAlbumTail);
@@ -1806,8 +1847,6 @@ MusicLib::export(ExportDlg * exp) {
 	if (exp->m_Html) {
 		ExpHtm.log(HtmlTmplTail);
 	}
-	dialog->EndDialog(0);
-	delete dialog;
 	logger.ods("exported " + numToString(ctr) + " songs");
 
 }
@@ -2496,8 +2535,8 @@ MusicLib::preModifyID3(Song & oldSong, Song & newSong) {
 	id3thread.m_pd = &pd;
 
 	pd.SetThreadFunc(&id3thread);
-	pd.DoModal();	// InitDlg invokes the run method, when it's done
-						// it calls EndDialog
+	pd.DoModal();	// OnInitDialog invokes the run method, when it's done
+					// it calls EndDialog
 	if (id3thread.m_results.GetLength())
 		MBMessageBox(CString("alert"), id3thread.m_results,TRUE);
 
@@ -4468,15 +4507,9 @@ MSongLib::readFromFile() {
 	if (r == 0) {
 		m_songcount = m_mem->readi(4);
 		m_garbagecollector = m_mem->readi(8);
-		if (m_files.read() == -1) { // create files list if !exists
-			int a,r;
-			r = MBMessageBox("Advisory","Database maintenance required.\r\nClick OK to continue.",TRUE);
-			if (IDOK == r)
-				verify("Performing database maintenance", a, r, m_songcount);
-			else
-				_exit(0);
-//		} else {
-//			m_files.removeAll();
+		if (m_files.read() == -1) {
+			init(TRUE);
+			MBMessageBox("Error","Database maintenance required.\r\nYou must perform a Complete Rebuild.",TRUE);
 		}
 	}
 	m_dirty = 0;
@@ -4651,9 +4684,9 @@ CString MusicLib::JustVerify() {
     num_albums1 = num_songs1 = num_albums2 = num_songs2 = 0;
 	CString msg("Test Verifying");
 	IgetLibraryCounts() ;
-    CString vr = m_SongLib.verify(msg, num_albums1, num_songs1,m_totalMp3s);
+//    CString vr = m_SongLib.verify(msg, num_albums1, num_songs1,m_totalMp3s);
 
-	return vr;
+	return "";
 }
 void
 MSongLib::dumpRecords(CString msg) {
@@ -4699,12 +4732,7 @@ MSongLib::verify(CString msg, int & total_albums, int & total_songs, const int t
 	time(&starttime);
 	CString etaS;
 
-    InitDlg * dialog = new InitDlg(1,0);
-	dialog->SetLabel(msg);
-	dialog->ShowWindow(SW_SHOWNORMAL);
-//	dialog->SendUpdateStatus(2, "", 0, count());
-	dialog->ProgressRange(0, count());
-	dialog->UpdateWindow();
+
 
 	int ctr=1;
 	int StatusUpdateDelay = 50;
@@ -4802,7 +4830,7 @@ MSongLib::verify(CString msg, int & total_albums, int & total_songs, const int t
 	delete dialog;
     return results;
 }
-#endif
+
 CString
 MSongLib::verify(CString msg, int & total_albums, int & total_songs, const int totalMp3s) {
     CString results, contents, removed;
@@ -4818,13 +4846,6 @@ MSongLib::verify(CString msg, int & total_albums, int & total_songs, const int t
 	float songspersec;
 	time(&starttime);
 	CString etaS;
-
-    InitDlg * dialog = new InitDlg(1,0);
-	dialog->SetLabel(msg);
-	dialog->ShowWindow(SW_SHOWNORMAL);
-//	dialog->SendUpdateStatus(2, "", 0, count());
-	dialog->ProgressRange(0, count());
-	dialog->UpdateWindow();
 
 	int ctr=1;
 	int StatusUpdateDelay = 50;
@@ -4926,6 +4947,7 @@ if (!sGenre.GetLength()
 	MBMessageBox("Verify",results,FALSE);
     return results;
 }
+#endif
 
 int
 MusicLib::setSongVal(const CString & key, const CString & value, 

@@ -4631,7 +4631,7 @@ void CPlayerDlg::OnMenuExportLibrary() {
 
 	if (dlg.m_Doit) {
 		CWaitCursor c;
-		m_mlib.export(&dlg);
+		m_mlib.preExport(&dlg);
 	}
     return;
 }

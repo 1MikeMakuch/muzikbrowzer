@@ -294,7 +294,7 @@ class MSongLib {
 		operator = (MSongLib &);
 		void ShortCopy(MSongLib & );
 		void Destroy();
-		CString verify(CString msg, int &, int &, const int);
+//		CString verify(CString msg, int &, int &, const int);
 		void writeToFile();
 		int m_garbagecollector;
 		MFiles m_files;
@@ -313,11 +313,12 @@ class MSongLib {
 };
 
 typedef MPtr<MSongLib> MSongLibP;
+#include <afxtempl.h>
+#include "SortedArray.h"
 
 class OggTag;
 class ExportDlg;
 class ProgressDlg;
-class InitDlg;
 class MusicLib {
 	public:
 		MusicLib();
@@ -341,7 +342,10 @@ class MusicLib {
 	    void	deletePlaylist(const CString &);
 	     int	deleteSongFromPlaylist(PlaylistNode *p);
 	    void	dumpPL(int p);
-		void	export(ExportDlg *);
+		void	preExport(ExportDlg *);
+		void	export(ProgressDlg *pd, ExportDlg *, MyLog & html, MyLog & csv, 
+					CSortedArray<CString, CString&> & genrelist,
+					CString & t1, CString & t2, CString & t3, CString & t4);
 		void	exportCsv(ExportDlg *, MyLog *, Song);
 		void	exportTxt(ExportDlg *, MyLog *, Song);
 		void	exportHtml(ExportDlg *, MyLog *, Song, CString & tmpl);
