@@ -32,7 +32,7 @@ CConfigFiles::CConfigFiles(CWnd *p, PlayerCallbacks * pcb) : CPropertyPage(CConf
     /*m_PlayerDlg(p),*/ m_RunAtStartupUL(0),
 	m_AlbumSortAlpha(TRUE), m_AlbumSortDate(FALSE),
 	m_playercallbacks(pcb), m_ResetNeeded(FALSE),
-	m_OrigRunAtStartup(FALSE)
+	m_OrigRunAtStartup(FALSE),m_HideGenre(FALSE)
 
 {
 	//{{AFX_DATA_INIT(CConfigFiles)
@@ -53,6 +53,7 @@ void CConfigFiles::DoDataExchange(CDataExchange* pDX)
 {
 	CPropertyPage::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CConfigFiles)
+
 	DDX_Control(pDX, IDC_RUNATSTARTUP,	m_RunAtStartup);
 	DDX_Control(pDX, IDC_MDB_LOCATION,	m_MdbLocation);
 	DDX_Control(pDX, IDC_DIRLIST,		m_MP3DirList);
@@ -69,6 +70,7 @@ BEGIN_MESSAGE_MAP(CConfigFiles, CPropertyPage)
 	ON_BN_CLICKED(IDC_ALBUMSORT_DATE, OnAlbumsortDate)
 	ON_BN_CLICKED(IDC_ALBUMSORT_ALPHA, OnAlbumsortAlpha)
 	ON_BN_CLICKED(IDC_RUNATSTARTUP, OnRunatstartup)
+	ON_BN_CLICKED(IDC_HIDE_GENRE, OnHideGenre)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -216,6 +218,9 @@ void CConfigFiles::ReadReg() {
     reg.Read(RegDbLocation, buf.p, 999, "");
     Location = buf.p;
 
+	m_HideGenre = (reg.Read("HideGenre",0) && 1);
+	m_InitialHideGenre = m_HideGenre;
+
     if (Location.GetLength()) {
         m_origMdbLocation = Location;
 		m_path = Location;
@@ -337,6 +342,10 @@ void CConfigFiles::StoreReg() {
     RegistryKey reg( HKEY_LOCAL_MACHINE, RegKey );
     reg.Write(RegDbLocation, location);
 	m_origMdbLocation = location;
+
+	m_HideGenre = ((CButton*)GetDlgItem(IDC_HIDE_GENRE))->GetCheck();
+	reg.Write("HideGenre",m_HideGenre);
+	m_InitialHideGenre = m_HideGenre;
 
     if (m_RunAtStartup.GetCheck() == 0) {
         m_RunAtStartupUL = 0;
@@ -484,8 +493,6 @@ BOOL CConfigFiles::OnInitDialog()
         m_RunAtStartup.SetCheck(0);
 		m_OrigRunAtStartup = FALSE;
     }
-	
-
 
 	if (m_AlbumSortAlpha) {
 		CheckRadioButton(IDC_ALBUMSORT_DATE,IDC_ALBUMSORT_ALPHA,
@@ -496,6 +503,8 @@ BOOL CConfigFiles::OnInitDialog()
 			IDC_ALBUMSORT_DATE);
 		m_InitialAlbumSortAlpha = FALSE;
 	}
+
+	((CButton*)GetDlgItem(IDC_HIDE_GENRE))->SetCheck(m_HideGenre);
 
     UpdateWindow();
 
@@ -545,6 +554,7 @@ BOOL CConfigFiles::OnApply()
 void CConfigFiles::OnOK() 
 {
 	CPropertyPage::OnOK();
+
     StoreReg();
 	SetModified(FALSE);
 	if (m_LocDirModified) {
@@ -583,17 +593,29 @@ void CConfigFiles::OnCancel()
 		m_AlbumSortAlpha = FALSE;
 	}
 
+
     if (m_OrigRunAtStartup) {
         m_RunAtStartup.SetCheck(1);
     } else {
         m_RunAtStartup.SetCheck(0);
     }
+
+	((CButton*)GetDlgItem(IDC_HIDE_GENRE))->SetCheck(m_InitialHideGenre);
+	m_HideGenre = m_InitialHideGenre;
+
 	StoreReg();
 //    UpdateData(FALSE);
 	CPropertyPage::OnCancel();
 }
 
 void CConfigFiles::OnRunatstartup() 
+{
+	UpdateData(FALSE);
+	SetModified(TRUE);
+	
+}
+
+void CConfigFiles::OnHideGenre() 
 {
 	UpdateData(FALSE);
 	SetModified(TRUE);

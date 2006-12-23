@@ -25,6 +25,7 @@ public:
 // Dialog Data
 	//{{AFX_DATA(CConfigFiles)
 	enum { IDD = IDD_CONFIG_FILES };
+
 	CButton		m_RunAtStartup;
 	CStatic		m_MdbLocation;
 	CListBox	m_MP3DirList;
@@ -54,6 +55,7 @@ protected:
 	afx_msg void OnAlbumsortDate();
 	afx_msg void OnAlbumsortAlpha();
 	afx_msg void OnRunatstartup();
+	afx_msg void OnHideGenre();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 private:
@@ -73,6 +75,8 @@ private:
 	BOOL m_LocDirModified;
 	BOOL m_InitialAlbumSortAlpha;
 	BOOL m_ResetNeeded;
+	BOOL m_HideGenre;
+	BOOL m_InitialHideGenre;
 
     void StoreReg();
 	void WriteFolders();
@@ -90,6 +94,7 @@ public:
 	void GetDirs(CStringList & dirs,const CString & dir);
 	void AddFolders(const CStringList & dirs);
 	void DelFolders(const CStringList & dirs);
+	BOOL hideGenre() { return m_HideGenre; }
 
 
 };

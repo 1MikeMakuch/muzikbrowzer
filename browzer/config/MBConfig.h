@@ -111,6 +111,7 @@ public:
 //	double getGenreWidthPct();
 	int getDlgBorderHorz() ;
 	int getDlgBorderVert() ;
+	BOOL hideGenre();
 		
 	BOOL AlbumSortAlpha();
 	void getRegistry(const CString & key, int & value, const int dflt);

@@ -37,7 +37,7 @@ public:
 	private:
 		CPlayerDlg * m_PlayerDlg;
 		BOOL m_rebuild;
-		CString m_dirs;
+		CString m_dir;
 
 	public:
 // Implementation

@@ -1145,6 +1145,14 @@ BOOL RecreateListBox(CExtendedListBox* pList, LPVOID lpParam/*=NULL*/)
 void
 CPlayerDlg::resetControls() {
 	if (!m_Ready2Reset) return;
+
+	if (m_Config.hideGenre()) {
+		m_Genres.ShowWindow(SW_HIDE);
+		m_GenresLabel.ShowWindow(SW_HIDE);
+	} else {
+		m_Genres.ShowWindow(SW_NORMAL);
+		m_GenresLabel.ShowWindow(SW_NORMAL);
+	}
 	
 	if (m_Config.AlbumSortAlpha()) {
 		m_Albums.ModifyStyle(0,LBS_SORT,0);
@@ -1279,29 +1287,16 @@ CPlayerDlg::resetControls() {
 
 //	Now using the hard limits to enforce
 	GenresWidthPct = atof(tmp);
-//	if (GenresWidthPct < .1 || .60 < GenresWidthPct) {
-//		GenresWidthPct = 0.15;
-//	}
+	if (m_Config.hideGenre())
+		GenresWidthPct = 0;
 
 	m_Config.getRegistry("LibArtistsWidth",tmp,".25");
 	ArtistsWidthPct = atof(tmp);
-//	if (ArtistsWidthPct < .1 || .60 < ArtistsWidthPct) {
-//		ArtistsWidthPct = (double)(1 - GenresWidthPct) / (double)3;
-//	}
 
 	m_Config.getRegistry("LibAlbumsWidth",tmp,".25");
 	AlbumsWidthPct = atof(tmp);
-//	if (AlbumsWidthPct < .1 || .60 < AlbumsWidthPct) {
-//		AlbumsWidthPct = (double)(1 - (GenresWidthPct + ArtistsWidthPct)) / (double)2;
-//	}
 
 	SongsWidthPct = 1 - (GenresWidthPct + ArtistsWidthPct + AlbumsWidthPct);
-//	if (SongsWidthPct < .1 || .60 < SongsWidthPct) {
-//		GenresWidthPct = 0.25;
-//		ArtistsWidthPct = 0.25 ;
-//		AlbumsWidthPct = 0.25;
-//		SongsWidthPct = 0.25;
-//	}
 
 	int fixedy = bordervert * 3;
 	int y = border;
@@ -1521,7 +1516,8 @@ CPlayerDlg::resetControls() {
 	m_SearchEdit.MoveWindow(m_SearchEditRect);
 	
 	pheight = p->height;
-	x += p->width + borderhorz;
+	if (!m_Config.hideGenre())
+		x += p->width + borderhorz;
 
 	p = m_BtnControls.getObj(IDC_ARTISTS);
 	p->width = m_LibRemainingWidth * ArtistsWidthPct;
@@ -2871,19 +2867,25 @@ CPlayerDlg::nextDlgCtrl() {
 		|| &m_SearchGo == f
 		|| &m_SearchEdit == f
 		) {
-		GotoDlgCtrl(&m_Genres);
+		if (!m_Config.hideGenre())
+			GotoDlgCtrl(&m_Genres);
+		else
+			GotoDlgCtrl(&m_Artists);
 	} else
 		NextDlgCtrl();
 }
 void
 CPlayerDlg::prevDlgCtrl() {
 	CWnd * f = GetFocus();
-	if ((CWnd * )&m_Genres== f
+	if ((&m_Genres== f
 		|| &m_SearchClear == f
 		|| &m_SearchCancel == f
 		|| &m_SearchGo == f
 		|| &m_SearchEdit == f
-		) {
+		)
+		|| (m_Config.hideGenre() && f == &m_Artists)
+		) 
+	{
 		GotoDlgCtrl(&m_Playlist);
 	} else
 		PrevDlgCtrl();

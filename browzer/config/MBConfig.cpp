@@ -313,3 +313,7 @@ void
 MBConfig::DelFolders(const CStringList & dirs) {
 	m_Files->DelFolders(dirs);
 }
+BOOL
+MBConfig::hideGenre() {
+	return m_Files->hideGenre();
+}

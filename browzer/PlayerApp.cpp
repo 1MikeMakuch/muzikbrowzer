@@ -45,8 +45,8 @@ CPlayerApp::CPlayerApp()
 	CString cl = ::GetCommandLine();
 	if (String::contains(cl,"rebuild")) {
 		m_rebuild = TRUE;
-		if (String::contains(cl,"dirs=")) {
-			m_dirs = String::extract(cl,"dirs=","");
+		if (String::contains(cl,"dir=")) {
+			m_dir = String::extract(cl,"dir=","");
 		}
 	}
 
@@ -100,7 +100,7 @@ BOOL CPlayerApp::InitInstance()
 	m_PlayerDlg = new CPlayerDlg(this);
 	m_pMainWnd = m_PlayerDlg;
 	if (m_rebuild)
-		m_PlayerDlg->RebuildOnly(m_dirs);
+		m_PlayerDlg->RebuildOnly(m_dir);
 
 	
 	int nResponse = m_PlayerDlg->DoModal();
