@@ -1,7 +1,7 @@
 
 
-#ifndef FAILURE_H
-#define FAILURE_H
+#ifndef _TESTHARNESS_FAILURE_H
+#define _TESTHARNESS_FAILURE_H
 
 // Failure records the circumstances surrounding a test failure.  Using C++
 // macros were are able to record the name of the file where the failure 

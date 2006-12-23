@@ -30,6 +30,13 @@ public:
 		const CString & to,
 		const CString & headers,
 		const CString & body);
+
+		BOOL http(CStringArray & rhdr, CStringArray & rbody,
+			const CString & server,
+					const CString & headers="",
+					const CString & url="",
+					const CString & body="");
+
 private:
 	CString WellFormedAddress(const CString & address);
     BOOL OpenConnection(const CString & szMailServerIPAddress, int port);

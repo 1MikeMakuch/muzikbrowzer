@@ -2,8 +2,8 @@
 
 
 
-#ifndef TESTHARNESS_H
-#define TESTHARNESS_H
+#ifndef _TESTHARNESS_H_
+#define _TESTHARNESS_H_
 
 #include "Test.h"
 #include "TestResult.h"

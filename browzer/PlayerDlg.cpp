@@ -658,19 +658,18 @@ BOOL CPlayerDlg::OnInitDialog()
 
 	}
 
-//	One user complained about this
-//	CMenu* pSysMenu = GetSystemMenu(FALSE);
-//	if (pSysMenu != NULL)
-//	{
-//		pSysMenu->AppendMenu(MF_SEPARATOR);
-//		pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, "A&bout Muzikbrowzer");
-//	}
+	MBVersion mbv;
+	if (mbv.needUpdate()) {
+		PlayerStatusSet("New version available at www.muzikbrowzer.com");
+		PlayerStatusTempSet("New version available at www.muzikbrowzer.com");
+	}
 
 	logger.ods("End of InitDialog");
 
 
 	return FALSE;  // return TRUE  unless you set the focus to a control
 }
+
 void CPlayerDlg::ShowBetaWarning() {
 	CTime t = CTime::GetCurrentTime();
 	CString y = t.Format("%Y");

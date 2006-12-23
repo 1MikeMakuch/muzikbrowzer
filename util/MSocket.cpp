@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "MSocket.h"
+#include "MyString.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -38,15 +39,16 @@ int MSocket::Send(LPCTSTR lpszStr, UINT uTimeOut, int nFlags)
 
 int MSocket::Receive(CString& str, UINT uTimeOut, int nFlags)
 {
-	static char szBuf[256];
-	memset(szBuf, 0, sizeof(szBuf));
+	//static char szBuf[5000];
+	AutoBuf szBuf(5000);
+	memset(szBuf.p, 0, 5000);
 
 	// If a timeout value was specified, set it
 	if (uTimeOut > 0)
 		SetTimeOut(uTimeOut);
 
 	// Call base class function
-	int nRet = CSocket::Receive(szBuf, sizeof(szBuf), nFlags);
+	int nRet = CSocket::Receive(szBuf.p, 5000, nFlags);
 
 	// If we previously set a timeout
 	if (uTimeOut > 0)
@@ -62,7 +64,7 @@ int MSocket::Receive(CString& str, UINT uTimeOut, int nFlags)
 	}
 
 	// Fill in the CString reference
-	str = szBuf;
+	str = szBuf.p;
 	return nRet;
 }
 

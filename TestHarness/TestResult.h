@@ -1,7 +1,7 @@
 
 
-#ifndef TESTRESULT_H
-#define TESTRESULT_H
+#ifndef _TESTHARNESS_TESTRESULT_H_
+#define _TESTHARNESS_TESTRESULT_H_
 
 #include "StdAfx.h"
 #include "MyString.h"

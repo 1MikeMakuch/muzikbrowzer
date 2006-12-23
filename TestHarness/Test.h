@@ -1,6 +1,6 @@
 
-#ifndef TEST_H
-#define TEST_H
+#ifndef _TESTHARNESS_TEST_H_
+#define _TESTHARNESS_TEST_H_
 
 // From C/C++ Users Journal October 2002 issue
 // "Test Driven Development in C/C++

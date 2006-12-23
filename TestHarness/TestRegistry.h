@@ -1,6 +1,6 @@
 
-#ifndef TESTREGISTRY_H
-#define TESTREGISTRY_H
+#ifndef _TESTHARNESS_TESTREGISTRY_H
+#define _TESTHARNESS_TESTREGISTRY_H
 
 // TestRegistry is a primitive singleton which collects all of the
 // tests in a system and allows them to be executed.  To see how

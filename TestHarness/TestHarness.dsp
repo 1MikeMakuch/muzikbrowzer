@@ -134,6 +134,10 @@ SOURCE=.\Failure.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\StdAfx.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\Test.h
 # End Source File
 # Begin Source File

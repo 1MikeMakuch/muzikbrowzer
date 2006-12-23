@@ -7,6 +7,7 @@
 #include "Misc.h"
 #include "MBMessageBox.h"
 #include "MyLog.h"
+#include "TestHarness.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -113,7 +114,7 @@ BOOL CSMTP::OpenConnection(const CString & server, int port)
         // connect to the SMTP Service
         Status=Connect((LPCTSTR)server,port);
 
-        if(Status){
+        if(port == 25 && Status){
             // Check response from the SMTP Service
             Status=ReceiveResponse();
         }
@@ -228,6 +229,7 @@ CSMTP::mail(const CString & serverHostPort,
 	status = SendLine(msg); if (status == FALSE) return FALSE;
 
 	logger.log(m_log);
+	Close();
 	
 	return TRUE;	
 }
@@ -247,3 +249,105 @@ CSMTP::WellFormedAddress(const CString & address)
 
     return result;
 }
+
+BOOL
+CSMTP::http(CStringArray & rheaders, CStringArray & rbody,
+			const CString & serverHostPort,
+			const CString & headers,
+			const CString & url,
+			const CString & body)
+{
+//	CWSAStartup wsastartup;
+	if (!AfxSocketInit())
+	{
+		return FALSE;
+	}
+
+	//
+	//  HELO
+	//
+    CString host = String::field(serverHostPort,":",1);
+	CString sPort = String::field(serverHostPort,":",2);
+	int port = 80;
+	if (sPort != "") {
+		port = atoi(sPort);
+	}
+
+	BOOL status = OpenConnection(host,port);
+	if (status == FALSE) return FALSE;
+
+    long numparts = String::delCount(host, ".");
+    CString domain;
+    if (numparts >= 3) {
+		for(long i = numparts-1 ; i <= numparts ; ++i) {
+			if (domain.GetLength()) domain += ".";
+			domain += String::field(host, ".", i);
+		}
+    } else {
+        domain = host;
+    }
+	CString method = "GET";
+	if (body.GetLength())
+		method = "POST";
+
+	CString req = method + " " + url + " HTTP/1.0\r\n";
+//	req += "User-Agent: www.muzikbrowzer.com\r\n";
+//	req += "Accept: */*\r\n";
+//	req += "Host: muzikbrowzer.makuch.org\r\n";
+	req += "Host: " + host + "\r\n";
+	req += headers;
+	if (body.GetLength())
+		req += "Content-Type: application/x-www-form-urlencoded\r\n";
+		req += "Content-Length: " + numToString(body.GetLength()) + "\r\n";
+
+	req += "\r\n";
+
+	req += body;
+
+//	logger.log(req);
+	int s = Send(req, 10);
+	if (0 == s)
+		return FALSE;
+
+	CString reply,line;
+	int r = Receive(reply,10000);
+	Close();
+//	logger.ods(reply);
+//	logger.log(reply);
+
+	CString chdrs = String::extract(reply,"","\r\n\r\n");
+	CString cbody = String::extract(reply,"\r\n\r\n","");
+
+	AutoBuf buf(reply.GetLength()+1);
+	strcpy(buf.p,chdrs);
+
+
+	char * p = strtok(buf.p,"\r\n");
+    while (NULL != p) {
+		rheaders.Add(p);
+		p = strtok(NULL,"\r\n");	
+	}
+
+	strcpy(buf.p,cbody);
+	p = strtok(buf.p,"\r\n");
+    while (NULL != p) {
+		rbody.Add(p);
+		p = strtok(NULL,"\r\n");	
+	}
+
+
+	return TRUE;
+
+
+}
+#ifdef asdf
+TEST(httptest,httptest)
+{
+	CStringArray rhdr,rbody;
+	CSMTP http;
+	http.http(rhdr,rbody,"muzikbrowzer.makuch.org","","/dl/current_rev");
+
+	CString reqbody("version=?");
+	http.http(rhdr,rbody,"muzikbrowzer.makuch.org","","/dl/current_rev.php",reqbody);
+}
+#endif

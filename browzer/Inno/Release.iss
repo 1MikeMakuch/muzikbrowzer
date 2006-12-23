@@ -8,20 +8,26 @@
 Type: files; Name: "{commonprograms}\Muzikbrowzer.lnk";
 ;Type: files; Name: "{commonprograms}\BitmapCutter.lnk";
 
-
 [Setup]
 AppMutex=MuzikbrowzerAppMutex,Global\MuzikbrowzerAppMutex
 ;AppMutex=MuzikbrowzerAppMutex,Global\MuzikbrowzerAppMutex,MuzikbrowzerBitMapCutterAppMutex,Global\MuzikbrowzerBitMapCutterAppMutex
 AppName=Muzikbrowzer
-AppVerName=muzikbrowzer 2.0.2
+AppVerName=Muzikbrowzer 2.0.2 (built 2006-12-23 16:22:44)
 AppCopyright=Copyright (C) 2001-Present Pecan Ventures, LLC
 DefaultDirName={pf}\Muzikbrowzer
 DefaultGroupName=Muzikbrowzer
 DisableProgramGroupPage=yes
 UninstallDisplayIcon={app}\Muzikbrowzer.exe
 MinVersion=4.1.1998,4
-OutputBaseFilename=muzikbrowzer_setup_2_0_2
+OutputBaseFilename=Muzikbrowzer_setup_2_0_2
 LicenseFile=mb_license.txt
+WizardImageFile=../res/MBWizardImageFile.bmp
+WizardSmallImageFile=../res/MBWizardSmallImageFile.bmp
+
+; *** "Welcome" wizard page
+[Messages]
+WelcomeLabel1=Welcome to the [name] Setup Wizard
+WelcomeLabel2=This will install [name/ver] on your computer.%n%nIt is recommended that you close all other applications before continuing.%n%nIf you are installing Muzikbrowzer over an existing version it is not necessary to first uninstall your existing version, simply proceed with this installation. You must first close any running instances of Muzikbrowzer before proceeding.
 
 [Files]
 Source: "..\Release\Muzikbrowzer.exe"; DestDir: "{app}"; CopyMode: alwaysoverwrite

@@ -78,6 +78,8 @@ BOOL CPlayerApp::InitInstance()
 	//  the specific initialization routines you do not need.
 	RegistryKey reg(HKEY_LOCAL_MACHINE, RegKey);
 	CString lfile = reg.ReadCString(RegDbLocation,"C:\\Program Files\\Muzikbrowzer");
+	if (m_dir.GetLength())
+		lfile = m_dir;
 	lfile += "\\Muzikbrowzer.log";
 	logger.open(lfile);
 	logger.log(CS("Muzikbrowzer version: ") + CS(MUZIKBROWZER_VERSION));
