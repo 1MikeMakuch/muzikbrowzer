@@ -127,7 +127,7 @@ public:
 	int getPanelWidth() ;
 	void ReadReg(RegistryKey &);
 	BOOL verifySkin();
-	void GetDirs(CStringList & dirs);
+	void GetDirs(CStringList & dirs,const CString & dir="");
 	void AddFolders(const CStringList & dirs);
 	void DelFolders(const CStringList & dirs);
 

@@ -302,8 +302,8 @@ BOOL MBConfig::OnCommand(WPARAM wParam, LPARAM lParam)
 }
 
 void
-MBConfig::GetDirs(CStringList & dirs) {
-	m_Files->GetDirs(dirs);
+MBConfig::GetDirs(CStringList & dirs, const CString & dir) {
+	m_Files->GetDirs(dirs,dir);
 }
 void
 MBConfig::AddFolders(const CStringList & dirs) {

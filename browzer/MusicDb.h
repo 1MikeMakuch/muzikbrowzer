@@ -110,6 +110,7 @@ class MMemory {
 		CString DbFile() { return m_file; }
 //		int release() {}
 		operator = (MMemory &);
+		BOOL dbchanged();
 	private:
 		int _refcnt;
 		char * m_space;
@@ -121,6 +122,7 @@ class MMemory {
 		void create();
 		void * addr(int p);
 		int next() { return m_next; }
+		CTime m_mtime;
 };
 typedef MPtr<MMemory> PMemory;
 
@@ -216,7 +218,7 @@ class MTags {
 
 class MFiles {
 	public:
-		MFiles() {
+		MFiles():m_count(0) {
 //			m_files.SetSize(1,100); // doesn't work right
 		}
 		~MFiles(){}
@@ -246,12 +248,14 @@ class MFiles {
 		int getLength() { return m_files.GetSize(); }
 		CString getAt(int i) { return m_files.GetAt(i); }
 		Song getSong(const LPCTSTR file);
+		int count() { return m_count; }
 	private:
 		CString m_loc;
 		CString m_dir;
 		CString m_idx;
 		CStringArray m_files;
 		CStringArray m_tags;
+		int m_count;
 };
 
 class MSongLib {
@@ -296,6 +300,7 @@ class MSongLib {
 		void Destroy();
 //		CString verify(CString msg, int &, int &, const int);
 		void writeToFile();
+		BOOL checkReReadDb();
 		int m_garbagecollector;
 		MFiles m_files;
 	private:
@@ -333,6 +338,7 @@ class MusicLib {
 	     int	addSongToPlaylist(const CString &, const CString &, const CString &, const CString &);
 	     int	addSongToPlaylist(const Song &);
 	    BOOL	apic(const CString & file, uchar *& rawdata, size_t & size, const CString & album);
+		BOOL	checkReReadDb();
 	     int	clearPlaylist();
 unsigned int	countSongsInGenre(const CString & genre, CArray<unsigned int, unsigned int> & array);
 	    Song	createSongFromFile(const CString & mp3file);
@@ -385,6 +391,7 @@ unsigned int	countSongsInGenre(const CString & genre, CArray<unsigned int, unsig
 	    void	RandomizePlaylist();
 	    UINT	readDb();
 	    void	readDbLocation();
+		void	RebuildOnly(const CStringList & dirs);
 	    BOOL	renamePlaylist(const CString src,const CString dest, BOOL overwrite=FALSE);
 	    void	savePlaylist(const CString &);
 	    void	savePlaylist(const CStringArray & list, const CString & file);

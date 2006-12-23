@@ -147,7 +147,8 @@ CPlayerDlg::CPlayerDlg(CPlayerApp * theApp,
 	m_PlayLoopTimerId(0),
 	m_LoadPlaylistDlg(0),
 	m_WindowRect(0,0,640,480),
-	m_Ready2Reset(FALSE)
+	m_Ready2Reset(FALSE),
+	m_RebuildOnly(FALSE)
 {
 	//{{AFX_DATA_INIT(CPlayerDlg)
 	//}}AFX_DATA_INIT
@@ -435,21 +436,20 @@ BOOL CPlayerDlg::OnInitDialog()
 #endif
 #endif
 
-//	CRect wmprect(0,0,0,0);
-//	m_WMP.Create(NULL,
-//		WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN 
-//		,wmprect,this, IDC_WMP);
-//	m_WMP.SetEnabled(TRUE);
-//	CString wmpstatus = m_WMP.GetStatus();
-
     *m_Dialog = this;
 	m_mlib.readDbLocation();
-    CString lpath = m_mlib.getDbLocation();
-	CString lfile = lpath + "\\" + MUZIKBROWZER;
-	lfile += ".log";
-	
-//    logger.open(lfile);
-//	logger.log(CS("Muzikbrowzer version: ") + CS(MUZIKBROWZER_VERSION));
+
+	m_Config.createit(this, &m_callbacks);
+
+	if (m_RebuildOnly) {
+		CStringList dirs;
+		m_Config.GetDirs(dirs,m_RebuildDir);
+		if (m_RebuildDir.GetLength())
+			m_mlib.setDbLocation(m_RebuildDir);
+		m_mlib.RebuildOnly(dirs);
+		exit(0);
+		return FALSE;
+	}
 
 	logger.ods("Begin InitDialog");
 	CDialogClassImpl::OnInitDialog();
@@ -460,19 +460,6 @@ BOOL CPlayerDlg::OnInitDialog()
 	m_SearchEdit.ShowWindow(SW_HIDE);
 	m_SearchStatus.ShowWindow(SW_HIDE);
 	
-	CString cl = ::GetCommandLine();
-	m_InitialSize.cx=0;m_InitialSize.cy=0;
-
-	if (cl.Find("-size=") >= 0) { // -size=800x600
-		CString tmp = String::extract(cl,"-size=","");
-		CString val = String::extract(tmp,"","x");
-		if (val.GetLength()) m_InitialSize.cx = atoi(val);
-		val = String::extract(tmp,"x","");
-		if (tmp.GetLength()) m_InitialSize.cy= atoi(val);
-	}
-
-	m_Config.createit(this, &m_callbacks);
-
 	MBCONFIG_READ_SKIN_DEFS(m_Config,m_reg);
 
 	MBCONFIG_READ_TRANS_COLORS(m_reg,m_TransMain,m_TransPanel);
@@ -572,7 +559,7 @@ BOOL CPlayerDlg::OnInitDialog()
 	m_VolumeSlider.SetRange(0,50);
 
     // instanciate a Player
-	m_Player = new MusicPlayerWMP(&m_WMP, lpath);
+	m_Player = new MusicPlayerWMP(&m_WMP);
 //	m_Player = new MusicPlayer(this, lpath);
 	m_Player->init();
 
@@ -1166,14 +1153,8 @@ CPlayerDlg::resetControls() {
 	}
 	RecreateListBox(&m_Albums,NULL);
 
-	static BOOL firsttime = TRUE;
 	CWaitCursor c;
 	GetWindowRect(m_WindowRect);
-
-//	RemoteReceiver * rrcvr = RemoteReceiver::rrcvr();	
-//	rrcvr->Close();
-//	rrcvr->init(this);
-//	rrcvr->Open();
 
 	m_Skins.RemoveAll();
 	m_Config.getSkins(m_Skins);
@@ -1200,11 +1181,6 @@ CPlayerDlg::resetControls() {
 	int w = 0;
 	int h = 0;
 
-	if (firsttime) {
-		firsttime=FALSE;
-		w = m_InitialSize.cx;
-		h = m_InitialSize.cy;
-	}
 	if (LO_FIXED == BackgroundMainType) {
 		CDIBSectionLite bmpBgMain;
 		bmpBgMain.Load(m_Config.getSkin(MB_SKIN_BACKGROUNDMAIN));
@@ -1373,12 +1349,6 @@ CPlayerDlg::resetControls() {
 	m_BtnControls.move(p, x, y, p->row, p->col);	
 	int playpaneltop = rowMaxY;
 
-//	p = m_BtnControls.getObj(IDC_BUTTON_RESIZE);
-//	x -= (SYSCTRLSWIDTH + p->width);
-//	rowMaxY = __max(rowMaxY, y + p->height);
-//	m_BtnControls.move(p, x, y, p->row, p->col);	
-//	playpaneltop = rowMaxY;
-
 // control box
 
 	y = rowMaxY + borderpanel /*+ bordervert*/;
@@ -1387,34 +1357,6 @@ CPlayerDlg::resetControls() {
 	int ControlBoxTop  = y;
 	int ControlBoxRight = x + ControlBoxWidth;
 	int ControlBoxBottom = y + ControlBoxHeight;
-
-//	x = ControlBoxLeft + m_reg.Read("MenuX",0);
-//	y = ControlBoxTop + m_reg.Read("MenuY", 0);
-//	p = m_BtnControls.getObj(IDC_OPTIONS_BUTTON);
-//	maxX = x + p->width;
-//	rowMaxY = y + p->height;
-//	m_BtnControls.move(p, x, y, p->row, p->col);
-
-//	x = ControlBoxLeft + m_reg.Read("MusicX",0);
-//	y = ControlBoxTop + m_reg.Read("MusicY", 0);
-//	p = m_BtnControls.getObj(IDC_MUSIC_BUTTON);
-//	maxX = x + p->width;
-////	rowMaxY = y + p->height;
-//	m_BtnControls.move(p, x, y, p->row, p->col);
-//
-//	x = ControlBoxLeft + m_reg.Read("PicturesX",0);
-//	y = ControlBoxTop + m_reg.Read("PicturesY", 0);
-//	p = m_BtnControls.getObj(IDC_PICTURES_BUTTON);
-//	maxX = x + p->width;
-////	rowMaxY = y + p->height;
-//	m_BtnControls.move(p, x, y, p->row, p->col);
-//
-//	x = ControlBoxLeft + m_reg.Read("VideoX",0);
-//	y = ControlBoxTop + m_reg.Read("VideoY", 0);
-//	p = m_BtnControls.getObj(IDC_VIDEO_BUTTON);
-//	maxX = x + p->width;
-////	rowMaxY = y + p->height;
-//	m_BtnControls.move(p, x, y, p->row, p->col);
 
 	x = ControlBoxLeft + m_reg.Read("StopX",0);
 	y = ControlBoxTop + m_reg.Read("StopY", 0);
@@ -1528,10 +1470,6 @@ CPlayerDlg::resetControls() {
 	plmaxx = __max(plmaxx,ControlBoxRight) + borderhorz;
 
 	p = m_BtnControls.getObj(IDC_PLAYLIST);
-//	p->height = plmaxy - (labelheight + textheight + bordervert
-//		+ stopy);
-//	p->height = ControlBoxHeight - (labelheight + curplayheight + bordervert);
-//	p->height = pheight - (labelheight + curplayheight + bordervert);
 	p->height = pheight - (labelheight );
 	p->labelheight = labelheight;
 	x = ControlBoxRight + borderhorz;
@@ -1547,14 +1485,6 @@ CPlayerDlg::resetControls() {
 	int posy = __max(ControlBoxBottom,volbottom);
 	posy = __max(posy, playlistbottom) + bordervert;
 
-//	x = x + p->width + borderhorz;
-//	p = m_BtnControls.getObj(IDC_CURRENT_TITLE);
-//	p->height = curplayheight;
-//	p->width = playlistright - x;
-//	m_BtnControls.move(p,x,y,p->row,p->col);
-//	int titlebottom = y + p->height;
-	
-//	y += p->height + bordervert;
 	int genrey = ControlBoxTop + ControlBoxHeight + (2 * borderpanel) +
 		bordervert;
 
@@ -1646,12 +1576,7 @@ CPlayerDlg::resetControls() {
 	}
 
 	// applabel
-//	x = (m_BtnControls.dialogrect.Width() / 2) - (bmpaplabel.GetWidth() / 2);
-//	y = border;
-//	CRect aplrect(x,y,x+bmpaplabel.GetWidth(),y+bmpaplabel.GetHeight());
-//	SetBitmap(m_Config.getSkin(MB_SKIN_BUTTONAPPLABELOUT), aplrect, LO_FIXED,
-//		CS("applabel"));
-	//ClientToScreen(AppLabelRect);
+
 	CString bgpanel ;
 
 	// l,t,r,b
@@ -1785,8 +1710,6 @@ CPlayerDlg::resetControls() {
 	m_SearchStatus.SetTransparent(m_bmBackground,m_SearchStatusRect, m_TransPanel);
 	m_SearchStatus.RedrawWindow();
 
-	//m_GenresLabel.RedrawWindow();
-
 	// Don't do this hear anymore, it's resetting volume back to
 	// what's saved in registry instead of current setting
 	//readConfig();
@@ -1801,6 +1724,10 @@ CPlayerDlg::resetControls() {
 		BOOL r = ::DeleteObject((HBRUSH)hbr);
 	}
 	m_CtlColors.RemoveAll();
+
+	if (m_mlib.checkReReadDb()) {
+		init();
+	}
 }
 void
 CPlayerDlg::ShowSearchDlg() {

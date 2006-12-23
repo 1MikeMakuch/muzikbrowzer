@@ -111,14 +111,26 @@ void CConfigFiles::OnDirremove()
 }
 
 void
-CConfigFiles::GetDirs(CStringList & dirs) {
+CConfigFiles::GetDirs(CStringList & dirs,const CString & dir) {
 	POSITION pos;
-	CString dir;
+	CString tmp;
+	CString save_m_path;
+
+	if (dir.GetLength()) {
+		dirs.RemoveAll();
+		save_m_path = m_path;
+		m_path = dir;
+		ReadFolders();
+	}
 	for (pos = m_slMP3DirList.GetHeadPosition(); pos != NULL; ) {
-        dir = m_slMP3DirList.GetAt(pos);
-		dirs.AddTail(dir);
+        tmp = m_slMP3DirList.GetAt(pos);
+		dirs.AddTail(tmp);
 		m_slMP3DirList.GetNext(pos);
     }
+	if (dir.GetLength()) {
+		m_path = save_m_path;
+		ReadFolders();
+	}
 }
 
 

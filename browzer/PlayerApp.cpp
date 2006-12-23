@@ -41,8 +41,14 @@ END_MESSAGE_MAP()
 
 CPlayerApp::CPlayerApp()
 {
-	// TODO: add construction code here,
-	// Place all significant initialization in InitInstance
+	m_rebuild = FALSE;
+	CString cl = ::GetCommandLine();
+	if (String::contains(cl,"rebuild")) {
+		m_rebuild = TRUE;
+		if (String::contains(cl,"dirs=")) {
+			m_dirs = String::extract(cl,"dirs=","");
+		}
+	}
 
 }
 
@@ -75,10 +81,13 @@ BOOL CPlayerApp::InitInstance()
 	lfile += "\\Muzikbrowzer.log";
 	logger.open(lfile);
 	logger.log(CS("Muzikbrowzer version: ") + CS(MUZIKBROWZER_VERSION));
+
 #ifdef _DEBUG
-	RunTestHarness();
+	if (!m_rebuild)
+		RunTestHarness();
 	//return FALSE;
 #endif
+
 
 
 #ifdef _AFXDLL
@@ -86,26 +95,14 @@ BOOL CPlayerApp::InitInstance()
 #else
 	Enable3dControlsStatic();	// Call this when linking to MFC statically
 #endif
-    //COLORREF clrCtlBk = RGB(192, 192, 192);
-    //COLORREF clrCtlBk = RGB(0,0,0);
-    //COLORREF clrCtlText = RGB(0, 0, 0);
-    //SetDialogBkColor(clrCtlBk , clrCtlText  );
 
-    // Check registration here
-    // If in eval mode just continue, but throw up a reminder dialog
-
-
-#ifdef doingithere
-	CTransparentDialogDlg * splashDlg = new CTransparentDialogDlg();
-    CString msg = MUZIKBROWZER;
-    msg += " initializing";
-	splashDlg->ShowWindow(SW_SHOWNORMAL /* CWinApp::m_nCmdShow */);
-	splashDlg->UpdateWindow();
-    m_PlayerDlg = new CPlayerDlg(this, splashDlg);
-#endif
 
 	m_PlayerDlg = new CPlayerDlg(this);
 	m_pMainWnd = m_PlayerDlg;
+	if (m_rebuild)
+		m_PlayerDlg->RebuildOnly(m_dirs);
+
+	
 	int nResponse = m_PlayerDlg->DoModal();
 	delete m_PlayerDlg;
 

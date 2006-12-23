@@ -205,7 +205,13 @@ CSong::Contains(const CString & keyword) {
 MusicLib::MusicLib(): m_totalMp3s(0),
 	m_Searching(FALSE),m_pSearchFiles(NULL)
 {
-//	init();
+	m_mp3Extensions.RemoveAll();
+	m_mp3Extensions.AddTail("mpg");
+	m_mp3Extensions.AddTail("mp1");
+	m_mp3Extensions.AddTail("mp2");
+	m_mp3Extensions.AddTail("mp3");
+	m_mp3Extensions.AddTail("wma");
+	m_mp3Extensions.AddTail("ogg");
 }
 
 MusicLib::~MusicLib() {
@@ -221,23 +227,11 @@ MusicLib::readDbLocation() {
 void 
 MusicLib::setDbLocation(const CString & loc) {
 	m_dir = loc;
-	m_file = loc;
-	m_file += "\\";
-	m_file += MUZIKBROWZER;
-	m_file += ".db";
 	m_SongLib.setDbLocation(loc);
 }
 int
 MusicLib::init() {
     
-	m_mp3Extensions.RemoveAll();
-	m_mp3Extensions.AddTail("mpg");
-	m_mp3Extensions.AddTail("mp1");
-	m_mp3Extensions.AddTail("mp2");
-	m_mp3Extensions.AddTail("mp3");
-	m_mp3Extensions.AddTail("wma");
-	m_mp3Extensions.AddTail("ogg");
-
 	readDbLocation();
 	Genre_init();
 
@@ -247,7 +241,10 @@ MusicLib::init() {
 	return r;
 
 }
-
+BOOL
+MusicLib::checkReReadDb() {
+	return m_SongLib.checkReReadDb();
+}
 int
 MusicLib::deleteSongFromPlaylist(PlaylistNode *p) {
     return _playlist.remove(p);
@@ -1149,6 +1146,15 @@ MusicLib::Scan(CStringList & dirs, BOOL bnew, BOOL bAdd) {
 	return (!pd.m_Abort);
 
 }
+void
+MusicLib::RebuildOnly(const CStringList & dirs) {
+	logger.log("RebuildOnly");
+	for(POSITION pos = dirs.GetHeadPosition(); pos != NULL;dirs.GetNext(pos))
+		logger.log(dirs.GetAt(pos));
+	CString result = scanDirectories2(dirs,NULL,FALSE,FALSE);
+	logger.log(result);
+	logger.log("RebuildOnly completed");
+}
 CString
 MusicLib::scanDirectories2(const CStringList & directories,
 						  ProgressDlg * pd, BOOL scanNew, BOOL bAdd) {
@@ -1164,12 +1170,12 @@ MusicLib::scanDirectories2(const CStringList & directories,
 	}
     
     POSITION pos;
-	pd->SetTitle("Searching folders for audio files");
+	if (pd) pd->SetTitle("Searching folders for audio files");
     for (pos = directories.GetHeadPosition(); pos != NULL; ) {
         scanDirectory2(pd, mp3Files, directories.GetAt(pos), 
 			scanNew, bAdd);
         directories.GetNext(pos);
-        if (pd->m_Abort) {
+        if (pd && pd->m_Abort) {
             error_results += "Aborted by user.";
 			return error_results;
             break;
@@ -1181,7 +1187,7 @@ MusicLib::scanDirectories2(const CStringList & directories,
 		m_totalMp3s = mp3Files.GetCount();
 	}
 
-	pd->ProgressRange(0,m_totalMp3s);
+	if (pd) pd->ProgressRange(0,m_totalMp3s);
 
     int good_count = 0;
     int ctr = 1;
@@ -1190,12 +1196,12 @@ MusicLib::scanDirectories2(const CStringList & directories,
 	int tlen_methods_failed_count = 0;
 	int added_count = 0;
 
-	pd->SetTitle("Adding music...");
+	if (pd) pd->SetTitle("Adding music...");
 
     for (pos = mp3Files.GetHeadPosition(); pos != NULL; ) {
 
         CString mp3file = mp3Files.GetAt(pos);
-        if (pd->m_Abort) {
+        if (pd && pd->m_Abort) {
             error_results += "Aborted by user.";
             return "";
         }
@@ -1222,9 +1228,9 @@ MusicLib::scanDirectories2(const CStringList & directories,
         } else {
             ++good_count;
         }
-		pd->ProgressPos(ctr);
+		if (pd) pd->ProgressPos(ctr);
 		ctr++;
-		pd->UpdateStatus2(genre + ", " + artist + ", " + album 
+		if (pd) pd->UpdateStatus2(genre + ", " + artist + ", " + album 
 			+ ", " + track);
 		added_count += addSongToDb(pd, song, mp3file);
 		mp3Files.GetNext(pos);
@@ -1301,7 +1307,7 @@ MusicLib::scanDirectory2(ProgressDlg * pd, CStringList &mp3Files,
 	CTime mtime;
     while (bWorking)
     {
-        if (pd->m_Abort) {
+        if (pd && pd->m_Abort) {
             return 0;
         }
 
@@ -1316,16 +1322,6 @@ MusicLib::scanDirectory2(ProgressDlg * pd, CStringList &mp3Files,
                 newDir += fname;
                 scanDirectory2(pd, mp3Files, newDir, scanNew, bAdd);
             } else {
-//				BOOL doit = TRUE;
-//				if (scanNew) {
-//					finder.GetLastWriteTime(mtime);
-//					if (mtime.GetTime() > scanNew) {
-//						doit = TRUE;
-//					} else {
-//						doit = FALSE;
-//					}
-//				}
-//				if (doit) {
 				if ((!scanNew && !bAdd) ||
 						!m_SongLib.m_files.contains(finder.GetFilePath())) {
 					FExtension ext(fname);
@@ -3012,6 +3008,10 @@ MMemory::readFromFile() {
 	{
         return -1;
 	}
+	CFileStatus status;
+	myFile.GetStatus(status);
+	m_mtime = status.m_mtime;
+
     if (myFile.GetLength()) {
         if (m_space) free(m_space);
         m_size = myFile.GetLength();
@@ -3023,7 +3023,28 @@ MMemory::readFromFile() {
     }
 	return -1;
 }
+BOOL
+MMemory::dbchanged() {
+	if (m_file.GetLength() == 0) return FALSE;
+    CString dbfilename = m_file;
 
+    const char * pszFileName = (LPCTSTR) dbfilename;
+	CFile myFile;
+	CFileException fileException;
+
+	if ( !myFile.Open( pszFileName,
+        CFile::modeRead,
+        &fileException ))
+	{
+        return FALSE;
+	}
+	CFileStatus status;
+	myFile.GetStatus(status);
+	if (m_mtime != status.m_mtime) {
+		return TRUE;
+	}
+	return FALSE;
+}
 int
 MMemory::writeToFile() {
 	if (m_file.GetLength() == 0 || m_next < 0) return -1;
@@ -3956,6 +3977,7 @@ MFiles::write() {
 
 int
 MFiles::read() {
+	m_count = 0;
 	CFile file;
     CFileException fileException;
     if (!file.Open( (LPCTSTR)m_loc, 
@@ -3981,8 +4003,15 @@ MFiles::read() {
 	m_tags.Serialize(ar2);
 	ar2.Close();
 	file.Close();
+
+	if (m_files.GetSize() != m_tags.GetSize()) {
+		m_count = -1;
+	} else {
+		m_count = m_files.GetSize();
+	}
 	return 0;
 }
+
 void
 MFiles::removeAll() {
 	m_files.RemoveAll();
@@ -4490,6 +4519,10 @@ int
 MSongLib::head() {
 	return m_mem->readi(0);
 }
+BOOL
+MSongLib::checkReReadDb() {
+	return m_mem->dbchanged();
+}
 void
 MSongLib::readFromFile() {
 	int r = m_mem->readFromFile();
@@ -4502,7 +4535,13 @@ MSongLib::readFromFile() {
 		m_garbagecollector = m_mem->readi(8);
 		if (m_files.read() == -1) {
 			init(TRUE);
-			MBMessageBox("Error","Database maintenance required.\r\nYou must perform a Complete Rebuild.",TRUE);
+			MBMessageBox("Error","Database corrupted.\r\nYou must perform a Complete Rebuild.",TRUE);
+			return;
+		}
+		if (count() != m_files.count()) {
+			init(TRUE);
+			MBMessageBox("Error","Database corrupted.\r\nYou must perform a Complete Rebuild.",TRUE);
+			return;
 		}
 	}
 	m_dirty = 0;

@@ -7,7 +7,7 @@ class CWMPPlayer4;
 class MusicPlayerWMP
 {
 public:
-	MusicPlayerWMP(CWMPPlayer4 *, const CString & logpath);
+	MusicPlayerWMP(CWMPPlayer4 *);
 	~MusicPlayerWMP();
 	int init();
 	int InputOpen(const char *name);

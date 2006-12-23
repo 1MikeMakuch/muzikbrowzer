@@ -87,7 +87,7 @@ public:
 	BOOL AlbumSortAlpha();
 	CString mbdir() { return m_path; };
 	BOOL resetNeeded() { return m_ResetNeeded; }
-	void GetDirs(CStringList & dirs);
+	void GetDirs(CStringList & dirs,const CString & dir);
 	void AddFolders(const CStringList & dirs);
 	void DelFolders(const CStringList & dirs);
 

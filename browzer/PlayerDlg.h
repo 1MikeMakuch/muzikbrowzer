@@ -234,7 +234,6 @@ private:
 	BOOL m_Maximized;
 	CString m_LastAlbumArtFile;
 	CString m_LastGAA;
-	CSize m_InitialSize;
 	BOOL m_FixedSize;
 	CPoint m_LastSized;
 	HANDLE m_hMutex;
@@ -444,7 +443,13 @@ public:
 	BOOL UpdateArtists();
 	BOOL UpdateAlbums();
 	BOOL UpdateSongs();
+	void RebuildOnly(const CString &dir) { 
+		m_RebuildOnly = TRUE;
+		m_RebuildDir = dir;
+	}
 protected:
+	BOOL m_RebuildOnly;
+	CString m_RebuildDir;
 	BOOL m_CheckingEm;
 	int m_CheckSongCount;
 	int m_CheckSongCounter;

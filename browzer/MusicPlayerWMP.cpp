@@ -20,7 +20,7 @@ static char THIS_FILE[] = __FILE__;
 // WMP
 //////////////////////////////////////////////////////////////////////////////////////////
 
-MusicPlayerWMP::MusicPlayerWMP(CWMPPlayer4 *pd, const CString & logpath) :
+MusicPlayerWMP::MusicPlayerWMP(CWMPPlayer4 *pd) :
 	m_MP(pd)
 {
 	m_FileLoaded= FALSE;
