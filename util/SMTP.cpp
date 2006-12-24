@@ -351,3 +351,29 @@ TEST(httptest,httptest)
 	http.http(rhdr,rbody,"muzikbrowzer.makuch.org","","/dl/current_rev.php",reqbody);
 }
 #endif
+
+BOOL
+CSMTP::entityBodyParse(MyHash & hash, const CString & body) {
+	if (!body.GetLength())
+		return FALSE;
+	int num = String::delCount(body,"&");
+	for(int pairIdx = 1 ; pairIdx <= num; ++pairIdx) {
+		CString pair = String::field(body,"&",pairIdx);
+		CString key = String::field(pair,"=",1);
+		CString val = String::field(pair,"=",2);
+		if (key.GetLength() && val.GetLength())
+			hash.setVal(key,val);
+	}
+	return TRUE;
+}
+
+TEST(CSMTP,entityBodyParse)
+{
+	CString body("key1=val1&key2=val2");
+	MyHash hash;
+	CSMTP http;
+	http.entityBodyParse(hash,body);
+	CHECK("val1" == hash.getVal("key1"));
+	CHECK("val2" == hash.getVal("key2"));
+
+}

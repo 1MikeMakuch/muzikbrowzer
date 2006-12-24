@@ -10,6 +10,7 @@
 #include "stdafx.h"
 #include <afxsock.h>
 #include "MSocket.h"
+#include "MyString.h"
 /////////////////////////////////////////////////////////////////////
 // CSMTP command target
 
@@ -36,6 +37,7 @@ public:
 					const CString & headers="",
 					const CString & url="",
 					const CString & body="");
+		BOOL entityBodyParse(MyHash & hash, const CString & body);
 
 private:
 	CString WellFormedAddress(const CString & address);

@@ -5,7 +5,15 @@
 
 #define CS(CS_string) CString(CS_string)
 
-
+class MyHash {
+public:
+	MyHash(){}
+	~MyHash(){}
+	void setVal(const CString & key, const CString & val);
+	CString getVal(const CString & key);
+private:
+	CMapStringToString m_hash;
+};
 
 class String {
     private:

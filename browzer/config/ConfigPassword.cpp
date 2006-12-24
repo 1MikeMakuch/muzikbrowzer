@@ -41,7 +41,13 @@ CConfigPassword::CConfigPassword(CWnd * p) : CPropertyPage(CConfigPassword::IDD)
     ReadReg();
 	validate();
 }
-
+void
+CConfigPassword::resetTrial() {
+    RegistryKey reg( HKEY_LOCAL_MACHINE, RegKey );
+	reg.Write("WindowData", "");
+    ReadReg();
+	validate();
+}
 CConfigPassword::~CConfigPassword()
 {
 }
@@ -440,6 +446,13 @@ void CConfigPassword::OnValidatePw()
 	} else {
 //		m_RequestPw.EnableWindow(FALSE);
 	}
+
+	MBVersion mbv(license());
+	if (!mbv.goodLicense()) {
+		MBMessageBox("Advisory","This Muzikbrowzer license is invalid.\r\nTrial Mode invoked.",TRUE);
+		resetTrial();
+	}
+
 	UpdateData(FALSE);
 	SetModified(TRUE);
 	

@@ -75,6 +75,8 @@ private:
 public:
 	int trialLeft();
 	CString genHost();
+	CString license() { return m_Password; }
+	void resetTrial();
 	static CString uuidEncode(const CString & u);
 	static CString uuidDecode(const CString & u);
 #ifdef MB_USING_TRIAL_MODE

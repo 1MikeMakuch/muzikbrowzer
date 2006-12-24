@@ -10,6 +10,30 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
+
+
+void
+MyHash::setVal(const CString & key, const CString & val) {
+    if (key.GetLength() && val.GetLength()) {
+        m_hash.SetAt(key, (LPCTSTR)val);
+    }
+    return;
+}
+
+CString
+MyHash::getVal(const CString & key) {
+    CString val;
+    if (m_hash.Lookup(key, val) == 0) { // not found
+		val = "";
+	}
+    return val;
+}
+
+
+
+
+
+
 CString
 String::replace(const CString cstring, const char src, const CString target) {
 	int len = cstring.GetLength();

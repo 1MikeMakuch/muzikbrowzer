@@ -131,6 +131,8 @@ public:
 	void GetDirs(CStringList & dirs,const CString & dir="");
 	void AddFolders(const CStringList & dirs);
 	void DelFolders(const CStringList & dirs);
+	CString license();
+	void resetTrial();
 
 	BOOL resetNeeded();
 };

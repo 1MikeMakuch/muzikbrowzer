@@ -317,3 +317,14 @@ BOOL
 MBConfig::hideGenre() {
 	return m_Files->hideGenre();
 }
+CString
+MBConfig::license() {
+	if (m_Password)
+		return m_Password->license();
+	return "";
+}
+void
+MBConfig::resetTrial() {
+	if (m_Password)
+		m_Password->resetTrial();
+}

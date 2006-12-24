@@ -460,9 +460,7 @@ BOOL CPlayerDlg::OnInitDialog()
 	m_SearchEdit.ShowWindow(SW_HIDE);
 	m_SearchStatus.ShowWindow(SW_HIDE);
 	
-	MBCONFIG_READ_SKIN_DEFS(m_Config,m_reg);
 
-	MBCONFIG_READ_TRANS_COLORS(m_reg,m_TransMain,m_TransPanel);
 
 	// this is to remain hard coded at 255,0,0 8/2/05
 	_initdialog = new CTransparentDialogDlg(NULL, RGB(255,0,0));
@@ -470,6 +468,10 @@ BOOL CPlayerDlg::OnInitDialog()
     msg += " initializing";
 	_initdialog->ShowWindow(SW_SHOWNORMAL /* CWinApp::m_nCmdShow */);
 	_initdialog->UpdateWindow();
+
+	MBCONFIG_READ_SKIN_DEFS(m_Config,m_reg);
+
+	MBCONFIG_READ_TRANS_COLORS(m_reg,m_TransMain,m_TransPanel);
 
 	if (FileUtil::IsReadable("Muzikbrowzer.wav")) {
 		::PlaySound("Muzikbrowzer.wav",NULL,
@@ -637,31 +639,29 @@ BOOL CPlayerDlg::OnInitDialog()
 	m_Genres.RedrawWindow(FALSE);
 	m_Artists.RedrawWindow(FALSE);
 
-	// Create dir for playlists
-//	CString tmp = m_Config.mbdir();
-//	tmp = m_Config.mbdir();
-//	tmp += "\\playlists";
-//	FileUtil::mkdirp(tmp);
-
 	readConfig();
 
 
+	MBVersion mbv(m_Config.license());
+	if (!mbv.goodLicense()) {
+		MBMessageBox("Advisory","This Muzikbrowzer license is invalid.\r\nTrial Mode invoked.",TRUE);
+		m_Config.resetTrial();
+	}
+	if (mbv.needUpdate()) {
+		CString msg = "New version available at www.muzikbrowzer.com";
+		PlayerStatusSet(msg);
+		PlayerStatusTempSet(msg);
+	}
 
 	if (_initdialog) {
-		time_t now = CTime::GetCurrentTime().GetTime();
-		if (now - _initdialog->m_start.GetTime() < 2) {
-			// Just to show the banner for a sec
-			Sleep(1000);
-		}
+//		time_t now = CTime::GetCurrentTime().GetTime();
+//		if (now - _initdialog->m_start.GetTime() < 2) {
+//			// Just to show the banner for a sec
+//			//Sleep(1000);
+//		}
 		_initdialog->DestroyWindow();
 		delete _initdialog;
 
-	}
-
-	MBVersion mbv;
-	if (mbv.needUpdate()) {
-		PlayerStatusSet("New version available at www.muzikbrowzer.com");
-		PlayerStatusTempSet("New version available at www.muzikbrowzer.com");
 	}
 
 	logger.ods("End of InitDialog");

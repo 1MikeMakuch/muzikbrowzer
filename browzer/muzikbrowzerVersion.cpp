@@ -3,13 +3,17 @@
 #include "SMTP.h"
 #include "MyString.h"
 #include "MyLog.h"
+#include "Registry.h"
 
-unsigned int
-MBVersion::publicVersion() {
+BOOL
+MBVersion::phoneHome() {
 	CString reqbody("version=?");
 #ifdef _DEBUG
 	reqbody = "version=test";
 #endif
+	reqbody += "&license=";
+	reqbody += m_license;
+
 	CSMTP http;
 	CStringArray hdrs,body;
 	BOOL r = http.http(hdrs,body,
@@ -17,21 +21,30 @@ MBVersion::publicVersion() {
 		"",
 		"/dl/current_rev.php",
 		reqbody);
+
 	if (!r) 
-		return 0;
+		return FALSE;
+	
+	if (body.GetSize()) {
+		for(int i = 0; i < body.GetSize(); i++){
+			http.entityBodyParse(m_pairs,body.GetAt(i));
+		}
+	} else {
+		return FALSE;
+	}
+	m_talkedToMama = TRUE;
+	return TRUE;
+}
+unsigned int
+MBVersion::publicVersion() {
+	if (!m_talkedToMama)
+		phoneHome();
 
 	unsigned int version=0;
-	CString key ;
-	if (body.GetSize())
-		key = String::extract(body.GetAt(0),"","=");
-	if (key != "version")
-		return 0;
-	CString val ;
-	if (body.GetSize())
-		val = String::extract(body.GetAt(0),"=","");
-	if (val.GetLength() < 5)
-		return 0;
-	version = s2i(val);
+
+	CString val = m_pairs.getVal("license");
+	if (val.GetLength())
+		version = s2i(val);
 
 	return version;
 }
@@ -60,6 +73,9 @@ MBVersion::s2i(const CString & val)  {
 }
 BOOL
 MBVersion::needUpdate() {
+	if (!m_talkedToMama)
+		phoneHome();
+
 	unsigned int tVer,pVer;
 	tVer = thisVersion();
 	logger.log("tVer:"+numToString(tVer));
@@ -71,3 +87,49 @@ MBVersion::needUpdate() {
 		return FALSE;
 	}
 }
+BOOL
+MBVersion::goodLicense() {
+
+	// phoneHome to check license validity
+	
+	// This can easily be circumvented by not allowing
+	// the pc to connect to the net while the license is
+	// good. Just using the reg key to signal that the
+	// license is bad even if no longer connected to
+	// the net.
+
+	// Arbitrarily chose "DbVer" as a disguise.
+	
+	RegistryKey reg( HKEY_LOCAL_MACHINE, RegKey );
+
+	// if DbVer is set to 2, then the license was listed
+	// as bad on the server and discovered in the phoneHome()
+	int check = reg.Read("DbVer",1);
+
+	// We phone home anyway in case the license has been renewed
+	if (!m_talkedToMama)
+		phoneHome();
+	
+	CString val = m_pairs.getVal("license");
+
+	// if not connected to the net then val will be null
+
+	// in this case DbVer was previously bad (2) but now
+	// it's good so we set it to (1)
+	if ("good" == val && 2 == check)
+		reg.Write("DbVer",1);
+
+	// license is listed as bad on server so signal it with (2)
+	if ("bad" == val)
+		reg.Write("DbVer",2);
+
+	return (val != "bad");
+}
+
+
+
+
+
+
+
+
