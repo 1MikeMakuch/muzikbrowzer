@@ -56,7 +56,7 @@ OggTag::read(const CString & file) {
 			CString key = String::field(ucomment,"=",1);
 			CString newvalue = String::extract(ucomment,"=","");
 			CString oldvalue;
-			key.MakeLower();
+			key.MakeUpper();
 			oldvalue = getVal(key);
 			if ((!key.CompareNoCase("description") 
 					|| !key.CompareNoCase("comments"))
@@ -162,7 +162,7 @@ OggTag::getVal(const CString & srcKey) {
 
 	CString val;
 	CString key(srcKey);
-	key.MakeLower();
+	key.MakeUpper();
 	if (m_tags.Lookup(key, val) != 0) {
 		return val;
 	} else {
@@ -180,7 +180,7 @@ OggTag::getVal(const CString & srcKey) {
 void
 OggTag::setVal(const CString & srcKey, const CString & srcVal) {
 	CString key(srcKey);
-	key.MakeLower();
+	key.MakeUpper();
 	m_tags.SetAt(key, srcVal);
 }
 
