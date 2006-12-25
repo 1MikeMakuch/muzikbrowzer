@@ -7,6 +7,8 @@
 
 BOOL
 MBVersion::phoneHome() {
+	m_talkedToMama = TRUE;
+//	logger.ods("phoning home");
 	CString reqbody("version=?");
 #ifdef _DEBUG
 	reqbody = "version=test";

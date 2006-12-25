@@ -4,13 +4,13 @@
 #include "stdafx.h"
 #include "MSocket.h"
 #include "MyString.h"
+#include "MyLog.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
 #endif
-
 
 
 IMPLEMENT_DYNAMIC(MSocket, CSocket)
@@ -39,6 +39,7 @@ int MSocket::Send(LPCTSTR lpszStr, UINT uTimeOut, int nFlags)
 
 int MSocket::Receive(CString& str, UINT uTimeOut, int nFlags)
 {
+
 	//static char szBuf[5000];
 	AutoBuf szBuf(5000);
 	memset(szBuf.p, 0, 5000);
@@ -70,13 +71,17 @@ int MSocket::Receive(CString& str, UINT uTimeOut, int nFlags)
 
 BOOL MSocket::OnMessagePending() 
 {
+
 	MSG msg;
 
 	// Watch for our timer message
-	if(::PeekMessage(&msg, NULL, WM_TIMER, WM_TIMER, PM_NOREMOVE))
+	// the -1 is critical, gets msgs created with NULL hwnd, wasn't working
+	// before I had -1 there.
+	if(::PeekMessage(&msg, (HWND)-1, WM_TIMER, WM_TIMER, PM_NOREMOVE))
 	{
+
 		// If our timer expired...
-		if (msg.wParam == (UINT) m_nTimerID)
+		if (msg.wParam == (UINT) m_nTimerID && m_nTimerID)
 		{
 			// Remove the message
 			::PeekMessage(&msg, NULL, WM_TIMER, WM_TIMER, PM_REMOVE);
@@ -88,7 +93,6 @@ BOOL MSocket::OnMessagePending()
 	// Call base class function
 	return CSocket::OnMessagePending();
 } 
-
 
 BOOL MSocket::SetTimeOut(UINT uTimeOut) 
 { 

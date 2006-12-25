@@ -119,6 +119,8 @@ CString   numToString(unsigned long ul);
 CString   numToString(long ul);
 CString   numToString(double d);
 
+#define NTS(_NUM_TO_STRING_PARAM1_) numToString(_NUM_TO_STRING_PARAM1_)
+
 class BaseC {
 	public:
 		static char		DecToSixtyTwoDigit	(const char digit);

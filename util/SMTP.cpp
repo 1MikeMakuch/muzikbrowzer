@@ -20,6 +20,7 @@ static char THIS_FILE[] = __FILE__;
 
 CSMTP::CSMTP()
 {
+	m_nTimerID = 0;
 }
 
 CSMTP::~CSMTP()
@@ -120,6 +121,7 @@ BOOL CSMTP::OpenConnection(const CString & server, int port)
         }
     } else {
 		CString e = MBFormatError(GetLastError());
+		logger.log("OpenConnection:"+e);
 	}
     return Status;
 }
@@ -291,9 +293,6 @@ CSMTP::http(CStringArray & rheaders, CStringArray & rbody,
 		method = "POST";
 
 	CString req = method + " " + url + " HTTP/1.0\r\n";
-//	req += "User-Agent: www.muzikbrowzer.com\r\n";
-//	req += "Accept: */*\r\n";
-//	req += "Host: muzikbrowzer.makuch.org\r\n";
 	req += "Host: " + host + "\r\n";
 	req += headers;
 	if (body.GetLength())
@@ -304,16 +303,14 @@ CSMTP::http(CStringArray & rheaders, CStringArray & rbody,
 
 	req += body;
 
-//	logger.log(req);
-	int s = Send(req, 10);
+	UINT timeout = 5000;
+	int s = Send(req, timeout);
 	if (0 == s)
 		return FALSE;
 
 	CString reply,line;
-	int r = Receive(reply,10000);
+	int r = Receive(reply,timeout);
 	Close();
-//	logger.ods(reply);
-//	logger.log(reply);
 
 	CString chdrs = String::extract(reply,"","\r\n\r\n");
 	CString cbody = String::extract(reply,"\r\n\r\n","");

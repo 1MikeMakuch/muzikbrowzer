@@ -6,6 +6,7 @@
 #include <afxsock.h>
 class MSocket : public CSocket
 {
+
 	DECLARE_DYNAMIC(MSocket);
 
 // Implementation
@@ -15,10 +16,11 @@ public:
 	BOOL SetTimeOut(UINT uTimeOut);
 	BOOL KillTimeOut();
 
+
 protected: 
 	virtual BOOL OnMessagePending();
+	
 
-private: 
 	int m_nTimerID;
 };
 #endif // __SOCKETX_H__
