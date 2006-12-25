@@ -1151,6 +1151,7 @@ MusicLib::Scan(CStringList & dirs, BOOL bnew, BOOL bAdd) {
 }
 void
 MusicLib::RebuildOnly(const CStringList & dirs) {
+	init();
 	logger.log("RebuildOnly");
 	for(POSITION pos = dirs.GetHeadPosition(); pos != NULL;dirs.GetNext(pos))
 		logger.log(dirs.GetAt(pos));
