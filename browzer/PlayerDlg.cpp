@@ -563,7 +563,12 @@ BOOL CPlayerDlg::OnInitDialog()
     // instanciate a Player
 	m_Player = new MusicPlayerWMP(&m_WMP);
 //	m_Player = new MusicPlayer(this, lpath);
-	m_Player->init();
+	int wmpver = m_Player->init();
+	if (wmpver < 9) {
+		MBMessageBox("Alert", 
+			"Muzikbrowzer requires Windows Media Player 9 or later",TRUE);
+	}
+
 
     // sets title in taskbar
     SetWindowText(MUZIKBROWZER); // needed if you used resource editor to remove title bar	

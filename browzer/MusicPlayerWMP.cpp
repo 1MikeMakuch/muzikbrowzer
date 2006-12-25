@@ -32,9 +32,15 @@ MusicPlayerWMP::~MusicPlayerWMP()
 int
 MusicPlayerWMP::init() 
 {
-	logger.log("WMP version:",m_MP->GetVersionInfo());
+	CString ver = m_MP->GetVersionInfo();
+	logger.log("WMP version:",ver);
 	logger.log("WMP status:" ,m_MP->GetStatus());
-	return 0;
+	CString maj = String::extract(ver,"",".");
+	int iver =0;
+	if (maj.GetLength())
+		iver = atoi(maj);
+
+	return iver;
 }
 
 int
