@@ -1013,10 +1013,14 @@ void CConfigDisplay::OnOK()
 	regSDCustom.WriteFile();
 
 	if (m_Modified) {
+		init();
+		readSkins();
 		(*m_callbacks->redraw)();
 	}
 	m_Modified = FALSE;
 	modified(FALSE);
+
+
 
 	CPropertyPage::OnOK();
 }
@@ -1450,20 +1454,13 @@ void CConfigDisplay::OnColorButton()			{
 void CConfigDisplay::OnSelchangeFont() {	showSample();	modified(TRUE);}
 
 
-//double CConfigDisplay::getGenreWidthPct() {
-//	int nTmp = m_vGenreWidthPct;
-//	nTmp = __min(nTmp, MB_GENRE_WIDTH_PCT_MAX);
-//	nTmp = __max(nTmp, MB_GENRE_WIDTH_PCT_MIN);
-//	double phpct = (double) nTmp / 100;
-//	return phpct;
-//}
-
 void CConfigDisplay::modified(BOOL b) {
 	SetModified(b);
 	m_Modified = b;
 	logger.ods(CString("cd modded ") + numToString(b));
 }
 void CConfigDisplay::getSkins(CStringList & skinlist) {
+	skinlist.RemoveAll();
 	AutoLog alog("CCD::getSkins");
     CString glob(m_SkinDir);
     glob += "\\";
@@ -1476,7 +1473,6 @@ void CConfigDisplay::getSkins(CStringList & skinlist) {
         CString fname = finder.GetFileName();
 		CString skin = fname;
 		if (skin != MUZIKBROWZER && skin != "." && skin != "..") {
-			// verifying here delays the menu from popping up
 			if (verifySkin(skin,FALSE))
 				skinlist.AddTail(skin);
 		}
@@ -1487,7 +1483,6 @@ void CConfigDisplay::getSkins(CStringList & skinlist) {
 void CConfigDisplay::readSkins() {
 	AutoLog alog("CCD::readSkins");
 	m_SkinList.ResetContent();
-	//m_SkinList.AddString(MUZIKBROWZER);
     CString glob(m_SkinDir);
     glob += "\\";
     glob += "*";
@@ -1499,7 +1494,6 @@ void CConfigDisplay::readSkins() {
         CString fname = finder.GetFileName();
 		CString skin = fname;
 		if (skin != MUZIKBROWZER && skin != "." && skin != "..") {
-			// verifying here delays the menu from popping up
 			if (verifySkin(skin,FALSE))
 				m_SkinList.AddString(skin);
 		}

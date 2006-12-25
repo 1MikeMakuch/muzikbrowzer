@@ -1167,7 +1167,6 @@ CPlayerDlg::resetControls() {
 	CWaitCursor c;
 	GetWindowRect(m_WindowRect);
 
-	m_Skins.RemoveAll();
 	m_Config.getSkins(m_Skins);
 	if (m_Skins.GetCount() < 1) {
 		MBMessageBox("Alert","Muzikbrowzer is unable to locate it's skins and cannot proceed.\r\nYou may wish to reinstall Muzikbrowzer.",TRUE);
@@ -2945,6 +2944,12 @@ void CPlayerDlg::OnMenuCheckem() {
 void CPlayerDlg::OnMenuOptions() {
 	
 	m_Config.DoModal();
+	m_Config.initSkins();
+	m_Config.getSkins(m_Skins);
+	if (m_Skins.GetCount() < 1) {
+		MBMessageBox("Alert","Muzikbrowzer is unable to locate it's skins and cannot proceed.\r\nYou may wish to reinstall Muzikbrowzer.",TRUE);
+		exit(0);
+	}
 	PlayerStatusClear();
 	m_AlbumArt = m_Config.getSkin(MB_SKIN_ALBUMART);
 
@@ -4176,6 +4181,12 @@ void CPlayerDlg::OnButtonMenu()
 		CMenu * skinmenu = popup->GetSubMenu(3);
 		ASSERT(skinmenu != NULL);
 		CString currentskin = m_Config.getCurrentSkin();
+
+
+		UINT n = skinmenu->GetMenuItemCount();
+		for(int m = n-1; m >= 0; --m) {
+			skinmenu->RemoveMenu(m, MF_BYPOSITION);
+		}
 
 		POSITION pos = m_Skins.GetHeadPosition();
 		UINT i=0;

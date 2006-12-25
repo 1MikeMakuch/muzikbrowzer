@@ -187,13 +187,13 @@ private:
 	BOOL m_Modified;
 	RegistryKey m_regSD;
 
-    void init();
+
 	void initFontSels();
     void showSample();
 	void setupSample();
     void copy2lf(LOGFONT &, LOGFONT &, LOGFONT &/*, LOGFONT &*/);
 	CString m_SkinDir;
-	void readSkins();
+
 	void EnableDisable();
 	CMapStringToString m_SkinDefKeyVals;
 	void loadSkinDefs();
@@ -203,7 +203,8 @@ public:
 	LPLOGFONT getStatusFont() { return m_lplfPanel; }
 	LPLOGFONT getColHdrFont() { return m_lplfColHdr; }
 //	LPLOGFONT getCurPlayFont() { return m_lplfCurPlay; }
-
+    void init();
+	void readSkins();
 public:
 	BOOL OnSkinChoose(CString skin);
     COLORREF getBkPanel() { return m_vBkPanel; }

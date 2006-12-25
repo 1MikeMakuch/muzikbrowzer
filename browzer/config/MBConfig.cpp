@@ -328,3 +328,7 @@ MBConfig::resetTrial() {
 	if (m_Password)
 		m_Password->resetTrial();
 }
+void
+MBConfig::initSkins() {
+	m_Display->init();
+}
