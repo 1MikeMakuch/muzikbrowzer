@@ -50,15 +50,35 @@ RegistryKey::init(CString filename)
 	mFileName = filename;
 }
 
-RegistryKey::RegistryKey( HKEY base, const TCHAR* keyName )
+RegistryKey::RegistryKey( HKEY base, const TCHAR* keyName, BOOL deleteRight )
 	: mKeyValPairs(NULL),key(NULL), m_keyname(keyName)
 {
-	if (RegCreateKeyEx( base, keyName, 0, _T(""), 0,
-			KEY_QUERY_VALUE | KEY_SET_VALUE,
-			NULL, &key, NULL ) != ERROR_SUCCESS ) {
-		key = NULL;
+	if (FALSE == deleteRight) {
+		if (RegCreateKeyEx( base, keyName, 0, _T(""), 0,
+				KEY_QUERY_VALUE | KEY_SET_VALUE,
+				NULL, &key, NULL ) != ERROR_SUCCESS ) {
+			key = NULL;
+		}
+	} else {
+		if (RegCreateKeyEx( base, keyName, 0, _T(""), 0,
+				KEY_ALL_ACCESS,
+				NULL, &key, NULL ) != ERROR_SUCCESS ) {
+			key = NULL;
+		}
 	}
 	mFileName = "";
+}
+void RegistryKey::DeleteValue(const TCHAR* keyval) {
+	if (key != NULL) {
+		if (keyval && strlen(keyval)) {
+			LONG e = RegDeleteValue(key, keyval);
+			if (ERROR_SUCCESS != e) {
+				logger.log("RegistryKey::DeleteValue:"+MBFormatError(e));
+			}
+		}
+	} else {
+		mKeyValPairs->RemoveKey(keyval);
+	}
 }
 RegistryKey::RegistryKey( CString filename ) : mFileName(filename)
 	,mKeyValPairs(NULL),key(NULL)
@@ -164,6 +184,7 @@ BOOL RegistryKey::ReadFile()
 	}
 	return TRUE;
 }
+
 ///////////////////////////////////////////////////////////////////////
 // Character strings
 ///////////////////////////////////////////////////////////////////////

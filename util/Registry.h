@@ -73,7 +73,7 @@ class RegistryKey
 public:
   // Open (or create, if necessary) the key below the specified handle
 	RegistryKey();
-  RegistryKey( HKEY base, const TCHAR* keyName );
+  RegistryKey( HKEY base, const TCHAR* keyName, BOOL DeleteAccess=FALSE);
   RegistryKey(CString filename);
   void init( HKEY base, const TCHAR* keyName );
   void init(CString filename);
@@ -106,6 +106,7 @@ public:
   BOOL WriteFile();
   BOOL ReadFile();
   BOOL Copy(const RegistryKey & src);
+  void DeleteValue(const TCHAR* key);
   CMapStringToString * mKeyValPairs;
 
 private:

@@ -282,7 +282,37 @@ void CConfigFiles::ReadFolders() {
 		}
     }
 
+	// For upgrade to 2.0.2; if no dirs on disk check in Registry
+	// and put 'em on disk then remove from Registry
+	BOOL deletem = FALSE;
+	if (0 == numdirs) {
+		RegistryKey reg( HKEY_LOCAL_MACHINE, RegKey );
+		numdirs = reg.Read(RegNumDirs,0);
+		reg.DeleteValue(RegNumDirs);
+		if (numdirs) {
+			deletem = TRUE;
+			unsigned long i;
+			for (i = 0 ; i < numdirs ; ++i) {
+				sprintf(buf.p, "%s_%02d", RegDirKey, i); // '_' intentional
+				CString dir;
+				dir = reg.ReadCString(buf.p,"");
+
+				if (dir.GetLength()) {
+					m_origMP3DirList.AddTail(dir);
+					m_slMP3DirList.AddTail(dir);
+					if (::IsWindow(m_MP3DirList.m_hWnd))
+						m_MP3DirList.AddString(dir);
+				}
+			}
+			WriteFolders();
+		}
+		for (i = 0 ; i < 100 ; ++i) {
+			sprintf(buf.p, "%s_%02d", RegDirKey, i); // '_' intentional
+			reg.DeleteValue(buf.p);
+		}
+	}
 }
+
 void CConfigFiles::AddFolders(const CStringList & dirs) {
 	POSITION pos;
 	for(pos = dirs.GetHeadPosition(); pos != NULL;) {
