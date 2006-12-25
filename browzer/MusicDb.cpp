@@ -1140,10 +1140,11 @@ MusicLib::Scan(CStringList & dirs, BOOL bnew, BOOL bAdd) {
 	pd.SetThreadFunc(&scanThread);
 	pd.DoModal();	// OnInitDialog invokes the run method
 	
-	if (!bAdd && !pd.m_Abort) // user didn't abort && rebuild or new
+	if (!pd.m_Abort) {
 		scanThread.m_results += "\r\n\r\nElapsed time: "
 			+String::secs2HMS(pd.TotalElapsedTime());
 		MBMessageBox("Search Results", scanThread.m_results, FALSE, FALSE);
+	}
 
 	return (!pd.m_Abort);
 
@@ -1189,7 +1190,7 @@ MusicLib::scanDirectories2(const CStringList & directories,
 		m_totalMp3s = mp3Files.GetCount();
 	}
 
-	if (pd) pd->ProgressRange(0,m_totalMp3s);
+	if (pd) pd->ProgressRange(0,mp3Files.GetCount());
 
     int good_count = 0;
     int ctr = 1;
