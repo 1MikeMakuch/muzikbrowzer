@@ -562,7 +562,6 @@ BOOL CPlayerDlg::OnInitDialog()
 
     // instanciate a Player
 	m_Player = new MusicPlayerWMP(&m_WMP);
-//	m_Player = new MusicPlayer(this, lpath);
 	int wmpver = m_Player->init();
 	if (wmpver < 9) {
 		MBMessageBox("Alert", 

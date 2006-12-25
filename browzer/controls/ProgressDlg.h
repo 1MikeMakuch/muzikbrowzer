@@ -36,6 +36,11 @@ public:
 	}
 	void Abort();
 	void End();
+	time_t ElapsedTime() { return m_elapsed; }
+	time_t TotalElapsedTime() {
+		time(&m_TotalEndTime);
+		return m_TotalEndTime-m_TotalStartTime;
+	}
 
 // Dialog Data
 	//{{AFX_DATA(ProgressDlg)
@@ -74,6 +79,9 @@ protected:
 
 	int m_abortflag;
 	MyThreadClass * m_pThread;
+
+	time_t m_TotalStartTime;
+	time_t m_TotalEndTime;
 
 	time_t m_starttime;
 	time_t m_elapsed;

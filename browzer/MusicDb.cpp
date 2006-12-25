@@ -1141,6 +1141,8 @@ MusicLib::Scan(CStringList & dirs, BOOL bnew, BOOL bAdd) {
 	pd.DoModal();	// OnInitDialog invokes the run method
 	
 	if (!bAdd && !pd.m_Abort) // user didn't abort && rebuild or new
+		scanThread.m_results += "\r\n\r\nElapsed time: "
+			+String::secs2HMS(pd.TotalElapsedTime());
 		MBMessageBox("Search Results", scanThread.m_results, FALSE, FALSE);
 
 	return (!pd.m_Abort);

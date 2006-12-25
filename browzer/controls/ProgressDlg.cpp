@@ -27,7 +27,7 @@ static char THIS_FILE[] = __FILE__;
 
 ProgressDlg::ProgressDlg(CDialog * pParent, int cflag, int abortflag)
 	: CDialog(ProgressDlg::IDD, pParent), m_abortflag(abortflag),
-	m_pThread(NULL)
+	m_pThread(NULL),m_elapsed(0),m_TotalStartTime(0),m_TotalEndTime(0)
 {
 	//{{AFX_DATA_PROGRESS(ProgressDlg)
 	//}}AFX_DATA_PROGRESS
@@ -42,6 +42,7 @@ ProgressDlg::ProgressDlg(CDialog * pParent, int cflag, int abortflag)
     }
 	m_InitStatus.SetWordWrap(TRUE,TRUE);
 	m_InitStatus2.SetWordWrap(TRUE,TRUE);
+	time(&m_TotalStartTime);
 }
 
 
