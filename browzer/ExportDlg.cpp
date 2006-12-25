@@ -7,6 +7,7 @@
 #include "Registry.h"
 #include "FileUtils.h"
 #include "MBMessageBox.h"
+#include "MyString.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -76,6 +77,8 @@ void ExportDlg::OnOK()
 	((CEdit*)GetDlgItem(IDC_EXPORT_FILE))->GetWindowText(m_File);
 	((CEdit*)GetDlgItem(IDC_EXPORT_TMPL))->GetWindowText(m_HtmlTemplate);
 
+	if (!String::endsWith(m_Folder,"\\"))
+		m_Folder += "\\";
 	CString check0 = m_Folder ;
 	check0 += "\\" ;
 	check0 += m_File;
@@ -144,6 +147,7 @@ BOOL ExportDlg::OnInitDialog()
 		if (!r)
 			folder = "C:\\MuzikbrowzerExport";
 	}
+
 	if (!file.GetLength()) {
 		file = "MuzikbrowzerTags";
 	}
