@@ -1041,7 +1041,7 @@ BOOL CConfigDisplay::verifySkin() {
 	}
 	return TRUE;
 }
-BOOL CConfigDisplay::verifySkin(CString skin) {
+BOOL CConfigDisplay::verifySkin(CString skin, BOOL stopOnError) {
 	AutoLog alog("CCD::verifySkin");
 	CStringList bmps;
 	bmps.AddTail(MB_SKIN_DEF);
@@ -1171,7 +1171,9 @@ BOOL CConfigDisplay::verifySkin(CString skin) {
  
 	if (msg.GetLength()) {
 		logger.log(msg);
-		MBMessageBox("Bad skin", msg,TRUE,FALSE);
+		if (stopOnError) {
+			MBMessageBox("Bad skin", msg,FALSE,FALSE);
+		}
 		return FALSE;
 	}
 	
@@ -1475,7 +1477,7 @@ void CConfigDisplay::getSkins(CStringList & skinlist) {
 		CString skin = fname;
 		if (skin != MUZIKBROWZER && skin != "." && skin != "..") {
 			// verifying here delays the menu from popping up
-			if (1 /* verifySkin(skin)*/)
+			if (verifySkin(skin,FALSE))
 				skinlist.AddTail(skin);
 		}
     }
@@ -1498,7 +1500,7 @@ void CConfigDisplay::readSkins() {
 		CString skin = fname;
 		if (skin != MUZIKBROWZER && skin != "." && skin != "..") {
 			// verifying here delays the menu from popping up
-			if (1 /*verifySkin(skin)*/)
+			if (verifySkin(skin,FALSE))
 				m_SkinList.AddString(skin);
 		}
     }

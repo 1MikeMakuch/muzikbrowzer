@@ -230,7 +230,7 @@ public:
 	const CString getSkin(const CString skiname, const CString key);
 	void getSkins(CStringList &);
 	const CString getCurrentSkin() { return m_sSkinName; }
-	BOOL verifySkin(CString skin);
+	BOOL verifySkin(CString skin, BOOL stopOnError=TRUE);
 	BOOL verifySkin();
 	BOOL checkSkinDef(const RegistryKey & skindef,CString & msg);
 	void StatusSet(CString text);
