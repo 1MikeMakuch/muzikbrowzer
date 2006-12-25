@@ -7,6 +7,7 @@
 
 BOOL
 MBVersion::phoneHome() {
+	// setting this true to prevent 3 calls home
 	m_talkedToMama = TRUE;
 //	logger.ods("phoning home");
 	CString reqbody("version=?");
@@ -104,9 +105,19 @@ MBVersion::goodLicense() {
 	
 	RegistryKey reg( HKEY_LOCAL_MACHINE, RegKey );
 
+	// 1st check last time we phoned home. Only do it
+	// once in a while to be less annoying
+	int lastmonthchecked = reg.Read("DbRev",0);
+	CTime t = CTime::GetCurrentTime();
+	CString mx = t.Format("%m");
+	int check = atoi(mx);
+	if (check == lastmonthchecked)
+		return TRUE;
+	reg.Write("DbRev",check);
+
 	// if DbVer is set to 2, then the license was listed
 	// as bad on the server and discovered in the phoneHome()
-	int check = reg.Read("DbVer",1);
+	check = reg.Read("DbVer",1);
 
 	// We phone home anyway in case the license has been renewed
 	if (!m_talkedToMama)
