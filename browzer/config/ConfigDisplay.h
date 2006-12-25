@@ -204,6 +204,7 @@ public:
 	LPLOGFONT getColHdrFont() { return m_lplfColHdr; }
 //	LPLOGFONT getCurPlayFont() { return m_lplfCurPlay; }
     void init();
+	void readSkins(CStringList & skinlist);
 	void readSkins();
 public:
 	BOOL OnSkinChoose(CString skin);
@@ -233,6 +234,7 @@ public:
 	const CString getCurrentSkin() { return m_sSkinName; }
 	BOOL verifySkin(CString skin, BOOL stopOnError=TRUE);
 	BOOL verifySkin();
+	BOOL findGoodSkin();
 	BOOL checkSkinDef(const RegistryKey & skindef,CString & msg);
 	void StatusSet(CString text);
 	void StatusTempSet(CString text);

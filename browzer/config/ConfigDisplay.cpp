@@ -1034,13 +1034,26 @@ void CConfigDisplay::OnCancel()
 
 	CPropertyPage::OnCancel();
 }
+BOOL CConfigDisplay::findGoodSkin() {
+	CStringList list;
+	CString skin ;
+	readSkins(list);
+	POSITION pos ;
+	if (String::CStringListContains(list,"MBClassic")) {
+		skin = "MBClassic";
+	} else {
+		pos = list.GetHeadPosition();
+		if (!pos)
+			return FALSE;
+		skin = list.GetAt(pos);
+	}
+	return OnSkinChoose(skin);
+}
+
+
 BOOL CConfigDisplay::verifySkin() {
 	BOOL r = verifySkin(m_sSkinName );
 	if (!r) {
-		// set to built in skin
-//		CString tmp = "Bad skin:" + m_sSkinName + ", see " + (*m_callbacks->mbdir)();
-//		tmp += "\\muzikbrowzer.log";
-//		MBMessageBox("Corrupt skin", tmp, FALSE, FALSE);
 		return FALSE;
 	}
 	return TRUE;
@@ -1479,7 +1492,26 @@ void CConfigDisplay::getSkins(CStringList & skinlist) {
     }
 	finder.Close();
 }
-
+void CConfigDisplay::readSkins(CStringList & skinlist) {
+	AutoLog alog("CCD::readSkins");
+	skinlist.RemoveAll();
+    CString glob(m_SkinDir);
+    glob += "\\";
+    glob += "*";
+    CFileFind finder;
+    BOOL bWorking = finder.FindFile(glob);
+    while (bWorking)
+    {
+        bWorking = finder.FindNextFile();
+        CString fname = finder.GetFileName();
+		CString skin = fname;
+		if (skin != MUZIKBROWZER && skin != "." && skin != "..") {
+			if (verifySkin(skin,FALSE))
+				skinlist.AddTail(skin);
+		}
+    }
+	finder.Close();
+}
 void CConfigDisplay::readSkins() {
 	AutoLog alog("CCD::readSkins");
 	m_SkinList.ResetContent();

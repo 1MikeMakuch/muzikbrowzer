@@ -197,18 +197,15 @@ BOOL MBConfig::ChooseSkin(CString s) {
 BOOL MBConfig::verifySkin() {
 	return m_Display->verifySkin();
 }
-
+BOOL MBConfig::verifySkin(const CString skin, const BOOL stopOnError) {
+	return m_Display->verifySkin(skin,stopOnError);
+}
+BOOL MBConfig::findGoodSkin() {
+	return m_Display->findGoodSkin();
+}
 const CString MBConfig::getCurrentSkin() {
 	return m_Display->getCurrentSkin();
 }
-//double
-//MBConfig::getPlaylistHeightPct() {
-//	return m_Display->getPlaylistHeightPct();
-//}
-//double
-//MBConfig::getGenreWidthPct() {
-//	return m_Display->getGenreWidthPct();
-//}
 
 BOOL
 MBConfig::AlbumSortAlpha() {

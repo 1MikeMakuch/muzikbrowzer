@@ -469,6 +469,14 @@ BOOL CPlayerDlg::OnInitDialog()
 	_initdialog->ShowWindow(SW_SHOWNORMAL /* CWinApp::m_nCmdShow */);
 	_initdialog->UpdateWindow();
 
+	CString skinname = m_Config.getCurrentSkin();
+	if (!m_Config.verifySkin(skinname,FALSE)) {
+		if (!m_Config.findGoodSkin()) {
+			MBMessageBox("Alert","Muzikbrowzer is unable to locate it's skins and cannot proceed.\r\nYou may wish to reinstall Muzikbrowzer.",TRUE);
+			exit(0);
+		}
+	}
+
 	MBCONFIG_READ_SKIN_DEFS(m_Config,m_reg);
 
 	MBCONFIG_READ_TRANS_COLORS(m_reg,m_TransMain,m_TransPanel);
@@ -2943,13 +2951,21 @@ void CPlayerDlg::OnMenuCheckem() {
 // Configuration dlg
 void CPlayerDlg::OnMenuOptions() {
 	
+	CString skinnameOrig = m_Config.getCurrentSkin();
 	m_Config.DoModal();
 	m_Config.initSkins();
 	m_Config.getSkins(m_Skins);
-	if (m_Skins.GetCount() < 1) {
-		MBMessageBox("Alert","Muzikbrowzer is unable to locate it's skins and cannot proceed.\r\nYou may wish to reinstall Muzikbrowzer.",TRUE);
-		exit(0);
+	CString skinname = m_Config.getCurrentSkin();
+	if (!m_Config.verifySkin(skinname,FALSE)) {
+		if (!m_Config.findGoodSkin()) {
+			MBMessageBox("Alert","No skins folder!",TRUE);
+			skinname = skinnameOrig;
+		}
 	}
+	if (skinnameOrig != skinname) {
+		resetControls();
+	}
+
 	PlayerStatusClear();
 	m_AlbumArt = m_Config.getSkin(MB_SKIN_ALBUMART);
 
