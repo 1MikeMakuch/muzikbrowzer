@@ -537,6 +537,9 @@ void CExtendedListBox::DrawScrollButton(BOOL calc, CPoint p)
 	int iheight = GetItemHeight(0);
 	m_Count = GetCount();
 	iheight = GetItemHeight(0);
+	if (0 == iheight) {
+		iheight = 19;
+	}
 	m_ItemsPerPage = saverect.Height() / iheight;
 
 	if (calc) {

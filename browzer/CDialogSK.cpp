@@ -7,7 +7,7 @@
 #include "MyString.h"
 #include "FileUtils.h"
 #include "Misc.h"
-
+#include "Registry.h"
 
 static lpfnSetLayeredWindowAttributes g_pSetLayeredWindowAttributes;
 /////////////////////////////////////////////////////////////////////////////
@@ -163,10 +163,11 @@ void CDialogSK::Init()
 	}
 // This turns off layering. Was a one off build for a cust using
 // Anyplace; remote desktop manager; which can't handle layered windows.
-//#define NO_MB_LAYERED_WINDOWS
-#ifdef NO_MB_LAYERED_WINDOWS
-	g_pSetLayeredWindowAttributes = NULL;
-#endif
+
+	RegistryKey reg(HKEY_LOCAL_MACHINE, RegKey);
+	if (reg.Read("DisableLayeredWindows",0))
+		g_pSetLayeredWindowAttributes = NULL;
+
 }
 
 

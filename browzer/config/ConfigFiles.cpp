@@ -284,13 +284,11 @@ void CConfigFiles::ReadFolders() {
 
 	// For upgrade to 2.0.2; if no dirs on disk check in Registry
 	// and put 'em on disk then remove from Registry
-	BOOL deletem = FALSE;
 	if (0 == numdirs) {
 		RegistryKey reg( HKEY_LOCAL_MACHINE, RegKey );
 		numdirs = reg.Read(RegNumDirs,0);
 		reg.DeleteValue(RegNumDirs);
 		if (numdirs) {
-			deletem = TRUE;
 			unsigned long i;
 			for (i = 0 ; i < numdirs ; ++i) {
 				sprintf(buf.p, "%s_%02d", RegDirKey, i); // '_' intentional
@@ -306,6 +304,7 @@ void CConfigFiles::ReadFolders() {
 			}
 			WriteFolders();
 		}
+		// Just in case there are some there clean 'em up.
 		for (i = 0 ; i < 100 ; ++i) {
 			sprintf(buf.p, "%s_%02d", RegDirKey, i); // '_' intentional
 			reg.DeleteValue(buf.p);
