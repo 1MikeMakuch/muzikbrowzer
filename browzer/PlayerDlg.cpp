@@ -3230,6 +3230,8 @@ void CPlayerDlg::OnMenuHelp()
 
 void CPlayerDlg::OnNextSong() {
     Stop();
+        m_StopFlag = FALSE;
+		m_PauseFlag = FALSE;
 	PlayLoop();
 }
 void CPlayerDlg::OnPreviousSong() {
@@ -3238,12 +3240,15 @@ void CPlayerDlg::OnPreviousSong() {
     } else {
         m_PlaylistCurrent -= 2;
     }
+        m_StopFlag = FALSE;
+		m_PauseFlag = FALSE;
     OnNextSong();
 }
 BOOL CPlayerDlg::Play() {
 	StartSeekTimer();
 	adjustVolume() ;
 	BOOL r = m_Player->Play();
+	m_PositionLabel.setText ( "");
 	return r;
 
 }
@@ -3251,6 +3256,7 @@ void CPlayerDlg::Stop() {
 	StopSeekTimer();
 	resetPosition();
 	m_Player->Stop();
+	m_PositionLabel.setText ( "Stop", DT_CENTER);
 //	CurrentTitleSet("");
 }
 void CPlayerDlg::Pause() {
@@ -3264,6 +3270,7 @@ void CPlayerDlg::Pause() {
 	adjustVolume() ;
 	m_Player->Pause();
 	m_StopFlag = FALSE;
+	m_PositionLabel.setText ( "Pause", DT_CENTER);
 }
 void CPlayerDlg::OnPlayButton() 
 {
@@ -3286,7 +3293,7 @@ void CPlayerDlg::OnStopButton()
 	Stop();
     m_StopFlag = TRUE;
 	m_PauseFlag = FALSE;
-	PlayerStatusClear();
+	//PlayerStatusClear();
 }
 
 void
@@ -3855,7 +3862,7 @@ CPlayerDlg::PlayerStatusTempSet(CString & cmsg) {
 	m_PlayerStatus.setText(msg/*,TRUE*/);
     m_PlayerStatusTime = CTime::GetCurrentTime();
 	StartStatusTimer();
-	m_PositionLabel.setText ( "" );
+//	m_PositionLabel.setText ( "" );
 }
 void
 CPlayerDlg::PlayerStatusRevert() {
