@@ -86,6 +86,8 @@ class String {
 	static void copyCStringList(CStringList & dest, const CStringList & src);
 	static BOOL CStringListContains(const CStringList & list, 
 		const CString & string);
+	static void Sort(CStringList & list);
+	static void Uniq(CStringList & list);
 };
 
 class AutoBuf {

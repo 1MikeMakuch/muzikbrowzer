@@ -21,6 +21,8 @@ public:
 	static BOOL IsParentPath(const CString & fullPath,
 		const CString & candPath);
 	static CString ParentDir(const CString & path);
+	static BOOL IsInSubDir(const CString & dir, const CString & candFilePath);
+	static void SortEliminateDupsAndSubDirs(CStringList & list);
 };
 
 #endif

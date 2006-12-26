@@ -164,13 +164,24 @@ void CConfigFiles::OnDiradd()
 		for(pos = list.GetHeadPosition(); pos != NULL;) {
 			CString path = list.GetNext(pos);
 			if (path.GetLength())
-				m_MP3DirList.AddString(path);
+//				m_MP3DirList.AddString(path);
 				m_slMP3DirList.AddTail(path);
 		}
+		FileUtil::SortEliminateDupsAndSubDirs(m_slMP3DirList);
+		list2box(m_slMP3DirList);
 
         EnableDisableButtons(); 
         UpdateData(FALSE);
 		SetModified(TRUE);
+	}
+}
+void CConfigFiles::list2box(const CStringList & list) {
+	if (::IsWindow(m_MP3DirList.m_hWnd)) {
+		m_MP3DirList.ResetContent();
+		POSITION pos;
+		for(pos = list.GetHeadPosition(); pos != NULL; list.GetNext(pos)) {
+			m_MP3DirList.AddString(list.GetAt(pos));
+		}
 	}
 }
 void CConfigFiles::OnLocationButton() 
@@ -310,6 +321,8 @@ void CConfigFiles::ReadFolders() {
 			reg.DeleteValue(buf.p);
 		}
 	}
+	FileUtil::SortEliminateDupsAndSubDirs(m_slMP3DirList);
+	list2box(m_slMP3DirList);
 }
 
 void CConfigFiles::AddFolders(const CStringList & dirs) {
@@ -318,6 +331,7 @@ void CConfigFiles::AddFolders(const CStringList & dirs) {
 		m_slMP3DirList.AddTail(dirs.GetAt(pos));
 		dirs.GetNext(pos);
 	}
+	FileUtil::SortEliminateDupsAndSubDirs(m_slMP3DirList);
 	WriteFolders();
 }
 void CConfigFiles::DelFolders(const CStringList & dirs) {

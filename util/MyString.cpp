@@ -4,6 +4,9 @@
 #include "MyString.h"
 #include "MyLog.h"
 #include "TestHarness.h"
+#include <afxtempl.h>
+#include "SortedArray.h"
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -919,4 +922,70 @@ TEST(CStringList,tests)
 	CHECK(String::CStringListContains(list2,"four") == FALSE);
 
 }
+void
+String::Sort(CStringList & list) {
+	CSortedArray<CString, CString&> slist;
+	POSITION pos;
+	for (pos = list.GetHeadPosition(); pos != NULL; list.GetNext(pos)) {
+		slist.Add(list.GetAt(pos));
+	}
+	list.RemoveAll();
 
+	slist.SetCompareFunction(String::CompareCase);
+	slist.Sort();
+	for (int i=0; i < slist.GetSize(); i++) {
+		CString& dir = slist.ElementAt(i);
+		list.AddTail(dir);
+	}
+}
+void
+String::Uniq(CStringList & list) {
+	CStringList newlist;
+	String::copyCStringList(newlist,list);
+	list.RemoveAll();
+
+	CString last;
+	POSITION pos;
+	for(pos = newlist.GetHeadPosition(); pos != NULL; newlist.GetNext(pos)) {
+		CString elem = newlist.GetAt(pos);
+		if (last != elem) {
+			list.AddTail(elem);
+		}
+		last = elem;
+	}
+}
+TEST(String,SortUniq)
+{
+	CStringList list;
+	list.AddTail("bbb");
+	list.AddTail("zzz");
+	list.AddTail("zzz");
+	list.AddTail("zzz");
+	list.AddTail("yyy");
+	list.AddTail("mmm");
+	list.AddTail("mmm");
+	list.AddTail("mmm");
+	list.AddTail("mmm");
+	list.AddTail("aaa");
+	String::Sort(list);
+	String::Uniq(list);
+	POSITION pos;
+	int ctr = 0;
+	for (pos = list.GetHeadPosition(); pos != NULL; list.GetNext(pos)) {
+		CString tmp = list.GetAt(pos);
+		switch (ctr) {
+		case 0:
+			CHECK("aaa" == tmp); break;
+		case 1:
+			CHECK("bbb" == tmp); break;
+		case 2:
+			CHECK("mmm" == tmp); break;
+		case 3:
+			CHECK("yyy" == tmp); break;
+		case 4:
+			CHECK("zzz" == tmp); break;
+		}
+		++ctr;
+	}
+	CHECK(5 == ctr);
+}

@@ -95,6 +95,8 @@ public:
 	void AddFolders(const CStringList & dirs);
 	void DelFolders(const CStringList & dirs);
 	BOOL hideGenre() { return m_HideGenre; }
+	void list2box(const CStringList & list);
+
 
 
 };

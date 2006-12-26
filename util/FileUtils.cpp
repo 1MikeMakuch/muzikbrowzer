@@ -349,3 +349,70 @@ TEST(FileUtil, ParentDir)
 	path = "c:\\mkm\\";
 	CHECK("c:" == FileUtil::ParentDir(path));
 }
+BOOL
+FileUtil::IsInSubDir(const CString & candParent, const CString & filePath) {
+	CString dirname = FileUtil::dirname(filePath);
+	return FileUtil::IsParentPath(dirname,candParent);
+}
+void
+FileUtil::SortEliminateDupsAndSubDirs(CStringList & list) {
+	String::Sort(list);
+	String::Uniq(list);
+	CStringList tmplist,newlist;
+	String::copyCStringList(tmplist,list);
+	POSITION pos,subpos;
+	for (pos = list.GetHeadPosition(); pos != NULL; list.GetNext(pos)) {
+		CString elem = list.GetAt(pos);
+		BOOL eliminate = FALSE;
+		for (subpos = tmplist.GetHeadPosition(); subpos != NULL; tmplist.GetNext(subpos)) 
+		{
+			CString candParent = tmplist.GetAt(subpos);
+			if (candParent != elem && FileUtil::IsInSubDir(candParent,elem)) {
+				eliminate = TRUE;
+			}
+		}
+		if (!eliminate)
+			newlist.AddTail(elem);
+	}
+	list.RemoveAll();
+	String::copyCStringList(list,newlist);
+}
+TEST(FileUtil,SortEliminateDupsAndSubDirs)
+{
+	CStringList list;
+	list.AddTail("c:\\mkm\\one");
+	list.AddTail("c:\\mkm\\one");
+	list.AddTail("c:\\mkm\\one");
+	list.AddTail("c:\\mkm\\one\\two");
+	list.AddTail("c:\\mkm\\one\\two\\three");
+
+	list.AddTail("c:\\mkm\\two");
+	list.AddTail("c:\\mkm\\two");
+	list.AddTail("c:\\mkm\\two");
+	list.AddTail("c:\\mkm\\two\\two");
+	list.AddTail("c:\\mkm\\two\\two\\three");
+
+	list.AddTail("c:\\mkm\\one");
+	list.AddTail("c:\\mkm\\onetwo");
+	list.AddTail("c:\\mkm\\onetwothree");
+	list.AddTail("c:\\mkm\\onetwothree\\four\\five");
+	FileUtil::SortEliminateDupsAndSubDirs(list);
+	POSITION pos;
+	int ctr=0;
+	for(pos = list.GetHeadPosition();pos != NULL; list.GetNext(pos)) {
+		CString tmp = list.GetAt(pos);
+		switch (ctr) {
+		case 0:
+			CHECK("c:\\mkm\\one" == tmp);break;
+		case 1:
+			CHECK("c:\\mkm\\onetwo" == tmp);break;
+		case 2:
+			CHECK("c:\\mkm\\onetwothree" == tmp);break;
+		case 3:
+			CHECK("c:\\mkm\\two" == tmp);break;
+		}
+		++ctr;
+	}
+
+
+}
