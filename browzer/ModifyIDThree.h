@@ -17,7 +17,8 @@ class ModifyIDThree : public CDialog
 {
 // Construction
 public:
-	ModifyIDThree(CStringList *gl, Song song, int, CWnd* pParent = NULL);   // standard constructor
+	ModifyIDThree(CStringList *gl, Song song, int wflag,
+		CWnd* pParent = NULL);   // standard constructor
 
 // Dialog Data
 	//{{AFX_DATA(ModifyIDThree)

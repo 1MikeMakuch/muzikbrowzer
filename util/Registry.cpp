@@ -72,9 +72,9 @@ void RegistryKey::DeleteValue(const TCHAR* keyval) {
 	if (key != NULL) {
 		if (keyval && strlen(keyval)) {
 			LONG e = RegDeleteValue(key, keyval);
-			if (ERROR_SUCCESS != e) {
-				logger.log("RegistryKey::DeleteValue:"+MBFormatError(e));
-			}
+//			if (ERROR_SUCCESS != e) {
+//				logger.log("RegistryKey::DeleteValue:"+keyval+" "+MBFormatError(e));
+//			}
 		}
 	} else {
 		mKeyValPairs->RemoveKey(keyval);

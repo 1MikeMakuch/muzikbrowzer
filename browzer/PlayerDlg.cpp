@@ -148,7 +148,9 @@ CPlayerDlg::CPlayerDlg(CPlayerApp * theApp,
 	m_LoadPlaylistDlg(0),
 	m_WindowRect(0,0,640,480),
 	m_Ready2Reset(FALSE),
-	m_RebuildOnly(FALSE)
+	m_RebuildOnly(FALSE),
+	m_ModifyDelete(FALSE),
+	m_HandlingIRMessage(FALSE)
 {
 	//{{AFX_DATA_INIT(CPlayerDlg)
 	//}}AFX_DATA_INIT
@@ -311,6 +313,7 @@ BEGIN_MESSAGE_MAP(CPlayerDlg, CDialogClassImpl)
 	ON_LBN_DBLCLK(IDC_PLAYLIST,              OnDblclkPlaylist)
 	ON_LBN_DBLCLK(IDC_SONGS,                 OnDblclkSongs)
 	ON_COMMAND(ID_DELETE_FROM_PL,            OnDelete)
+	ON_COMMAND(ID_DELETE_FROM_LIBRARY,       OnDelete)
 	ON_COMMAND(ID__PLAYER_FASTFORWARD,       OnFastForward)
 	ON_LBN_SETFOCUS(IDC_GENRES,              OnGenresFocus)
 	ON_MESSAGE(WM_GRAPHNOTIFY,               OnGraphNotify)
@@ -443,10 +446,17 @@ BOOL CPlayerDlg::OnInitDialog()
 
 	if (m_RebuildOnly) {
 		CStringList dirs;
-		m_Config.GetDirs(dirs,m_RebuildDir);
-		if (m_RebuildDir.GetLength())
-			m_mlib.setDbLocation(m_RebuildDir);
-		m_mlib.RebuildOnly(dirs);
+		CStringArray excludes;
+		m_Config.GetDirs(dirs,excludes,m_RebuildDir);
+		CString saveDbLoc;
+		if (m_RebuildDir.GetLength()) {
+			saveDbLoc = m_mlib.getDbLocation();
+			m_mlib.setDbLocation(m_RebuildDir); // writes to Registry
+		}
+		m_mlib.RebuildOnly(dirs,excludes);
+		if (m_RebuildDir.GetLength()) {
+			m_mlib.setDbLocation(saveDbLoc);	// writes to Registry
+		}
 		exit(0);
 		return FALSE;
 	}
@@ -635,10 +645,10 @@ BOOL CPlayerDlg::OnInitDialog()
 	}
 	CString menuFunc,menuDesc;
 	RemoteReceiver * rrcvr = RemoteReceiver::reset(this, MB_SERIAL_MESSAGE);
-	if (rrcvr)
-		rrcvr->getDescs(IR_MESSAGE_MENU, menuFunc, menuDesc);
-	if (menuDesc == "") menuDesc = "Menu";
-	m_HelpMsg = "Press "; m_HelpMsg += menuDesc; m_HelpMsg += " for options.";
+//	if (rrcvr)
+//		rrcvr->getDescs(IR_MESSAGE_MENU, menuFunc, menuDesc);
+//	if (menuDesc == "") menuDesc = "Menu";
+//	m_HelpMsg = "Press "; m_HelpMsg += menuDesc; m_HelpMsg += " for options.";
 	m_HelpMsg = "";
 	if (m_Config.trialMode() == 1) {
 		m_HelpMsg += " Trial Mode.";
@@ -1175,11 +1185,13 @@ CPlayerDlg::resetControls() {
 	CWaitCursor c;
 	GetWindowRect(m_WindowRect);
 
+#ifndef _DEBUGBC
 	m_Config.getSkins(m_Skins);
 	if (m_Skins.GetCount() < 1) {
 		MBMessageBox("Alert","Muzikbrowzer is unable to locate it's skins and cannot proceed.\r\nYou may wish to reinstall Muzikbrowzer.",TRUE);
 		exit(0);
 	}
+#endif
 
 	// read skin def
 	MBCONFIG_READ_SKIN_DEFS(m_Config,m_reg);
@@ -1976,6 +1988,15 @@ CPlayerDlg::initDb() {
     m_Artists.ResetContent();
 
 	m_mlib.getGenres(m_Genres);
+	if (m_Genres.GetCount() == 0) {
+		_selectedGenre = "";
+		_selectedArtist = "";
+		_selectedAlbum = "";
+		_selectedSong = "";
+		PlayerStatusSet(m_mlib.getLibraryCounts());
+		PlayerStatusTempSet("");
+	}
+
 	if (_selectedGenre == ""
 			|| m_Genres.SelectString(0, _selectedGenre) == LB_ERR) {
 		m_Genres.SetCurSel(0);
@@ -2326,7 +2347,11 @@ BOOL CPlayerDlg::UpdateSongs()
 	m_AlbumSong.SetAt(_selectedAlbum, _selectedSong);
 
 #pragma hack
-	if (_selectedSong.GetLength()) { // hack! not doing this check
+	if (_selectedSong.GetLength()
+		&& _selectedAlbum.GetLength()
+		&& _selectedArtist.GetLength()
+		&& _selectedGenre.GetLength()
+		) { // hack! not doing this check
 		// adds a song to the db!
 		Song song = m_mlib.getSong(_selectedGenre, _selectedArtist,
 			_selectedAlbum, _selectedSong);
@@ -2593,6 +2618,8 @@ void CPlayerDlg::OnMenuButton()
 }
 
 void CPlayerDlg::OnDelete() {
+
+	mWindowFlag = 0;
     if (m_Control->ptr() == &m_Playlist) {
 	    int sel = m_Playlist.GetCurSel();
         if (sel < 0) { return ; }
@@ -2624,7 +2651,16 @@ void CPlayerDlg::OnDelete() {
 		m_LastThingQueuedUp = "";
 		OnSelchangePlaylist() ;
 		return ;
-    }
+    } else if (!m_HandlingIRMessage && (
+		(m_Control->ptr() == &m_Genres && (mWindowFlag = 1))
+			|| (m_Control->ptr() == &m_Artists && (mWindowFlag = 2))
+			|| (m_Control->ptr() == &m_Albums && (mWindowFlag = 3))
+			|| (m_Control->ptr() == &m_Songs && (mWindowFlag = 4))) )
+	{
+		m_ModifyDelete = TRUE;
+		OnUserEditSong();
+	}
+	m_ModifyDelete = FALSE;
 	return ;
 }
 
@@ -2767,7 +2803,7 @@ CPlayerDlg::OnSerialMsg (WPARAM wParam, LPARAM lParam) {
 }
 int
 CPlayerDlg::HandleIRMessage(int key) {
-
+	m_HandlingIRMessage = TRUE;
 	int wakeitup = 1;
     switch (key) {
 	case IR_MESSAGE_UP: {
@@ -2858,6 +2894,7 @@ CPlayerDlg::HandleIRMessage(int key) {
 	default:
 		wakeitup = 0;
 	}
+	m_HandlingIRMessage = FALSE;
 
 	if (wakeitup) {
 	    WakeUp();
@@ -2969,12 +3006,12 @@ void CPlayerDlg::OnMenuOptions() {
 	PlayerStatusClear();
 	m_AlbumArt = m_Config.getSkin(MB_SKIN_ALBUMART);
 
-	CString menuFunc,menuDesc;
+//	CString menuFunc,menuDesc;
 	RemoteReceiver * rrcvr = RemoteReceiver::reset(this, MB_SERIAL_MESSAGE);	
-	if (rrcvr)
-		rrcvr->getDescs(IR_MESSAGE_MENU, menuFunc, menuDesc);
-	if (menuDesc == "") menuDesc = "Menu";
-	m_HelpMsg = "Press "; m_HelpMsg += menuDesc; m_HelpMsg += " for options.";
+//	if (rrcvr)
+//		rrcvr->getDescs(IR_MESSAGE_MENU, menuFunc, menuDesc);
+//	if (menuDesc == "") menuDesc = "Menu";
+//	m_HelpMsg = "Press "; m_HelpMsg += menuDesc; m_HelpMsg += " for options.";
 	m_HelpMsg = "";
 	if (m_Config.trialMode() == 1) {
 		m_HelpMsg += " Trial Mode.";
@@ -3601,6 +3638,8 @@ void CPlayerDlg::OnContextMenu(CWnd* pWnd, CPoint ScreenPnt)
 			if (1 <= mWindowFlag && mWindowFlag <= 4) {
 				popup->EnableMenuItem(ID_ADDTO_PLAYLIST, 
 					MF_ENABLED | MF_BYCOMMAND);
+				popup->EnableMenuItem(ID_DELETE_FROM_LIBRARY, 
+					MF_ENABLED | MF_BYCOMMAND);
 				popup->EnableMenuItem(ID_DELETE_FROM_PL, 
 					MF_DISABLED |MF_GRAYED| MF_BYCOMMAND);
 			} else {
@@ -3609,6 +3648,8 @@ void CPlayerDlg::OnContextMenu(CWnd* pWnd, CPoint ScreenPnt)
 				popup->EnableMenuItem(ID_DELETE_FROM_PL, 
 					MF_ENABLED | MF_BYCOMMAND);
 				popup->EnableMenuItem(ID_EDIT_ID3TAG, 
+					MF_DISABLED |MF_GRAYED| MF_BYCOMMAND);
+				popup->EnableMenuItem(ID_DELETE_FROM_LIBRARY, 
 					MF_DISABLED |MF_GRAYED| MF_BYCOMMAND);
 			}
             popup->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON,ScreenPnt.x,
@@ -3623,7 +3664,7 @@ void CPlayerDlg::OnUserEditSong()
 		MBMessageBox("Notice", "Trial Expired.");
 		return;
 	}
-	ModifyIDThree *dialog;
+	ModifyIDThree *dialog = NULL;
     CString genre,artist,album,title,year,track;
     CStringList genreList;
     m_mlib.getGenres(genreList);
@@ -3664,27 +3705,44 @@ void CPlayerDlg::OnUserEditSong()
 		PlayerStatusTempSet("not allowed");
 		return;
 	}
-
-	dialog = new ModifyIDThree(&genreList, song, mWindowFlag);
-
-	int ret;
-	ret = dialog->DoModal();
-	if (ret == IDOK) {
-		DBLOCKED = TRUE;
-		OnSearchClear();
-        ret = m_mlib.preModifyID3(song, dialog->m_newSong);
-		if (ret) {
-			initDb();
-			DBLOCKED = FALSE;
-			_selectedGenre = "xyzzy";
-			OnSelchangeGenres();
-			updatePlaylistPostEdit();
-		}
-		DBLOCKED = FALSE;
+	int ret=IDOK;
+	if (!m_ModifyDelete) {
+		dialog = new ModifyIDThree(&genreList, song, mWindowFlag);
+		ret = dialog->DoModal();
 	}
 
+	if (ret == IDOK) {
+		DBLOCKED = TRUE;
+		logger.ods("Deleting, DBLOCKED=TRUE");
+		OnSearchClear();
+		CStringList deletes;
+		if (m_ModifyDelete) {
+			ret = m_mlib.preDeleteSong(song,deletes);
+		} else {
+			ret = m_mlib.preModifyID3(song, dialog->m_newSong);
+		}
+		if (ret) {
+			logger.ods("pre initDb");
+			initDb();
+			logger.ods("post initDb");
+//			DBLOCKED = FALSE;
+//			_selectedGenre = "";
+			OnSelchangeGenres();
+			logger.ods("post 0");
+			updatePlaylistPostEdit();
+			logger.ods("post 1");
+			if (m_ModifyDelete) {
+				m_Config.AddDeletedFiles(deletes);
+			}
+			logger.ods("post 2");
 
-	delete dialog;    	
+		}
+		DBLOCKED = FALSE;
+		logger.ods("Deleting, DBLOCKED=FALSE");
+	}
+
+	if (dialog)
+		delete dialog;    	
 
 }
 
@@ -4273,8 +4331,9 @@ void
 CPlayerDlg::OnMusicAdd() {
 	OnSearchClear();
 	CStringList dirs;
+	CStringArray excludes;
 	CString dflt;
-	m_Config.GetDirs(dirs);
+	m_Config.GetDirs(dirs,excludes);
 	if (!dirs.IsEmpty()) {
 		dflt = dirs.GetTail();
 		dflt = String::upDir(dflt);
@@ -4289,7 +4348,7 @@ CPlayerDlg::OnMusicAdd() {
 		dialog.GetPaths(list);
 		m_Config.AddFolders(list);
 
-		if (!m_mlib.Scan(list,FALSE,TRUE)) {
+		if (!m_mlib.Scan(list,excludes,FALSE,TRUE)) {
 			init(); // re-read db
 			m_Config.DelFolders(list);
 		} else {
@@ -4304,8 +4363,9 @@ void
 CPlayerDlg::OnMusicScan() {
 	OnSearchClear();
 	CStringList dirs;
-	m_Config.GetDirs(dirs);
-	if (!m_mlib.Scan(dirs,FALSE,FALSE)) {
+	CStringArray excludes;
+	m_Config.GetDirs(dirs,excludes);
+	if (!m_mlib.Scan(dirs,excludes,FALSE,FALSE)) {
 		init();
 	} else {
 		initDb();
@@ -4318,8 +4378,9 @@ void
 CPlayerDlg::OnMusicScanNew() {
 	OnSearchClear();
 	CStringList dirs;
-	m_Config.GetDirs(dirs);
-	if (!m_mlib.Scan(dirs,TRUE,FALSE)) {
+	CStringArray excludes;
+	m_Config.GetDirs(dirs,excludes);
+	if (!m_mlib.Scan(dirs,excludes,TRUE,FALSE)) {
 		init();
 	} else {
 		initDb();

@@ -457,6 +457,8 @@ protected:
 	int m_CheckBadCount;
 	BOOL m_Ready2Reset;
 	int m_LibRemainingWidth;
+	BOOL m_ModifyDelete;
+	BOOL m_HandlingIRMessage;
 
 	DECLARE_MESSAGE_MAP()
 

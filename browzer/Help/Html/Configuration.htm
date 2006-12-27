@@ -25,10 +25,21 @@
 			<ul class="text">
 			<li><b>General</b>
 			<ul class="text">
-			<li><b>Directories to scan for audio files</b>. Tell Muzikbrowzer where
+			<li><b>Audio file folders</b>. Tell Muzikbrowzer where
 				to look for audio files on your computer or network. You don't want
 				to enter "C:\" here, rather, enter the specific directory(ies) where your
-				music files are stored.
+				music files are stored. Also when you Add specific music to the library (from
+				Menu/Music Library/Add music) it may appear in this list. Muzikbrowzer sorts
+				and condenses this list to the minimal necessary. For example if you enter
+				C:\MyMusic and C:\MyMusic\folder1, it will eliminate C:\MyMusic\folder1 since
+				that will be found by searching C:\MyMusic.
+
+			<li><b>Deleted files & excluded folders</b>. Files/folders in this list will be
+				excluded from the library. When you remove music from the library (right
+				click on music and select "Delete from Library" or press Delete key)
+				Muzikbrowzer remembers those deletions here and will not re-add them to
+				the library upon subsequent Search/Builds. Remove them from this list
+				to allow them to be added to the library.
 
 			<li><b>Location of Muzikbrowzer database</b>. Normally the default 
 				location is copasetic. This is where Muzikbrowzer stores the database, 
@@ -36,19 +47,7 @@
 				Muzikbrowzer database and other data in a folder other than the default
 				"Program Files\Muzikbrowzer" you may do so.
 
-			<li><b>Scan</b>. Performs the scan and builds the Muzikbrowzer internal 
-				database.  If the database exists it is first deleted then 
-				completely rebuilt.
-
-			<li><b>Scan for New Files</b>. Retains the existing database and scans in new
-				audio files. Use this when you've added new music files into the 
-				directories specified above or, you've added one or more directories 
-				to the list of directories to scan. Scan for New is significantly 
-				faster than a complete Scan because it
-				retains the existing database and only searches for new files.
-				Note that if you use tag editing software other than Muzikbrowzer, 
-				you'll have to perform a complete Scan in order for Muzikbrowzer to pickup 
-				those changes.
+			<li><b>Hide Genre</b>. Checking this will remove the Genre column from the library.
 
 			<li><b>Run at Startup</b>. This will cause Muzikbrowzer to run when you 
 			logon. Tip: see the Autolog program at www.sysinternals.com.
@@ -92,7 +91,7 @@
 					effect.
 
 				<li><b>Margin</b>. Sets the margin around the outer edge of the whole
-				Muzikbrowzer window. On some systems when you maximize Muzikbrowzer the edges
+				Muzikbrowzer window. On some systems (especially tv screens) when you maximize Muzikbrowzer the edges
 				may be lost off the edge of the display. Increasing this value resolves this
 				problem.
 

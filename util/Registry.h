@@ -23,7 +23,9 @@ const static TCHAR RegKeyPrevVals[] = _T(MBREGKEYLAST);
 
 const static TCHAR RegDbLocation[] = _T( "DbLocation" );
 const static TCHAR RegDirKey[] = _T("Dir");
+const static TCHAR RegExcludePath[] = _T("ExcludePath");
 const static TCHAR RegNumDirs[] = _T("NumDirs");
+const static TCHAR RegNumExcludes[] = _T("NumExcludes");
 const static TCHAR RegNumMp3Extensions[] = _T("NumMp3Extensions");
 const static TCHAR RegMp3ExtensionsKey[] = _T("Mp3Extension");
 

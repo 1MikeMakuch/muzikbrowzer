@@ -137,6 +137,7 @@
 #define IDC_ARTISTS                     1033
 #define IDC_DIRLIST                     1033
 #define IDC_PLAYLIST_NAMES              1033
+#define IDC_DIRLIST2                    1034
 #define IDC_LIST2                       1037
 #define IDC_ALBUMS                      1037
 #define IDC_PLAYLIST_SONGS              1037
@@ -177,10 +178,14 @@
 #define IDC_PMENUSAVEPLAYLIST           1128
 #define IDC_DIRREMOVE                   1129
 #define IDC_DIRSCAN                     1130
+#define IDC_DIRADD2                     1130
 #define IDC_DIRSCAN_NEW                 1131
+#define IDC_DIRREMOVE2                  1131
 #define IDC_IRCONFIG_BUTTON             1132
+#define IDC_DIRCLEAR                    1132
 #define IDC_LOCATION_BUTTON             1133
 #define IDC_MDB_LOCATION                1134
+#define IDC_EXCLUDECLEAR                1135
 #define IDC_SAVEPLAYLIST_BOX            1136
 #define IDC_SCAN_RESULTS                1139
 #define IDC_EDIT_ARTIST                 1141
@@ -527,14 +532,15 @@
 #define ID_OPEN_FILE_BUTTON             32857
 #define ID_ALPHA_UP                     32859
 #define ID_ALPHA_DOWN                   32860
+#define ID_DELETE_FROM_LIBRARY          32862
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        274
-#define _APS_NEXT_COMMAND_VALUE         32862
-#define _APS_NEXT_CONTROL_VALUE         2081
+#define _APS_NEXT_COMMAND_VALUE         32863
+#define _APS_NEXT_CONTROL_VALUE         2082
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

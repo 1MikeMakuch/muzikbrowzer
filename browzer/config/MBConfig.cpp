@@ -269,7 +269,7 @@ BOOL MBConfig::HelpInfo(const int idx) {
 	} else if (1 == idx) {
 		anchor = "::/Html/Configuration.htm#Display";
 	} else if (2 == idx) {
-		anchor = "::/Html/Configuration.htm#Irman";
+		anchor = "::/Html/Configuration.htm#RemoteControl";
 	} else if (3 == idx) {
 		anchor = "::/Html/Configuration.htm#License";
 	}
@@ -299,8 +299,8 @@ BOOL MBConfig::OnCommand(WPARAM wParam, LPARAM lParam)
 }
 
 void
-MBConfig::GetDirs(CStringList & dirs, const CString & dir) {
-	m_Files->GetDirs(dirs,dir);
+MBConfig::GetDirs(CStringList & dirs,CStringArray & excludes, const CString & dir) {
+	m_Files->GetDirs(dirs,excludes,dir);
 }
 void
 MBConfig::AddFolders(const CStringList & dirs) {
@@ -328,4 +328,8 @@ MBConfig::resetTrial() {
 void
 MBConfig::initSkins() {
 	m_Display->init();
+}
+void 
+MBConfig::AddDeletedFiles(const CStringList & files) {
+	m_Files->AddDeletedFiles(files);
 }

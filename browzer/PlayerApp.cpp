@@ -83,6 +83,8 @@ BOOL CPlayerApp::InitInstance()
 	lfile += "\\Muzikbrowzer.log";
 	logger.open(lfile);
 	logger.log(CS("Muzikbrowzer version: ") + CS(MUZIKBROWZER_VERSION));
+	CString cl = ::GetCommandLine();
+	logger.log(cl);
 
 #ifdef _DEBUG
 	if (!m_rebuild)

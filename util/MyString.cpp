@@ -899,8 +899,16 @@ String::copyCStringList(CStringList & dest, const CStringList & src) {
 		src.GetNext(pos);
 	}
 }
+void
+String::copyCStringArray(CStringArray & dest, const CStringArray & src) {
+	dest.RemoveAll();
+	for(int i = 0 ; i < src.GetSize(); i++) {
+		dest.Add(src[i]);
+	}
+}
 BOOL
-String::CStringListContains(const CStringList & list, const CString & string) {
+String::CStringListContains(const CStringList & list, const CString & string
+) {
 	POSITION pos;
 	for(pos = list.GetHeadPosition(); pos != NULL;) {
 		if (list.GetAt(pos) == string)
@@ -908,6 +916,83 @@ String::CStringListContains(const CStringList & list, const CString & string) {
 		list.GetNext(pos);
 	}
 	return FALSE;
+}
+BOOL
+String::CStringArrayContains(const CStringArray & list, const CString & string) {
+	int low = 0;
+	int high = list.GetSize() - 1;
+	int middle;
+	
+	while( low <= high )
+	{
+		middle = ( low  + high ) / 2;
+		
+		if( string  == list[  middle ] ) {//match
+			return TRUE;
+		} else if( string < list[ middle ] )
+			high = middle - 1;		//search low end of array
+		else
+			low = middle + 1;		//search high end of array
+	}
+	
+	return FALSE;		//search key not found
+
+}
+TEST(String,CStringArrayContains)
+{
+	for(int n = 10 ; n < 101 ; n++) {
+		CStringArray a;
+		AutoBuf buf(10);
+		for(int i = n ; i > -1 ; --i) {
+			sprintf(buf.p,"%d",i);
+			a.Add(buf.p);
+		}
+		String::Sort(a);
+		CString string;
+		for(i = 0 ; i <= n; i++) {
+			sprintf(buf.p,"%d",i);
+			string = buf.p;
+			CHECK(TRUE == String::CStringArrayContains(a,string));
+		}
+	}
+	CStringArray a;
+	a.Add("N:\\musictests\\AeroClips\\2good\\02_Love in an Elevator.mp3");
+	a.Add("N:\\musictests\\AeroClips\\2goodAnd2bad\\01_Walk On Water.mp3");
+	a.Add("N:\\musictests\\AeroClips\\2goodAnd2bad\\02_Love in an Elevator.mp3");
+	a.Add("N:\\musictests\\AeroClips\\2goodAnd2bad\\bad.mp3");
+	a.Add("N:\\musictests\\AeroClips\\2goodAnd2bad\\x.mp3");
+	a.Add("N:\\musictests\\AeroClips\\2goodAnd2bad\\x2.mp3");
+	a.Add("N:\\musictests\\AeroClips\\x\\x.mp3");
+	a.Add("N:\\musictests\\AeroClips\\x\\x2.mp3");
+	a.Add("N:\\musictests\\Amber.mp3");
+	a.Add("N:\\musictests\\bad");
+	a.Add("N:\\musictests\\flac");
+	a.Add("N:\\musictests\\Horns 'n Roses.mp3");
+	a.Add("N:\\musictests\\MediaMonkey");
+	a.Add("N:\\musictests\\MediaMonkey3");
+	a.Add("N:\\musictests\\mp3");
+	a.Add("N:\\musictests\\noart");
+	a.Add("N:\\musictests\\noTLENs");
+	a.Add("N:\\musictests\\ogg");
+	a.Add("N:\\musictests\\onesong");
+	a.Add("N:\\musictests\\sec10");
+	a.Add("N:\\musictests\\tags");
+	a.Add("N:\\musictests\\testArt");
+	a.Add("N:\\musictests\\testFolderCoverAlbumArt");
+	a.Add("N:\\musictests\\V");
+	a.Add("N:\\musictests\\wavs");
+	a.Add("N:\\musictests\\wma");
+	a.Add("N:\\musictests\\wma10");
+	a.Add("N:\\musictests\\wma9");
+	a.Add("N:\\musictests\\wmaDRM");
+	a.Add("N:\\musictests\\x.wma");
+	a.Add("N:\\musictests\\y.wma");
+	a.Add("N:\\musictests\\zz");
+	String::Sort(a);
+	for(int i = 0 ; i < a.GetSize(); i++) {
+		CHECK(TRUE == String::CStringArrayContains(a,a[i]));
+	}
+
 }
 TEST(CStringList,tests)
 {
@@ -936,6 +1021,19 @@ String::Sort(CStringList & list) {
 	for (int i=0; i < slist.GetSize(); i++) {
 		CString& dir = slist.ElementAt(i);
 		list.AddTail(dir);
+	}
+}
+void
+String::Sort(CStringArray & list) {
+	CSortedArray<CString, CString&> slist;
+	for(int i = 0 ; i < list.GetSize(); i++) {
+		slist.Add(list[i]);
+	}
+	slist.SetCompareFunction(String::CompareCase);
+	slist.Sort();
+	list.RemoveAll();
+	for(i = 0 ; i < slist.GetSize() ; i++) {
+		list.Add(slist[i]);
 	}
 }
 void

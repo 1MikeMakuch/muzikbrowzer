@@ -167,6 +167,9 @@ class MList {
 	public:
 		MList(PMemory & m);
 		MList(MRecord & r);
+		// empty list
+		MList();
+		MList (MList &);
 //		a read only MList?
 //		MList(const MRecord & r);
 		~MList(){};
@@ -186,7 +189,10 @@ class MList {
 		class Iterator {
 			public:
 				Iterator(MList & list) : m_list(list) {
-					pos = m_list.head();
+					if (m_list.m_empty)
+						pos = 0;
+					else
+						pos = m_list.head();
 				}
 				~Iterator() {};
 				MRecord next();
@@ -200,6 +206,7 @@ class MList {
 	protected:
 		int m_headstore;
 		PMemory & m_mem;
+		BOOL m_empty;
 	private:
 };
 
@@ -348,6 +355,7 @@ unsigned int	countSongsInGenre(const CString & genre, CArray<unsigned int, unsig
 	    Song	createSongFromWma(WmaTag *);
 	    void	deletePlaylist(const CString &);
 	     int	deleteSongFromPlaylist(PlaylistNode *p);
+		BOOL	deleteSong(ProgressDlg *p, Playlist & songs, CString & results);
 	    void	dumpPL(int p);
 		void	preExport(ExportDlg *);
 		void	export(ProgressDlg *pd, ExportDlg *, MyLog & html, MyLog & csv, 
@@ -377,11 +385,12 @@ unsigned int	countSongsInGenre(const CString & genre, CArray<unsigned int, unsig
 	     int	getSongsInPlaylist(const CString & name, CStringArray & desc, CStringArray & plist, CDWordArray & tlenArray);
 	 CString	getSongVal(const CString & key, const CString & genre, const CString & artist, const CString & album, const CString & song);
 	     int	getTotalMp3s() { return m_totalMp3s; }
-	     int	init();
+	     int	init(const BOOL rebuildOnly=FALSE);
 	     int	iSearch(const CString name, MSongLib & db, MSongLib & results);
 	     int	loadOldPlaylist(const CString & name, CStringList & playlist);
 	     int	loadPlaylist(const CString & name, CString & errormsg);
 	MSongLib	m_SongLib;
+		BOOL	preDeleteSong(Song & song,CStringList & deletes);
 	    BOOL	preModifyID3(Song & old, Song & newSong);
 		BOOL	modifyID3(ProgressDlg *p, Playlist & songs, Song & newsong, CString & results);
 	    void	movePlaylistDown(int plc, int sel);
@@ -391,13 +400,13 @@ unsigned int	countSongsInGenre(const CString & genre, CArray<unsigned int, unsig
 	    void	RandomizePlaylist();
 	    UINT	readDb();
 	    void	readDbLocation();
-		void	RebuildOnly(const CStringList & dirs);
+		void	RebuildOnly(const CStringList & dirs,const CStringArray & excludes);
 	    BOOL	renamePlaylist(const CString src,const CString dest, BOOL overwrite=FALSE);
 	    void	savePlaylist(const CString &);
 	    void	savePlaylist(const CStringArray & list, const CString & file);
 	    void	savePlaylist(Playlist & playlist, const CString & file);
-		BOOL	Scan(CStringList & dirs, BOOL bNew, BOOL bAdd);
-	 CString	scanDirectories2(const CStringList & dirs, ProgressDlg*, BOOL scanNew, BOOL bAdd);
+		BOOL	Scan(const CStringList & dirs, const CStringArray & excludes, BOOL bNew, BOOL bAdd);
+	 CString	scanDirectories(const CStringList & dirs,const CStringArray & excludes, ProgressDlg*, BOOL scanNew, BOOL bAdd);
 	     int	Search(const CString name);
 	    void	SearchCancel();
 	    void	SearchClear();
@@ -424,9 +433,8 @@ private:
 		CString m_libCounts;
 		MFiles * m_pSearchFiles;
 
-        int scanDirectory(int * abortf, CStringList &, const CString &,
-			BOOL scanNew, BOOL bAdd);
-        int scanDirectory2(ProgressDlg * pd, CStringList &, const CString &,
+        int scanDirectory(ProgressDlg * pd, CStringList & mp3files, 
+			const CStringArray & excludes, const CString &,
 			BOOL scanNew, BOOL bAdd);
         int garbageCollect(ProgressDlg * dlg, BOOL test=FALSE);
 

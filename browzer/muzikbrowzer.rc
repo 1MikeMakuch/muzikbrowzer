@@ -296,32 +296,38 @@ BEGIN
                     WS_BORDER
 END
 
-IDD_CONFIG_FILES DIALOGEX 0, 0, 356, 183
+IDD_CONFIG_FILES DIALOGEX 0, 0, 346, 193
 STYLE WS_CHILD | WS_DISABLED | WS_CAPTION | WS_SYSMENU
 CAPTION "General"
 FONT 8, "MS Sans Serif"
 BEGIN
-    LISTBOX         IDC_DIRLIST,18,16,319,52,LBS_SORT | WS_VSCROLL | 
-                    WS_HSCROLL
-    PUSHBUTTON      "Add",IDC_DIRADD,139,69,36,11
-    PUSHBUTTON      "Remove",IDC_DIRREMOVE,180,68,36,11
-    PUSHBUTTON      "Edit",IDC_LOCATION_BUTTON,302,105,33,13
-    LTEXT           "",IDC_MDB_LOCATION,19,105,273,14,NOT WS_GROUP,
+    LISTBOX         IDC_DIRLIST,17,15,273,35,LBS_SORT | LBS_NOINTEGRALHEIGHT | 
+                    WS_VSCROLL | WS_HSCROLL
+    PUSHBUTTON      "Add",IDC_DIRADD,297,15,36,11
+    PUSHBUTTON      "Remove",IDC_DIRREMOVE,297,27,36,11
+    PUSHBUTTON      "Edit",IDC_LOCATION_BUTTON,300,129,33,13
+    LTEXT           "",IDC_MDB_LOCATION,17,129,273,14,NOT WS_GROUP,
                     WS_EX_CLIENTEDGE
-    GROUPBOX        "Audio file folders",IDC_STATIC,11,5,332,80
+    GROUPBOX        "Audio file folders",IDC_STATIC,11,5,332,49
     GROUPBOX        "Location of muzikbrowzer database files, playlists, etc.",
-                    IDC_STATIC,12,90,331,35
-    CONTROL         "Yes",IDC_RUNATSTARTUP,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,252,146,40,8
-    GROUPBOX        "Run muzikbrowzer at Start up?",IDC_STATIC,233,129,110,
-                    35
+                    IDC_STATIC,11,114,332,35
+    CONTROL         "Run Muzikbrowzer at Startup?",IDC_RUNATSTARTUP,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,94,175,111,8
     CONTROL         "Date",IDC_ALBUMSORT_DATE,"Button",BS_AUTORADIOBUTTON | 
-                    WS_GROUP,17,143,28,10
+                    WS_GROUP,15,167,28,10
     CONTROL         "Alpha",IDC_ALBUMSORT_ALPHA,"Button",BS_AUTORADIOBUTTON | 
-                    WS_GROUP,17,155,30,10
-    LTEXT           "Sort albums by",IDC_STATIC,15,132,48,9
+                    WS_GROUP,15,179,30,10
+    LTEXT           "Sort albums by",IDC_STATIC,13,156,48,9
     CONTROL         "Hide Genre column?",IDC_HIDE_GENRE,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,96,131,83,16
+                    BS_AUTOCHECKBOX | WS_TABSTOP,94,155,83,16
+    LISTBOX         IDC_DIRLIST2,17,70,273,35,LBS_SORT | 
+                    LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_HSCROLL
+    PUSHBUTTON      "Add",IDC_DIRADD2,297,70,36,11
+    PUSHBUTTON      "Remove",IDC_DIRREMOVE2,297,82,36,11
+    GROUPBOX        "Deleted files && excluded folders",IDC_STATIC,11,60,332,
+                    49
+    PUSHBUTTON      "Clear",IDC_DIRCLEAR,297,39,36,11
+    PUSHBUTTON      "Clear",IDC_EXCLUDECLEAR,297,94,36,11
 END
 
 IDD_CONFIG_IRMAN DIALOG DISCARDABLE  0, 0, 402, 199
@@ -827,9 +833,9 @@ BEGIN
     IDD_CONFIG_FILES, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 349
+        RIGHTMARGIN, 339
         TOPMARGIN, 7
-        BOTTOMMARGIN, 176
+        BOTTOMMARGIN, 186
     END
 
     IDD_CONFIG_IRMAN, DIALOG
@@ -959,8 +965,11 @@ BEGIN
     POPUP "POPUP_MENU2"
     BEGIN
         MENUITEM "Edit Audio Tag",              ID_EDIT_ID3TAG
+        MENUITEM SEPARATOR
         MENUITEM "Add to Playlist",             ID_ADDTO_PLAYLIST
         MENUITEM "Quick Play",                  ID_QUICK_PLAY
+        MENUITEM SEPARATOR
+        MENUITEM "Delete from Library",         ID_DELETE_FROM_LIBRARY
         MENUITEM "Delete from Playlist",        ID_DELETE_FROM_PL
     END
 END

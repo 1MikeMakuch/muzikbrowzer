@@ -29,6 +29,7 @@ public:
 	CButton		m_RunAtStartup;
 	CStatic		m_MdbLocation;
 	CListBox	m_MP3DirList;
+	CListBox	m_ExcludeList;
 	//}}AFX_DATA
 
 
@@ -48,14 +49,19 @@ protected:
 	// Generated message map functions
 	//{{AFX_MSG(CConfigFiles)
 	afx_msg void OnDiradd();
+	afx_msg void OnDiradd2();
 	afx_msg void OnSelchangeDirlist();
+	afx_msg void OnSelchangeDirlist2();
 	afx_msg void OnDirremove();
+	afx_msg void OnDirremove2();
 	afx_msg void OnLocationButton();
 	virtual BOOL OnInitDialog();
 	afx_msg void OnAlbumsortDate();
 	afx_msg void OnAlbumsortAlpha();
 	afx_msg void OnRunatstartup();
 	afx_msg void OnHideGenre();
+	afx_msg void OnDirclear();
+	afx_msg void OnExcludeclear();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 private:
@@ -68,6 +74,9 @@ private:
     CString m_origMdbLocation;
     CStringList m_origMP3DirList;
 	CStringList m_slMP3DirList;
+    CStringList m_origExcludeList;
+	CStringList m_slExcludeList;
+
     unsigned long m_RunAtStartupUL;
 	BOOL m_OrigRunAtStartup;
 	BOOL m_AlbumSortAlpha;
@@ -91,11 +100,12 @@ public:
 	BOOL AlbumSortAlpha();
 	CString mbdir() { return m_path; };
 	BOOL resetNeeded() { return m_ResetNeeded; }
-	void GetDirs(CStringList & dirs,const CString & dir);
+	void GetDirs(CStringList & dirs, CStringArray & excludes,const CString & dir);
 	void AddFolders(const CStringList & dirs);
 	void DelFolders(const CStringList & dirs);
 	BOOL hideGenre() { return m_HideGenre; }
-	void list2box(const CStringList & list);
+	void list2box(const CStringList & list,CListBox & box);
+	void AddDeletedFiles(const CStringList & files);
 
 
 

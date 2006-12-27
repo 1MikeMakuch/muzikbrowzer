@@ -84,9 +84,13 @@ class String {
 		return element1.Compare(element2);
 	}
 	static void copyCStringList(CStringList & dest, const CStringList & src);
+	static void copyCStringArray(CStringArray & dest, const CStringArray & src);
 	static BOOL CStringListContains(const CStringList & list, 
 		const CString & string);
+	static BOOL CStringArrayContains(const CStringArray & list, 
+		const CString & string);
 	static void Sort(CStringList & list);
+	static void Sort(CStringArray & list);
 	static void Uniq(CStringList & list);
 };
 
