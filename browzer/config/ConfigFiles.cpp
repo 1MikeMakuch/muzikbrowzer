@@ -32,7 +32,8 @@ CConfigFiles::CConfigFiles(CWnd *p, PlayerCallbacks * pcb) : CPropertyPage(CConf
     /*m_PlayerDlg(p),*/ m_RunAtStartupUL(0),
 	m_AlbumSortAlpha(TRUE), m_AlbumSortDate(FALSE),
 	m_playercallbacks(pcb), m_ResetNeeded(FALSE),
-	m_OrigRunAtStartup(FALSE),m_HideGenre(FALSE)
+	m_OrigRunAtStartup(FALSE),m_HideGenre(FALSE),
+	m_InitialLogging(TRUE),m_Logging(TRUE)
 
 {
 	//{{AFX_DATA_INIT(CConfigFiles)
@@ -53,7 +54,7 @@ void CConfigFiles::DoDataExchange(CDataExchange* pDX)
 {
 	CPropertyPage::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CConfigFiles)
-
+	DDX_Control(pDX, IDC_DEBUG_LOG,		m_LoggingButton);
 	DDX_Control(pDX, IDC_RUNATSTARTUP,	m_RunAtStartup);
 	DDX_Control(pDX, IDC_MDB_LOCATION,	m_MdbLocation);
 	DDX_Control(pDX, IDC_DIRLIST,		m_MP3DirList);
@@ -62,7 +63,6 @@ void CConfigFiles::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_DIRCLEAR,		m_Mp3DirClear);
 	DDX_Control(pDX, IDC_DIRREMOVE2,	m_ExRemove);
 	DDX_Control(pDX, IDC_EXCLUDECLEAR,	m_ExClear);
-
 	//}}AFX_DATA_MAP
 }
 
@@ -343,6 +343,9 @@ void CConfigFiles::ReadReg() {
 		m_AlbumSortDate = 0;
 	}
 
+	m_Logging = reg.Read(RegLogging,1);
+	m_InitialLogging = m_Logging;
+
 
 
 }
@@ -474,6 +477,8 @@ void CConfigFiles::StoreReg() {
     setRunAtStartup();
 	reg.Write(RegAlbumSort, (unsigned long)m_AlbumSortAlpha);
 	m_InitialAlbumSortAlpha = m_AlbumSortAlpha;
+
+	reg.Write(RegLogging,m_Logging);
 
 
 }
@@ -624,6 +629,7 @@ BOOL CConfigFiles::OnInitDialog()
 	}
 
 	((CButton*)GetDlgItem(IDC_HIDE_GENRE))->SetCheck(m_HideGenre);
+	m_LoggingButton.SetCheck(m_Logging);
 
     UpdateWindow();
 
@@ -720,6 +726,8 @@ void CConfigFiles::OnCancel()
 
 	((CButton*)GetDlgItem(IDC_HIDE_GENRE))->SetCheck(m_InitialHideGenre);
 	m_HideGenre = m_InitialHideGenre;
+	m_LoggingButton.SetCheck(m_InitialLogging);
+	m_Logging = m_InitialLogging;
 
 	StoreReg();
 	EnableDisable();

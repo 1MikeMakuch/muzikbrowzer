@@ -60,6 +60,7 @@ const static TCHAR RegWindowsColorBkPanel2[] = _T("ColorBgPanel2");
 const static TCHAR RegRunAtStartup[] =_T("RunAtStartup");
 const static TCHAR RegUseGenre[] =_T("UseGenre");
 const static TCHAR RegAlbumSort[] = _T("AlbumSort");
+const static TCHAR RegLogging[] = _T("Logging");
 const static TCHAR RegWindowsRoundCorners[] = _T("RoundCorners");
 const static TCHAR RegWindowsThemeName[] = _T("ThemeName");
 const static TCHAR RegWindowsSkinName[] = _T("SkinName");

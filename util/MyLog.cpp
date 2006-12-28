@@ -77,9 +77,10 @@ MyLog::logd(const CString &m1, const CString &m2,
 		   const CString &m3, const CString &m4,
 		   const CString &m5, const CString &m6
 		   ) {
-#ifndef _DEBUG
-	return;
-#endif
+
+	if (m_loglevel < 1)
+		return;
+
 	log(m1,m2,m3,m4,m5,m6);
 }
 void
@@ -181,18 +182,10 @@ MyLog::log(char * m1, char * m2,char*m3,char*m4,char*m5,char*m6) {
 	log(M1,M2,M3,M4,M5,M6);
 }
 
-AutoLog::AutoLog(CString desc, BOOL todisk) : m_desc(desc), m_ToDisk(todisk)
+AutoLog::AutoLog(const CString & desc) : m_desc(desc)
 {
-	if (m_ToDisk) 
-		logger.logd(m_desc + " begin");
-	else
-		logger.ods(m_desc + " begin");
-
+	logger.logd(m_desc + " begin");
 }
-AutoLog::~AutoLog() 
-	{
-		if (m_ToDisk)
-			logger.logd(m_desc + " end");
-		else 
-			logger.ods(m_desc + " end");
-	}
+AutoLog::~AutoLog() {
+	logger.logd(m_desc + " end");
+}

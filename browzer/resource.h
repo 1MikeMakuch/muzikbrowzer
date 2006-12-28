@@ -472,6 +472,7 @@
 #define IDC_PROGRESS_LABEL2             2078
 #define IDC_PROGRESS_LABEL              2079
 #define IDC_HIDE_GENRE                  2080
+#define IDC_DEBUG_LOG                   2082
 #define IDS_UNKNOWN_ERROR               5000
 #define IDC_BUTTON_LOGO                 12052
 #define ID_XXX                          32775
@@ -540,7 +541,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        274
 #define _APS_NEXT_COMMAND_VALUE         32863
-#define _APS_NEXT_CONTROL_VALUE         2082
+#define _APS_NEXT_CONTROL_VALUE         2083
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

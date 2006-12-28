@@ -355,3 +355,7 @@ MBConfig::getSettings(MyHash & settings) {
 	if (m_Irman) m_Irman->getSettings(settings);
 	if (m_Password) m_Password->getSettings(settings);
 }
+int
+MBConfig::logging() {
+	return m_Files->logging();
+}

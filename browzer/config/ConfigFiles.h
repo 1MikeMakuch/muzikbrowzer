@@ -28,7 +28,7 @@ public:
 // Dialog Data
 	//{{AFX_DATA(CConfigFiles)
 	enum { IDD = IDD_CONFIG_FILES };
-
+	CButton		m_LoggingButton;
 	CButton		m_RunAtStartup;
 	CStatic		m_MdbLocation;
 	CHListBox	m_MP3DirList;
@@ -92,6 +92,8 @@ private:
 	BOOL m_ResetNeeded;
 	BOOL m_HideGenre;
 	BOOL m_InitialHideGenre;
+	int  m_Logging;
+	int  m_InitialLogging;
 
     void StoreReg();
 	void WriteFolders();
@@ -114,7 +116,7 @@ public:
 	void list2box(const CStringArray & list,CHListBox & box);
 	void AddDeletedFiles(const CStringArray & files);
 	void getSettings(MyHash & settings);
-
+	int logging() { return m_Logging; }
 
 };
 

@@ -196,7 +196,8 @@ CPlayerDlg::CPlayerDlg(CPlayerApp * theApp,
 	m_UpdateNeeded[2] = FALSE;
 	m_CheckingEm = FALSE;
 }
-CPlayerDlg::~CPlayerDlg() {
+CPlayerDlg::~CPlayerDlg()
+{
     //delete m_Config;
 
 	m_HatchBrush.DeleteObject();
@@ -219,7 +220,8 @@ CPlayerDlg::~CPlayerDlg() {
 }
 
 
-void CPlayerDlg::DoDataExchange(CDataExchange* pDX)
+void 
+CPlayerDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogClassImpl::DoDataExchange(pDX);
 
@@ -428,8 +430,8 @@ END_MESSAGE_MAP()
 // CPlayerDlg message handlers
 void initFont(CWnd *);
 void changeFont(CWnd *, CFont &);
-BOOL CPlayerDlg::OnInitDialog()
-{
+BOOL 
+CPlayerDlg::OnInitDialog() {
 	AutoLog al("CPlayerDlg::OnInitDialog");
 
 #ifdef _DEBUG
@@ -444,6 +446,7 @@ BOOL CPlayerDlg::OnInitDialog()
 	m_mlib.readDbLocation();
 
 	m_Config.createit(this, &m_callbacks);
+	logger.loglevel(m_Config.logging()); // set logging level
 
 	if (m_RebuildOnly) {
 		CStringArray dirs,excludes;
@@ -689,7 +692,8 @@ BOOL CPlayerDlg::OnInitDialog()
 	return FALSE;  // return TRUE  unless you set the focus to a control
 }
 
-void CPlayerDlg::ShowBetaWarning() {
+void 
+CPlayerDlg::ShowBetaWarning() {
 	CTime t = CTime::GetCurrentTime();
 	CString y = t.Format("%Y");
 	int Y = atoi(y);
@@ -762,7 +766,8 @@ changeFont(CWnd * wnd, CFont & f) {
     wnd->SetFont(&f);
     f.Detach();
 }
-void CPlayerDlg::setFont() {
+void 
+CPlayerDlg::setFont() {
     static int first = 1;
     if (first) {
         first = 0;
@@ -1868,7 +1873,8 @@ CPlayerDlg::UpdateRects() {
 	m_LibraryRect.UnionRect(m_SearchEditRect,m_SongsRect);
 	//GetClientRect(m_LibraryRect);
 }
-void CPlayerDlg::OnSearchDlg() {
+void 
+CPlayerDlg::OnSearchDlg() {
 	if (m_ShowSearchPanel) {
 		OnNoSearchDlg();
 		return;
@@ -1886,7 +1892,8 @@ void CPlayerDlg::OnSearchDlg() {
 	RedrawWindow();
 
 }
-void CPlayerDlg::OnNoSearchDlg() {
+void 
+CPlayerDlg::OnNoSearchDlg() {
 	CWaitCursor c;
 	m_LastShowSearchPanel = m_ShowSearchPanel;
 	m_ShowSearchPanel = FALSE;
@@ -1905,7 +1912,8 @@ void CPlayerDlg::OnNoSearchDlg() {
 	m_Genres.SetFocus();
 }
 
-void CPlayerDlg::OnSearchGo() {
+void 
+CPlayerDlg::OnSearchGo() {
 
 	if (!m_ShowSearchPanel) return;
 	CString txt;
@@ -1936,8 +1944,8 @@ void CPlayerDlg::OnSearchGo() {
 	}
 	m_SearchEdit.SetFocus();
 }
-void CPlayerDlg::OnSearchClear() 
-{
+void 
+CPlayerDlg::OnSearchClear() {
 	m_SearchStatus.setText("",DT_RIGHT);
 	m_SearchEdit.SetWindowText("");
 	if (!m_ShowSearchPanel) return;
@@ -2010,8 +2018,8 @@ CPlayerDlg::initDb() {
 
 }
 
-void CPlayerDlg::OnSysCommand(UINT nID, LONG lParam)
-{
+void 
+CPlayerDlg::OnSysCommand(UINT nID, LONG lParam) {
 //	logger.ods("OnSysCommand:" + numToString(nID) + " " + numToString(lParam));
 
 	if ((nID & 0xFFF0) == IDM_ABOUTBOX)	{
@@ -2060,7 +2068,8 @@ void CPlayerDlg::OnSysCommand(UINT nID, LONG lParam)
 #pragma hack
 // get rid of the 'z' above before release.
 
-void CPlayerDlg::OnVerify() {
+void 
+CPlayerDlg::OnVerify() {
 	CString msg = m_mlib.JustVerify();
 }
 
@@ -2068,8 +2077,8 @@ void CPlayerDlg::OnVerify() {
 //  to draw the icon.  For MFC applications using the document/view model,
 //  this is automatically done for you by the framework.
 
-void CPlayerDlg::OnPaint() 
-{
+void 
+CPlayerDlg::OnPaint() {
 //	logger.ods("OnPaint");
 	if (m_Resizing) return;
 //	CString msg="CPlayerDlg OnPaint\r\n"; OutputDebugString(msg);
@@ -2085,13 +2094,13 @@ void CPlayerDlg::OnPaint()
 
 // The system calls this to obtain the cursor to display while the user drags
 //  the minimized window.
-HCURSOR CPlayerDlg::OnQueryDragIcon()
-{
+HCURSOR 
+CPlayerDlg::OnQueryDragIcon(){
 	return (HCURSOR) m_hIcon;
 }
 
-BOOL CPlayerDlg::DestroyWindow() 
-{
+BOOL 
+CPlayerDlg::DestroyWindow() {
 	SavePlaylist("Last");
 	// delete the Xaudio player
     if (m_Player) {
@@ -2102,8 +2111,8 @@ BOOL CPlayerDlg::DestroyWindow()
 	return CDialogClassImpl::DestroyWindow();
 }
 
-void CPlayerDlg::OnOpenFileButton() 
-{
+void 
+CPlayerDlg::OnOpenFileButton() {
     // open a file
 	CFileDialog *dialog;
 
@@ -2129,8 +2138,8 @@ void CPlayerDlg::OnOpenFileButton()
 }
 
 #ifdef asdf
-void CPlayerDlg::OnOpenUrlButton() 
-{
+void 
+CPlayerDlg::OnOpenUrlButton() {
 	CUrlDlg *dialog;
 
 	dialog = new CUrlDlg();
@@ -2145,12 +2154,12 @@ void CPlayerDlg::OnOpenUrlButton()
 }
 #endif
 #ifdef asdf
-void CPlayerDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
-{
-OnHScroll(nSBCode, nPos, pScrollBar) ;
+void 
+CPlayerDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) {
+	OnHScroll(nSBCode, nPos, pScrollBar) ;
 }
-void CPlayerDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
-{
+void 
+CPlayerDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) {
 	return;
 	if (pScrollBar->m_hWnd == m_PositionSlider.m_hWnd) {
 		switch (nSBCode) {
@@ -2177,15 +2186,16 @@ void CPlayerDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	}
 }
 #endif
-void CPlayerDlg::OnAbout() 
-{
+void 
+CPlayerDlg::OnAbout() {
 		CRect rect;
 		GetWindowRect(rect);
 		About dlgAbout(rect);
 		dlgAbout.DoModal();
 }
 
-void CPlayerDlg::OnControlSelChange() {
+void 
+CPlayerDlg::OnControlSelChange() {
     if (m_Control->ptr() == &m_Genres) {
         OnSelchangeGenres();
 		m_Genres.invalidate();
@@ -2204,7 +2214,8 @@ void CPlayerDlg::OnControlSelChange() {
     }
 }
 
-BOOL CPlayerDlg::OnControlClick() {
+BOOL 
+CPlayerDlg::OnControlClick(){
     if (m_Control->ptr() == &m_Genres) {
         OnDblclkGenres() ; return TRUE;
     } else if (m_Control->ptr() == &m_Artists) {
@@ -2241,29 +2252,30 @@ rememberSelections(CMapStringToString & map, CString sel,
 #endif
 }
 
-void CPlayerDlg::OnSelchangeGenres() 
-{
+void 
+CPlayerDlg::OnSelchangeGenres(){
 	m_UpdateNeeded[0] = TRUE;
 	m_UpdateNeeded[1] = TRUE;
 	m_UpdateNeeded[2] = TRUE;
 	m_Artists.invalidate();
 }
-void CPlayerDlg::OnSelchangeArtists() 
-{
+void 
+CPlayerDlg::OnSelchangeArtists() {
 	m_UpdateNeeded[1] = TRUE;
 	m_UpdateNeeded[2] = TRUE;
 	m_Albums.invalidate();
 }
-void CPlayerDlg::OnSelchangeAlbums() 
-{
+void 
+CPlayerDlg::OnSelchangeAlbums() {
 	m_UpdateNeeded[2] = TRUE;
 	m_Songs.invalidate();
 }
-void CPlayerDlg::OnSelchangeSongs() 
-{
+void 
+CPlayerDlg::OnSelchangeSongs() {
 }
-BOOL CPlayerDlg::UpdateArtists() // called by m_Artists::OnPaint
-{
+ // called by m_Artists::OnPaint
+BOOL 
+CPlayerDlg::UpdateArtists(){
 	BOOL updated = FALSE;
 	static int lastsel = -1;
 	if (DBLOCKED) return updated;
@@ -2289,8 +2301,9 @@ BOOL CPlayerDlg::UpdateArtists() // called by m_Artists::OnPaint
 	if (lastsel != sel)	m_LastThingQueuedUp = ""; lastsel = sel;
 	return updated;
 }
-BOOL CPlayerDlg::UpdateAlbums() // called by m_Albums::OnPaint
-{
+// called by m_Albums::OnPaint
+BOOL 
+CPlayerDlg::UpdateAlbums() {
 	BOOL updated = FALSE;
 	static int lastsel = -1;
 	if (DBLOCKED) return updated;
@@ -2315,8 +2328,8 @@ BOOL CPlayerDlg::UpdateAlbums() // called by m_Albums::OnPaint
 	if (lastsel != sel)	m_LastThingQueuedUp = ""; lastsel = sel;
 	return updated;
 }
-BOOL CPlayerDlg::UpdateSongs()
-{
+BOOL 
+CPlayerDlg::UpdateSongs(){
 	BOOL updated = FALSE;
 	static int lastsel = -1;
 	if (DBLOCKED) return updated;
@@ -2361,8 +2374,8 @@ BOOL CPlayerDlg::UpdateSongs()
 	return updated;
 }
 
-void CPlayerDlg::OnSelchangePlaylist() 
-{
+void 
+CPlayerDlg::OnSelchangePlaylist() {
 	if (DBLOCKED) return;
 	int sel = m_Playlist.GetCurSel();
 	if (sel > -1) {
@@ -2374,8 +2387,8 @@ void CPlayerDlg::OnSelchangePlaylist()
 	CString file = m_mlib._playlist[sel]->getId3("FILE");
 	displayAlbumArt(file,m_mlib._playlist[sel]->getId3("TALB"));
 }
-void CPlayerDlg::OnKillfocusVirtuals() 
-{
+void 
+CPlayerDlg::OnKillfocusVirtuals() {
 	// Now that we have non virtual controls, need this
 	// to prevent misdirected actions from going to the
 	// most recent active virtual control.
@@ -2448,8 +2461,7 @@ void CPlayerDlg::updatePlaylist(const BOOL save) {
 		SavePlaylist("Last");
 }
 
-void CPlayerDlg::OnDblclkSongs() 
-{
+void CPlayerDlg::OnDblclkSongs() {
 	CString last = _selectedGenre + _selectedArtist + _selectedAlbum +
 		_selectedSong;
 	if (last != m_LastThingQueuedUp) {
@@ -2465,12 +2477,13 @@ void CPlayerDlg::OnDblclkSongs()
 	}
 }
 
-LRESULT CPlayerDlg::OnDblclkAlbums(WPARAM, LPARAM) {
+LRESULT 
+CPlayerDlg::OnDblclkAlbums(WPARAM, LPARAM) {
 	OnDblclkAlbums() ;
 	return 0;
 }
-void CPlayerDlg::OnDblclkAlbums() 
-{
+void 
+CPlayerDlg::OnDblclkAlbums() {
 	static justclicked = TRUE;
 	CString last = _selectedGenre + _selectedArtist + _selectedAlbum;
 	if (last != m_LastThingQueuedUp) {
@@ -2487,12 +2500,13 @@ void CPlayerDlg::OnDblclkAlbums()
 		PlayerStatusTempSet("You just added that!");
 	}
 }
-LRESULT CPlayerDlg::OnDblclkArtists(WPARAM, LPARAM) {
+LRESULT 
+CPlayerDlg::OnDblclkArtists(WPARAM, LPARAM) {
 	OnDblclkArtists();
 	return 0;
 }
-void CPlayerDlg::OnDblclkArtists()
-{
+void 
+CPlayerDlg::OnDblclkArtists(){
 	static justclicked = TRUE;
 	if (_selectedArtist == MBALL) return;
 	CString last = _selectedGenre + _selectedArtist;
@@ -2510,12 +2524,13 @@ void CPlayerDlg::OnDblclkArtists()
 		PlayerStatusTempSet("You just added that!");
 	}
 }
-LRESULT CPlayerDlg::OnDblclkGenres(WPARAM, LPARAM) {
+LRESULT 
+CPlayerDlg::OnDblclkGenres(WPARAM, LPARAM) {
 	OnDblclkGenres();
 	return 0;
 }
-void CPlayerDlg::OnDblclkGenres() 
-{
+void 
+CPlayerDlg::OnDblclkGenres() {
 	static justclicked = TRUE;
 	if (_selectedGenre == MBALL) return;
 	CString last = _selectedGenre;
@@ -2534,8 +2549,8 @@ void CPlayerDlg::OnDblclkGenres()
 	}
 }
 
-void CPlayerDlg::OnDblclkPlaylist() 
-{
+void 
+CPlayerDlg::OnDblclkPlaylist() {
     int sel = m_Playlist.GetCurSel();
     m_PlaylistCurrent = sel -1;
     Stop();
@@ -2545,8 +2560,9 @@ void CPlayerDlg::OnDblclkPlaylist()
 
 }
 
-BOOL CPlayerDlg::PreTranslateMessage(MSG* pMsg)
-{	// disable ESC & ENTER from killing the dialog
+BOOL 
+CPlayerDlg::PreTranslateMessage(MSG* pMsg){
+	// disable ESC & ENTER from killing the dialog
 	// returning TRUE says msg has been processed, don't further process
     if (pMsg->message == WM_KEYDOWN) {
         if (pMsg->wParam == VK_RETURN) {
@@ -2570,8 +2586,8 @@ BOOL CPlayerDlg::PreTranslateMessage(MSG* pMsg)
 	return CDialogClassImpl::PreTranslateMessage(pMsg);
 }
 
-void CPlayerDlg::OnMenuButton() 
-{
+void 
+CPlayerDlg::OnMenuButton() {
     int r = -1;
     if (m_MenuDlg == 0) {
         m_MenuDlg = new RMenuDlg (this, &m_callbacks);
@@ -2616,7 +2632,8 @@ void CPlayerDlg::OnMenuButton()
     }
 }
 
-void CPlayerDlg::OnDelete() {
+void 
+CPlayerDlg::OnDelete() {
 
 	mWindowFlag = 0;
     if (m_Control->ptr() == &m_Playlist) {
@@ -2958,7 +2975,8 @@ CPlayerDlg::OnPostMyIdle(WPARAM wParam, LPARAM lParam) {
     PlayerStatusRevert();
     return 0;
 }
-void CPlayerDlg::OnMenuCheckem() {
+void 
+CPlayerDlg::OnMenuCheckem() {
 	OnMenuClearplaylist();
 	m_CheckSongCount = m_mlib.getSongCount();
 	m_CheckGoodCount = 0;
@@ -2985,7 +3003,8 @@ void CPlayerDlg::OnMenuCheckem() {
 	updatePlaylist();	
 }
 // Configuration dlg
-void CPlayerDlg::OnMenuOptions() {
+void 
+CPlayerDlg::OnMenuOptions() {
 	
 	CString skinnameOrig = m_Config.getCurrentSkin();
 	CWaitCursor cw;
@@ -3029,14 +3048,16 @@ void
 CPlayerDlg::redraw() {
 	resetControls();
 }
-void CPlayerDlg::OnAlphaUp() {
+void 
+CPlayerDlg::OnAlphaUp() {
 	HandleIRMessage(IR_MESSAGE_ALPHAUP);
 }
-void CPlayerDlg::OnAlphaDown() {
+void 
+CPlayerDlg::OnAlphaDown() {
 	HandleIRMessage(IR_MESSAGE_ALPHADOWN);
 }
-void CPlayerDlg::OnMenuClearplaylist() 
-{
+void 
+CPlayerDlg::OnMenuClearplaylist() {
     m_mlib._playlist.reset();
     m_PlaylistCurrent = -1;
     updatePlaylist(FALSE);
@@ -3050,7 +3071,8 @@ void CPlayerDlg::OnMenuClearplaylist()
 	m_LastThingQueuedUp = "";
 	
 }
-void CPlayerDlg::OnCancel() {
+void 
+CPlayerDlg::OnCancel() {
 	StopTimers();
     saveConfig();
     EndDialog(0);
@@ -3100,8 +3122,8 @@ CPlayerDlg::SaveWindowPos() {
 
 }
 
-void CPlayerDlg::OnMenuExit() 
-{
+void 
+CPlayerDlg::OnMenuExit() {
     if (m_MenuDlg) {
 	    m_MenuDlg->EndDialog(0);
     } else {
@@ -3109,15 +3131,16 @@ void CPlayerDlg::OnMenuExit()
         EndDialog(0);
     }
 }
-void CPlayerDlg::OnExit() 
-{
+void 
+CPlayerDlg::OnExit() {
     if (m_MenuDlg) {
 	    m_MenuDlg->EndDialog(0);
     } else {
         saveConfig();
     }
 }
-void CPlayerDlg::OnMenuEditPlaylist() {
+void 
+CPlayerDlg::OnMenuEditPlaylist() {
 	if (0 == m_LoadPlaylistDlg) {
 		m_LoadPlaylistDlg = new LoadPlaylistDlg (&m_callbacks, this, TRUE);
 		*m_Dialog = m_LoadPlaylistDlg;
@@ -3127,8 +3150,8 @@ void CPlayerDlg::OnMenuEditPlaylist() {
 		*m_Dialog = this;
 	}
 }
-void CPlayerDlg::OnMenuLoadplaylist() 
-{
+void 
+CPlayerDlg::OnMenuLoadplaylist() {
 	if (0 == m_LoadPlaylistDlg) {
 		m_LoadPlaylistDlg = new LoadPlaylistDlg (&m_callbacks, this, FALSE);
 		*m_Dialog = m_LoadPlaylistDlg;
@@ -3139,8 +3162,8 @@ void CPlayerDlg::OnMenuLoadplaylist()
 	}
 }
 
-void CPlayerDlg::OnMenuSaveplaylist() 
-{
+void 
+CPlayerDlg::OnMenuSaveplaylist() {
 
     if (m_Playlist.GetCount() < 1) {
         PlayerStatusTempSet("No Playlist to save!");
@@ -3173,7 +3196,8 @@ void CPlayerDlg::OnMenuSaveplaylist()
 	
 }
 
-void CPlayerDlg::SavePlaylist(CString name) {
+void 
+CPlayerDlg::SavePlaylist(CString name) {
 	if (!::IsWindow(m_Playlist.m_hWnd)) {
 		return;
 	}
@@ -3183,8 +3207,8 @@ void CPlayerDlg::SavePlaylist(CString name) {
 	m_mlib.savePlaylist(name);
 }
 
-void CPlayerDlg::OnMenuShuffleplaylist() 
-{
+void 
+CPlayerDlg::OnMenuShuffleplaylist() {
 	m_mlib.shufflePlaylist();
     m_Playlist.ResetContent();
 	m_mlib.getPlaylist(m_Playlist);
@@ -3196,8 +3220,8 @@ void CPlayerDlg::OnMenuShuffleplaylist()
 	PlayLoop();	
 }
 
-void CPlayerDlg::OnMenuRandomizePlaylist() 
-{
+void 
+CPlayerDlg::OnMenuRandomizePlaylist() {
 	CWaitCursor cw;
 	if (m_mlib._playlist.size()) {
 		m_mlib.RandomizePlaylist();
@@ -3216,26 +3240,26 @@ void CPlayerDlg::OnMenuRandomizePlaylist()
 	calcDuration();
 }
 
-void CPlayerDlg::OnMenuPause() 
-{
+void 
+CPlayerDlg::OnMenuPause() {
 	Pause();
 	
 }
 
-void CPlayerDlg::OnMenuPlay() 
-{
+void 
+CPlayerDlg::OnMenuPlay() {
     OnPlayButton();
 	
 }
 
-void CPlayerDlg::OnMenuStop() 
-{
+void 
+CPlayerDlg::OnMenuStop() {
     OnStopButton();
 	
 }
 
-void CPlayerDlg::OnMenuHelp() 
-{
+void 
+CPlayerDlg::OnMenuHelp() {
 	CString msg,d1,d2,d3,r1,r2,r3;
 	int i,n;
 	BOOL AnyDefined = FALSE;
@@ -3266,13 +3290,15 @@ void CPlayerDlg::OnMenuHelp()
 	MBMessageBox("Remote Control Help", msg, FALSE, FALSE,60);
 }
 
-void CPlayerDlg::OnNextSong() {
+void 
+CPlayerDlg::OnNextSong() {
     Stop();
-        m_StopFlag = FALSE;
-		m_PauseFlag = FALSE;
+    m_StopFlag = FALSE;
+	m_PauseFlag = FALSE;
 	PlayLoop();
 }
-void CPlayerDlg::OnPreviousSong() {
+void 
+CPlayerDlg::OnPreviousSong() {
     if (m_PlaylistCurrent <= 0) {
         m_PlaylistCurrent = m_Playlist.GetCount() -2;
     } else {
@@ -3282,7 +3308,8 @@ void CPlayerDlg::OnPreviousSong() {
 		m_PauseFlag = FALSE;
     OnNextSong();
 }
-BOOL CPlayerDlg::Play() {
+BOOL 
+CPlayerDlg::Play() {
 	StartSeekTimer();
 	adjustVolume() ;
 	BOOL r = m_Player->Play();
@@ -3290,14 +3317,16 @@ BOOL CPlayerDlg::Play() {
 	return r;
 
 }
-void CPlayerDlg::Stop() {
+void 
+CPlayerDlg::Stop() {
 	StopSeekTimer();
 	resetPosition();
 	m_Player->Stop();
 	m_PositionLabel.setText ( "Stop", DT_CENTER);
 //	CurrentTitleSet("");
 }
-void CPlayerDlg::Pause() {
+void 
+CPlayerDlg::Pause() {
 	if (m_PauseFlag == FALSE) {
 		m_PauseFlag = TRUE;
 		StopSeekTimer();
@@ -3310,8 +3339,8 @@ void CPlayerDlg::Pause() {
 	m_StopFlag = FALSE;
 	m_PositionLabel.setText ( "Pause", DT_CENTER);
 }
-void CPlayerDlg::OnPlayButton() 
-{
+void 
+CPlayerDlg::OnPlayButton() {
 	if (m_Config.trialMode() == 1) {
 		--m_PlaylistCurrent;
 		PlayLoop();
@@ -3326,8 +3355,8 @@ void CPlayerDlg::OnPlayButton()
 	}
 }
 
-void CPlayerDlg::OnStopButton() 
-{
+void 
+CPlayerDlg::OnStopButton() {
 	Stop();
     m_StopFlag = TRUE;
 	m_PauseFlag = FALSE;
@@ -3350,7 +3379,8 @@ CPlayerDlg::recordTLEN() {
 	}
 }
 
-void CPlayerDlg::PlayLoop() {
+void 
+CPlayerDlg::PlayLoop() {
 	AutoLog alog("PlayLoop()##################################################");
     static int first = 1;
 	static int trialCounter = 0;
@@ -3535,7 +3565,8 @@ CPlayerDlg::calcDuration() {
 	m_PlaylistLabel.setText(msg);
 }
 
-void CPlayerDlg::LoadPlaylist(CString name) {
+void 
+CPlayerDlg::LoadPlaylist(CString name) {
     m_Playlist.ResetContent();
     CString errormsg;
     int r = m_mlib.loadPlaylist(name,errormsg);
@@ -3554,8 +3585,8 @@ void CPlayerDlg::LoadPlaylist(CString name) {
 	calcDuration();
 }
 
-void CPlayerDlg::OnContextMenu(CWnd* pWnd, CPoint ScreenPnt) 
-{
+void 
+CPlayerDlg::OnContextMenu(CWnd* pWnd, CPoint ScreenPnt) {
 
 
     CPoint  point; // point inside the list ctrl where right-click occurred
@@ -3659,8 +3690,8 @@ void CPlayerDlg::OnContextMenu(CWnd* pWnd, CPoint ScreenPnt)
     }
 }
 
-void CPlayerDlg::OnUserEditSong() 
-{
+void 
+CPlayerDlg::OnUserEditSong() {
 	if (m_Config.trialMode() == 2) {
 		MBMessageBox("Notice", "Trial Expired.");
 		return;
@@ -3749,7 +3780,8 @@ void CPlayerDlg::OnUserEditSong()
 
 }
 
-void CPlayerDlg::OnGetMinMaxInfo( MINMAXINFO FAR* lpMMI ) {
+void 
+CPlayerDlg::OnGetMinMaxInfo( MINMAXINFO FAR* lpMMI ) {
    RECT r;
    GetWindowRect(&r);
    if ((r.right - r.left) > 0 && TRUE == m_FixedSize )
@@ -3763,8 +3795,8 @@ void CPlayerDlg::OnGetMinMaxInfo( MINMAXINFO FAR* lpMMI ) {
       CDialog::OnGetMinMaxInfo(lpMMI); 
 }
 
-void CPlayerDlg::OnSizing(UINT fwSide, LPRECT pRect) 
-{
+void 
+CPlayerDlg::OnSizing(UINT fwSide, LPRECT pRect) {
 	int left,right,top,bottom;
 	left = pRect->left;
 	right = pRect->right;
@@ -3798,7 +3830,8 @@ void CPlayerDlg::OnSizing(UINT fwSide, LPRECT pRect)
 	m_Resizing = TRUE;	
 //	logger.ods("OnSizing");
 }
-void CPlayerDlg::OnCaptureChanged(CWnd *pWnd) {
+void 
+CPlayerDlg::OnCaptureChanged(CWnd *pWnd) {
 	// This forces rubber band style resizing
 //	logger.ods("OnCaptureChanged");
 	if (m_Resizing)
@@ -3818,8 +3851,8 @@ void CPlayerDlg::OnCaptureChanged(CWnd *pWnd) {
 	CDialog::OnCaptureChanged(pWnd);
 }
 
-void CPlayerDlg::OnSize(UINT nType, int cx, int cy) 
-{
+void 
+CPlayerDlg::OnSize(UINT nType, int cx, int cy) {
     static int first = 0;
     if (first < 2) {
         first++;
@@ -4007,8 +4040,8 @@ CPlayerDlg::OnNcHitTest( CPoint point ) {
 
 	return rv;
 }
-BOOL CPlayerDlg::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message) 
-{
+BOOL 
+CPlayerDlg::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message) {
 	if (nHitTest == HTSIZE) {
 		::SetCursor(AfxGetApp()->LoadStandardCursor(IDC_SIZEWE));
 	} else {
@@ -4018,8 +4051,8 @@ BOOL CPlayerDlg::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message)
 	return TRUE;
 }
 
-void CPlayerDlg::OnNcLButtonDown(UINT nHitTest, CPoint point) 
-{
+void 
+CPlayerDlg::OnNcLButtonDown(UINT nHitTest, CPoint point) {
 	CPoint cpoint(point);
 	ScreenToClient(&cpoint);
 	m_AdjustLibrary = 0;
@@ -4039,14 +4072,14 @@ void CPlayerDlg::OnNcLButtonDown(UINT nHitTest, CPoint point)
 		CDialogClassImpl::OnNcLButtonDown(nHitTest, point);
 	}
 }
-void CPlayerDlg::OnLButtonUp(UINT nFlags, CPoint point) 
-{
+void 
+CPlayerDlg::OnLButtonUp(UINT nFlags, CPoint point) {
 	ClientToScreen(&point);
 	OnNcLButtonUp(nFlags,point);
 }
 
-void CPlayerDlg::OnNcLButtonUp(UINT nHitTest, CPoint point) 
-{
+void 
+CPlayerDlg::OnNcLButtonUp(UINT nHitTest, CPoint point) {
 	if (m_LibDrag) {
 		ReleaseCapture();
 		m_LibDrag = FALSE;
@@ -4061,15 +4094,15 @@ void CPlayerDlg::OnNcLButtonUp(UINT nHitTest, CPoint point)
 	m_AdjustLibrary = 0;
 	
 }
-void CPlayerDlg::OnMouseMove(UINT nFlags, CPoint point) 
-{
+void 
+CPlayerDlg::OnMouseMove(UINT nFlags, CPoint point) {
 	ClientToScreen(&point);
 	OnNcMouseMove(nFlags,point);
 }
 
 
-void CPlayerDlg::OnNcMouseMove(UINT nHitTest, CPoint point) 
-{
+void 
+CPlayerDlg::OnNcMouseMove(UINT nHitTest, CPoint point) {
 	static const SIZE rbs = {1,1};
 	
 	if (m_LibDrag) {
@@ -4245,8 +4278,8 @@ CPlayerDlg::AdjustLibraryWidths(CPoint &apoint) {
 
 
 
-void CPlayerDlg::OnButtonMenu() 
-{
+void 
+CPlayerDlg::OnButtonMenu() {
     CMenu menu;
     if (menu.LoadMenu(IDR_MENU2)) {
         CMenu * popup = menu.GetSubMenu(0);
@@ -4391,13 +4424,13 @@ CPlayerDlg::OnMusicScanNew() {
 	PlayerStatusSet(m_mlib.getLibraryCounts());
 	UpdateWindow();
 }
-void CPlayerDlg::OnButtonMinimize() 
-{
+void 
+CPlayerDlg::OnButtonMinimize() {
 	ShowWindow(SW_MINIMIZE);
 }
 
-void CPlayerDlg::OnButtonMaximize() 
-{
+void 
+CPlayerDlg::OnButtonMaximize() {
 	if (TRUE != m_FixedSize) {
 		WINDOWPLACEMENT lpwndpl;
 		BOOL r = GetWindowPlacement(&lpwndpl);
@@ -4426,7 +4459,8 @@ void CPlayerDlg::OnButtonMaximize()
 	
 }
 
-HBRUSH CPlayerDlg::OnCtlColor( CDC* pDC, CWnd* pWnd, UINT nCtlColor ) {
+HBRUSH 
+CPlayerDlg::OnCtlColor( CDC* pDC, CWnd* pWnd, UINT nCtlColor ) {
 
 	HBRUSH hbr = CDialogClassImpl::OnCtlColor(pDC, pWnd, nCtlColor);
 
@@ -4497,7 +4531,8 @@ HBRUSH CPlayerDlg::OnCtlColor( CDC* pDC, CWnd* pWnd, UINT nCtlColor ) {
 }
 
 
-void CPlayerDlg::OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruct) {
+void 
+CPlayerDlg::OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruct) {
 
     switch (nIDCtl)	{
 //    case IDC_BUTTON_MINIMIZE:
@@ -4548,7 +4583,8 @@ void CPlayerDlg::OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruct) {
         break;	
     }
 }
-void CPlayerDlg::OnQuickPlay() {
+void 
+CPlayerDlg::OnQuickPlay() {
 	CString file;
 	Song song = new CSong;
 	int sel = -1 ;
@@ -4591,7 +4627,8 @@ void CPlayerDlg::OnQuickPlay() {
 	m_PlaylistCurrent--;
 
 }
-void CPlayerDlg::OnAddToPlaylist() {
+void 
+CPlayerDlg::OnAddToPlaylist() {
 	switch (mWindowFlag) {
 	case 1:
 		OnDblclkGenres() ;
@@ -4607,7 +4644,8 @@ void CPlayerDlg::OnAddToPlaylist() {
 		break;
 	}
 }
-void CPlayerDlg::OnTestMenu() {
+void 
+CPlayerDlg::OnTestMenu() {
 //    CScrollBar *s = new CScrollBar();
 //    LPSCROLLINFO lpScrollInfo;
 //    UINT nMask;
@@ -4617,7 +4655,8 @@ void CPlayerDlg::OnTestMenu() {
 
 }
 
-void CPlayerDlg::HelpInfo(BOOL user) {
+void 
+CPlayerDlg::HelpInfo(BOOL user) {
     TCHAR szPath[_MAX_PATH],
       szFname[_MAX_FNAME],
       szDir[_MAX_DIR],
@@ -4656,16 +4695,19 @@ void CPlayerDlg::HelpInfo(BOOL user) {
 
 }
 // This one's called from the Menu
-void CPlayerDlg::HelpInfo() {
+void 
+CPlayerDlg::HelpInfo() {
 	HelpInfo(FALSE);
 }
 // While this one's called via F1
-BOOL CPlayerDlg::OnHelpInfo(HELPINFO* pHelpInfo) {
+BOOL 
+CPlayerDlg::OnHelpInfo(HELPINFO* pHelpInfo) {
 	HelpInfo(TRUE);
 	return TRUE;
 }
 
-void CPlayerDlg::OnMenuExportLibrary() {
+void 
+CPlayerDlg::OnMenuExportLibrary() {
 	ExportDlg dlg;
 	BOOL again = TRUE;
 	while (again) {
@@ -4680,24 +4722,25 @@ void CPlayerDlg::OnMenuExportLibrary() {
     return;
 }
 
-void CPlayerDlg::StopTimers() {
+void 
+CPlayerDlg::StopTimers() {
 	StopSeekTimer();
 	StopStatusTimer();
 }
-void CPlayerDlg::StartStatusTimer()
-{
+void 
+CPlayerDlg::StartStatusTimer(){
 	StopStatusTimer();
 	m_StatusTimerId = SetTimer(MB_STATUS_TIMER_ID, 3000, NULL);
 }
-void CPlayerDlg::StopStatusTimer()
-{
+void 
+CPlayerDlg::StopStatusTimer(){
 	if (m_StatusTimerId) {
 		KillTimer(m_StatusTimerId);
 		m_StatusTimerId = 0;
 	}
 }
-void CPlayerDlg::StartSeekTimer() 
-{
+void 
+CPlayerDlg::StartSeekTimer() {
     // Cancel any pending timer event
     StopSeekTimer();
 	m_PositionSlider.SetRange(0,100);	
@@ -4707,8 +4750,8 @@ void CPlayerDlg::StartSeekTimer()
 
 }
 
-void CPlayerDlg::StopSeekTimer() 
-{
+void 
+CPlayerDlg::StopSeekTimer() {
     // Cancel the timer
     if(m_timerid)        
     {                
@@ -4716,12 +4759,13 @@ void CPlayerDlg::StopSeekTimer()
         m_timerid = 0;
     }
 }
-void CPlayerDlg::resetPosition() {
+void 
+CPlayerDlg::resetPosition() {
 	m_PositionLabel.setText("");
 	m_PositionSlider.SetPos(0);
 }
-void CPlayerDlg::OnTimer(UINT nIDEvent) 
-{
+void 
+CPlayerDlg::OnTimer(UINT nIDEvent) {
 	switch(nIDEvent) {
 	case MB_PLAYLOOP_TIMER_ID:
 		KillTimer(m_PlayLoopTimerId);
@@ -4735,8 +4779,8 @@ void CPlayerDlg::OnTimer(UINT nIDEvent)
 		break;
 	}
 }
-void CPlayerDlg::updatePositionLabel()
-{
+void 
+CPlayerDlg::updatePositionLabel(){
 	long pos_secs, dur_secs, pos_pct;
 	pos_secs = dur_secs = pos_pct = 0;
 	m_Player->ReadMediaPosition(pos_secs, dur_secs, pos_pct);
@@ -4764,11 +4808,13 @@ void CPlayerDlg::updatePositionLabel()
 //	PlayerStatusSet(msg);
 
 }
-void CPlayerDlg::adjustPosition() {
+void 
+CPlayerDlg::adjustPosition() {
 	m_Player->Seek(m_PositionSlider.GetPos(), TRUE);
 	updatePositionLabel();
 }
-void CPlayerDlg::adjustPosition(int pct) {
+void 
+CPlayerDlg::adjustPosition(int pct) {
 	m_Player->Seek(pct, TRUE);
 	updatePositionLabel();
 }
@@ -4777,24 +4823,22 @@ CPlayerDlg::OnProgress(WPARAM wParam, LPARAM lParam) {
 	adjustPosition();
 	return 0;
 }
-void CPlayerDlg::OnFastForward() {
+void 
+CPlayerDlg::OnFastForward() {
 	adjustPosition(m_PositionSlider.GetPos() + 5);
 }
-void CPlayerDlg::OnReverse() {
+void 
+CPlayerDlg::OnReverse() {
 	adjustPosition(m_PositionSlider.GetPos() - 5);
 }
 
-//void CPlayerDlg::updateVolumeLabel() {
-//	AutoBuf buf(10);
-//	sprintf(buf.p,"%d", m_VolumeSlider.GetPos());
-//	m_VolumeLabel.setText(buf.p);
-//}
 LRESULT
 CPlayerDlg::OnVolume(WPARAM wParam, LPARAM lParam) {
 	adjustVolume();
 	return 0;
 }
-void CPlayerDlg::adjustVolume() {
+void 
+CPlayerDlg::adjustVolume() {
 	if (m_Player->SetVolume(m_VolumeSlider.GetPos())) {
 //		updateVolumeLabel();
 	} else {
@@ -4802,26 +4846,32 @@ void CPlayerDlg::adjustVolume() {
 //		PlayerStatusTempSet("Unable to set volume");
 	}
 }
-void CPlayerDlg::adjustVolume(int level) {
+void 
+CPlayerDlg::adjustVolume(int level) {
 	m_VolumeSlider.SetPos(level);
 	adjustVolume();
 }
-void CPlayerDlg::OnVolUp() {
+void 
+CPlayerDlg::OnVolUp() {
 	adjustVolume(m_VolumeSlider.GetPos() + 1);
 }
-void CPlayerDlg::OnVolDown() {
+void 
+CPlayerDlg::OnVolDown() {
 	adjustVolume(m_VolumeSlider.GetPos() - 1);
 }
 
-void CPlayerDlg::InputClose() {
+void 
+CPlayerDlg::InputClose() {
 	m_Player->InputClose();
 	StopSeekTimer();
 }
 
-void CPlayerDlg::killAlbumArt() {
+void 
+CPlayerDlg::killAlbumArt() {
 	m_Picture.unload();
 }
-void CPlayerDlg::displayAlbumArt(const CString & file, const CString & album) {
+void 
+CPlayerDlg::displayAlbumArt(const CString & file, const CString & album) {
 //	return;
 
 	if (""== file) {
@@ -4864,14 +4914,6 @@ void CPlayerDlg::displayAlbumArt(const CString & file, const CString & album) {
 
 }
 
-//void
-//CPlayerDlg::OnNcPaint() {
-//	CDC* pdc= GetWindowDC();
-//	EraseBkgndNC(pdc);//, BitmapToCRect * bmcr)
-//	ReleaseDC(pdc);	
-//	return;
-//}
-
 TEST(WmaTag2, read2)
 {
 	CString file = "..\\testdata\\x.wma";
@@ -4887,11 +4929,14 @@ TEST(WmaTag2, read2)
 //	MBMessageBox("test",info);
 }
 
-void CPlayerDlg::OnMusicButton() {
+void 
+CPlayerDlg::OnMusicButton() {
 }
-void CPlayerDlg::OnPicturesButton() {
+void 
+CPlayerDlg::OnPicturesButton() {
 }
-void CPlayerDlg::OnVideoButton() {
+void 
+CPlayerDlg::OnVideoButton() {
 }
 LONG myGetRegKey(HKEY key, LPCTSTR subkey, LPTSTR retdata)
 {
@@ -4908,8 +4953,8 @@ LONG myGetRegKey(HKEY key, LPCTSTR subkey, LPTSTR retdata)
 
     return retval;
 }
-void CPlayerDlg::OnLogoButton() 
-{
+void 
+CPlayerDlg::OnLogoButton() {
     TCHAR key[MAX_PATH + MAX_PATH];
 	const char * url = MBURL;
 
@@ -5032,7 +5077,8 @@ LRESULT CPlayerDlg::OnHoverMsg20(WPARAM wParam, LPARAM lParam) { return OnHoverM
 LRESULT CPlayerDlg::OnHoverMsg21(WPARAM wParam, LPARAM lParam) { return OnHoverMsg1(wParam,lParam);}
 
 
-void CPlayerDlg::OnInitMenuPopup(CMenu *pSysMenu, 
+void 
+CPlayerDlg::OnInitMenuPopup(CMenu *pSysMenu, 
 								 UINT nIndex,
 								 BOOL bSysMenu)
 {
@@ -5063,7 +5109,8 @@ BEGIN_EVENTSINK_MAP(CPlayerDlg, CDialogClassImpl)
 	//}}AFX_EVENTSINK_MAP
 END_EVENTSINK_MAP()
 
-void CPlayerDlg::OnPlayStateChangeWmp(long NewState) 
+void 
+CPlayerDlg::OnPlayStateChangeWmp(long NewState) 
 {
 	logger.ods("OnPlayStateChangeWmp:"+numToString(NewState));
 	if (8 == NewState) {
@@ -5072,7 +5119,8 @@ void CPlayerDlg::OnPlayStateChangeWmp(long NewState)
 	}
 }
 
-void CPlayerDlg::OnPositionChangeWmp(double oldPosition, double newPosition) 
+void 
+CPlayerDlg::OnPositionChangeWmp(double oldPosition, double newPosition) 
 {
 	updatePositionLabel();
 }
@@ -5081,7 +5129,8 @@ void CPlayerDlg::OnPositionChangeWmp(double oldPosition, double newPosition)
 // In event of these errors, stop MB from continuing so the user
 // can see which file has a problem. 
 
-void CPlayerDlg::OnMediaErrorWmp(LPDISPATCH pMediaObject) 
+void 
+CPlayerDlg::OnMediaErrorWmp(LPDISPATCH pMediaObject) 
 {
 	// TODO: Add your control notification handler code here
 	logger.log("Media Error Wmp");
@@ -5092,7 +5141,8 @@ void CPlayerDlg::OnMediaErrorWmp(LPDISPATCH pMediaObject)
 	
 }
 
-void CPlayerDlg::OnErrorWmp() 
+void 
+CPlayerDlg::OnErrorWmp() 
 {
 	// TODO: Add your control notification handler code here
 	logger.log("Error Wmp");
@@ -5103,7 +5153,8 @@ void CPlayerDlg::OnErrorWmp()
 	
 }
 
-void CPlayerDlg::OnWarningWmp(long WarningType, long Param, LPCTSTR Description) 
+void 
+CPlayerDlg::OnWarningWmp(long WarningType, long Param, LPCTSTR Description) 
 {
 	// TODO: Add your control notification handler code here
 	logger.log("Warning Wmp");

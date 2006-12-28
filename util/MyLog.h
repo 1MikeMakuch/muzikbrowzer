@@ -5,7 +5,7 @@
 class MyLog {
 	public:
 		MyLog():m_ready(FALSE),m_DTStamp(TRUE),m_trim(TRUE),
-		m_NoODS(FALSE){};
+		m_NoODS(FALSE),m_loglevel(1){};
 		~MyLog();
 		BOOL open(CString, BOOL trunc=FALSE);
 		void close();
@@ -38,22 +38,22 @@ class MyLog {
 		BOOL m_DTStamp;
 		BOOL m_trim;
 		BOOL m_NoODS;
+		void loglevel(int l) { m_loglevel = l; }
 	private:
 		BOOL m_ready;
 		CFile _file;
 		void trimIt();
-
+		int m_loglevel;
 
 
 };
 
 class AutoLog {
 public:
-	AutoLog(CString desc, BOOL todisk=FALSE);
+	AutoLog(const CString & desc);
 	~AutoLog();
 private:
-	CString m_desc;
-	BOOL m_ToDisk;
+	const CString & m_desc;
 };
 
 #ifdef LOGOWNER

@@ -142,6 +142,7 @@ public:
 	void initSkins();
 	void logSettings();
 	void getSettings(MyHash & settings);
+	int logging();
 };
 
 /////////////////////////////////////////////////////////////////////////////
