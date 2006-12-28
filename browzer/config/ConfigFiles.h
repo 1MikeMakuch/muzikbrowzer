@@ -9,6 +9,7 @@
 
 #include "PlayerCallbacks.h"
 #include "MyString.h"
+#include "HListBox.h"
 
 class ThreadParams;
 
@@ -30,8 +31,12 @@ public:
 
 	CButton		m_RunAtStartup;
 	CStatic		m_MdbLocation;
-	CListBox	m_MP3DirList;
-	CListBox	m_ExcludeList;
+	CHListBox	m_MP3DirList;
+	CHListBox	m_ExcludeList;
+	CButton		m_Mp3DirRemove;
+	CButton		m_Mp3DirClear;
+	CButton		m_ExRemove;
+	CButton		m_ExClear;
 	//}}AFX_DATA
 
 
@@ -69,7 +74,6 @@ protected:
 private:
 //    CPlayerDlg * m_PlayerDlg;
 	PlayerCallbacks * m_playercallbacks;
-    void EnableDisableButtons();
     CString m_path;
 
     CStringArray m_origMp3Extensions;
@@ -95,6 +99,7 @@ private:
 	void ReadFolders();
     void init();
     void setRunAtStartup();
+	void EnableDisable();
 	
 public:
 
@@ -106,7 +111,7 @@ public:
 	void AddFolders(const CStringArray & dirs);
 	void DelFolders(const CStringArray & dirs);
 	BOOL hideGenre() { return m_HideGenre; }
-	void list2box(const CStringArray & list,CListBox & box);
+	void list2box(const CStringArray & list,CHListBox & box);
 	void AddDeletedFiles(const CStringArray & files);
 
 

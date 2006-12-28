@@ -296,38 +296,38 @@ BEGIN
                     WS_BORDER
 END
 
-IDD_CONFIG_FILES DIALOGEX 0, 0, 346, 193
+IDD_CONFIG_FILES DIALOGEX 0, 0, 401, 201
 STYLE WS_CHILD | WS_DISABLED | WS_CAPTION | WS_SYSMENU
 CAPTION "General"
 FONT 8, "MS Sans Serif"
 BEGIN
-    LISTBOX         IDC_DIRLIST,17,15,273,35,LBS_SORT | LBS_NOINTEGRALHEIGHT | 
+    LISTBOX         IDC_DIRLIST,10,12,340,52,LBS_SORT | LBS_NOINTEGRALHEIGHT | 
                     WS_VSCROLL | WS_HSCROLL
-    PUSHBUTTON      "Add",IDC_DIRADD,297,15,36,11
-    PUSHBUTTON      "Remove",IDC_DIRREMOVE,297,27,36,11
-    PUSHBUTTON      "Edit",IDC_LOCATION_BUTTON,300,129,33,13
-    LTEXT           "",IDC_MDB_LOCATION,17,129,273,14,NOT WS_GROUP,
+    PUSHBUTTON      "Add",IDC_DIRADD,355,12,33,11
+    PUSHBUTTON      "Remove",IDC_DIRREMOVE,355,32,33,11
+    PUSHBUTTON      "Edit",IDC_LOCATION_BUTTON,355,150,33,13
+    LTEXT           "",IDC_MDB_LOCATION,10,150,340,14,NOT WS_GROUP,
                     WS_EX_CLIENTEDGE
-    GROUPBOX        "Audio file folders",IDC_STATIC,11,5,332,49
+    GROUPBOX        "Audio file folders",IDC_STATIC,4,2,389,66
     GROUPBOX        "Location of muzikbrowzer database files, playlists, etc.",
-                    IDC_STATIC,11,114,332,35
+                    IDC_STATIC,4,140,389,27
     CONTROL         "Run Muzikbrowzer at Startup?",IDC_RUNATSTARTUP,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,94,175,111,8
+                    BS_AUTOCHECKBOX | WS_TABSTOP,92,189,111,8
     CONTROL         "Date",IDC_ALBUMSORT_DATE,"Button",BS_AUTORADIOBUTTON | 
-                    WS_GROUP,15,167,28,10
+                    WS_GROUP,13,180,28,9
     CONTROL         "Alpha",IDC_ALBUMSORT_ALPHA,"Button",BS_AUTORADIOBUTTON | 
-                    WS_GROUP,15,179,30,10
-    LTEXT           "Sort albums by",IDC_STATIC,13,156,48,9
+                    WS_GROUP,13,189,30,10
+    LTEXT           "Sort albums by",IDC_STATIC,11,170,48,8
     CONTROL         "Hide Genre column?",IDC_HIDE_GENRE,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,94,155,83,16
-    LISTBOX         IDC_DIRLIST2,17,70,273,35,LBS_SORT | 
+                    BS_AUTOCHECKBOX | WS_TABSTOP,92,175,83,9
+    LISTBOX         IDC_DIRLIST2,10,82,340,52,LBS_SORT | 
                     LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_HSCROLL
-    PUSHBUTTON      "Add",IDC_DIRADD2,297,70,36,11
-    PUSHBUTTON      "Remove",IDC_DIRREMOVE2,297,82,36,11
-    GROUPBOX        "Deleted files && excluded folders",IDC_STATIC,11,60,332,
-                    49
-    PUSHBUTTON      "Clear",IDC_DIRCLEAR,297,39,36,11
-    PUSHBUTTON      "Clear",IDC_EXCLUDECLEAR,297,94,36,11
+    PUSHBUTTON      "Add",IDC_DIRADD2,355,82,33,11
+    PUSHBUTTON      "Remove",IDC_DIRREMOVE2,355,102,33,11
+    GROUPBOX        "Deleted files && excluded folders",IDC_STATIC,3,70,390,
+                    67
+    PUSHBUTTON      "Clear",IDC_DIRCLEAR,355,52,33,11
+    PUSHBUTTON      "Clear",IDC_EXCLUDECLEAR,355,122,33,11
 END
 
 IDD_CONFIG_IRMAN DIALOG DISCARDABLE  0, 0, 402, 199
@@ -833,9 +833,9 @@ BEGIN
     IDD_CONFIG_FILES, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 339
+        RIGHTMARGIN, 394
         TOPMARGIN, 7
-        BOTTOMMARGIN, 186
+        BOTTOMMARGIN, 194
     END
 
     IDD_CONFIG_IRMAN, DIALOG

@@ -58,6 +58,11 @@ void CConfigFiles::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_MDB_LOCATION,	m_MdbLocation);
 	DDX_Control(pDX, IDC_DIRLIST,		m_MP3DirList);
 	DDX_Control(pDX, IDC_DIRLIST2,		m_ExcludeList);
+	DDX_Control(pDX, IDC_DIRREMOVE,		m_Mp3DirRemove);
+	DDX_Control(pDX, IDC_DIRCLEAR,		m_Mp3DirClear);
+	DDX_Control(pDX, IDC_DIRREMOVE2,	m_ExRemove);
+	DDX_Control(pDX, IDC_EXCLUDECLEAR,	m_ExClear);
+
 	//}}AFX_DATA_MAP
 }
 
@@ -82,15 +87,11 @@ END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
 // CConfigFiles message handlers
+
 void CConfigFiles::init() {
 
     ReadReg();
 }
-
-
-
-
-
 
 void CConfigFiles::OnSelchangeDirlist() 
 {
@@ -112,7 +113,6 @@ void CConfigFiles::OnDirremove()
 	m_MP3DirList.SetCurSel(
 		cursel < m_MP3DirList.GetCount() ? cursel : cursel -1);
 
-    EnableDisableButtons(); 
 	SetModified(TRUE);
 
 	m_slMP3DirList.RemoveAll();
@@ -121,6 +121,7 @@ void CConfigFiles::OnDirremove()
 		m_MP3DirList.GetText(cursel,tmp);
 		m_slMP3DirList.Add(tmp);
 	}
+	EnableDisable();
 
 }
 void CConfigFiles::OnDirremove2() 
@@ -130,7 +131,6 @@ void CConfigFiles::OnDirremove2()
 	m_ExcludeList.SetCurSel(
 		cursel < m_ExcludeList.GetCount() ? cursel : cursel -1);
 
-    EnableDisableButtons(); 
 	SetModified(TRUE);
 
 	m_CSAExcludeList.RemoveAll();
@@ -139,6 +139,7 @@ void CConfigFiles::OnDirremove2()
 		m_ExcludeList.GetText(cursel,tmp);
 		m_CSAExcludeList.Add(tmp);
 	}
+	EnableDisable();
 }
 
 void
@@ -207,10 +208,11 @@ void CConfigFiles::OnDiradd()
 		FileUtil::SortUniqDelSubDirs(m_slMP3DirList);
 		list2box(m_slMP3DirList,m_MP3DirList);
 
-        EnableDisableButtons(); 
         UpdateData(FALSE);
 		SetModified(TRUE);
+		UpdateWindow();
 	}
+	EnableDisable();
 }
 void CConfigFiles::OnDiradd2() 
 {
@@ -246,12 +248,12 @@ void CConfigFiles::OnDiradd2()
 		FileUtil::SortUniqDelSubDirs(m_CSAExcludeList);
 		list2box(m_CSAExcludeList,m_ExcludeList);
 
-        EnableDisableButtons(); 
         UpdateData(FALSE);
 		SetModified(TRUE);
 	}
+	EnableDisable();
 }
-void CConfigFiles::list2box(const CStringArray & list, CListBox & box) {
+void CConfigFiles::list2box(const CStringArray & list, CHListBox & box) {
 	if (::IsWindow(box.m_hWnd)) {
 		box.ResetContent();
 		int pos;
@@ -281,7 +283,6 @@ void CConfigFiles::OnLocationButton()
 			CString path = paths.GetNext(pos);
 			if (path.GetLength()) {
 				m_MdbLocation.SetWindowText(path);
-				EnableDisableButtons(); 
 				UpdateData(FALSE);
 
 				(*m_playercallbacks->setDbLocation)(path);
@@ -628,14 +629,12 @@ BOOL CConfigFiles::OnInitDialog()
 
     UpdateData(FALSE);
 
-    EnableDisableButtons(); 
 	m_LocDirModified = FALSE;
 
+	EnableDisable();
+	
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
-}
-
-void CConfigFiles::EnableDisableButtons() {
 }
 
 void CConfigFiles::OnAlbumsortDate() 
@@ -682,6 +681,7 @@ void CConfigFiles::OnOK()
 		m_ResetNeeded = TRUE;
 		//MBMessageBox("Notice","Changes to the \"Album sort\" parameter will take effect\r\nthe next time you start Muzikbrowzer. Alternatively hit \"F5\".",FALSE);
 	}
+	EnableDisable();
 }
 void CConfigFiles::OnCancel() 
 {
@@ -722,6 +722,7 @@ void CConfigFiles::OnCancel()
 	m_HideGenre = m_InitialHideGenre;
 
 	StoreReg();
+	EnableDisable();
 //    UpdateData(FALSE);
 	CPropertyPage::OnCancel();
 }
@@ -746,6 +747,7 @@ void CConfigFiles::OnDirclear()
 	m_slMP3DirList.RemoveAll();
 	UpdateData(FALSE);
 	SetModified(TRUE);
+	EnableDisable();
 }
 
 void CConfigFiles::OnExcludeclear() 
@@ -754,4 +756,27 @@ void CConfigFiles::OnExcludeclear()
 	m_CSAExcludeList.RemoveAll();
 	UpdateData(FALSE);
 	SetModified(TRUE);
+	EnableDisable();
+}
+void CConfigFiles::EnableDisable() {
+	int sel;
+	if (m_ExcludeList.GetCount()) {
+		sel = m_ExcludeList.GetCurSel();
+		if (sel >= 0)
+			m_ExRemove.EnableWindow(TRUE);
+		m_ExClear.EnableWindow(TRUE);
+	} else {
+		m_ExRemove.EnableWindow(FALSE);
+		m_ExClear.EnableWindow(FALSE);
+	}
+	if (m_MP3DirList.GetCount()) {
+		sel = m_MP3DirList.GetCurSel();
+		if (sel >= 0)
+			m_Mp3DirRemove.EnableWindow(TRUE);
+		m_Mp3DirClear.EnableWindow(TRUE);
+	} else {
+		m_Mp3DirRemove.EnableWindow(FALSE);
+		m_Mp3DirClear.EnableWindow(FALSE);
+	}
+		
 }

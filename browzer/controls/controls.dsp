@@ -150,6 +150,10 @@ SOURCE=.\FontTipWnd.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\HListBox.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\HyperLink.cpp
 # End Source File
 # Begin Source File
@@ -232,6 +236,10 @@ SOURCE=.\FontCombo.h
 # Begin Source File
 
 SOURCE=.\FontTipWnd.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\HListBox.h
 # End Source File
 # Begin Source File
 
