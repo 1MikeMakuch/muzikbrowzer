@@ -299,15 +299,15 @@ BOOL MBConfig::OnCommand(WPARAM wParam, LPARAM lParam)
 }
 
 void
-MBConfig::GetDirs(CStringList & dirs,CStringArray & excludes, const CString & dir) {
+MBConfig::GetDirs(CStringArray & dirs,CStringArray & excludes, const CString & dir) {
 	m_Files->GetDirs(dirs,excludes,dir);
 }
 void
-MBConfig::AddFolders(const CStringList & dirs) {
+MBConfig::AddFolders(const CStringArray & dirs) {
 	m_Files->AddFolders(dirs);
 }
 void
-MBConfig::DelFolders(const CStringList & dirs) {
+MBConfig::DelFolders(const CStringArray & dirs) {
 	m_Files->DelFolders(dirs);
 }
 BOOL
@@ -330,6 +330,6 @@ MBConfig::initSkins() {
 	m_Display->init();
 }
 void 
-MBConfig::AddDeletedFiles(const CStringList & files) {
+MBConfig::AddDeletedFiles(const CStringArray & files) {
 	m_Files->AddDeletedFiles(files);
 }

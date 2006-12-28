@@ -22,7 +22,7 @@ public:
 		const CString & candPath);
 	static CString ParentDir(const CString & path);
 	static BOOL IsInSubDir(const CString & dir, const CString & candFilePath);
-	static void SortEliminateDupsAndSubDirs(CStringList & list);
+	static void SortUniqDelSubDirs(CStringArray & list);
 };
 
 #endif

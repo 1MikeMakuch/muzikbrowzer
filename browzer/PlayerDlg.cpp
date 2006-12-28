@@ -445,8 +445,7 @@ BOOL CPlayerDlg::OnInitDialog()
 	m_Config.createit(this, &m_callbacks);
 
 	if (m_RebuildOnly) {
-		CStringList dirs;
-		CStringArray excludes;
+		CStringArray dirs,excludes;
 		m_Config.GetDirs(dirs,excludes,m_RebuildDir);
 		CString saveDbLoc;
 		if (m_RebuildDir.GetLength()) {
@@ -2461,7 +2460,7 @@ void CPlayerDlg::OnDblclkSongs()
 		m_mlib.addSongToPlaylist(song);
 		updatePlaylist();
 		m_LastThingQueuedUp = last;
-	} else {
+	} else if (last.GetLength()) {
 		PlayerStatusTempSet("You just added that!");
 	}
 }
@@ -2484,7 +2483,7 @@ void CPlayerDlg::OnDblclkAlbums()
 			updatePlaylist();
 			m_LastThingQueuedUp = last;
 		}
-	} else {
+	} else if (last.GetLength()) {
 		PlayerStatusTempSet("You just added that!");
 	}
 }
@@ -2507,7 +2506,7 @@ void CPlayerDlg::OnDblclkArtists()
 			updatePlaylist();
 			m_LastThingQueuedUp = last;
 		}
-	} else {
+	} else if (last.GetLength()) {
 		PlayerStatusTempSet("You just added that!");
 	}
 }
@@ -2530,7 +2529,7 @@ void CPlayerDlg::OnDblclkGenres()
 			updatePlaylist();
 			m_LastThingQueuedUp = last;
 		}
-	} else {
+	} else if (last.GetLength()) {
 		PlayerStatusTempSet("You just added that!");
 	}
 }
@@ -3666,7 +3665,7 @@ void CPlayerDlg::OnUserEditSong()
 	}
 	ModifyIDThree *dialog = NULL;
     CString genre,artist,album,title,year,track;
-    CStringList genreList;
+    CStringArray genreList;
     m_mlib.getGenres(genreList);
 
 	if (mWindowFlag > 4) {
@@ -3715,7 +3714,7 @@ void CPlayerDlg::OnUserEditSong()
 		DBLOCKED = TRUE;
 		logger.ods("Deleting, DBLOCKED=TRUE");
 		OnSearchClear();
-		CStringList deletes;
+		CStringArray deletes;
 		if (m_ModifyDelete) {
 			ret = m_mlib.preDeleteSong(song,deletes);
 		} else {
@@ -4330,12 +4329,11 @@ CPlayerDlg::OnSkinPic(UINT wParam) {
 void
 CPlayerDlg::OnMusicAdd() {
 	OnSearchClear();
-	CStringList dirs;
-	CStringArray excludes;
+	CStringArray dirs,excludes;
 	CString dflt;
 	m_Config.GetDirs(dirs,excludes);
-	if (!dirs.IsEmpty()) {
-		dflt = dirs.GetTail();
+	if (dirs.GetSize()) {
+		dflt = dirs.GetAt(dirs.GetSize()-1);
 		dflt = String::upDir(dflt);
 	}
 	CFileAndFolder dialog(this, dflt);
@@ -4345,12 +4343,14 @@ CPlayerDlg::OnMusicAdd() {
 	ret = dialog.DoModal();
 	if (ret == IDOK) {
 		CStringList list;
+		CStringArray array;
 		dialog.GetPaths(list);
-		m_Config.AddFolders(list);
+		String::CStringList2CStringArray(array,list);
+		m_Config.AddFolders(array);
 
-		if (!m_mlib.Scan(list,excludes,FALSE,TRUE)) {
+		if (!m_mlib.Scan(array,excludes,FALSE,TRUE)) {
 			init(); // re-read db
-			m_Config.DelFolders(list);
+			m_Config.DelFolders(array);
 		} else {
 			initDb(); // just reinit the Player dlg
 		}
@@ -4362,8 +4362,7 @@ CPlayerDlg::OnMusicAdd() {
 void 
 CPlayerDlg::OnMusicScan() {
 	OnSearchClear();
-	CStringList dirs;
-	CStringArray excludes;
+	CStringArray dirs,excludes;
 	m_Config.GetDirs(dirs,excludes);
 	if (!m_mlib.Scan(dirs,excludes,FALSE,FALSE)) {
 		init();
@@ -4377,8 +4376,7 @@ CPlayerDlg::OnMusicScan() {
 void
 CPlayerDlg::OnMusicScanNew() {
 	OnSearchClear();
-	CStringList dirs;
-	CStringArray excludes;
+	CStringArray dirs,excludes;
 	m_Config.GetDirs(dirs,excludes);
 	if (!m_mlib.Scan(dirs,excludes,TRUE,FALSE)) {
 		init();

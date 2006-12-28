@@ -257,54 +257,6 @@ MusicLib::deleteSongFromPlaylist(PlaylistNode *p) {
 
 }
 
-static void
-insertSort(CStringList &list, const CString &string) {
-    POSITION pos = list.GetHeadPosition();
-    if (pos == NULL) {
-        list.AddTail(string);
-        return;
-    }
-    BOOL inserted = false;
-    for (pos = list.GetHeadPosition(); pos != NULL; ) {
-        CString lstring = list.GetAt(pos);
-
-        // If string > lstring ...
-        if (string.CompareNoCase(lstring) == -1) {
-            list.InsertBefore(pos, string);
-            inserted = true;
-            break;
-        }
-        list.GetNext(pos);
-    }
-    if (!inserted)
-        list.AddTail(string);
-}
-
-TEST(insertSortTest, insertSort)
-{
-	CStringList list;
-	insertSort(list, CString("abc"));
-	insertSort(list, CString("1bc"));
-	insertSort(list, CString("xbc"));
-	insertSort(list, CString("zbc"));
-	insertSort(list, CString("rbc"));
-	insertSort(list, CString("dbc"));
-    POSITION pos = list.GetHeadPosition();
-	CString lastone,string;
-	int first = 1;
-    for (pos = list.GetHeadPosition(); pos != NULL; ) {
-		lastone = string;
-        string = list.GetAt(pos);
-        list.GetNext(pos);
-		if (first) {
-			first = 0;
-		} else {
-			CHECK(lastone < string);
-		}
-    }
-	CHECK(lastone < string);
-}
-
 UINT
 MusicLib::readDb() {
 	m_SongLib.readFromFile();
@@ -522,39 +474,37 @@ MusicLib::loadOldPlaylist(const CString & name, CStringList & plist) {
 
 int
 MusicLib::getPlaylistNames(CExtendedListBox & box) {
-	CStringList cslList;
+	CStringArray cslList;
 	getPlaylistNames(cslList);
-	POSITION pos;
-    for (pos = cslList.GetHeadPosition(); pos != NULL; ) {
+	int pos;
+    for (pos = 0; pos < cslList.GetSize(); pos++) {
         CString lstring = cslList.GetAt(pos);
 		box.AddString(lstring);
-        cslList.GetNext(pos);
 	}
 	return 0;
 }
-void sortPlaylist(CStringList & cslList) {
-	POSITION pos,pcur,pprev;
-	pcur = pprev = NULL;
-    for (pos = cslList.GetHeadPosition(); pos != NULL; ) {
+void sortPlaylist(CStringArray & cslList) {
+	int pos,pcur,pprev;
+	pcur = pprev = 0;
+    for (pos = 0; pos < cslList.GetSize(); pos++) {
         CString lstring = cslList.GetAt(pos);
-		if ("Last" == lstring) 
-			pcur = pos;
-		if ("Previous" == lstring)
-			pprev = pos;
-        cslList.GetNext(pos);
+		if ("Previous" == lstring) {
+			cslList.RemoveAt(pos);
+			cslList.InsertAt(0,"Previous");
+			pos = cslList.GetSize()+1;
+		}
 	}
-	if (pprev) {
-		cslList.RemoveAt(pprev);
-		cslList.AddHead("Previous");
+    for (pos = 0; pos < cslList.GetSize(); pos++) {
+        CString lstring = cslList.GetAt(pos);
+		if ("Last" == lstring) {
+			cslList.RemoveAt(pos);
+			cslList.InsertAt(0,"Last");
+			pos = cslList.GetSize()+1;
+		}
 	}
-	if (pcur) {
-		cslList.RemoveAt(pcur);
-		cslList.AddHead("Last");
-	}
-
 }
 int
-MusicLib::getPlaylistNames(CStringList & box) {
+MusicLib::getPlaylistNames(CStringArray & box) {
     CString glob(m_dir);
     glob += "\\" + CS(MBPLAYLISTDIR) + "\\*." + CS(MBPLAYLISTM3U);
     CFileFind finder;
@@ -564,7 +514,7 @@ MusicLib::getPlaylistNames(CStringList & box) {
         bWorking = finder.FindNextFile();
         CString fname = finder.GetFileName();
 		FExtension fext(fname);
-		insertSort(box,FileUtil::basename(fext.filename()));
+		String::insertSort(box,FileUtil::basename(fext.filename()));
     }
 	finder.Close();
 	sortPlaylist(box);
@@ -576,14 +526,11 @@ MusicLib::getSongsInPlaylist(const CString & name, CExtendedListBox & box) {
 	CStringArray list,playlist;
 	CDWordArray colTlen;
 	getSongsInPlaylist(name, list, playlist, colTlen);
-//	POSITION pos;
 	int pos,size;
 	size = list.GetSize();
 	for(pos = 0 ; pos < size ; pos++) {
-//    for (pos = list.GetHeadPosition(); pos != NULL; ) {
         CString lstring = list.GetAt(pos);
 		box.AddString(lstring);
-//        list.GetNext(pos);
 	}
 	return 0;
 }
@@ -639,10 +586,10 @@ MusicLib::getSongsInPlaylist(const CString & name,
 						disp += song->getId3("TCON");
 						tlen = atoi(song->getId3("TLEN"));
 					} else {
-						disp = "not in library: " + file;
+						disp = file;
 					}
 				} else {
-					disp = "unreadable: " + file;
+					disp = "X " + file;
 				}
 				cslDesc.Add(disp);
 				cslPlaylist.Add(file);
@@ -720,7 +667,7 @@ MusicLib::getGenres(CExtendedListBox & box) {
 	return 0;
 }
 int
-MusicLib::getGenres(CStringList & box) {
+MusicLib::getGenres(CStringArray & box) {
     CMapStringToString genrehash;
 	MList genreList = m_SongLib.genreList();
 	MList::Iterator genreIter(genreList);
@@ -736,14 +683,14 @@ MusicLib::getGenres(CStringList & box) {
     POSITION pos = glist.GetHeadPosition();
     for (pos = glist.GetHeadPosition(); pos != NULL; ) {
         CString genre = glist.GetAt(pos);
-        genrehash.SetAt(genre, "");
+        genrehash.SetAt(genre, 0);
         glist.GetNext(pos);
     }
     CString key;
     CString val;
     for( pos = genrehash.GetStartPosition(); pos != NULL; ) {
         genrehash.GetNextAssoc(pos, key, val);
-        insertSort(box, key);
+        String::insertSort(box, key);
     }
 
 	return 0;
@@ -1103,7 +1050,7 @@ public:
 		m_pd->End(); // invokes EndDialog
 	}
 
-	CStringList m_dirs;
+	CStringArray m_dirs;
 	CStringArray m_excludes;
 	MusicLib * m_lib;
 	ProgressDlg * m_pd;
@@ -1112,7 +1059,7 @@ public:
 	CString m_results;
 };
 BOOL
-MusicLib::Scan(const CStringList & dirs,const CStringArray & excludes, BOOL bnew, BOOL bAdd) {
+MusicLib::Scan(const CStringArray & dirs,const CStringArray & excludes, BOOL bnew, BOOL bAdd) {
 
 	CString text,dir;
 	if (bnew) {
@@ -1121,21 +1068,19 @@ MusicLib::Scan(const CStringList & dirs,const CStringArray & excludes, BOOL bnew
 		text = "Search the music folders below for all music and\r\nrebuild Library from scratch?\r\n\r\n";
 	}
 	MyScanThread scanThread;
-	String::copyCStringList(scanThread.m_dirs,dirs);
+	String::copyCStringArray(scanThread.m_dirs,dirs);
 	String::copyCStringArray(scanThread.m_excludes,excludes);
 	logger.log("Scan and build dirs:");
-	POSITION pos;
-	for(pos = dirs.GetHeadPosition(); pos != NULL;) {
+	int pos;
+	for(pos = 0; pos < dirs.GetSize(); pos++) {
 		dir = dirs.GetAt(pos);
-		dirs.GetNext(pos);
 		text += dir + "\r\n";
 	}
-    int n = scanThread.m_dirs.GetCount();
+    int n = scanThread.m_dirs.GetSize();
 	if (n < 1) {
 		MBMessageBox("Search", "You must enter at least one directory in Settings.",FALSE);
 		return FALSE;
 	}
-
 	
 	if (!bAdd && MBMessageBox("Confirmation", text, FALSE, TRUE) == 0) {
 		return FALSE;
@@ -1160,7 +1105,7 @@ MusicLib::Scan(const CStringList & dirs,const CStringArray & excludes, BOOL bnew
 
 }
 void
-MusicLib::RebuildOnly(const CStringList & dirs,const CStringArray & excludes) {
+MusicLib::RebuildOnly(const CStringArray & dirs,const CStringArray & excludes) {
 	init(TRUE); // TRUE = rebuildOnly, don't read
 	CString dbloc = getDbLocation();
 	logger.log("RebuildOnly: "+dbloc);
@@ -1169,11 +1114,11 @@ MusicLib::RebuildOnly(const CStringList & dirs,const CStringArray & excludes) {
 	logger.log("RebuildOnly completed");
 }
 CString
-MusicLib::scanDirectories(const CStringList & directories,
+MusicLib::scanDirectories(const CStringArray & directories,
 	const CStringArray & excludes, ProgressDlg * pd, BOOL scanNew, BOOL bAdd) {
 
 	SearchClear();
-    CStringList mp3Files,mp3Extensions;
+    CStringArray mp3Files;
     CString good_results, error_results;
 
     AutoBuf buf(1000);
@@ -1182,9 +1127,9 @@ MusicLib::scanDirectories(const CStringList & directories,
 		m_SongLib.init(TRUE); // does an m_files.removeAll()
 	}
     
-    POSITION pos;
+    int pos;
 	logger.log("Scan folders:");
-	for (pos = directories.GetHeadPosition(); pos != NULL; directories.GetNext(pos)) {
+	for (pos = 0; pos < directories.GetSize(); pos++) {
 		logger.log(directories.GetAt(pos));
 	}
 	if (excludes.GetSize())
@@ -1194,7 +1139,7 @@ MusicLib::scanDirectories(const CStringList & directories,
 	}
 	if (pd) pd->SetTitle("Searching folders for audio files");
 	CString dir;
-    for (pos = directories.GetHeadPosition(); pos != NULL; directories.GetNext(pos)) {
+    for (pos = 0; pos < directories.GetSize(); pos++) {
 		dir = directories.GetAt(pos);
 		if (!String::CStringArrayContains(excludes,dir)) {
 			scanDirectory(pd, mp3Files, excludes, directories.GetAt(pos), 
@@ -1209,12 +1154,12 @@ MusicLib::scanDirectories(const CStringList & directories,
         }
     }
 	if (scanNew || bAdd) {
-		m_totalMp3s += mp3Files.GetCount();
+		m_totalMp3s += mp3Files.GetSize();
 	} else {
-		m_totalMp3s = mp3Files.GetCount();
+		m_totalMp3s = mp3Files.GetSize();
 	}
 
-	if (pd) pd->ProgressRange(0,mp3Files.GetCount());
+	if (pd) pd->ProgressRange(0,mp3Files.GetSize());
 
     int good_count = 0;
     int ctr = 1;
@@ -1225,7 +1170,7 @@ MusicLib::scanDirectories(const CStringList & directories,
 
 	if (pd) pd->SetTitle("Adding music...");
 
-    for (pos = mp3Files.GetHeadPosition(); pos != NULL; ) {
+    for (pos = 0 ; pos < mp3Files.GetSize(); pos++) {
 
         CString mp3file = mp3Files.GetAt(pos);
         if (pd && pd->m_Abort) {
@@ -1260,7 +1205,6 @@ MusicLib::scanDirectories(const CStringList & directories,
 		if (pd) pd->UpdateStatus2(genre + ", " + artist + ", " + album 
 			+ ", " + track);
 		added_count += addSongToDb(pd, song, mp3file);
-		mp3Files.GetNext(pos);
     }
 
     int num_albums1,num_songs1, num_albums2, num_songs2;
@@ -1288,7 +1232,7 @@ MusicLib::scanDirectories(const CStringList & directories,
 
 	results += good_results;
 
-    if (mp3Files.GetCount() == good_count) {
+    if (mp3Files.GetSize() == good_count) {
 		if (added_count) {
 			sprintf(buf.p, 
 			"\r\nAll %d audio files found with good/complete audio tags\r\n",
@@ -1298,7 +1242,7 @@ MusicLib::scanDirectories(const CStringList & directories,
 	} else {
 		sprintf(buf.p, 
 			"\r\n%d audio files found, %d had incomplete audio tags.\r\nThey show up as \"unknown\" in the Muzikbrowzer Library\r\nso that you may easily identify them and edit.",
-			mp3Files.GetCount(), mp3Files.GetCount()-good_count);
+			mp3Files.GetSize(), mp3Files.GetSize()-good_count);
 		results += buf.p;
 	}
 
@@ -1309,7 +1253,7 @@ MusicLib::scanDirectories(const CStringList & directories,
 }
 
 int
-MusicLib::scanDirectory(ProgressDlg * pd, CStringList &mp3Files,
+MusicLib::scanDirectory(ProgressDlg * pd, CStringArray &mp3Files,
 					   const CStringArray & excludes,
 					   const CString & directory, BOOL scanNew, BOOL bAdd) {
 
@@ -1362,7 +1306,7 @@ MusicLib::scanDirectory(ProgressDlg * pd, CStringList &mp3Files,
 		if (!String::CStringArrayContains(excludes,fname)) {
 			FExtension ext(fname);
 			if (m_mp3Extensions.Find(String::downcase(ext.ext())) != NULL) {
-				insertSort(mp3Files, fname);
+				String::insertSort(mp3Files, fname);
 			}
 		} else {
 			logger.log("excluded "+fname);
@@ -2472,7 +2416,7 @@ public:
 
 };
 BOOL
-MusicLib::preDeleteSong(Song & oldSong, CStringList & deletes) {
+MusicLib::preDeleteSong(Song & oldSong, CStringArray & deletes) {
 	logger.log("preDeleteSong");
 	SearchClear();
     CString oldGenre, oldArtist, oldAlbum, oldTitle, oldYear, oldTrack;
@@ -2495,7 +2439,7 @@ MusicLib::preDeleteSong(Song & oldSong, CStringList & deletes) {
     for (PlaylistNode *p = songs.head(); p != (PlaylistNode*)0; p = songs.next(p)) {
 		msg += p->_item->getId3("FILE");
 		msg += "\r\n";
-		deletes.AddTail(p->_item->getId3("FILE"));
+		deletes.Add(p->_item->getId3("FILE"));
 	}
 	logger.log(msg);
 	int r = MBMessageBox("Confirmation", msg, FALSE, TRUE);

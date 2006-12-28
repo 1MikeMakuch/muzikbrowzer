@@ -8,6 +8,8 @@
 //
 
 #include "PlayerCallbacks.h"
+#include "MyString.h"
+
 class ThreadParams;
 
 /////////////////////////////////////////////////////////////////////////////
@@ -70,12 +72,12 @@ private:
     void EnableDisableButtons();
     CString m_path;
 
-    CStringList m_origMp3Extensions;
+    CStringArray m_origMp3Extensions;
     CString m_origMdbLocation;
-    CStringList m_origMP3DirList;
-	CStringList m_slMP3DirList;
-    CStringList m_origExcludeList;
-	CStringList m_slExcludeList;
+    CStringArray m_origMP3DirList;
+	CStringArray m_slMP3DirList;
+    CStringArray m_origExcludeList;
+	CStringArray m_CSAExcludeList;
 
     unsigned long m_RunAtStartupUL;
 	BOOL m_OrigRunAtStartup;
@@ -100,12 +102,12 @@ public:
 	BOOL AlbumSortAlpha();
 	CString mbdir() { return m_path; };
 	BOOL resetNeeded() { return m_ResetNeeded; }
-	void GetDirs(CStringList & dirs, CStringArray & excludes,const CString & dir);
-	void AddFolders(const CStringList & dirs);
-	void DelFolders(const CStringList & dirs);
+	void GetDirs(CStringArray & dirs, CStringArray & excludes,const CString & dir);
+	void AddFolders(const CStringArray & dirs);
+	void DelFolders(const CStringArray & dirs);
 	BOOL hideGenre() { return m_HideGenre; }
-	void list2box(const CStringList & list,CListBox & box);
-	void AddDeletedFiles(const CStringList & files);
+	void list2box(const CStringArray & list,CListBox & box);
+	void AddDeletedFiles(const CStringArray & files);
 
 
 

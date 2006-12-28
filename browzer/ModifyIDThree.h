@@ -17,7 +17,7 @@ class ModifyIDThree : public CDialog
 {
 // Construction
 public:
-	ModifyIDThree(CStringList *gl, Song song, int wflag,
+	ModifyIDThree(CStringArray *gl, Song song, int wflag,
 		CWnd* pParent = NULL);   // standard constructor
 
 // Dialog Data
@@ -63,7 +63,7 @@ private:
     int mWindowFlag;
 //    ID3_Tag * mID3_Tag;
 	Song m_Song;
-    CStringList *mGenreList;
+    CStringArray *mGenreList;
 };
 
 //{{AFX_INSERT_LOCATION}}

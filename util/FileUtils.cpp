@@ -354,52 +354,53 @@ FileUtil::IsInSubDir(const CString & candParent, const CString & filePath) {
 	CString dirname = FileUtil::dirname(filePath);
 	return FileUtil::IsParentPath(dirname,candParent);
 }
+
 void
-FileUtil::SortEliminateDupsAndSubDirs(CStringList & list) {
-	String::Sort(list);
+FileUtil::SortUniqDelSubDirs(CStringArray & list) {
+	AutoLog al("FileUtil::SortUniqDelSubDirs");
 	String::Uniq(list);
-	CStringList tmplist,newlist;
-	String::copyCStringList(tmplist,list);
-	POSITION pos,subpos;
-	for (pos = list.GetHeadPosition(); pos != NULL; list.GetNext(pos)) {
-		CString elem = list.GetAt(pos);
+	MyHash hash;
+	String::copyCStringArray2MyHash(hash,list);
+	list.RemoveAll();
+	POSITION pos;
+	CString ppath,dir,path,val ;
+	for (pos = hash.m_hash.GetStartPosition(); pos != NULL;) {
+		hash.m_hash.GetNextAssoc(pos, path, val);
+		ppath = path;
 		BOOL eliminate = FALSE;
-		for (subpos = tmplist.GetHeadPosition(); subpos != NULL; tmplist.GetNext(subpos)) 
-		{
-			CString candParent = tmplist.GetAt(subpos);
-			if (candParent != elem && FileUtil::IsInSubDir(candParent,elem)) {
+		while(ppath.GetLength() && !eliminate) {
+			ppath = FileUtil::dirname(ppath);
+			if (hash.contains(ppath))
 				eliminate = TRUE;
-			}
 		}
 		if (!eliminate)
-			newlist.AddTail(elem);
+			list.Add(path);
 	}
-	list.RemoveAll();
-	String::copyCStringList(list,newlist);
+	String::Sort(list);
 }
 TEST(FileUtil,SortEliminateDupsAndSubDirs)
 {
-	CStringList list;
-	list.AddTail("c:\\mkm\\one");
-	list.AddTail("c:\\mkm\\one");
-	list.AddTail("c:\\mkm\\one");
-	list.AddTail("c:\\mkm\\one\\two");
-	list.AddTail("c:\\mkm\\one\\two\\three");
+	CStringArray list;
+	list.Add("c:\\mkm\\one");
+	list.Add("c:\\mkm\\one");
+	list.Add("c:\\mkm\\one");
+	list.Add("c:\\mkm\\one\\two");
+	list.Add("c:\\mkm\\one\\two\\three");
 
-	list.AddTail("c:\\mkm\\two");
-	list.AddTail("c:\\mkm\\two");
-	list.AddTail("c:\\mkm\\two");
-	list.AddTail("c:\\mkm\\two\\two");
-	list.AddTail("c:\\mkm\\two\\two\\three");
+	list.Add("c:\\mkm\\two");
+	list.Add("c:\\mkm\\two");
+	list.Add("c:\\mkm\\two");
+	list.Add("c:\\mkm\\two\\two");
+	list.Add("c:\\mkm\\two\\two\\three");
 
-	list.AddTail("c:\\mkm\\one");
-	list.AddTail("c:\\mkm\\onetwo");
-	list.AddTail("c:\\mkm\\onetwothree");
-	list.AddTail("c:\\mkm\\onetwothree\\four\\five");
-	FileUtil::SortEliminateDupsAndSubDirs(list);
-	POSITION pos;
+	list.Add("c:\\mkm\\one");
+	list.Add("c:\\mkm\\onetwo");
+	list.Add("c:\\mkm\\onetwothree");
+	list.Add("c:\\mkm\\onetwothree\\four\\five");
+	FileUtil::SortUniqDelSubDirs(list);
+	int pos;
 	int ctr=0;
-	for(pos = list.GetHeadPosition();pos != NULL; list.GetNext(pos)) {
+	for(pos = 0; pos < list.GetSize();pos++) {
 		CString tmp = list.GetAt(pos);
 		switch (ctr) {
 		case 0:

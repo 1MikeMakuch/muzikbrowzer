@@ -130,10 +130,10 @@ public:
 	BOOL verifySkin();
 	BOOL verifySkin(const CString skin, const BOOL stopOnError=TRUE);
 	BOOL findGoodSkin();
-	void GetDirs(CStringList & dirs,CStringArray & excludes,const CString & dir="");
-	void AddFolders(const CStringList & dirs);
-	void AddDeletedFiles(const CStringList & files);
-	void DelFolders(const CStringList & dirs);
+	void GetDirs(CStringArray & dirs,CStringArray & excludes,const CString & dir="");
+	void AddFolders(const CStringArray & dirs);
+	void AddDeletedFiles(const CStringArray & files);
+	void DelFolders(const CStringArray & dirs);
 	CString license();
 	void resetTrial();
 

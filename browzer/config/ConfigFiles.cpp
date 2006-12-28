@@ -119,7 +119,7 @@ void CConfigFiles::OnDirremove()
 	CString tmp;
 	for(cursel = 0; cursel < m_MP3DirList.GetCount(); cursel++) {
 		m_MP3DirList.GetText(cursel,tmp);
-		m_slMP3DirList.AddTail(tmp);
+		m_slMP3DirList.Add(tmp);
 	}
 
 }
@@ -133,17 +133,17 @@ void CConfigFiles::OnDirremove2()
     EnableDisableButtons(); 
 	SetModified(TRUE);
 
-	m_slExcludeList.RemoveAll();
+	m_CSAExcludeList.RemoveAll();
 	CString tmp;
 	for(cursel = 0; cursel < m_ExcludeList.GetCount(); cursel++) {
 		m_ExcludeList.GetText(cursel,tmp);
-		m_slExcludeList.AddTail(tmp);
+		m_CSAExcludeList.Add(tmp);
 	}
 }
 
 void
-CConfigFiles::GetDirs(CStringList & dirs, CStringArray & excludes,const CString & dir) {
-	POSITION pos;
+CConfigFiles::GetDirs(CStringArray & dirs, CStringArray & excludes,const CString & dir) {
+	int pos;
 	CString tmp;
 	CString save_m_path;
 	dirs.RemoveAll();
@@ -155,15 +155,13 @@ CConfigFiles::GetDirs(CStringList & dirs, CStringArray & excludes,const CString 
 		m_path = dir;
 		ReadFolders();
 	}
-	for (pos = m_slMP3DirList.GetHeadPosition(); pos != NULL; ) {
+	for (pos = 0; pos < m_slMP3DirList.GetSize(); pos++ ) {
         tmp = m_slMP3DirList.GetAt(pos);
-		dirs.AddTail(tmp);
-		m_slMP3DirList.GetNext(pos);
+		dirs.Add(tmp);
     }
-	for (pos = m_slExcludeList.GetHeadPosition(); pos != NULL; ) {
-        tmp = m_slExcludeList.GetAt(pos);
+	for (pos = 0 ; pos < m_CSAExcludeList.GetSize(); pos++ ) {
+        tmp = m_CSAExcludeList.GetAt(pos);
 		excludes.Add(tmp);
-		m_slExcludeList.GetNext(pos);
     }
 	if (dir.GetLength()) {
 		m_path = save_m_path;
@@ -204,9 +202,9 @@ void CConfigFiles::OnDiradd()
 			CString path = list.GetNext(pos);
 			if (path.GetLength())
 //				m_MP3DirList.AddString(path);
-				m_slMP3DirList.AddTail(path);
+				m_slMP3DirList.Add(path);
 		}
-		FileUtil::SortEliminateDupsAndSubDirs(m_slMP3DirList);
+		FileUtil::SortUniqDelSubDirs(m_slMP3DirList);
 		list2box(m_slMP3DirList,m_MP3DirList);
 
         EnableDisableButtons(); 
@@ -243,21 +241,21 @@ void CConfigFiles::OnDiradd2()
 			CString path = list.GetNext(pos);
 			if (path.GetLength())
 //				m_MP3DirList.AddString(path);
-				m_slExcludeList.AddTail(path);
+				m_CSAExcludeList.Add(path);
 		}
-		FileUtil::SortEliminateDupsAndSubDirs(m_slExcludeList);
-		list2box(m_slExcludeList,m_ExcludeList);
+		FileUtil::SortUniqDelSubDirs(m_CSAExcludeList);
+		list2box(m_CSAExcludeList,m_ExcludeList);
 
         EnableDisableButtons(); 
         UpdateData(FALSE);
 		SetModified(TRUE);
 	}
 }
-void CConfigFiles::list2box(const CStringList & list, CListBox & box) {
+void CConfigFiles::list2box(const CStringArray & list, CListBox & box) {
 	if (::IsWindow(box.m_hWnd)) {
 		box.ResetContent();
-		POSITION pos;
-		for(pos = list.GetHeadPosition(); pos != NULL; list.GetNext(pos)) {
+		int pos;
+		for(pos = 0; pos < list.GetSize(); pos++) {
 			box.AddString(list.GetAt(pos));
 		}
 	}
@@ -348,149 +346,101 @@ void CConfigFiles::ReadReg() {
 
 }
 void CConfigFiles::ReadFolders() {
+	AutoLog al("ReadFolders()");
 	m_origMP3DirList.RemoveAll();
 	m_slMP3DirList.RemoveAll();
 	m_origExcludeList.RemoveAll();
-	m_slExcludeList.RemoveAll();
-	if (::IsWindow(m_MP3DirList.m_hWnd))
-		m_MP3DirList.ResetContent();
-	if (::IsWindow(m_ExcludeList.m_hWnd))
-		m_ExcludeList.ResetContent();
+	m_CSAExcludeList.RemoveAll();
 
-	RegistryKey dreg(m_path + "\\Muzikbrowzer.folders");
-	dreg.ReadFile();
-	
-	unsigned long numdirs;
-    numdirs = dreg.Read(RegNumDirs, 0);
-    AutoBuf buf(1000);
-    unsigned long i;
-    for (i = 0 ; i < numdirs ; ++i) {
-        sprintf(buf.p, "%s%02d", RegDirKey, i);
-        CString dir;
-        //dreg.Read(buf.p, dir, 999, "");
-		dir = dreg.ReadCString(buf.p,"");
-		if (dir.GetLength()) {
-			m_origMP3DirList.AddTail(dir);
-			m_slMP3DirList.AddTail(dir);
-			if (::IsWindow(m_MP3DirList.m_hWnd))
-				m_MP3DirList.AddString(dir);
-		}
-    }
-    numdirs = dreg.Read(RegNumExcludes, 0);
-    for (i = 0 ; i < numdirs ; ++i) {
-        sprintf(buf.p, "%s%02d", RegExcludePath, i);
-        CString dir;
-        //dreg.Read(buf.p, dir, 999, "");
-		dir = dreg.ReadCString(buf.p,"");
-		if (dir.GetLength()) {
-			m_origExcludeList.AddTail(dir);
-			m_slExcludeList.AddTail(dir);
-			if (::IsWindow(m_ExcludeList.m_hWnd))
-				m_ExcludeList.AddString(dir);
-		}
-    }
+	CString file = m_path + "\\Muzikbrowzer.mbdirs";
+	String::CStringArrayFromFile(m_slMP3DirList,file);
+	file = m_path + "\\Muzikbrowzer.mbexs";
+	String::CStringArrayFromFile(m_CSAExcludeList,file);
 
 	// For upgrade to 2.0.2; if no dirs on disk check in Registry
 	// and put 'em on disk then remove from Registry
-	if (0 == numdirs) {
+	if (m_slMP3DirList.GetSize() == 0) {
 		RegistryKey reg( HKEY_LOCAL_MACHINE, RegKey );
-		numdirs = reg.Read(RegNumDirs,0);
+		int numdirs = reg.Read(RegNumDirs,0);
 		reg.DeleteValue(RegNumDirs);
+		AutoBuf buf(100);
 		if (numdirs) {
-			unsigned long i;
+			int i;
 			for (i = 0 ; i < numdirs ; ++i) {
 				sprintf(buf.p, "%s_%02d", RegDirKey, i); // '_' intentional
 				CString dir;
 				dir = reg.ReadCString(buf.p,"");
 
 				if (dir.GetLength()) {
-					m_origMP3DirList.AddTail(dir);
-					m_slMP3DirList.AddTail(dir);
-					if (::IsWindow(m_MP3DirList.m_hWnd))
-						m_MP3DirList.AddString(dir);
+					m_slMP3DirList.Add(dir);
 				}
+
 			}
 			WriteFolders();
 		}
 		// Just in case there are some there clean 'em up.
-		for (i = 0 ; i < 100 ; ++i) {
+		for (int i = 0 ; i < 100 ; ++i) {
 			sprintf(buf.p, "%s_%02d", RegDirKey, i); // '_' intentional
 			reg.DeleteValue(buf.p);
 		}
 	}
-	FileUtil::SortEliminateDupsAndSubDirs(m_slMP3DirList);
+//	FileUtil::SortEliminateDupsAndSubDirs(m_slMP3DirList);
+//	FileUtil::SortEliminateDupsAndSubDirs(m_CSAExcludeList);
+
+	String::copyCStringArray(m_origMP3DirList,m_slMP3DirList);
+	String::copyCStringArray(m_origExcludeList,m_CSAExcludeList);
+
 	list2box(m_slMP3DirList,m_MP3DirList);
-	FileUtil::SortEliminateDupsAndSubDirs(m_slExcludeList);
-	list2box(m_slExcludeList,m_ExcludeList);
+	list2box(m_CSAExcludeList,m_ExcludeList);
+}
+void CConfigFiles::WriteFolders() {
+	AutoLog al("WriteFolders()");
+	FileUtil::SortUniqDelSubDirs(m_slMP3DirList);
+	logger.ods("WriteFolders 1");
+	FileUtil::SortUniqDelSubDirs(m_CSAExcludeList);
+	logger.ods("WriteFolders 2");
+
+	CString file = m_path + "\\Muzikbrowzer.mbdirs";
+	String::CStringArray2File(file,m_slMP3DirList);
+	file = m_path + "\\Muzikbrowzer.mbexs";
+	String::CStringArray2File(file,m_CSAExcludeList);
+	logger.ods("WriteFolders 3");
+
+
+	String::copyCStringArray(m_origMP3DirList,m_slMP3DirList);
+	String::copyCStringArray(m_origExcludeList,m_CSAExcludeList);
+
 }
 
-void CConfigFiles::AddFolders(const CStringList & dirs) {
-	POSITION pos;
-	for(pos = dirs.GetHeadPosition(); pos != NULL;) {
-		m_slMP3DirList.AddTail(dirs.GetAt(pos));
-		dirs.GetNext(pos);
+void CConfigFiles::AddFolders(const CStringArray & dirs) {
+	int pos;
+	for(pos = 0; pos < dirs.GetSize(); pos++) {
+		m_slMP3DirList.Add(dirs.GetAt(pos));
 	}
-	FileUtil::SortEliminateDupsAndSubDirs(m_slMP3DirList);
+	FileUtil::SortUniqDelSubDirs(m_slMP3DirList);
 	WriteFolders();
 }
-void CConfigFiles::AddDeletedFiles(const CStringList & dirs) {
-	POSITION pos;
-	for(pos = dirs.GetHeadPosition(); pos != NULL;) {
-		m_slExcludeList.AddTail(dirs.GetAt(pos));
-		dirs.GetNext(pos);
+void CConfigFiles::AddDeletedFiles(const CStringArray & dirs) {
+	int pos;
+	for(pos = 0; pos < dirs.GetSize(); pos++) {
+		m_CSAExcludeList.Add(dirs.GetAt(pos));
 	}
-	FileUtil::SortEliminateDupsAndSubDirs(m_slExcludeList);
+	FileUtil::SortUniqDelSubDirs(m_CSAExcludeList);
 	WriteFolders();
 }
 // This is for when/if the user begins to Add but then cancels it
-void CConfigFiles::DelFolders(const CStringList & dirs) {
-	CStringList list;
-	String::copyCStringList(list, m_slMP3DirList);
+void CConfigFiles::DelFolders(const CStringArray & dirs) {
+	CStringArray list;
+	String::copyCStringArray(list, m_slMP3DirList);
 	m_slMP3DirList.RemoveAll();
 
-	POSITION pos;
-	for(pos = list.GetHeadPosition(); pos != NULL;) {
+	int pos;
+	for(pos = 0; pos < list.GetSize(); pos++) {
 		CString tmp = list.GetAt(pos);
-		if (!String::CStringListContains(dirs,tmp))
-			m_slMP3DirList.AddTail(tmp);
-		list.GetNext(pos);
+		if (!String::CStringArrayContains(dirs,tmp))
+			m_slMP3DirList.Add(tmp);
 	}
 	WriteFolders();
-}
-void CConfigFiles::WriteFolders() {
-    AutoBuf buf(1000);
-    unsigned long num = m_slMP3DirList.GetCount();
-//    RegistryKey reg( HKEY_LOCAL_MACHINE, RegKey );
-	RegistryKey reg(m_path + "\\Muzikbrowzer.folders");
-    reg.Write(RegNumDirs, num);
-
-	num = m_slExcludeList.GetCount();
-	reg.Write(RegNumExcludes, num);
-
-    m_origMP3DirList.RemoveAll();
-	m_origExcludeList.RemoveAll();
-
-    unsigned long i=0;
-	POSITION pos;
-	CString dir;
-	for (pos = m_slMP3DirList.GetHeadPosition(); pos != NULL; ) {
-        dir = m_slMP3DirList.GetAt(pos);
-		m_origMP3DirList.AddTail(dir);
-		m_slMP3DirList.GetNext(pos);
-		sprintf(buf.p, "%s%02d", RegDirKey, i);
-		reg.Write(buf.p, dir);
-		i++;
-    }
-	i=0;
-	for (pos = m_slExcludeList.GetHeadPosition(); pos != NULL; ) {
-        dir = m_slExcludeList.GetAt(pos);
-		m_origExcludeList.AddTail(dir);
-		m_slExcludeList.GetNext(pos);
-		sprintf(buf.p, "%s%02d", RegExcludePath, i);
-		reg.Write(buf.p, dir);
-		i++;
-    }
-	reg.WriteFile();
 }
 
 void CConfigFiles::StoreReg() {
@@ -639,18 +589,16 @@ BOOL CConfigFiles::OnInitDialog()
 {
 	CPropertyPage::OnInitDialog();
 
-	POSITION pos;
+	int pos;
     m_MP3DirList.ResetContent();
 	m_ExcludeList.ResetContent();
-    for (pos = m_origMP3DirList.GetHeadPosition(); pos != NULL; ) {
+    for (pos = 0; pos < m_origMP3DirList.GetSize(); pos++) {
         CString extension = m_origMP3DirList.GetAt(pos);
         m_MP3DirList.AddString(extension);
-	    m_origMP3DirList.GetNext(pos);
     }
-    for (pos = m_origExcludeList.GetHeadPosition(); pos != NULL; ) {
+    for (pos = 0; pos < m_origExcludeList.GetSize(); pos++) {
         CString extension = m_origExcludeList.GetAt(pos);
         m_ExcludeList.AddString(extension);
-	    m_origExcludeList.GetNext(pos);
     }
 
     m_MdbLocation.SetWindowText(m_origMdbLocation);
@@ -803,7 +751,7 @@ void CConfigFiles::OnDirclear()
 void CConfigFiles::OnExcludeclear() 
 {
 	m_ExcludeList.ResetContent();
-	m_slExcludeList.RemoveAll();
+	m_CSAExcludeList.RemoveAll();
 	UpdateData(FALSE);
 	SetModified(TRUE);
 }

@@ -387,33 +387,13 @@ Genre_getInt(CString genre) {
     }
 }
 
-static void
-insertSort(CStringList &list, CString &string) {
-    POSITION pos = list.GetHeadPosition();
-    if (pos == NULL) {
-        list.AddTail(string);
-        return;
-    }
-    bool inserted = false;
-    for (pos = list.GetHeadPosition(); pos != NULL; ) {
-        CString lstring = list.GetAt(pos);
-        if (string.CompareNoCase(lstring) == 1) {
-            list.InsertBefore(pos, string);
-            inserted = true;
-            break;
-        }
-        list.GetNext(pos);
-    }
-    if (!inserted)
-        list.AddTail(string);
-}
 void
 Genre_getGenres(CStringList & glist) {
     POSITION pos;
     for (pos = gdb.GetStartPosition(); pos != NULL;) {
         CString genre, val;
         gdb.GetNextAssoc(pos, genre, val);
-        insertSort(glist, genre);
+        String::insertSort(glist, genre);
     }
     return;
 }

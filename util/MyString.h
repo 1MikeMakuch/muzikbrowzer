@@ -11,7 +11,8 @@ public:
 	~MyHash(){}
 	void setVal(const CString & key, const CString & val);
 	CString getVal(const CString & key);
-private:
+	BOOL contains(const CString & key);
+
 	CMapStringToString m_hash;
 };
 
@@ -62,6 +63,7 @@ class String {
 	static CString upcase(const CString string);
 	static int last(const CString & string, const char ch);
 	static void insertSort(CStringList &list, const CString &string);
+	static void insertSort(CStringArray &list, const CString &string);
 	static CString stripws(const CString & string);
 	static void trimLR(CString & string, const CString & trim="");
 	static CString upDir(const CString & string);
@@ -91,7 +93,11 @@ class String {
 		const CString & string);
 	static void Sort(CStringList & list);
 	static void Sort(CStringArray & list);
-	static void Uniq(CStringList & list);
+	static void Uniq(CStringArray & list);
+	static BOOL CStringArray2File(const CString & file, CStringArray & array);
+	static BOOL CStringArrayFromFile(CStringArray & array,const CString & file);
+	static void CStringList2CStringArray(CStringArray & array, const CStringList & list);
+	static void copyCStringArray2MyHash(MyHash & tmplist,const CStringArray & list);
 };
 
 class AutoBuf {

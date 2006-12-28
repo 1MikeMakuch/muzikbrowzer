@@ -371,11 +371,11 @@ unsigned int	countSongsInGenre(const CString & genre, CArray<unsigned int, unsig
 	 CString	getDbLocation() { return m_dir; };
 	 CString 	getComments(const CString & file);
 	     int	getGenres(CExtendedListBox&);
-	     int	getGenres(CStringList&);
+	     int	getGenres(CStringArray&);
 	 CString	getLibraryCounts();
 	     int	getPlaylist(CExtendedListBox &);
 	     int	getPlaylistNames(CExtendedListBox &);
-	     int	getPlaylistNames(CStringList &);
+	     int	getPlaylistNames(CStringArray &);
 		 void	getRandomPlaylist(const CString & genre=MBALL);
 		 int	getSongCount();
 	 CString	getSongFileName(const int i);
@@ -390,7 +390,7 @@ unsigned int	countSongsInGenre(const CString & genre, CArray<unsigned int, unsig
 	     int	loadOldPlaylist(const CString & name, CStringList & playlist);
 	     int	loadPlaylist(const CString & name, CString & errormsg);
 	MSongLib	m_SongLib;
-		BOOL	preDeleteSong(Song & song,CStringList & deletes);
+		BOOL	preDeleteSong(Song & song,CStringArray & deletes);
 	    BOOL	preModifyID3(Song & old, Song & newSong);
 		BOOL	modifyID3(ProgressDlg *p, Playlist & songs, Song & newsong, CString & results);
 	    void	movePlaylistDown(int plc, int sel);
@@ -400,13 +400,13 @@ unsigned int	countSongsInGenre(const CString & genre, CArray<unsigned int, unsig
 	    void	RandomizePlaylist();
 	    UINT	readDb();
 	    void	readDbLocation();
-		void	RebuildOnly(const CStringList & dirs,const CStringArray & excludes);
+		void	RebuildOnly(const CStringArray & dirs,const CStringArray & excludes);
 	    BOOL	renamePlaylist(const CString src,const CString dest, BOOL overwrite=FALSE);
 	    void	savePlaylist(const CString &);
 	    void	savePlaylist(const CStringArray & list, const CString & file);
 	    void	savePlaylist(Playlist & playlist, const CString & file);
-		BOOL	Scan(const CStringList & dirs, const CStringArray & excludes, BOOL bNew, BOOL bAdd);
-	 CString	scanDirectories(const CStringList & dirs,const CStringArray & excludes, ProgressDlg*, BOOL scanNew, BOOL bAdd);
+		BOOL	Scan(const CStringArray & dirs, const CStringArray & excludes, BOOL bNew, BOOL bAdd);
+	 CString	scanDirectories(const CStringArray & dirs,const CStringArray & excludes, ProgressDlg*, BOOL scanNew, BOOL bAdd);
 	     int	Search(const CString name);
 	    void	SearchCancel();
 	    void	SearchClear();
@@ -433,7 +433,7 @@ private:
 		CString m_libCounts;
 		MFiles * m_pSearchFiles;
 
-        int scanDirectory(ProgressDlg * pd, CStringList & mp3files, 
+        int scanDirectory(ProgressDlg * pd, CStringArray & mp3files, 
 			const CStringArray & excludes, const CString &,
 			BOOL scanNew, BOOL bAdd);
         int garbageCollect(ProgressDlg * dlg, BOOL test=FALSE);

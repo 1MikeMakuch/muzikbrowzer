@@ -6,6 +6,7 @@
 #include "TestHarness.h"
 #include <afxtempl.h>
 #include "SortedArray.h"
+#include "FileUtils.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -31,10 +32,13 @@ MyHash::getVal(const CString & key) {
 	}
     return val;
 }
-
-
-
-
+BOOL
+MyHash::contains(const CString & key) {
+	CString val;
+	if (m_hash.Lookup(key,val) == 0)
+		return FALSE;
+	return TRUE;
+}
 
 
 CString
@@ -781,7 +785,50 @@ String::insertSort(CStringList &list, const CString &string) {
     if (!inserted)
         list.AddTail(string);
 }
+void
+String::insertSort(CStringArray &list, const CString &string) {
+    int pos = 0;
+    if (!list.GetSize()) {
+        list.Add(string);
+        return;
+    }
+    bool inserted = false;
+    for (pos = 0; pos < list.GetSize(); pos++) {
+        CString lstring = list.GetAt(pos);
 
+        // If string > lstring ...
+        if (string.CompareNoCase(lstring) == -1) {
+            list.InsertAt(pos, string);
+            inserted = true;
+            break;
+        }
+    }
+    if (!inserted)
+        list.Add(string);
+}
+TEST(String, insertSortCStringArray)
+{
+	CStringArray list;
+	String::insertSort(list, CString("abc"));
+	String::insertSort(list, CString("1bc"));
+	String::insertSort(list, CString("xbc"));
+	String::insertSort(list, CString("zbc"));
+	String::insertSort(list, CString("rbc"));
+	String::insertSort(list, CString("dbc"));
+    int pos;
+	CString lastone,string;
+	int first = 1;
+    for (pos = 0; pos < list.GetSize(); pos++) {
+		lastone = string;
+        string = list.GetAt(pos);
+		if (first) {
+			first = 0;
+		} else {
+			CHECK(lastone < string);
+		}
+    }
+	CHECK(lastone < string);
+}
 TEST(StringinsertSortTest, StringinsertSort)
 {
 	CStringList list;
@@ -1025,6 +1072,7 @@ String::Sort(CStringList & list) {
 }
 void
 String::Sort(CStringArray & list) {
+	AutoLog al("String::Sort(CStringArray)");
 	CSortedArray<CString, CString&> slist;
 	for(int i = 0 ; i < list.GetSize(); i++) {
 		slist.Add(list[i]);
@@ -1037,39 +1085,48 @@ String::Sort(CStringArray & list) {
 	}
 }
 void
-String::Uniq(CStringList & list) {
-	CStringList newlist;
-	String::copyCStringList(newlist,list);
+String::Uniq(CStringArray & list) {
+	AutoLog al("String::Uniq(CStringArray)");
+	CStringArray newlist;
+	String::copyCStringArray(newlist,list);
 	list.RemoveAll();
 
 	CString last;
-	POSITION pos;
-	for(pos = newlist.GetHeadPosition(); pos != NULL; newlist.GetNext(pos)) {
+	int pos;
+	for(pos = 0 ; pos < newlist.GetSize(); pos++) {
 		CString elem = newlist.GetAt(pos);
 		if (last != elem) {
-			list.AddTail(elem);
+			list.Add(elem);
 		}
 		last = elem;
 	}
 }
+void
+String::copyCStringArray2MyHash(MyHash & hash, const CStringArray & list) {
+	if (list.GetSize())
+		hash.m_hash.InitHashTable(list.GetSize() + (list.GetSize() * 0.2),TRUE);
+	for(int i = 0 ; i < list.GetSize() ; ++i) {
+		hash.setVal(list[i],"1");
+	}
+}
 TEST(String,SortUniq)
 {
-	CStringList list;
-	list.AddTail("bbb");
-	list.AddTail("zzz");
-	list.AddTail("zzz");
-	list.AddTail("zzz");
-	list.AddTail("yyy");
-	list.AddTail("mmm");
-	list.AddTail("mmm");
-	list.AddTail("mmm");
-	list.AddTail("mmm");
-	list.AddTail("aaa");
+	CStringArray list;
+	list.Add("bbb");
+	list.Add("zzz");
+	list.Add("zzz");
+	list.Add("zzz");
+	list.Add("yyy");
+	list.Add("mmm");
+	list.Add("mmm");
+	list.Add("mmm");
+	list.Add("mmm");
+	list.Add("aaa");
 	String::Sort(list);
 	String::Uniq(list);
-	POSITION pos;
+	int  pos;
 	int ctr = 0;
-	for (pos = list.GetHeadPosition(); pos != NULL; list.GetNext(pos)) {
+	for (pos = 0; pos < list.GetSize(); pos++) {
 		CString tmp = list.GetAt(pos);
 		switch (ctr) {
 		case 0:
@@ -1086,4 +1143,61 @@ TEST(String,SortUniq)
 		++ctr;
 	}
 	CHECK(5 == ctr);
+}
+BOOL
+String::CStringArray2File(const CString & sfile, CStringArray & array) {
+	CFile file;
+    CFileException fileException;
+    if (!file.Open( (LPCTSTR)sfile, 
+			CFile::modeCreate | CFile::modeWrite,
+			&fileException )) {
+		return FALSE;
+	}
+
+	CArchive ar( &file, CArchive::store);
+	array.Serialize(ar);
+	ar.Close();
+	file.Close();
+	return TRUE;
+}
+BOOL
+String::CStringArrayFromFile(CStringArray & array, const CString & sfile) {
+	CFile file;
+    CFileException fileException;
+    if (!file.Open( (LPCTSTR)sfile, 
+			CFile::modeRead,
+			&fileException )) {
+		return -1;
+	}
+
+	CArchive ar( &file, CArchive::load);
+	array.RemoveAll();
+	array.Serialize(ar);
+	ar.Close();
+	file.Close();
+	return TRUE;
+}
+
+TEST(String,CStringArray2AndFromFile)
+{
+	CStringArray a;
+	for(int i = 0 ; i < 10; ++i) {
+		a.Add(NTS(i));
+	}
+	CHECK(TRUE == String::CStringArray2File("..\\testdata\\CStringArray2AndFromFile.ar",a));
+	String::CStringArrayFromFile(a,"..\\testdata\\CStringArray2AndFromFile.ar");
+	for(i = 0 ; i < 10 ; ++i) {
+		CHECK(atoi(a[i]) == i);
+	}
+	FileUtil::rm("..\\testdata\\CStringArray2AndFromFile.ar");
+}
+
+void
+String::CStringList2CStringArray(CStringArray & array, const CStringList & list)
+{
+	array.RemoveAll();
+	POSITION pos;
+	for (pos = list.GetHeadPosition(); pos != NULL; list.GetNext(pos)) {
+		array.Add(list.GetAt(pos));
+	}
 }

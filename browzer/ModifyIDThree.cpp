@@ -21,7 +21,7 @@ static char THIS_FILE[] = __FILE__;
 // ModifyIDThree dialog
 
 
-ModifyIDThree::ModifyIDThree(CStringList * gl, Song song,
+ModifyIDThree::ModifyIDThree(CStringArray * gl, Song song,
 							 int flag, CWnd* pParent /*=NULL*/)
 	: CDialog(ModifyIDThree::IDD, pParent), m_Song(song), mWindowFlag(flag),
     mGenreList(gl)
@@ -112,12 +112,11 @@ BOOL ModifyIDThree::OnInitDialog()
 	}
 
 	m_OldGenre.SetWindowText(oldgenre);
-    POSITION pos;
+    int pos;
 	CString tmpGenre;
-    for (pos = mGenreList->GetHeadPosition(); pos != NULL; ) {
+    for (pos = 0 ; pos < mGenreList->GetSize(); pos++) {
         tmpGenre = mGenreList->GetAt(pos);
         m_Genre.AddString(tmpGenre);
-        mGenreList->GetNext(pos);
     }
     m_Genre.SelectString(0, newgenre );
 
