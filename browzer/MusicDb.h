@@ -353,6 +353,7 @@ unsigned int	countSongsInGenre(const CString & genre, CArray<unsigned int, unsig
 	    Song	createSongFromId3(ID3_Tag *);
 	    Song	createSongFromOgg(OggTag *);
 	    Song	createSongFromWma(WmaTag *);
+		void	DeleteDb();
 	    void	deletePlaylist(const CString &);
 	     int	deleteSongFromPlaylist(PlaylistNode *p);
 		BOOL	deleteSong(ProgressDlg *p, Playlist & songs, CString & results);

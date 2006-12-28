@@ -2988,7 +2988,9 @@ void CPlayerDlg::OnMenuCheckem() {
 void CPlayerDlg::OnMenuOptions() {
 	
 	CString skinnameOrig = m_Config.getCurrentSkin();
+	CWaitCursor cw;
 	m_Config.DoModal();
+	cw.Restore();
 	m_Config.initSkins();
 	m_Config.getSkins(m_Skins);
 	CString skinname = m_Config.getCurrentSkin();
@@ -3700,7 +3702,7 @@ void CPlayerDlg::OnUserEditSong()
         }
 		song->setId3(CS("TCON"), _selectedGenre);
     }
-	if (mWindowFlag  < 3 && MBALL == _selectedGenre && MBALL == _selectedArtist) {
+	if (!m_ModifyDelete && mWindowFlag  < 3 && MBALL == _selectedGenre && MBALL == _selectedArtist) {
 		PlayerStatusTempSet("not allowed");
 		return;
 	}
@@ -3715,12 +3717,14 @@ void CPlayerDlg::OnUserEditSong()
 		logger.ods("Deleting, DBLOCKED=TRUE");
 		OnSearchClear();
 		CStringArray deletes;
+		CWaitCursor c;
 		if (m_ModifyDelete) {
 			ret = m_mlib.preDeleteSong(song,deletes);
 		} else {
 			ret = m_mlib.preModifyID3(song, dialog->m_newSong);
 		}
 		if (ret) {
+			CWaitCursor c;
 			logger.ods("pre initDb");
 			initDb();
 			logger.ods("post initDb");

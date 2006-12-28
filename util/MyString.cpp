@@ -534,6 +534,7 @@ TEST(DecDigitToSixtyTwoDigit, BascC)
 	}
 	CHECK('*' == BaseC::DecToSixtyTwoDigit(-1));
 	CHECK('*' == BaseC::DecToSixtyTwoDigit(62));
+	logger.logd("two errors expected in log");
 
 }
 char
@@ -562,6 +563,7 @@ TEST(SixtyTwoDigitToDec, BaseC)
 	}
 	CHECK(-1 == BaseC::SixtyTwoDigitToDec(-1));
 	CHECK(-1 == BaseC::SixtyTwoDigitToDec(123));
+	logger.logd("two errors expected in log");
 }
 
 
@@ -611,6 +613,7 @@ TEST(MyStringUtils, BascC)
 	CHECK((char)15 == BaseC::HexDigitToDec('F'));
 	CHECK(-1       == BaseC::HexDigitToDec('z'));
 	CHECK(-1       == BaseC::HexDigitToDec(-1));
+	logger.logd("two errors expected in log");
 }
 
 CString 
@@ -1072,7 +1075,7 @@ String::Sort(CStringList & list) {
 }
 void
 String::Sort(CStringArray & list) {
-	AutoLog al("String::Sort(CStringArray)");
+
 	CSortedArray<CString, CString&> slist;
 	for(int i = 0 ; i < list.GetSize(); i++) {
 		slist.Add(list[i]);
@@ -1086,7 +1089,7 @@ String::Sort(CStringArray & list) {
 }
 void
 String::Uniq(CStringArray & list) {
-	AutoLog al("String::Uniq(CStringArray)");
+
 	CStringArray newlist;
 	String::copyCStringArray(newlist,list);
 	list.RemoveAll();

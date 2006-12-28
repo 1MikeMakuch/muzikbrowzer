@@ -32,9 +32,9 @@
 #define MMEMORY_RESERVE_BYTES 100
 
 #ifdef _DEBUG
-#define MB_GARBAGE_INTERVAL 50
+#define MB_GARBAGE_INTERVAL 500
 #else
-#define MB_GARBAGE_INTERVAL 50
+#define MB_GARBAGE_INTERVAL 500
 #endif
 
 #define MB_DB_VERSION 5
@@ -2424,9 +2424,11 @@ public:
 };
 BOOL
 MusicLib::preDeleteSong(Song & oldSong, CStringArray & deletes) {
+	CWaitCursor cw;
 	logger.log("preDeleteSong");
 	SearchClear();
     CString oldGenre, oldArtist, oldAlbum, oldTitle, oldYear, oldTrack;
+	CString dispGenre, dispArtist, dispAlbum, dispTitle, dispYear, dispTrack;
     oldGenre = oldSong->getId3("TCON",0);
     oldArtist = oldSong->getId3("TPE1",0);
     oldAlbum = oldSong->getId3("TALB",0);
@@ -2442,17 +2444,53 @@ MusicLib::preDeleteSong(Song & oldSong, CStringArray & deletes) {
 
 	deletes.RemoveAll();
 
-	CString msg = "The following files will be removed from the library.\r\nThey will not be removed from disk.\r\n\r\n";
-    for (PlaylistNode *p = songs.head(); p != (PlaylistNode*)0; p = songs.next(p)) {
-		msg += p->_item->getId3("FILE");
-		msg += "\r\n";
+	for (PlaylistNode *p = songs.head(); p != (PlaylistNode*)0; p = songs.next(p)) {
 		deletes.Add(p->_item->getId3("FILE"));
 	}
+	if (MBALL == oldGenre || "" == oldGenre)
+		dispGenre = "All";
+	else
+		dispGenre = oldGenre;
+	if (MBALL == oldArtist || "" == oldArtist)
+		dispArtist = "All";
+	else
+		dispArtist = oldArtist;
+	if (MBALL == oldAlbum || "" == oldAlbum)
+		dispAlbum = "All";
+	else
+		dispAlbum = oldAlbum;
+	if (MBALL == oldTitle || "" == oldTitle)
+		dispTitle = "All";
+	else
+		dispTitle = oldTitle;
+
+	BOOL deleteAll = FALSE;
+	CString msg = "Are you sure you want to delete\r\n\r\n";
+	if (songs.size() < m_totalMp3s) {
+		msg += "Genre:\t\""+dispGenre+"\"\r\n";
+		msg += "Artist:\t\""+dispArtist+"\"\r\n";
+		msg += "Album:\t\""+dispAlbum+"\"\r\n";
+		msg += "Title:\t\""+dispTitle+"\"\r\n";
+	} else {
+		msg += "all ";
+		deleteAll = TRUE;
+	}
+	msg += "(" + NTS(songs.size()) + " files) from the library?\r\n";
+	msg += "They will not be removed from disk.\r\n\r\n";
+
 	logger.log(msg);
 	int r = MBMessageBox("Confirmation", msg, FALSE, TRUE);
 	if (r == 0) {
 		logger.log("Delete from Library cancelled");
 		return FALSE;
+	}
+	cw.Restore();
+
+	if (deleteAll) {
+		DeleteDb();
+		m_libCounts = "";
+		IgetLibraryCounts();
+		return TRUE;
 	}
 
 	ProgressDlg pd(NULL,FALSE,FALSE);
@@ -2464,13 +2502,20 @@ MusicLib::preDeleteSong(Song & oldSong, CStringArray & deletes) {
 	pd.SetThreadFunc(&deletethread);
 	pd.DoModal();	// OnInitDialog invokes the run method, when it's done
 					// it calls EndDialog
+
 	if (deletethread.m_results.GetLength())
 		MBMessageBox(CString("alert"), deletethread.m_results,TRUE);
 
 	return TRUE;
 
 }
-
+void
+MusicLib::DeleteDb() {
+	FileUtil::rm(m_dir + "\\Muzikbrowzer.mb");
+	FileUtil::rm(m_dir + "\\Muzikbrowzer.mbfls");
+	FileUtil::rm(m_dir + "\\Muzikbrowzer.mbtgs");
+	m_SongLib.init(TRUE);
+}
 BOOL
 MusicLib::preModifyID3(Song & oldSong, Song & newSong) {
 	logger.log("modifyID3");
@@ -2588,9 +2633,10 @@ MusicLib::deleteSong(ProgressDlg *dialog, Playlist & songs, CString & results) {
 
 		Song delsong = new CSong(p->_item);
 		m_SongLib.removeSong(delsong);
+		m_SongLib.m_garbagecollector++;
     }
 
-	m_SongLib.m_garbagecollector++;
+
     garbageCollect(dialog);
 	writeDb();
 
@@ -2662,9 +2708,9 @@ MusicLib::modifyID3(ProgressDlg *dialog, Playlist & songs, Song & newSong, CStri
 			}
 
         }
+		m_SongLib.m_garbagecollector++;
     }
 
-	m_SongLib.m_garbagecollector++;
     garbageCollect(dialog);
 	writeDb();
 
