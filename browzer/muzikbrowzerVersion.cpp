@@ -8,16 +8,25 @@
 BOOL
 MBVersion::phoneHome() {
 	// setting this true to prevent 3 calls home
-	m_talkedToMama = TRUE;
-//	logger.ods("phoning home");
-	CString reqbody("version=?");
-#ifdef _DEBUG
-	reqbody = "version=test";
-#endif
-	reqbody += "&license=";
-	reqbody += m_license;
+	if (!timeToPhoneHome())
+		return FALSE;
 
+	m_talkedToMama = TRUE;
 	CSMTP http;
+
+	CString reqbody;
+	http.bodyAddKV(reqbody,"version","?");
+	http.bodyAddKV(reqbody,"VERSION",MBVERSION());
+
+	MyHash settings;
+	m_Config.getSettings(settings);
+
+	http.bodyAddKV(reqbody,"License",settings.getVal("License"));
+	http.bodyAddKV(reqbody,"Mode",settings.getVal("Mode"));
+	http.bodyAddKV(reqbody,"RemoteType",settings.getVal("RemoteType"));
+	http.bodyAddKV(reqbody,"Skin",settings.getVal("Skin"));
+
+
 	CStringArray hdrs,body;
 	BOOL r = http.http(hdrs,body,
 		"www.muzikbrowzer.com",
@@ -76,9 +85,9 @@ MBVersion::s2i(const CString & val)  {
 }
 BOOL
 MBVersion::needUpdate() {
-	if (!m_talkedToMama)
-		phoneHome();
 
+	phoneHome();
+	
 	unsigned int tVer,pVer;
 	tVer = thisVersion();
 	logger.log("tVer:"+numToString(tVer));
@@ -89,6 +98,21 @@ MBVersion::needUpdate() {
 	} else {
 		return FALSE;
 	}
+}
+BOOL
+MBVersion::timeToPhoneHome() {
+	RegistryKey reg( HKEY_LOCAL_MACHINE, RegKey );
+
+	// 1st check last time we phoned home. Only do it
+	// once in a while to be less annoying
+	int lastmonthchecked = reg.Read("DbRev",0);
+	CTime t = CTime::GetCurrentTime();
+	CString mx = t.Format("%m");
+	int check = atoi(mx);
+	if (check == lastmonthchecked)
+		return FALSE;
+	reg.Write("DbRev",check);
+	return TRUE;
 }
 BOOL
 MBVersion::goodLicense() {
@@ -105,23 +129,12 @@ MBVersion::goodLicense() {
 	
 	RegistryKey reg( HKEY_LOCAL_MACHINE, RegKey );
 
-	// 1st check last time we phoned home. Only do it
-	// once in a while to be less annoying
-	int lastmonthchecked = reg.Read("DbRev",0);
-	CTime t = CTime::GetCurrentTime();
-	CString mx = t.Format("%m");
-	int check = atoi(mx);
-	if (check == lastmonthchecked)
-		return TRUE;
-	reg.Write("DbRev",check);
-
 	// if DbVer is set to 2, then the license was listed
 	// as bad on the server and discovered in the phoneHome()
-	check = reg.Read("DbVer",1);
+	int check = reg.Read("DbVer",1);
 
 	// We phone home anyway in case the license has been renewed
-	if (!m_talkedToMama)
-		phoneHome();
+	phoneHome();
 	
 	CString val = m_pairs.getVal("license");
 

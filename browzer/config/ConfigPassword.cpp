@@ -24,8 +24,9 @@ static char THIS_FILE[] = __FILE__;
 
 IMPLEMENT_DYNCREATE(CConfigPassword, CPropertyPage)
 
-CConfigPassword::CConfigPassword(CWnd * p) : CPropertyPage(CConfigPassword::IDD),
-    /*m_PlayerDlg(p), */m_TrialMode(1)
+CConfigPassword::CConfigPassword(CWnd * p, MBConfig * c) 
+	: CPropertyPage(CConfigPassword::IDD),m_config(c),
+    m_TrialMode(1)
 {
 	//{{AFX_DATA_INIT(CConfigPassword)
 	m_HostId = _T("");
@@ -447,11 +448,12 @@ void CConfigPassword::OnValidatePw()
 //		m_RequestPw.EnableWindow(FALSE);
 	}
 
-	MBVersion mbv(license());
+	MBVersion mbv(*m_config);
 	if (!mbv.goodLicense()) {
 		MBMessageBox("Advisory","This Muzikbrowzer license is invalid.\r\nTrial Mode invoked.",TRUE);
 		resetTrial();
 	}
+
 
 	UpdateData(FALSE);
 	SetModified(TRUE);
@@ -471,4 +473,9 @@ void CConfigPassword::OnCancel()
 BOOL CConfigPassword::OnApply() 
 {
 	return CPropertyPage::OnApply();
+}
+void
+CConfigPassword::getSettings(MyHash & settings) {
+	settings.setVal("Mode",NTS(m_TrialMode));
+	settings.setVal("License",license());
 }

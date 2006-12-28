@@ -12,8 +12,12 @@ public:
 	void setVal(const CString & key, const CString & val);
 	CString getVal(const CString & key);
 	BOOL contains(const CString & key);
-
+	void SortedKeys(CStringList & keys);
+	POSITION GetSortedHead();
+	void GetNextAssoc(POSITION & pos, CString & key, CString & val);
 	CMapStringToString m_hash;
+private:
+	CStringList m_sortedKeys;
 };
 
 class String {

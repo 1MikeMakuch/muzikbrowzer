@@ -8,6 +8,8 @@
 #include "controls/ColorStatic.h"
 #include <afxdlgs.h>
 #include "ExtendedListBox.h"
+#include "MyString.h"
+
 //#include "ButtonSkin.h"
 
 #if _MSC_VER > 1000
@@ -238,7 +240,7 @@ public:
 	BOOL checkSkinDef(const RegistryKey & skindef,CString & msg);
 	void StatusSet(CString text);
 	void StatusTempSet(CString text);
-
+	void getSettings(MyHash & settings);
 };
 
 //{{AFX_INSERT_LOCATION}}

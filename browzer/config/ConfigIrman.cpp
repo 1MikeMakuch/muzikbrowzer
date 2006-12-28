@@ -672,3 +672,6 @@ void CConfigIrman::OnChangeIrdelay()
 	RemoteReceiver * rrcvr = RemoteReceiver::rrcvr();	
 	if (rrcvr) rrcvr->Delay(m_delay);
 }
+void CConfigIrman::getSettings(MyHash & settings) {
+	settings.setVal("RemoteType",RemoteReceiver::GetTypeString());
+}

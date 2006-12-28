@@ -1133,11 +1133,11 @@ MusicLib::scanDirectories(const CStringArray & directories,
 	for (pos = 0; pos < directories.GetSize(); pos++) {
 		logger.log(directories.GetAt(pos));
 	}
-	if (excludes.GetSize())
-		logger.log("Excludes:");
-	for(int i=0 ; i < excludes.GetSize(); ++i) {
-		logger.log(excludes[i]);
-	}
+//	if (excludes.GetSize())
+//		logger.log("Excludes:");
+//	for(int i=0 ; i < excludes.GetSize(); ++i) {
+//		logger.log(excludes[i]);
+//	}
 	if (pd) pd->SetTitle("Searching folders for audio files");
 	CString dir;
     for (pos = 0; pos < directories.GetSize(); pos++) {

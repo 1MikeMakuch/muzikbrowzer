@@ -93,6 +93,18 @@ RemoteReceiver::GetType() {
 	unsigned long t = reg.Read("RemoteReceiverType", 0);
 	return t;
 }
+CString
+RemoteReceiver::GetTypeString() {
+	CString type("None");
+	RegistryKey reg( HKEY_LOCAL_MACHINE, RegKey );
+	unsigned long t = reg.Read("RemoteReceiverType", 0);
+	switch(t) {
+		case RemoteReceiver::MB_IR_IRMAN: type = "Irman"; break;
+		case RemoteReceiver::MB_IR_USBUIRT: type = "USBUIRT"; break;
+		case RemoteReceiver::MB_IR_TIRA: type = "Tira"; break;
+	}
+	return type;
+}
 
 RemoteReceiver::RemoteReceiver() : m_lasttick(0), m_keyCodes(NULL)
 	,m_ready(FALSE), m_portSet(FALSE), m_bPortReady(FALSE), m_numKeys(0)

@@ -8,6 +8,7 @@
 #include "MBMessageBox.h"
 #include "MyLog.h"
 #include "TestHarness.h"
+#include "URLEncode.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -360,6 +361,7 @@ CSMTP::entityBodyParse(MyHash & hash, const CString & body) {
 		CString val = String::field(pair,"=",2);
 		if (key.GetLength() && val.GetLength())
 			hash.setVal(key,val);
+//		logger.logd("parse "+key,val);
 	}
 	return TRUE;
 }
@@ -372,5 +374,15 @@ TEST(CSMTP,entityBodyParse)
 	http.entityBodyParse(hash,body);
 	CHECK("val1" == hash.getVal("key1"));
 	CHECK("val2" == hash.getVal("key2"));
+
+}
+void
+CSMTP::bodyAddKV(CString & body, const CString & key, const CString & val) {
+	if (body.GetLength())
+		body += "&";
+	CURLEncode ue;
+	body += ue.URLEncode(key);
+	body += "=";
+	body += ue.URLEncode(val);
 
 }

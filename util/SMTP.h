@@ -38,6 +38,7 @@ public:
 					const CString & url="",
 					const CString & body="");
 		BOOL entityBodyParse(MyHash & hash, const CString & body);
+		void bodyAddKV(CString & body, const CString & key, const CString & val);
 
 private:
 	CString WellFormedAddress(const CString & address);

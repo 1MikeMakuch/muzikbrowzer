@@ -31,6 +31,7 @@ public:
 	static void destroy();
 	static void SetType(unsigned long);
 	static int GetType();
+	static CString GetTypeString();
 
 
 	RemoteReceiver();

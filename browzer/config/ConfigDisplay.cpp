@@ -1621,3 +1621,7 @@ void CConfigDisplay::OnMakedefault()
 }
 
 
+void CConfigDisplay::getSettings(MyHash & settings) {
+	settings.setVal("SkinsDir",m_SkinDir);
+	settings.setVal("Skin",m_sSkinName);
+}

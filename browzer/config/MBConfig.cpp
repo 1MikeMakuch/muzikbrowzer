@@ -11,6 +11,7 @@
 #include "ConfigPassword.h"
 #include "Registry.h"
 #include "MyString.h"
+#include "MyLog.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -60,7 +61,7 @@ MBConfig::init() {
 //    m_Fonts = new CConfigFonts(m_CWnd);
 	m_Display = new CConfigDisplay(m_CWnd, m_playercallbacks);
 #ifdef MB_USING_TRIAL_MODE
-	m_Password = new CConfigPassword(m_CWnd);
+	m_Password = new CConfigPassword(m_CWnd,this);
 #endif
 
     AddPage(m_Files);
@@ -93,6 +94,7 @@ BOOL MBConfig::OnInitDialog()
 	
 	return bResult;
 }
+
 BOOL
 MBConfig::resetNeeded() {
 	return m_Files->resetNeeded();
@@ -332,4 +334,24 @@ MBConfig::initSkins() {
 void 
 MBConfig::AddDeletedFiles(const CStringArray & files) {
 	m_Files->AddDeletedFiles(files);
+}
+void
+MBConfig::logSettings() {
+	MyHash settings ;
+	getSettings(settings);
+	POSITION pos;
+	CString key,val;
+	logger.log("Settings:");
+	for(pos = settings.GetSortedHead(); pos != NULL; ) {
+		settings.GetNextAssoc(pos,key,val);
+		logger.log(" "+key,val);
+	}
+
+}
+void
+MBConfig::getSettings(MyHash & settings) {
+	if (m_Files) m_Files->getSettings(settings);
+	if (m_Display) m_Display->getSettings(settings);
+	if (m_Irman) m_Irman->getSettings(settings);
+	if (m_Password) m_Password->getSettings(settings);
 }

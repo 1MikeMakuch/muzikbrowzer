@@ -8,6 +8,7 @@
 #include "StdAfx.h"
 #include "PlayerCallbacks.h"
 #include "Registry.h"
+#include "MyString.h"
 
 // MBConfig.h : header file
 //
@@ -139,6 +140,8 @@ public:
 
 	BOOL resetNeeded();
 	void initSkins();
+	void logSettings();
+	void getSettings(MyHash & settings);
 };
 
 /////////////////////////////////////////////////////////////////////////////

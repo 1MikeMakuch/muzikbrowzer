@@ -1,6 +1,8 @@
 #if !defined(AFX_CONFIGIRMAN_H__449E928D_3B06_11D6_8695_002078049F22__INCLUDED_)
 #define AFX_CONFIGIRMAN_H__449E928D_3B06_11D6_8695_002078049F22__INCLUDED_
 #include "Resource.h"
+#include "MyString.h"
+
 #if _MSC_VER > 1000
 #pragma once
 #endif // _MSC_VER > 1000
@@ -20,6 +22,7 @@ public:
 	~CConfigIrman();
 //    CPlayerDlg * playerdlg() { return m_PlayerDlg; }
     BOOL EnableDisableDialog();
+	void getSettings(MyHash & settings);
 
 // Dialog Data
 	//{{AFX_DATA(CConfigIrman)

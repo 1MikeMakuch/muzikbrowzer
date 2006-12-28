@@ -2,6 +2,7 @@
 #define AFX_CONFIGPASSWORD_H__449E928A_3B06_11D6_8695_002078049F22__INCLUDED_
 
 #include "Resource.h"
+#include "MyString.h"
 
 #include <afxdlgs.h>
 
@@ -11,6 +12,7 @@
 // ConfigPassword.h : header file
 //
 //class CPlayerDlg;
+class MBConfig;
 /////////////////////////////////////////////////////////////////////////////
 // CConfigPassword dialog
 
@@ -20,7 +22,7 @@ class CConfigPassword : public CPropertyPage
 
 // Construction
 public:
-	CConfigPassword(CWnd*p=NULL);
+	CConfigPassword(CWnd*p=NULL,MBConfig *c=NULL);
 	~CConfigPassword();
 
 // Dialog Data
@@ -65,6 +67,7 @@ private:
     CWnd * m_PlayerDlg;
 	int m_TrialMode;
 	CTime m_ExpDate;
+	MBConfig * m_config;
 
     void ReadReg();
     void StoreReg();
@@ -77,6 +80,7 @@ public:
 	CString genHost();
 	CString license() { return m_Password; }
 	void resetTrial();
+	void getSettings(MyHash & settings);
 	static CString uuidEncode(const CString & u);
 	static CString uuidDecode(const CString & u);
 #ifdef MB_USING_TRIAL_MODE

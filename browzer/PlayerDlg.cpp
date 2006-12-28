@@ -430,6 +430,7 @@ void initFont(CWnd *);
 void changeFont(CWnd *, CFont &);
 BOOL CPlayerDlg::OnInitDialog()
 {
+	AutoLog al("CPlayerDlg::OnInitDialog");
 
 #ifdef _DEBUG
 #ifndef _DEBUGBC
@@ -460,7 +461,6 @@ BOOL CPlayerDlg::OnInitDialog()
 		return FALSE;
 	}
 
-	logger.ods("Begin InitDialog");
 	CDialogClassImpl::OnInitDialog();
 	CWaitCursor c;
 	m_SearchClear.ShowWindow(SW_HIDE);
@@ -663,7 +663,8 @@ BOOL CPlayerDlg::OnInitDialog()
 	readConfig();
 
 
-	MBVersion mbv(m_Config.license());
+	//MBVersion mbv(m_Config.license());
+	MBVersion mbv(m_Config);
 	if (!mbv.goodLicense()) {
 		MBMessageBox("Advisory","This Muzikbrowzer license is invalid.\r\nTrial Mode invoked.",TRUE);
 		m_Config.resetTrial();
@@ -684,9 +685,6 @@ BOOL CPlayerDlg::OnInitDialog()
 		delete _initdialog;
 
 	}
-
-	logger.ods("End of InitDialog");
-
 
 	return FALSE;  // return TRUE  unless you set the focus to a control
 }
@@ -1165,6 +1163,8 @@ BOOL RecreateListBox(CExtendedListBox* pList, LPVOID lpParam/*=NULL*/)
 void
 CPlayerDlg::resetControls() {
 	if (!m_Ready2Reset) return;
+
+	m_Config.logSettings();
 
 	if (m_Config.hideGenre()) {
 		m_Genres.ShowWindow(SW_HIDE);

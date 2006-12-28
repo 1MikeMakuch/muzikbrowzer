@@ -1,12 +1,13 @@
 #ifndef _MUZIKBROWZER__VERSION__H__
 #define _MUZIKBROWZER__VERSION__H__
-static const char MUZIKBROWZER_VERSION[] = "2.0.2 2006-12-25 15:23:07";
+static const char MUZIKBROWZER_VERSION[] = "2.0.2 2006-12-28 11:32:21";
 
 #include "MyString.h"
+#include "MBConfig.h"
 
 class MBVersion {
 public:
-	MBVersion(const CString & license):m_license(license),
+	MBVersion(MBConfig & config):m_Config(config),
 		m_talkedToMama(FALSE) {}
 	~MBVersion(){}
 	CString MBVERSION() {
@@ -20,9 +21,11 @@ public:
 	BOOL goodLicense();
 protected:
 	unsigned int s2i(const CString & s);
+	BOOL timeToPhoneHome();
 	MyHash m_pairs;
 	BOOL m_talkedToMama;
 	CString m_license;
+	MBConfig & m_Config;
 };
 
 #endif

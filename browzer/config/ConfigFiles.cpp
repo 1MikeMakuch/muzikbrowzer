@@ -780,3 +780,9 @@ void CConfigFiles::EnableDisable() {
 	}
 		
 }
+void CConfigFiles::getSettings(MyHash & settings) {
+	settings.setVal("DbLocation",m_path);
+	settings.setVal("RunAtStartup",NTS(m_RunAtStartupUL));
+	settings.setVal("HideGenre",NTS(m_HideGenre));
+	settings.setVal("AlbumSort",NTS(m_AlbumSortAlpha));
+}

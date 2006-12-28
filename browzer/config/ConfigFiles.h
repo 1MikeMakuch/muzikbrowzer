@@ -113,7 +113,7 @@ public:
 	BOOL hideGenre() { return m_HideGenre; }
 	void list2box(const CStringArray & list,CHListBox & box);
 	void AddDeletedFiles(const CStringArray & files);
-
+	void getSettings(MyHash & settings);
 
 
 };

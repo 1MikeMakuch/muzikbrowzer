@@ -39,8 +39,32 @@ MyHash::contains(const CString & key) {
 		return FALSE;
 	return TRUE;
 }
-
-
+void
+MyHash::SortedKeys(CStringList & keys) {
+	keys.RemoveAll();
+	POSITION pos;
+	CString key,val;
+	for(pos = m_hash.GetStartPosition(); pos != NULL;) {
+		m_hash.GetNextAssoc(pos,key,val);
+		keys.AddTail(key);
+	}
+	String::Sort(keys);
+}
+POSITION
+MyHash::GetSortedHead() {
+	SortedKeys(m_sortedKeys);
+	return m_sortedKeys.GetHeadPosition();
+}
+void
+MyHash::GetNextAssoc(POSITION & pos, CString & key, CString & val) {
+	if (NULL != pos) {
+		key = m_sortedKeys.GetAt(pos);
+		m_hash.Lookup(key,val);
+	} else {
+		key = "";val = "";
+	}
+	m_sortedKeys.GetNext(pos);
+}
 CString
 String::replace(const CString cstring, const char src, const CString target) {
 	int len = cstring.GetLength();
