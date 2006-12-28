@@ -82,6 +82,7 @@ BEGIN_MESSAGE_MAP(CConfigFiles, CPropertyPage)
 	ON_BN_CLICKED(IDC_HIDE_GENRE, OnHideGenre)
 	ON_BN_CLICKED(IDC_DIRCLEAR, OnDirclear)
 	ON_BN_CLICKED(IDC_EXCLUDECLEAR, OnExcludeclear)
+	ON_BN_CLICKED(IDC_DEBUG_LOG, OnDebugLog)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -793,4 +794,10 @@ void CConfigFiles::getSettings(MyHash & settings) {
 	settings.setVal("RunAtStartup",NTS(m_RunAtStartupUL));
 	settings.setVal("HideGenre",NTS(m_HideGenre));
 	settings.setVal("AlbumSort",NTS(m_AlbumSortAlpha));
+}
+
+void CConfigFiles::OnDebugLog() 
+{
+	m_Logging = m_LoggingButton.GetCheck();
+	
 }

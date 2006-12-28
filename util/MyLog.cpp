@@ -184,8 +184,17 @@ MyLog::log(char * m1, char * m2,char*m3,char*m4,char*m5,char*m6) {
 
 AutoLog::AutoLog(const CString & desc) : m_desc(desc)
 {
-	logger.logd(m_desc + " begin");
+	CString tab = String::numspaces(AutoLogTabCounter);
+	logger.logd(tab + m_desc + " begin");
+	AutoLogTabCounter++;
+	if (AutoLogTabCounter > 20)
+		AutoLogTabCounter = 0;
 }
 AutoLog::~AutoLog() {
-	logger.logd(m_desc + " end");
+	AutoLogTabCounter--;
+	if (AutoLogTabCounter < 0)
+		AutoLogTabCounter =0;
+	CString tab = String::numspaces(AutoLogTabCounter);
+	logger.logd(tab + m_desc + " end");
+
 }

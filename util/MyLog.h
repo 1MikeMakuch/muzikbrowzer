@@ -53,13 +53,16 @@ public:
 	AutoLog(const CString & desc);
 	~AutoLog();
 private:
-	const CString & m_desc;
+	const CString m_desc;
+	int m_tab;
 };
 
 #ifdef LOGOWNER
 MyLog logger;
+int AutoLogTabCounter = 0;
 #else
 extern MyLog logger;
+extern int AutoLogTabCounter;
 #endif
 
 #define ODS(x) {\

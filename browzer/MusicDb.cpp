@@ -205,6 +205,7 @@ CSong::Contains(const CString & keyword) {
 MusicLib::MusicLib(): m_totalMp3s(0),
 	m_Searching(FALSE),m_pSearchFiles(NULL),m_RebuildOnly(FALSE)
 {
+	AutoLog al("mdb::MusicLib");
 	m_mp3Extensions.RemoveAll();
 	m_mp3Extensions.AddTail("mpg");
 	m_mp3Extensions.AddTail("mp1");
@@ -215,10 +216,12 @@ MusicLib::MusicLib(): m_totalMp3s(0),
 }
 
 MusicLib::~MusicLib() {
+	AutoLog al("mdb::~MusicLib");
 }
 
 void
 MusicLib::readDbLocation() {
+	AutoLog al("mdb::readDbLocation");
     RegistryKey reg( HKEY_LOCAL_MACHINE, RegKey );
     AutoBuf buf(1000);
     reg.Read(RegDbLocation, buf.p, 999, "");
@@ -226,6 +229,7 @@ MusicLib::readDbLocation() {
 }
 void 
 MusicLib::setDbLocation(const CString & loc) {
+	AutoLog al("mdb::setDbLocation");
 	m_dir = loc;
 	m_SongLib.setDbLocation(loc);
 
@@ -235,6 +239,7 @@ MusicLib::setDbLocation(const CString & loc) {
 }
 int
 MusicLib::init(const BOOL rebuildOnly) {
+	AutoLog al("mdb::init");
     
 	readDbLocation();
 	Genre_init();
@@ -249,16 +254,19 @@ MusicLib::init(const BOOL rebuildOnly) {
 }
 BOOL
 MusicLib::checkReReadDb() {
+	AutoLog al("mdb::checkReReadDb");
 	return m_SongLib.checkReReadDb();
 }
 int
 MusicLib::deleteSongFromPlaylist(PlaylistNode *p) {
+	AutoLog al("mdb::deleteSongFromPlaylist");
     return _playlist.remove(p);
 
 }
 
 UINT
 MusicLib::readDb() {
+	AutoLog al("mdb::readDb");
 	m_SongLib.readFromFile();
 // commenting out cause the dialog is null at start up
 // I don't think I need to garbageCollect at StartUp anyway
@@ -269,12 +277,14 @@ MusicLib::readDb() {
 
 UINT
 MusicLib::writeDb() {
+	AutoLog al("mdb::writeDb");
 	m_SongLib.writeToFile();
     return 0;
 }
 
 UINT
 MusicLib::addSongToDb(ProgressDlg *pd, Song &song, const CString & file) {
+	AutoLog al("mdb::addSongToDb");
 	CString dir;
 
 	static CString lastdir;
@@ -291,6 +301,7 @@ MusicLib::addSongToDb(ProgressDlg *pd, Song &song, const CString & file) {
 }
 void
 MusicLib::MovePlaylistsToDir() {
+	AutoLog al("mdb::MovePlaylistsToDir");
 
 	CString errormsg;
 	CStringList plist;
@@ -400,6 +411,7 @@ MusicLib::MovePlaylistsToDir() {
 }
 int
 MusicLib::loadOldPlaylist(const CString & name, CStringList & plist) {
+	AutoLog al("mdb::loadOldPlaylist");
 
     CString dbfilename(m_dir);
     dbfilename += "\\";
@@ -474,6 +486,7 @@ MusicLib::loadOldPlaylist(const CString & name, CStringList & plist) {
 
 int
 MusicLib::getPlaylistNames(CExtendedListBox & box) {
+	AutoLog al("mdb::getPlaylistNames");
 	CStringArray cslList;
 	getPlaylistNames(cslList);
 	int pos;
@@ -505,6 +518,7 @@ void sortPlaylist(CStringArray & cslList) {
 }
 int
 MusicLib::getPlaylistNames(CStringArray & box) {
+	AutoLog al("mdb::getPlaylistNames");
     CString glob(m_dir);
     glob += "\\" + CS(MBPLAYLISTDIR) + "\\*." + CS(MBPLAYLISTM3U);
     CFileFind finder;
@@ -523,6 +537,7 @@ MusicLib::getPlaylistNames(CStringArray & box) {
 }
 int
 MusicLib::getSongsInPlaylist(const CString & name, CExtendedListBox & box) {
+	AutoLog al("mdb::getSongsInPlaylist");
 	CStringArray list,playlist;
 	CDWordArray colTlen;
 	getSongsInPlaylist(name, list, playlist, colTlen);
@@ -540,6 +555,7 @@ MusicLib::getSongsInPlaylist(const CString & name,
 							 CStringArray & cslDesc,
 							 CStringArray & cslPlaylist,
 							 CDWordArray & cwaTlen) {
+	AutoLog al("mdb::getSongsInPlaylist");
 
     CString dbfilename(m_dir);
     dbfilename += "\\" + CS(MBPLAYLISTDIR) + "\\";
@@ -603,6 +619,7 @@ MusicLib::getSongsInPlaylist(const CString & name,
 }
 int
 MusicLib::loadPlaylist(const CString & name, CString & error_msg) {
+	AutoLog al("mdb::loadPlaylist");
 
     CString dbfilename(m_dir);
     dbfilename += "\\" + CS(MBPLAYLISTDIR) + "\\";
@@ -657,6 +674,7 @@ MusicLib::loadPlaylist(const CString & name, CString & error_msg) {
 }
 int
 MusicLib::getGenres(CExtendedListBox & box) {
+	AutoLog al("mdb::getGenres");
 	MList genreList = m_SongLib.genreList();
 	MList::Iterator genreIter(genreList);
 	
@@ -668,6 +686,7 @@ MusicLib::getGenres(CExtendedListBox & box) {
 }
 int
 MusicLib::getGenres(CStringArray & box) {
+	AutoLog al("mdb::getGenres");
     CMapStringToString genrehash;
 	MList genreList = m_SongLib.genreList();
 	MList::Iterator genreIter(genreList);
@@ -697,6 +716,7 @@ MusicLib::getGenres(CStringArray & box) {
 }
 int
 MusicLib::getArtists(const CString & genrename, CExtendedListBox & box) {
+	AutoLog al("mdb::getArtists");
 	MList artistList = m_SongLib.artistList(genrename);
 	MList::Iterator artistIter(artistList);
 	
@@ -782,6 +802,7 @@ public:
 int
 MusicLib::getAlbums(const CString & genrename, const CString & artistname,
 				   CExtendedListBox & box, BOOL AlbumSortAlpha) {
+	AutoLog al("mdb::getAlbums");
 
 	MList albumList = m_SongLib.albumList(genrename, artistname);
 	MList::Iterator albumIter(albumList);
@@ -830,10 +851,12 @@ MusicLib::getAlbums(const CString & genrename, const CString & artistname,
 }
 int
 MusicLib::getSongCount() {
+	AutoLog al("mdb::getSongCount");
 	return m_SongLib.m_files.getLength();
 }
 CString
 MusicLib::getSongFileName(const int i) {
+	AutoLog al("mdb::getSongFileName");
 	return m_SongLib.m_files.getAt(i);
 }
 
@@ -842,6 +865,7 @@ MusicLib::getSongs(const CString & genrename,
 				  const CString & artistname,
 				  const CString & albumname,
 				  CExtendedListBox & box) {
+	AutoLog al("mdb::getSongs");
 //	MBAutoTimer t("MusicLib::getSongs");
 	MList songList = m_SongLib.songList(genrename, artistname, albumname);
 	MList::Iterator songIter(songList);
@@ -874,6 +898,7 @@ MusicLib::getSongs(const CString & genrename,
 
 int
 MusicLib::getPlaylist(CExtendedListBox & box) {
+	AutoLog al("mdb::getPlaylist");
 	for (PlaylistNode *p = _playlist.head();
 			p != (PlaylistNode*)0;
 			p = _playlist.next(p)) {
@@ -905,6 +930,7 @@ MusicLib::getPlaylist(CExtendedListBox & box) {
 Song
 MusicLib::getSong(const CString & genre, const CString & artist,
 				const CString & album, const CString & title) {
+	AutoLog al("mdb::getSong");
 	MRecord songr = m_SongLib.getSong(genre, artist, album, title);
 	Song song = new CSong;
 	song->setId3("TCON", genre);
@@ -928,6 +954,7 @@ MSongLib::getSong(int pi) {
 
 int
 MusicLib::addFileToPlaylist(const CString & file) {
+	AutoLog al("mdb::addFileToPlaylist");
 	if (FileUtil::IsReadable(file)) {
 		Song addsong = createSongFromFile(file);
 		if (addsong->GetCount()) {
@@ -942,6 +969,7 @@ MusicLib::addFileToPlaylist(const CString & file) {
 }
 int
 MusicLib::addSongToPlaylist(const Song & song) {
+	AutoLog al("mdb::addSongToPlaylist");
 	_playlist.append(song);
 	return 1;
 }
@@ -950,6 +978,7 @@ int
 MusicLib::addSongToPlaylist(const CString & genrename,
 		const CString & artistname, const CString & albumname,
 		const CString & songname) {
+	AutoLog al("mdb::addSongToPlaylist");
     int count = 0;
 	MList songList = m_SongLib.songList(genrename, artistname, albumname);
 	MList::Iterator songIter(songList);
@@ -965,6 +994,7 @@ MusicLib::addSongToPlaylist(const CString & genrename,
 int
 MusicLib::addAlbumToPlaylist(const CString & genrename,
 		const CString & artistname, const CString & albumname) {
+	AutoLog al("mdb::addAlbumToPlaylist");
 	int count = 0;
 	MList songList = m_SongLib.songList(genrename, artistname, albumname);
 	MList::Iterator songIter(songList);
@@ -990,6 +1020,7 @@ MusicLib::addAlbumToPlaylist(const CString & genrename,
 int
 MusicLib::addArtistToPlaylist(const CString & genrename,
 		const CString & artistname) {
+	AutoLog al("mdb::addArtistToPlaylist");
 
 	MList albumList = m_SongLib.albumList(genrename, artistname);
 	MList::Iterator albumIter(albumList);
@@ -1024,6 +1055,7 @@ MusicLib::addArtistToPlaylist(const CString & genrename,
 
 int
 MusicLib::addGenreToPlaylist(const CString & genrename) {
+	AutoLog al("mdb::addGenreToPlaylist");
 	MList artistList = m_SongLib.artistList(genrename);
 	MList::Iterator artistIter(artistList);
 	while (artistIter.more()) {
@@ -1036,6 +1068,7 @@ MusicLib::addGenreToPlaylist(const CString & genrename) {
 
 int
 MusicLib::clearPlaylist() {
+	AutoLog al("mdb::clearPlaylist");
     return _playlist.reset();
 }
 
@@ -1060,6 +1093,7 @@ public:
 };
 BOOL
 MusicLib::Scan(const CStringArray & dirs,const CStringArray & excludes, BOOL bnew, BOOL bAdd) {
+	AutoLog al("mdb::Scan");
 
 	CString text,dir;
 	if (bnew) {
@@ -1106,6 +1140,7 @@ MusicLib::Scan(const CStringArray & dirs,const CStringArray & excludes, BOOL bne
 }
 void
 MusicLib::RebuildOnly(const CStringArray & dirs,const CStringArray & excludes) {
+	AutoLog al("mdb::RebuildOnly");
 	m_RebuildOnly = TRUE;
 	init(TRUE); // TRUE = rebuildOnly, don't read
 	CString dbloc = getDbLocation();
@@ -1117,6 +1152,7 @@ MusicLib::RebuildOnly(const CStringArray & dirs,const CStringArray & excludes) {
 CString
 MusicLib::scanDirectories(const CStringArray & directories,
 	const CStringArray & excludes, ProgressDlg * pd, BOOL scanNew, BOOL bAdd) {
+	AutoLog al("mdb::scanDirectories");
 
 	SearchClear();
     CStringArray mp3Files;
@@ -1263,6 +1299,7 @@ int
 MusicLib::scanDirectory(ProgressDlg * pd, CStringArray &mp3Files,
 					   const CStringArray & excludes,
 					   const CString & directory, BOOL scanNew, BOOL bAdd) {
+	AutoLog al("mdb::scanDirectory");
 
     CString glob(directory);
 	if (glob[glob.GetLength()-1] == '\\') {
@@ -1330,6 +1367,7 @@ MusicLib::scanDirectory(ProgressDlg * pd, CStringArray &mp3Files,
 
 Song
 MusicLib::createSongFromFile(const CString & mp3file) {
+	AutoLog al("mdb::createSongFromFile");
 	CString er;
 	int t1, t2, tf;
 	t1 = t2 = tf = 0;
@@ -1340,6 +1378,7 @@ MusicLib::createSongFromFile(const CString & mp3file,
 	CString & error_results, int & tlen_method_1_count,
 	int & tlen_method_2_count, int & tlen_methods_failed_count)
 {
+	AutoLog al("mdb::createSongFromFile");
 	AutoBuf buf(1000);
 	CString tlen;
 	Song song = new CSong;
@@ -1427,6 +1466,7 @@ MusicLib::createSongFromFile(const CString & mp3file,
 }
 void
 MusicLib::NormalizeTagField(CString & tag) {
+
 	if ("" == tag) {
 		tag = MBUNKNOWN;
 		return;
@@ -1440,6 +1480,7 @@ MusicLib::NormalizeTagField(CString & tag) {
 
 CString
 MusicLib::writeSongToFile(Song song) {
+	AutoLog al("mdb::writeSongToFile");
 	CString result;
 	CString file = song->getId3(CS("FILE"));
 	if (!FileUtil::IsReadable(file)) {
@@ -1596,6 +1637,7 @@ public:
 };
 void
 MusicLib::preExport(ExportDlg * exp) {
+	AutoLog al("mdb::preExport");
 	CString filehtm = exp->m_Folder + exp->m_File + ".htm";
 	CString filetxt = exp->m_Folder + exp->m_File + ".txt";
 	CString filecsv = exp->m_Folder + exp->m_File + ".csv";
@@ -1737,6 +1779,7 @@ MusicLib::export(ProgressDlg * dialog, ExportDlg * exp,
 				 CString & HtmlTmplAlbumTail,
 				 CString & HtmlTmplTail
 				 ) {
+	AutoLog al("mdb::export");
 	dialog->SetTitle("Export tag data");
 	dialog->ProgressRange(0,m_totalMp3s);
 	CString tmp;
@@ -1824,6 +1867,7 @@ MusicLib::export(ProgressDlg * dialog, ExportDlg * exp,
 
 void
 MusicLib::exportCsv(ExportDlg * exp, MyLog * log, Song song) {
+
 	CString entry;
 	if (exp->m_Genre){
 		entry = expQE(entry, song->getId3("TCON"));
@@ -1855,6 +1899,7 @@ MusicLib::exportCsv(ExportDlg * exp, MyLog * log, Song song) {
 }
 CString 
 MusicLib::expQE(const CString & entry, const CString in) {
+
 	CString out = String::replace(in, "\"\"", "\"");
 	out = "\"" + out + "\"";
 	if (entry.GetLength()) 
@@ -1864,9 +1909,11 @@ MusicLib::expQE(const CString & entry, const CString in) {
 void
 MusicLib::exportTxt(ExportDlg * exp, MyLog * log, Song song) {
 
+
 }
 void
 MusicLib::exportHtml(ExportDlg * exp, MyLog * log, Song song, CString & tmpl) {
+
 	CString entry = tmpl;
 	CString tmp ;
 	if (exp->m_Genre){
@@ -1908,6 +1955,7 @@ MusicLib::exportHtml(ExportDlg * exp, MyLog * log, Song song, CString & tmpl) {
 }
 int
 MusicLib::garbageCollect(ProgressDlg * dialog, BOOL test) {
+	AutoLog al("mdb::garbageCollect");
 
 	SearchClear();
 	if (m_SongLib.m_garbagecollector < MB_GARBAGE_INTERVAL && !test) {
@@ -1969,6 +2017,7 @@ MusicLib::garbageCollect(ProgressDlg * dialog, BOOL test) {
 }
 void
 MusicLib::SearchSetup() {
+	AutoLog al("mdb::SearchSetup");
 	if (m_Searching)
 		return;
 	m_Searching = TRUE;
@@ -1976,12 +2025,14 @@ MusicLib::SearchSetup() {
 }
 void
 MusicLib::SearchCancel() {
+	AutoLog al("mdb::SearchCancel");
 	m_SongLib = m_SaveLib;
 	m_Searching = FALSE;
 	IgetLibraryCounts();
 }
 void
 MusicLib::SearchClear() {
+	AutoLog al("mdb::SearchClear");
 	if (!m_Searching)
 		return;
 //	m_Searching = FALSE;
@@ -1990,6 +2041,7 @@ MusicLib::SearchClear() {
 }
 int
 MusicLib::Search(const CString keywords) {
+	AutoLog al("mdb::Search");
 	CString word;
 	int found = 0;
 	int n = String::delCount(keywords," ");
@@ -2010,6 +2062,7 @@ MusicLib::Search(const CString keywords) {
 }
 int
 MusicLib::iSearch(const CString keyword, MSongLib & db, MSongLib & results) {
+	AutoLog al("mdb::iSearch");
 	int found = 0;
 	MList genreList = db.genreList();
 	MList::Iterator genreIter(genreList);
@@ -2049,6 +2102,7 @@ MusicLib::iSearch(const CString keyword, MSongLib & db, MSongLib & results) {
 
 Song
 MusicLib::createSongFromId3(ID3_Tag * id3) {
+	AutoLog al("mdb::createSongFromId3");
     CString genre = id3_GetGenre(id3);
     CString artist = id3_GetArtist(id3);
     CString album = id3_GetAlbum(id3);
@@ -2077,6 +2131,7 @@ MusicLib::createSongFromId3(ID3_Tag * id3) {
 }
 Song
 MusicLib::createSongFromOgg(OggTag * ogg) {
+	AutoLog al("mdb::createSongFromOgg");
 
 	CString kv,key,val;
 	Song song = new CSong;
@@ -2118,6 +2173,7 @@ MusicLib::createSongFromOgg(OggTag * ogg) {
 
 Song
 MusicLib::createSongFromWma(WmaTag * wma) {
+	AutoLog al("mdb::createSongFromWma");
 
 	CString kv,key,val;
 	Song song = new CSong;
@@ -2158,6 +2214,7 @@ MusicLib::createSongFromWma(WmaTag * wma) {
 
 void
 MusicLib::deletePlaylist(const CString & name) {
+	AutoLog al("mdb::deletePlaylist");
 	CString src;
 	src = m_dir + "\\";
 	src += MBPLAYLISTDIR ;
@@ -2170,6 +2227,7 @@ BOOL
 MusicLib::renamePlaylist(const CString srcname,const CString dstname, 
 						 BOOL overwrite)
 {
+	AutoLog al("mdb::renamePlaylist");
 	CString src,dst;
 	src = m_dir + "\\";
 	src += MBPLAYLISTDIR ;
@@ -2188,6 +2246,7 @@ MusicLib::renamePlaylist(const CString srcname,const CString dstname,
 }
 void
 MusicLib::savePlaylist(Playlist & playlist, const CString & file) {
+	AutoLog al("mdb::savePlaylist");
 
 	CString playlistDir = m_dir;
 	playlistDir += "\\";
@@ -2232,10 +2291,12 @@ MusicLib::savePlaylist(Playlist & playlist, const CString & file) {
 }
 void
 MusicLib::savePlaylist(const CString & file) {
+	AutoLog al("mdb::savePlaylist");
 	savePlaylist(_playlist, file);
 }
 void
 MusicLib::savePlaylist(const CStringArray & list, const CString & name) {
+	AutoLog al("mdb::savePlaylist");
 	int size = list.GetSize();
 	CString playlistDir = m_dir;
 	playlistDir += "\\";
@@ -2273,6 +2334,7 @@ MusicLib::savePlaylist(const CStringArray & list, const CString & name) {
 unsigned int
 MusicLib::countSongsInGenre(const CString & genre, 
 		CArray<unsigned int, unsigned int> & array) {
+	AutoLog al("mdb::countSongsInGenre");
 	unsigned int ctr = 0;
 	MList artistList = m_SongLib.artistList(genre);
 	MList::Iterator artistIter(artistList);
@@ -2302,6 +2364,7 @@ MusicLib::countSongsInGenre(const CString & genre,
 
 void
 MusicLib::getRandomPlaylist(const CString & genre) {
+	AutoLog al("mdb::getRandomPlaylist");
 	CArray<unsigned int, unsigned int> array;
 	int songsNgenre = countSongsInGenre(genre,array);
 	if (songsNgenre < MB_RANDOM_PICKS) {
@@ -2321,6 +2384,7 @@ MusicLib::getRandomPlaylist(const CString & genre) {
 
 void
 MusicLib::RandomizePlaylist() {
+	AutoLog al("mdb::RandomizePlaylist");
     shufflePlaylist();
     Playlist newplaylist;
     while (_playlist.size() > 0) {
@@ -2337,6 +2401,7 @@ MusicLib::RandomizePlaylist() {
 }
 void
 MusicLib::shufflePlaylist() {
+	AutoLog al("mdb::shufflePlaylist");
     int n = _playlist.size();
     int i;
     AutoBuf buf(100);
@@ -2424,6 +2489,7 @@ public:
 };
 BOOL
 MusicLib::preDeleteSong(Song & oldSong, CStringArray & deletes) {
+	AutoLog al("mdb::preDeleteSong");
 	CWaitCursor cw;
 	logger.log("preDeleteSong");
 	SearchClear();
@@ -2511,6 +2577,7 @@ MusicLib::preDeleteSong(Song & oldSong, CStringArray & deletes) {
 }
 void
 MusicLib::DeleteDb() {
+	AutoLog al("mdb::DeleteDb");
 	FileUtil::rm(m_dir + "\\Muzikbrowzer.mb");
 	FileUtil::rm(m_dir + "\\Muzikbrowzer.mbfls");
 	FileUtil::rm(m_dir + "\\Muzikbrowzer.mbtgs");
@@ -2518,6 +2585,7 @@ MusicLib::DeleteDb() {
 }
 BOOL
 MusicLib::preModifyID3(Song & oldSong, Song & newSong) {
+	AutoLog al("mdb::preModifyID3");
 	logger.log("modifyID3");
 	SearchClear();
     CString oldGenre, oldArtist, oldAlbum, oldTitle, oldYear, oldTrack;
@@ -2618,6 +2686,7 @@ MusicLib::preModifyID3(Song & oldSong, Song & newSong) {
 }
 BOOL
 MusicLib::deleteSong(ProgressDlg *dialog, Playlist & songs, CString & results) {
+	//AutoLog al("mdb::deleteSong");
 
 	dialog->SetTitle("Removing...");
 	dialog->ProgressRange(0,songs.size());
@@ -2647,6 +2716,7 @@ MusicLib::deleteSong(ProgressDlg *dialog, Playlist & songs, CString & results) {
 }
 BOOL
 MusicLib::modifyID3(ProgressDlg *dialog, Playlist & songs, Song & newSong, CString & results) {
+	AutoLog al("mdb::modifyID3");
 
     CString newGenre = newSong->getId3("TCON",0);
     CString newArtist = newSong->getId3("TPE1",0);
@@ -2718,6 +2788,7 @@ MusicLib::modifyID3(ProgressDlg *dialog, Playlist & songs, Song & newSong, CStri
 }
 void
 MusicLib::updatePlaylist(Song oldsong, Song newsong) {
+	AutoLog al("mdb::updatePlaylist");
 	for (PlaylistNode *p = _playlist.head();
 			p != (PlaylistNode*)0;
 			p = _playlist.next(p)) {
@@ -2734,6 +2805,7 @@ void
 MusicLib::searchForMp3s(Playlist & songs, const CString & genrename_,
 	const CString & artistname, const CString & albumname,
 	const CString & songname) {
+	AutoLog al("mdb::searchForMp3s");
 
 	if (m_pSearchFiles) {
 		delete m_pSearchFiles;
@@ -2764,6 +2836,7 @@ MusicLib::searchForMp3s(Playlist & songs, const CString & genrename_,
 
 void
 MusicLib::searchForArtists(Playlist & songs, MList & artistList) {
+	AutoLog al("mdb::searchForArtists");
 	MList::Iterator artistIter(artistList);
 	while (artistIter.more()) {
 		MRecord artist = artistIter.next();
@@ -2774,6 +2847,7 @@ MusicLib::searchForArtists(Playlist & songs, MList & artistList) {
 }
 void
 MusicLib::searchForAlbums(Playlist & songs, MList & albumList) {
+	AutoLog al("mdb::searchForAlbums");
 	MList::Iterator albumIter(albumList);
 	while (albumIter.more()) {
 		MRecord album = albumIter.next();
@@ -2785,6 +2859,7 @@ MusicLib::searchForAlbums(Playlist & songs, MList & albumList) {
 void
 MusicLib::searchForSongs(Playlist & songs, MList & songList,
 						 const CString & songname) {
+	AutoLog al("mdb::searchForSongs");
 	if (songname != "") {
 		MRecord song = songList.record(songname);
 		songs.append(song.createSong());
@@ -2805,6 +2880,7 @@ MusicLib::searchForSongs(Playlist & songs, MList & songList,
 
 void
 MusicLib::dumpPL(int playlistCurrent) {
+	AutoLog al("mdb::dumpPL");
     CString buf;
     AutoBuf cbuf(100);
     sprintf(cbuf.p,"%d: ", playlistCurrent);
@@ -2826,16 +2902,19 @@ MusicLib::dumpPL(int playlistCurrent) {
 }
 void
 MusicLib::movePlaylistDown(int plcurrent, int element) {
+	AutoLog al("mdb::movePlaylistDown");
     _playlist.moveDown(element);
     // dumpPL(plcurrent);
 }
 void
 MusicLib::movePlaylistUp(int plcurrent, int element) {
+	AutoLog al("mdb::movePlaylistUp");
     _playlist.moveUp(element);
     //dumpPL(plcurrent);
 }
 CString
 MusicLib::getLibraryCounts() {
+	AutoLog al("mdb::getLibraryCounts");
 	if (m_libCounts.GetLength())
 		return m_libCounts;
 	else
@@ -2843,6 +2922,7 @@ MusicLib::getLibraryCounts() {
 }
 CString
 MusicLib::IgetLibraryCounts() {
+	AutoLog al("mdb::IgetLibraryCounts");
 	int genrecount, artistcount, albumcount, songcount;
 	genrecount = artistcount = albumcount = songcount = 0;
 	MList genreList = m_SongLib.genreList();
@@ -2892,6 +2972,7 @@ MusicLib::IgetLibraryCounts() {
 
 BOOL
 MusicLib::apic(const CString & file, uchar *& rawdata, size_t & nDataSize, const CString & album) {
+	AutoLog al("mdb::apic");
 
 	//	if (m_picCache.read(file, rawdata, nDataSize)) {
 	//		return TRUE;
@@ -4745,6 +4826,7 @@ CString
 MusicLib::getSongVal(const CString & key, const CString & genrename,
 					 const CString & artistname, const CString & albumname,
 					 const CString & songname) {
+	//AutoLog al("mdb::getSongVal");
 	CString val = m_SongLib.getSongVal(key, genrename, artistname, albumname,
 		songname);
 	return val;
@@ -4844,6 +4926,7 @@ MSongLib::validate() {
 	return 0;
 }
 CString MusicLib::JustVerify() {
+	AutoLog("CString MusicLib::JustVerify");
     int num_albums1,num_songs1, num_albums2, num_songs2;
     num_albums1 = num_songs1 = num_albums2 = num_songs2 = 0;
 	CString msg("Test Verifying");
@@ -5119,6 +5202,7 @@ MusicLib::setSongVal(const CString & key, const CString & value,
 			const CString & artistname, const CString & albumname,
 			const CString & songname)
 {
+	//AutoLog al("mdb::setSongVal");
 	int r = m_SongLib.setSongVal(key, value, genrename, artistname,
 								   albumname, songname);
 	return r;
@@ -5144,6 +5228,7 @@ MSongLib::setSongVal(const CString & key, const CString & value,
 }
 CString 
 MusicLib::getComments(const CString & file) {
+	AutoLog al("mdb::getComments");
 
 	CString comment ;
 
@@ -5181,9 +5266,11 @@ MusicLib::getComments(const CString & file) {
 
 #ifndef _DEBUG
 void MusicLib::garbageCollectTest() {};
+	AutoLog("void MusicLib::garbageCollectTest");
 #else
 void
 MusicLib::garbageCollectTest() {
+	AutoLog al("mdb::garbageCollectTest");
 	for(int i=0 ; i < 10; ++i) {
 	logger.ods("garbageCollectTest:"+numToString(i));
 	

@@ -102,6 +102,7 @@ class String {
 	static BOOL CStringArrayFromFile(CStringArray & array,const CString & file);
 	static void CStringList2CStringArray(CStringArray & array, const CStringList & list);
 	static void copyCStringArray2MyHash(MyHash & tmplist,const CStringArray & list);
+	static CString numspaces(const int num);
 };
 
 class AutoBuf {

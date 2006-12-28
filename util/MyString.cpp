@@ -1228,3 +1228,23 @@ String::CStringList2CStringArray(CStringArray & array, const CStringList & list)
 		array.Add(list.GetAt(pos));
 	}
 }
+static MyHash tabhash;
+CString 
+String::numspaces(const int num) {
+	if (tabhash.contains(NTS(num)))
+		return tabhash.getVal(NTS(num));
+	
+	CString spaces;
+	for(int i = 0 ; i < num; i++) {
+		spaces += " ";
+	}
+	tabhash.setVal(NTS(num),spaces);
+	return spaces;
+}
+
+
+
+
+
+
+

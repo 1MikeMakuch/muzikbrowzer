@@ -69,6 +69,7 @@ protected:
 	afx_msg void OnHideGenre();
 	afx_msg void OnDirclear();
 	afx_msg void OnExcludeclear();
+	afx_msg void OnDebugLog();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 private:
