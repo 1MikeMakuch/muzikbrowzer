@@ -203,7 +203,7 @@ CSong::Contains(const CString & keyword) {
 /////////////////////////////////////////////////////////////////////////////////
 
 MusicLib::MusicLib(): m_totalMp3s(0),
-	m_Searching(FALSE),m_pSearchFiles(NULL)
+	m_Searching(FALSE),m_pSearchFiles(NULL),m_RebuildOnly(FALSE)
 {
 	m_mp3Extensions.RemoveAll();
 	m_mp3Extensions.AddTail("mpg");
@@ -1106,6 +1106,7 @@ MusicLib::Scan(const CStringArray & dirs,const CStringArray & excludes, BOOL bne
 }
 void
 MusicLib::RebuildOnly(const CStringArray & dirs,const CStringArray & excludes) {
+	m_RebuildOnly = TRUE;
 	init(TRUE); // TRUE = rebuildOnly, don't read
 	CString dbloc = getDbLocation();
 	logger.log("RebuildOnly: "+dbloc);
@@ -1170,6 +1171,7 @@ MusicLib::scanDirectories(const CStringArray & directories,
 
 	if (pd) pd->SetTitle("Adding music...");
 
+	double pctctr = 0.10;
     for (pos = 0 ; pos < mp3Files.GetSize(); pos++) {
 
         CString mp3file = mp3Files.GetAt(pos);
@@ -1205,6 +1207,11 @@ MusicLib::scanDirectories(const CStringArray & directories,
 		if (pd) pd->UpdateStatus2(genre + ", " + artist + ", " + album 
 			+ ", " + track);
 		added_count += addSongToDb(pd, song, mp3file);
+		if (m_RebuildOnly && ctr > (mp3Files.GetSize() * pctctr)) {
+			logger.log("Rebuild "+NTS(ctr)+"/"+NTS(mp3Files.GetSize())
+				+" "+NTS(int(pctctr * 100))+"% done");
+			pctctr += 0.10;
+		}
     }
 
     int num_albums1,num_songs1, num_albums2, num_songs2;

@@ -432,6 +432,7 @@ private:
         CStringList m_mp3Extensions;
 		CString m_libCounts;
 		MFiles * m_pSearchFiles;
+		BOOL m_RebuildOnly;
 
         int scanDirectory(ProgressDlg * pd, CStringArray & mp3files, 
 			const CStringArray & excludes, const CString &,
