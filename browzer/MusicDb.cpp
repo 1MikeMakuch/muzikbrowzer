@@ -17,6 +17,7 @@
 #include "ExportDlg.h"
 #include <afxtempl.h> 
 #include "SortedArray.h"
+#include "MBtag.h"
 
 #include "vorbis/codec.h"
 #include "vorbis/vorbisfile.h"
