@@ -183,6 +183,30 @@ Package=<4>
 
 ###############################################################################
 
+Project: "getopt_static"="..\3rdparty\flac-1.1.3\src\share\getopt\getopt_static.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "grabbag_static"="..\3rdparty\flac-1.1.3\src\share\grabbag\grabbag_static.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
 Project: "id3"=..\id3\id3\id3.dsp - Package Owner=<4>
 
 Package=<5>
@@ -261,6 +285,18 @@ Package=<4>
 
 ###############################################################################
 
+Project: "libFLAC_static"="..\3rdparty\flac-1.1.3\src\libFLAC\libFLAC_static.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
 Project: "mbpw"=..\md5\mbpw.dsp - Package Owner=<4>
 
 Package=<5>
@@ -296,6 +332,45 @@ Package=<5>
 
 Package=<4>
 {{{
+}}}
+
+###############################################################################
+
+Project: "metaflac"="..\3rdparty\flac-1.1.3\src\metaflac\metaflac.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name getopt_static
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name grabbag_static
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name libFLAC_static
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name ogg_static
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name replaygain_analysis_static
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name utf8_static
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name vorbis_static
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name vorbiscomment
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name vorbisfile_static
+    End Project Dependency
 }}}
 
 ###############################################################################
@@ -409,6 +484,30 @@ Package=<4>
 ###############################################################################
 
 Project: "regset"=.\regset\regset.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "replaygain_analysis_static"="..\3rdparty\flac-1.1.3\src\share\replaygain_analysis\replaygain_analysis_static.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "utf8_static"="..\3rdparty\flac-1.1.3\src\share\utf8\utf8_static.dsp" - Package Owner=<4>
 
 Package=<5>
 {{{

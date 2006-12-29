@@ -4,7 +4,7 @@
 
 # TARGTYPE "Win32 (x86) Static Library" 0x0104
 
-CFG=libFLAC_static - Win32 Debug
+CFG=libFLAC_static - Win32 DebugBC
 !MESSAGE This is not a valid makefile. To build this project using NMAKE,
 !MESSAGE use the Export Makefile command and run
 !MESSAGE 
@@ -13,12 +13,13 @@ CFG=libFLAC_static - Win32 Debug
 !MESSAGE You can specify a configuration when running NMAKE
 !MESSAGE by defining the macro CFG on the command line. For example:
 !MESSAGE 
-!MESSAGE NMAKE /f "libFLAC_static.mak" CFG="libFLAC_static - Win32 Debug"
+!MESSAGE NMAKE /f "libFLAC_static.mak" CFG="libFLAC_static - Win32 DebugBC"
 !MESSAGE 
 !MESSAGE Possible choices for configuration are:
 !MESSAGE 
 !MESSAGE "libFLAC_static - Win32 Release" (based on "Win32 (x86) Static Library")
 !MESSAGE "libFLAC_static - Win32 Debug" (based on "Win32 (x86) Static Library")
+!MESSAGE "libFLAC_static - Win32 DebugBC" (based on "Win32 (x86) Static Library")
 !MESSAGE 
 
 # Begin Project
@@ -38,7 +39,7 @@ RSC=rc.exe
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 0
 # PROP Output_Dir "..\..\obj\release\lib"
-# PROP Intermediate_Dir "Release_static"
+# PROP Intermediate_Dir "Release"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
 # ADD CPP /nologo /MD /W3 /GX /O2 /Op /I ".\include" /I "..\..\include" /D VERSION=\"1.1.3\" /D "FLAC__NO_DLL" /D "FLAC__HAS_OGG" /D "FLAC__CPU_IA32" /D "FLAC__HAS_NASM" /D "FLAC__USE_3DNOW" /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
@@ -61,10 +62,10 @@ LIB32=link.exe -lib
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 1
 # PROP Output_Dir "..\..\obj\debug\lib"
-# PROP Intermediate_Dir "Debug_static"
+# PROP Intermediate_Dir "Debug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I ".\include" /I "..\..\include" /D VERSION=\"1.1.3\" /D "FLAC__NO_DLL" /D "FLAC__HAS_OGG" /D "FLAC__CPU_IA32" /D "FLAC__HAS_NASM" /D "FLAC__USE_3DNOW" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I ".\include" /I "..\..\include" /I "..\..\..\ogg\libogg-1.0\include\\" /D VERSION=\"1.1.3\" /D "FLAC__NO_DLL" /D "FLAC__HAS_OGG" /D "FLAC__CPU_IA32" /D "FLAC__HAS_NASM" /D "FLAC__USE_3DNOW" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe
@@ -74,12 +75,36 @@ LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
 # ADD LIB32 /nologo /nodefaultlib
 
+!ELSEIF  "$(CFG)" == "libFLAC_static - Win32 DebugBC"
+
+# PROP BASE Use_MFC 0
+# PROP BASE Use_Debug_Libraries 1
+# PROP BASE Output_Dir "libFLAC_static___Win32_DebugBC"
+# PROP BASE Intermediate_Dir "libFLAC_static___Win32_DebugBC"
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 0
+# PROP Use_Debug_Libraries 1
+# PROP Output_Dir "DebugBC"
+# PROP Intermediate_Dir "DebugBC"
+# PROP Target_Dir ""
+# ADD BASE CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I ".\include" /I "..\..\include" /D VERSION=\"1.1.3\" /D "FLAC__NO_DLL" /D "FLAC__HAS_OGG" /D "FLAC__CPU_IA32" /D "FLAC__HAS_NASM" /D "FLAC__USE_3DNOW" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I ".\include" /I "..\..\include" /D VERSION=\"1.1.3\" /D "FLAC__NO_DLL" /D "FLAC__HAS_OGG" /D "FLAC__CPU_IA32" /D "FLAC__HAS_NASM" /D "FLAC__USE_3DNOW" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
+# ADD BASE RSC /l 0x409 /d "_DEBUG"
+# ADD RSC /l 0x409 /d "_DEBUG"
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LIB32=link.exe -lib
+# ADD BASE LIB32 /nologo /nodefaultlib
+# ADD LIB32 /nologo /nodefaultlib
+
 !ENDIF 
 
 # Begin Target
 
 # Name "libFLAC_static - Win32 Release"
 # Name "libFLAC_static - Win32 Debug"
+# Name "libFLAC_static - Win32 DebugBC"
 # Begin Group "Source Files"
 
 # PROP Default_Filter "c"
@@ -102,6 +127,17 @@ InputPath=.\ia32\cpu_asm.nasm
 # End Custom Build
 
 !ELSEIF  "$(CFG)" == "libFLAC_static - Win32 Debug"
+
+USERDEP__CPU_A="ia32/cpu_asm.nasm"	
+# Begin Custom Build
+InputPath=.\ia32\cpu_asm.nasm
+
+"ia32/cpu_asm.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	nasmw.exe -f win32 -d OBJ_FORMAT_win32 -i ia32/ ia32/cpu_asm.nasm -o ia32/cpu_asm.obj
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "libFLAC_static - Win32 DebugBC"
 
 USERDEP__CPU_A="ia32/cpu_asm.nasm"	
 # Begin Custom Build
@@ -141,6 +177,17 @@ InputPath=.\ia32\fixed_asm.nasm
 
 # End Custom Build
 
+!ELSEIF  "$(CFG)" == "libFLAC_static - Win32 DebugBC"
+
+USERDEP__FIXED="ia32/fixed_asm.nasm"	
+# Begin Custom Build
+InputPath=.\ia32\fixed_asm.nasm
+
+"ia32/fixed_asm.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	nasmw.exe -f win32 -d OBJ_FORMAT_win32 -i ia32/ ia32/fixed_asm.nasm -o ia32/fixed_asm.obj
+
+# End Custom Build
+
 !ENDIF 
 
 # End Source File
@@ -160,6 +207,17 @@ InputPath=.\ia32\lpc_asm.nasm
 # End Custom Build
 
 !ELSEIF  "$(CFG)" == "libFLAC_static - Win32 Debug"
+
+USERDEP__LPC_A="ia32/lpc_asm.nasm"	
+# Begin Custom Build
+InputPath=.\ia32\lpc_asm.nasm
+
+"ia32/lpc_asm.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	nasmw.exe -f win32 -d OBJ_FORMAT_win32 -i ia32/ ia32/lpc_asm.nasm -o ia32/lpc_asm.obj
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "libFLAC_static - Win32 DebugBC"
 
 USERDEP__LPC_A="ia32/lpc_asm.nasm"	
 # Begin Custom Build
