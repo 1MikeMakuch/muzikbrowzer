@@ -57,6 +57,13 @@ public:
 	CString m_desc;
 
 };
+
+#define MBCCFONTFMT "%08X %08X %08X %08X %08X %02X %02X %02X %02X %02X %02X %02X %02X "
+#define MBCCFONTFACEPOS 69
+#define MBdeffont "FFFFFFF4 00000000 00000000 00000000 000002BC 00 00 00 00 00 00 00 00 Arial"
+#define MBdeffontfacename "Arial"
+#define MBFontErrorMsg(_MBFONTSPEC_) "Error in SkinDefinition setting:" + CS(_MBFONTSPEC_) + "\r\n\r\nGo to Settings/Display, make a change and click\r\nOK or Apply to create a new SkinDefintion file."
+
 class MBUtil {
 public:
 	static BOOL RgbTriple(const char * val, unsigned long & rgb);
@@ -85,6 +92,9 @@ public:
 	static void SecsToHMS(const int seconds, int & hours, int & mins, 
 		int & secs,	char * buf);
 	static BOOL system(CWnd * cwnd, const CString & command, UINT msg=0);
+	static void FontStr2LogFont(const char * fontstr, LPLOGFONT lplf);
+	static CString LogFont2FontStr(const LPLOGFONT lplf);
+
 };
 
 

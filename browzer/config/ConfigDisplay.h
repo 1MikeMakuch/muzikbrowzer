@@ -9,6 +9,7 @@
 #include <afxdlgs.h>
 #include "ExtendedListBox.h"
 #include "MyString.h"
+#include "MyLog.h"
 
 //#include "ButtonSkin.h"
 
@@ -201,7 +202,10 @@ private:
 	void loadSkinDefs();
 	
 public:
-    LPLOGFONT getTitlesFont() { return m_lplfTitles; }
+    LPLOGFONT getTitlesFont() { 
+		logger.logd("configgetTitlesFont "+MBUtil::LogFont2FontStr(m_lplfTitles));
+		return m_lplfTitles; 
+	}
 	LPLOGFONT getStatusFont() { return m_lplfPanel; }
 	LPLOGFONT getColHdrFont() { return m_lplfColHdr; }
 //	LPLOGFONT getCurPlayFont() { return m_lplfCurPlay; }

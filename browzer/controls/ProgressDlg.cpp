@@ -6,8 +6,9 @@
 #include "ProgressDlg.h"
 #include "PlayerDlg.h"
 #include "MyThread.h"
-
 #include "MBGlobals.h"
+#include "MyLog.h"
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -240,15 +241,16 @@ BOOL ProgressDlg::OnInitDialog()
 
 	m_InitStatus.initFont();
 	m_InitLabel.initFont();
-
+	LPLOGFONT lplf ;
 	if (thePlayer && thePlayer->pconfig()) {
-		LPLOGFONT lf = thePlayer->config().getTitlesFont();
-		m_InitStatus.changeFont(lf);
-		m_InitStatus2.changeFont(lf);
-		m_InitLabel.changeFont(lf);
+		lplf = thePlayer->config().getTitlesFont();
+		m_InitStatus.changeFont(lplf);
+		m_InitStatus2.changeFont(lplf);
+		m_InitLabel.changeFont(lplf);
 	} else {
 	
 		LOGFONT lf;
+
 		sscanf(deffont, CCFONTFMT, &lf.lfHeight, &lf.lfWidth, 
 		&lf.lfEscapement, &lf.lfOrientation,
 		&lf.lfWeight, &italic, &underline, &strikeout, &charset,

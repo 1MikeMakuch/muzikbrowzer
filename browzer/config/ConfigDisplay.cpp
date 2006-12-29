@@ -22,19 +22,6 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-#define CCFONTFMT "%08X %08X %08X %08X %08X %02X %02X %02X %02X %02X %02X %02X %02X "
-#define CCFONTFACEPOS 69
-char deffont[] = "FFFFFFF4 00000000 00000000 00000000 000002BC 00 00 00 00 00 00 00 00 Arial";
-char deffontfacename[] = "Arial";
-static unsigned int italic;
-static unsigned int underline;
-static unsigned int strikeout;
-static unsigned int charset;
-static unsigned int outprecision;
-static unsigned int clipprecision;
-static unsigned int quality;
-static unsigned int pitchandfamily;
-
 CConfigDisplay * theConfigDisplay = NULL;
 void MBConfigStatusSet(CString text) {
 	theConfigDisplay->StatusSet(text);
@@ -72,37 +59,6 @@ CConfigDisplay::CConfigDisplay(CWnd * p, PlayerCallbacks * pcb)
 	m_ConfigCallbacks.setDbLocation = NULL;
 
     init();
-
-	RegistryKey realreg( HKEY_LOCAL_MACHINE, RegKey );
-	AutoBuf buf(1000);
-	realreg.Read(RegWindowsSkinName, buf.p, 999,m_sSkinName.GetBuffer(0));
-	m_sSkinName = buf.p;
-
-	if (IsWindow(m_SkinList.m_hWnd)) {
-		int sel = m_SkinList.SelectString(-1, m_sSkinName);
-		if (sel > -1) {
-			m_SkinList.SetCurSel(sel);
-		}
-	}
-
-	// Read skin def
-	CString skindef = getSkin(MB_SKIN_DEF);
-	if (skindef.GetLength() == 0) {
-		return;
-	}
-	m_regSD.init(skindef);
-	m_regSD.ReadFile();
-
-	// read skin def custom
-	CString save = m_sSkinName;
-	CString skindefcustom = getSkin(MB_SKIN_DEF_CUSTOM);
-	RegistryKey regSDCustom(skindefcustom);
-	regSDCustom.ReadFile();
-
-	// custom overlays standard
-	m_regSD.Copy(regSDCustom);
-	ReadReg(m_regSD);
-	m_sSkinName = save;
 }
 
 CConfigDisplay::~CConfigDisplay()
@@ -247,31 +203,9 @@ BOOL CConfigDisplay::OnInitDialog()
 	AutoLog alog("CCD::OnInitDialog");
 	CPropertyPage::OnInitDialog();	
     
-//	m_FontTitles.SubclassDlgItem(IDC_FONT, (CWnd*)m_PlayerDlg);
-//	m_FontPanel.SubclassDlgItem(IDC_FONT_PANEL, (CWnd*)m_PlayerDlg);
-//	m_FontColHdr.SubclassDlgItem(IDC_FONT_COLHDR, (CWnd*)m_PlayerDlg);
-//	m_FontCurPlay.SubclassDlgItem(IDC_FONT_CURPLY, (CWnd*)m_PlayerDlg);
-
     m_FontPanel.Initialize();
     m_FontTitles.Initialize();
     m_FontColHdr.Initialize();
-//	m_FontCurPlay.Initialize();
-
-
-//	m_BkColHdr.SubclassDlgItem(IDC_COLOR_BK_COLHDR, (CWnd*)m_PlayerDlg);
-//	m_BkCtrls.SubclassDlgItem(IDC_COLOR_BK_CTRLS, (CWnd*)m_PlayerDlg);
-//	m_BkHigh.SubclassDlgItem(IDC_COLOR_BK_HIGH, (CWnd*)m_PlayerDlg);
-//	m_BkNormal.SubclassDlgItem(IDC_COLOR_BK_NORMAL, (CWnd*)m_PlayerDlg);
-//	m_BkPanel.SubclassDlgItem(IDC_COLOR_BK_PANEL, (CWnd*)m_PlayerDlg);
-//	m_BkSel.SubclassDlgItem(IDC_COLOR_BK_SEL, (CWnd*)m_PlayerDlg);
-//	m_Border.SubclassDlgItem(IDC_COLOR_BORDERS, (CWnd*)m_PlayerDlg);
-//	m_TxColHdr.SubclassDlgItem(IDC_COLOR_TX_COLHDR, (CWnd*)m_PlayerDlg);
-//	m_TxCtrls.SubclassDlgItem(IDC_COLOR_TX_CTRLS, (CWnd*)m_PlayerDlg);
-//	m_TxHigh.SubclassDlgItem(IDC_COLOR_TX_HIGH, (CWnd*)m_PlayerDlg);
-//	m_TxNormal.SubclassDlgItem(IDC_COLOR_TX_NORMAL, (CWnd*)m_PlayerDlg);
-//	m_TxPanel.SubclassDlgItem(IDC_COLOR_TX_PANEL, (CWnd*)m_PlayerDlg);
-//	m_TxSel.SubclassDlgItem(IDC_COLOR_TX_SEL, (CWnd*)m_PlayerDlg);    
-
 
     AutoBuf buf(5);
     int i;
@@ -331,6 +265,37 @@ CConfigDisplay::init() {
 	if (tmp.GetLength()) {
 		m_SkinDir = tmp;
 	}
+
+	RegistryKey realreg( HKEY_LOCAL_MACHINE, RegKey );
+
+	realreg.Read(RegWindowsSkinName, buf.p, 999,m_sSkinName.GetBuffer(0));
+	m_sSkinName = buf.p;
+
+	if (IsWindow(m_SkinList.m_hWnd)) {
+		int sel = m_SkinList.SelectString(-1, m_sSkinName);
+		if (sel > -1) {
+			m_SkinList.SetCurSel(sel);
+		}
+	}
+
+	// Read skin def
+	CString skindef = getSkin(MB_SKIN_DEF);
+	if (skindef.GetLength() == 0) {
+		return;
+	}
+	m_regSD.init(skindef);
+	m_regSD.ReadFile();
+
+	// read skin def custom
+	CString save = m_sSkinName;
+	CString skindefcustom = getSkin(MB_SKIN_DEF_CUSTOM);
+	RegistryKey regSDCustom(skindefcustom);
+	regSDCustom.ReadFile();
+
+	// custom overlays standard
+	m_regSD.Copy(regSDCustom);
+	ReadReg(m_regSD);
+	m_sSkinName = save;
 }
 void
 CConfigDisplay::setDefaults() {
@@ -366,44 +331,16 @@ CConfigDisplay::setDefaults() {
     v2m();
 	
 	m_3dData = m_3dColHdr = m_3dStatus = FALSE;
-
-
-    sscanf(deffont, CCFONTFMT, &m_lfTitles.lfHeight, &m_lfTitles.lfWidth, 
-		&m_lfTitles.lfEscapement, &m_lfTitles.lfOrientation,
-        &m_lfTitles.lfWeight, &italic, &underline, &strikeout, &charset,
-        &outprecision, &clipprecision, &quality, &pitchandfamily);
-    m_lfTitles.lfItalic = italic; m_lfTitles.lfUnderline = underline;
-    m_lfTitles.lfStrikeOut = strikeout; m_lfTitles.lfCharSet = charset;
-    m_lfTitles.lfOutPrecision = outprecision;m_lfTitles.lfClipPrecision = clipprecision;
-    m_lfTitles.lfQuality = quality;m_lfTitles.lfPitchAndFamily = pitchandfamily;
-
-    strcpy(m_lfTitles.lfFaceName, deffontfacename);
+	
+	MBUtil::FontStr2LogFont(MBdeffont, &m_lfTitles);
     memcpy(&m_samplelfTitles, &m_lfTitles, sizeof(LOGFONT));
     m_lplfTitles = &m_lfTitles;
 
-    sscanf(deffont, CCFONTFMT, &m_lfPanel.lfHeight, &m_lfPanel.lfWidth,
-		&m_lfPanel.lfEscapement, &m_lfPanel.lfOrientation,
-		&m_lfPanel.lfWeight,&italic, &underline, &strikeout, &charset,
-        &outprecision, &clipprecision,&quality, &pitchandfamily);
-    m_lfPanel.lfItalic = italic; m_lfPanel.lfUnderline = underline;
-    m_lfPanel.lfStrikeOut = strikeout;m_lfPanel.lfCharSet = charset;
-    m_lfPanel.lfOutPrecision = outprecision;m_lfPanel.lfClipPrecision = clipprecision;
-    m_lfPanel.lfQuality = quality;m_lfPanel.lfPitchAndFamily = pitchandfamily;
-
-    strcpy(m_lfPanel.lfFaceName, deffontfacename);
-    memcpy(&m_samplelfPanel, &m_lfPanel, sizeof(LOGFONT));
+    MBUtil::FontStr2LogFont(MBdeffont, &m_lfPanel);
+	memcpy(&m_samplelfPanel, &m_lfPanel, sizeof(LOGFONT));
     m_lplfPanel = &m_lfPanel;
 
-    sscanf(deffont, CCFONTFMT, &m_lfColHdr.lfHeight, &m_lfColHdr.lfWidth, 
-		&m_lfColHdr.lfEscapement,&m_lfColHdr.lfOrientation,
-        &m_lfColHdr.lfWeight,&italic,&underline,&strikeout,&charset,
-        &outprecision,&clipprecision,&quality,&pitchandfamily);
-    m_lfColHdr.lfItalic = italic;m_lfColHdr.lfUnderline = underline;
-    m_lfColHdr.lfStrikeOut = strikeout;m_lfColHdr.lfCharSet = charset;
-    m_lfColHdr.lfOutPrecision = outprecision;m_lfColHdr.lfClipPrecision = clipprecision;
-    m_lfColHdr.lfQuality = quality;m_lfColHdr.lfPitchAndFamily = pitchandfamily;
-
-    strcpy(m_lfColHdr.lfFaceName, deffontfacename);
+	MBUtil::FontStr2LogFont(MBdeffont, &m_lfColHdr);
     memcpy(&m_samplelfColHdr, &m_lfColHdr, sizeof(LOGFONT));
     m_lplfColHdr = &m_lfColHdr;
 
@@ -459,78 +396,18 @@ CConfigDisplay::ReadReg(RegistryKey & reg) {
     AutoBuf buf(1000);
 	
     reg.Read(RegWindowsFontTitles, buf.p, 999, "");
-    if (MBUtil::ConfigFontValidate(buf.p) && strlen(buf.p) > CCFONTFACEPOS) {
-        sscanf(buf.p, CCFONTFMT, 
-            &m_lfTitles.lfHeight, &m_lfTitles.lfWidth, &m_lfTitles.lfEscapement,
-            &m_lfTitles.lfOrientation,
-            &m_lfTitles.lfWeight,
-                    &italic,
-            &underline,
-            &strikeout,
-            &charset,
-            &outprecision,
-            &clipprecision,
-            &quality,
-            &pitchandfamily);
-        m_lfTitles.lfItalic = italic;
-        m_lfTitles.lfUnderline = underline;
-        m_lfTitles.lfStrikeOut = strikeout;
-        m_lfTitles.lfCharSet = charset;
-        m_lfTitles.lfOutPrecision = outprecision;
-        m_lfTitles.lfClipPrecision = clipprecision;
-        m_lfTitles.lfQuality = quality;
-        m_lfTitles.lfPitchAndFamily = pitchandfamily;
-        strcpy(m_lfTitles.lfFaceName, (buf.p + CCFONTFACEPOS));
+    if (MBUtil::ConfigFontValidate(buf.p) && strlen(buf.p) > MBCCFONTFACEPOS) {
+		MBUtil::FontStr2LogFont(buf.p, &m_lfTitles);
 	}
 
     reg.Read(RegWindowsFontPanel, buf.p, 999, "");
-    if (MBUtil::ConfigFontValidate(buf.p) && strlen(buf.p) > CCFONTFACEPOS) {
-        sscanf(buf.p, CCFONTFMT, 
-            &m_lfPanel.lfHeight, &m_lfPanel.lfWidth, &m_lfPanel.lfEscapement,
-            &m_lfPanel.lfOrientation,
-            &m_lfPanel.lfWeight,
-                    &italic,
-            &underline,
-            &strikeout,
-            &charset,
-            &outprecision,
-            &clipprecision,
-            &quality,
-            &pitchandfamily);
-        m_lfPanel.lfItalic = italic;
-        m_lfPanel.lfUnderline = underline;
-        m_lfPanel.lfStrikeOut = strikeout;
-        m_lfPanel.lfCharSet = charset;
-        m_lfPanel.lfOutPrecision = outprecision;
-        m_lfPanel.lfClipPrecision = clipprecision;
-        m_lfPanel.lfQuality = quality;
-        m_lfPanel.lfPitchAndFamily = pitchandfamily;
-        strcpy(m_lfPanel.lfFaceName, (buf.p + CCFONTFACEPOS));
+    if (MBUtil::ConfigFontValidate(buf.p) && strlen(buf.p) > MBCCFONTFACEPOS) {
+		MBUtil::FontStr2LogFont(buf.p, &m_lfPanel);
 	}
 
     reg.Read(RegWindowsFontColHdr, buf.p, 999, "");
-    if (MBUtil::ConfigFontValidate(buf.p) && strlen(buf.p) > CCFONTFACEPOS) {
-        sscanf(buf.p, CCFONTFMT, 
-            &m_lfColHdr.lfHeight, &m_lfColHdr.lfWidth, &m_lfColHdr.lfEscapement,
-            &m_lfColHdr.lfOrientation,
-            &m_lfColHdr.lfWeight,
-                    &italic,
-            &underline,
-            &strikeout,
-            &charset,
-            &outprecision,
-            &clipprecision,
-            &quality,
-            &pitchandfamily);
-        m_lfColHdr.lfItalic = italic;
-        m_lfColHdr.lfUnderline = underline;
-        m_lfColHdr.lfStrikeOut = strikeout;
-        m_lfColHdr.lfCharSet = charset;
-        m_lfColHdr.lfOutPrecision = outprecision;
-        m_lfColHdr.lfClipPrecision = clipprecision;
-        m_lfColHdr.lfQuality = quality;
-        m_lfColHdr.lfPitchAndFamily = pitchandfamily;
-        strcpy(m_lfColHdr.lfFaceName, (buf.p + CCFONTFACEPOS));
+    if (MBUtil::ConfigFontValidate(buf.p) && strlen(buf.p) > MBCCFONTFACEPOS) {
+		MBUtil::FontStr2LogFont(buf.p, &m_lfColHdr);
 	}
 
 	EnableDisable();
@@ -591,34 +468,14 @@ CConfigDisplay::StoreReg(RegistryKey & reg) {
 	reg.Write(RegWindowsBorderHorz, m_vBorderHorz);
 	reg.Write(RegWindowsBorderVert, m_vBorderVert);
 
-    AutoBuf buf(1000);
+	CString fontstr = MBUtil::LogFont2FontStr(&m_lfTitles);
+    reg.Write(RegWindowsFontTitles, fontstr);
 
-    sprintf(buf.p, CCFONTFMT,
-        m_lfTitles.lfHeight, m_lfTitles.lfWidth, m_lfTitles.lfEscapement, m_lfTitles.lfOrientation,
-        m_lfTitles.lfWeight, m_lfTitles.lfItalic, m_lfTitles.lfUnderline, m_lfTitles.lfStrikeOut,
-        m_lfTitles.lfCharSet, m_lfTitles.lfOutPrecision, m_lfTitles.lfClipPrecision,
-        m_lfTitles.lfQuality, m_lfTitles.lfPitchAndFamily);
-    char * p = buf.p + strlen(buf.p);
-    sprintf(p, "%s", m_lfTitles.lfFaceName);
-    reg.Write(RegWindowsFontTitles, buf.p);
+	fontstr = MBUtil::LogFont2FontStr(&m_lfPanel);
+    reg.Write(RegWindowsFontPanel, fontstr);
 
-    sprintf(buf.p, CCFONTFMT,
-        m_lfPanel.lfHeight, m_lfPanel.lfWidth, m_lfPanel.lfEscapement, m_lfPanel.lfOrientation,
-        m_lfPanel.lfWeight, m_lfPanel.lfItalic, m_lfPanel.lfUnderline, m_lfPanel.lfStrikeOut,
-        m_lfPanel.lfCharSet, m_lfPanel.lfOutPrecision, m_lfPanel.lfClipPrecision,
-        m_lfPanel.lfQuality, m_lfPanel.lfPitchAndFamily);
-    p = buf.p + strlen(buf.p);
-    sprintf(p, "%s", m_lfPanel.lfFaceName);
-    reg.Write(RegWindowsFontPanel, buf.p);
-
-    sprintf(buf.p, CCFONTFMT,
-        m_lfColHdr.lfHeight, m_lfColHdr.lfWidth, m_lfColHdr.lfEscapement, m_lfColHdr.lfOrientation,
-        m_lfColHdr.lfWeight, m_lfColHdr.lfItalic, m_lfColHdr.lfUnderline, m_lfColHdr.lfStrikeOut,
-        m_lfColHdr.lfCharSet, m_lfColHdr.lfOutPrecision, m_lfColHdr.lfClipPrecision,
-        m_lfColHdr.lfQuality, m_lfColHdr.lfPitchAndFamily);
-    p = buf.p + strlen(buf.p);
-    sprintf(p, "%s", m_lfColHdr.lfFaceName);
-    reg.Write(RegWindowsFontColHdr, buf.p);
+	fontstr = MBUtil::LogFont2FontStr(&m_lfColHdr);
+    reg.Write(RegWindowsFontColHdr, fontstr);
 
 }
 
@@ -1261,7 +1118,7 @@ BOOL CConfigDisplay::checkSkinDef(const RegistryKey & regSD, CString & msg) {
 			}
 		} else if (key.Left(4) == "Font") {
 			if (!MBUtil::ConfigFontValidate(val)
-				|| val.GetLength() < CCFONTFACEPOS) {
+				|| val.GetLength() < MBCCFONTFACEPOS) {
 				msg += key + " bad font setting\r\n";
 				good = FALSE;
 			}
@@ -1470,7 +1327,6 @@ void CConfigDisplay::OnSelchangeFont() {	showSample();	modified(TRUE);}
 void CConfigDisplay::modified(BOOL b) {
 	SetModified(b);
 	m_Modified = b;
-	logger.ods(CString("cd modded ") + numToString(b));
 }
 void CConfigDisplay::getSkins(CStringList & skinlist) {
 	skinlist.RemoveAll();

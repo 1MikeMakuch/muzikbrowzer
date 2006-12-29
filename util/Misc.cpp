@@ -168,6 +168,54 @@ TEST(ConfigFileParser2, ParseTest2)
 	}
 	CHECK(kvstack.empty() == TRUE);
 }
+static unsigned int italic;
+static unsigned int underline;
+static unsigned int strikeout;
+static unsigned int charset;
+static unsigned int outprecision;
+static unsigned int clipprecision;
+static unsigned int quality;
+static unsigned int pitchandfamily;
+void
+MBUtil::FontStr2LogFont(const char * fontstr, LPLOGFONT lplf) {
+    sscanf(fontstr, MBCCFONTFMT, 
+		&lplf->lfHeight, 
+		&lplf->lfWidth, 
+		&lplf->lfEscapement, 
+		&lplf->lfOrientation,
+        &lplf->lfWeight, 
+		&italic, 
+		&underline, 
+		&strikeout, 
+		&charset,
+        &outprecision, 
+		&clipprecision, 
+		&quality, 
+		&pitchandfamily);
+
+    lplf->lfItalic = italic; 
+	lplf->lfUnderline = underline;
+    lplf->lfStrikeOut = strikeout; 
+	lplf->lfCharSet = charset;
+    lplf->lfOutPrecision = outprecision;
+	lplf->lfClipPrecision = clipprecision;
+    lplf->lfQuality = quality;
+	lplf->lfPitchAndFamily = pitchandfamily;
+
+    strcpy(lplf->lfFaceName, fontstr+MBCCFONTFACEPOS);
+}
+CString MBUtil::LogFont2FontStr(const LPLOGFONT lplf) {
+    AutoBuf buf(1000);
+    sprintf(buf.p, MBCCFONTFMT,
+        lplf->lfHeight, lplf->lfWidth, lplf->lfEscapement, lplf->lfOrientation,
+        lplf->lfWeight, lplf->lfItalic, lplf->lfUnderline, lplf->lfStrikeOut,
+        lplf->lfCharSet, lplf->lfOutPrecision, lplf->lfClipPrecision,
+        lplf->lfQuality, lplf->lfPitchAndFamily);
+    char * p = buf.p + strlen(buf.p);
+    sprintf(p, "%s", lplf->lfFaceName);
+	return CString(buf.p);
+}
+
 
 // Validate font spec from config file
 BOOL
