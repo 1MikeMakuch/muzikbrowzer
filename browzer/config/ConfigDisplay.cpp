@@ -246,6 +246,7 @@ BOOL CConfigDisplay::OnInitDialog()
 #endif
 	
 	EnableDisable();
+
 	
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
@@ -877,7 +878,8 @@ void CConfigDisplay::OnOK()
 	m_Modified = FALSE;
 	modified(FALSE);
 
-
+	sel = m_SkinList.SelectString(-1, m_sSkinName);
+	m_SkinList.SetCurSel(sel);
 
 	CPropertyPage::OnOK();
 }

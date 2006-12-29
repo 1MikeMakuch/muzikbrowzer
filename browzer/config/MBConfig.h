@@ -50,7 +50,8 @@ public:
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(MBConfig)
-	public:
+public:
+	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);
 	virtual BOOL OnInitDialog();
 	//}}AFX_VIRTUAL
 
@@ -64,6 +65,8 @@ protected:
 		// NOTE - the ClassWizard will add and remove member functions here.
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
+	void SaveWindowPos();
+	void ReadWindowPos();
 private:
 	PlayerCallbacks * m_playercallbacks;
 //    CPlayerDlg * m_PlayerDlg;
@@ -79,7 +82,6 @@ private:
 
     void init();
 	BOOL HelpInfo(const int i);
-	afx_msg BOOL OnCommand(WPARAM wParam, LPARAM lParam) ;
 
 public:
     CConfigFiles * files() { return m_Files; }

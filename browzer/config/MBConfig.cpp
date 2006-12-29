@@ -82,10 +82,41 @@ END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
 // MBConfig message handlers
+void
+MBConfig::ReadWindowPos() {
+
+    RegistryKey reg( HKEY_LOCAL_MACHINE, RegKey );
+    int x1,y1;
+
+
+    x1 = reg.Read("SettingsDlgX", 0);
+    y1 = reg.Read("SettingsDlgY", 0);
+    
+	if (x1 && y1) {
+		CRect dialog;
+		GetWindowRect(dialog);
+		MoveWindow(x1,y1,dialog.Width(),dialog.Height(),TRUE);
+	}
+}
+void
+MBConfig::SaveWindowPos() {
+	AutoLog al("SaveWindowPos");
+    CRect dialog;
+    GetWindowRect(dialog);
+
+    RegistryKey reg( HKEY_LOCAL_MACHINE, RegKey );
+
+    reg.Write("SettingsDlgX", dialog.TopLeft().x);
+    reg.Write("SettingsDlgY", dialog.TopLeft().y);
+
+
+}
 
 BOOL MBConfig::OnInitDialog() 
 {
 	BOOL bResult = CPropertySheet::OnInitDialog();
+
+	ReadWindowPos();
 	
 //	pApplyButton = GetDlgItem (ID_APPLY_NOW);
 //	ASSERT (pApplyButton);
@@ -295,6 +326,8 @@ BOOL MBConfig::OnCommand(WPARAM wParam, LPARAM lParam)
 		int i = GetActiveIndex();
 		HelpInfo(i);
 	} else {
+		if (IDOK == nID)
+			SaveWindowPos();
 		return CPropertySheet::OnCommand(wParam, lParam);
 	}
 	return TRUE;
@@ -359,3 +392,4 @@ int
 MBConfig::logging() {
 	return m_Files->logging();
 }
+
