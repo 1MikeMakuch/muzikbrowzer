@@ -6,6 +6,8 @@
 #include "wmpcontrols.h"
 #include "wmpmedia.h"
 #include "wmpsettings.h"
+#include "wmperror.h"
+#include "wmperroritem.h"
 #include "util/MyLog.h"
 #include "util/Misc.h"
 #include "util/MyString.h"
@@ -42,7 +44,23 @@ MusicPlayerWMP::init()
 
 	return iver;
 }
-
+CString 
+MusicPlayerWMP::GetStatus() { 
+	return m_MP->GetStatus(); 
+}
+CString
+MusicPlayerWMP::GetError() { 
+	CString msg;
+	CWMPError e = m_MP->GetError();
+	long n = e.GetErrorCount();
+	for(int i = 0 ; i < n; ++i) {
+		CWMPErrorItem ei = e.GetItem(i);
+		if (msg.GetLength())
+			msg += ", ";
+		msg += ei.GetErrorDescription();
+	}
+	return msg;
+}
 int
 MusicPlayerWMP::InputOpen(const char *file) {
 	m_file = file;

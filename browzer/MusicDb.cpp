@@ -5273,10 +5273,11 @@ MusicLib::getComments(const CString & file) {
 		if (tmp.GetLength()) {
 			comment += " Composer(s): "+tmp;
 		}
-		tmp = wma.getVal("Author");
-		if (tmp.GetLength()) {
-			comment += " Author(s): "+tmp;
-		}
+// Author no good, it's usually just Artist
+//		tmp = wma.getVal("Author");
+//		if (tmp.GetLength()) {
+//			comment += " Author(s): "+tmp;
+//		}
 	} else if (fext == "ogg") {
 		OggTag ogg;
 		ogg.read(file);

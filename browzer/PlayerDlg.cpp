@@ -3521,6 +3521,25 @@ CPlayerDlg::PlayLoop() {
 			}
         
 			CString msg;
+			if (good) { // Get comments first cause it locks the file and races with WMP
+				msg = m_mlib._playlist[m_PlaylistCurrent]->getId3("TIT2");
+				msg += " by ";
+				msg += m_mlib._playlist[m_PlaylistCurrent]->getId3("TPE1");
+				msg += " on ";
+				msg += m_mlib._playlist[m_PlaylistCurrent]->getId3("TALB");
+				msg += " in ";
+				msg += m_mlib._playlist[m_PlaylistCurrent]->getId3("TCON");
+
+				CString comments = m_mlib.getComments(file);
+				if (comments.GetLength()) {
+					msg += ". ";
+					msg += comments;
+				}
+				CurrentTitleSet(msg);
+				if (m_Config.trialMode() == 1) {
+					PlayerStatusTempSet("Trial Mode. See Settings/License.");
+				}
+			}
             if (good && m_Player->InputOpen(file) && Play()) {
 //				Play();
 //				adjustVolume();
@@ -3591,25 +3610,6 @@ CPlayerDlg::PlayLoop() {
 					msg = FileUtil::FileToString(CheckEmLog._pathfile);
 					MBMessageBox("Check Em results",msg,TRUE,FALSE);
 				}
-			} else if (good) {
-				msg = m_mlib._playlist[m_PlaylistCurrent]->getId3("TIT2");
-				msg += " by ";
-				msg += m_mlib._playlist[m_PlaylistCurrent]->getId3("TPE1");
-				msg += " on ";
-				msg += m_mlib._playlist[m_PlaylistCurrent]->getId3("TALB");
-				msg += " in ";
-				msg += m_mlib._playlist[m_PlaylistCurrent]->getId3("TCON");
-
-				CString comments = m_mlib.getComments(file);
-				if (comments.GetLength()) {
-					msg += ". ";
-					msg += comments;
-				}
-				CurrentTitleSet(msg);
-				if (m_Config.trialMode() == 1) {
-					PlayerStatusTempSet("Trial Mode. See Settings/License.");
-				}
-				UpdateWindow();
 			}
         } else {
 			if (m_Player->isStopped() && m_QuickPlay) {
@@ -3929,7 +3929,7 @@ CPlayerDlg::OnSizing(UINT fwSide, LPRECT pRect) {
 }
 void 
 CPlayerDlg::OnCaptureChanged(CWnd *pWnd) {
-	AutoLog al("OnCaptureChanged");
+//	AutoLog al("OnCaptureChanged");
 	// This forces rubber band style resizing
 //	logger.ods("OnCaptureChanged");
 	if (m_Resizing)
@@ -4001,13 +4001,13 @@ CPlayerDlg::OnSize(UINT nType, int cx, int cy) {
 }
 void
 CPlayerDlg::CurrentTitleSet(LPCTSTR lpmsg) {
-	AutoLog al("CurrentTitleSet");
+//	AutoLog al("CurrentTitleSet");
 	CString msg(lpmsg);
 	CurrentTitleSet(msg);
 }
 void
 CPlayerDlg::CurrentTitleSet(CString & msg) {
-	AutoLog al("CurrentTitleSet");
+//	AutoLog al("CurrentTitleSet");
 	//m_CurrentTitle.setText(msg);
 	m_CurrentTitleDesc = msg;
 	PlayerStatusSet(msg);
@@ -4015,7 +4015,7 @@ CPlayerDlg::CurrentTitleSet(CString & msg) {
 }
 void
 CPlayerDlg::PlayerStatusClear() {
-	AutoLog al("PlayerStatusClear");
+//	AutoLog al("PlayerStatusClear");
 	PlayerStatusSet("");
 }
 void
@@ -4034,14 +4034,14 @@ CPlayerDlg::SetSelected(const CString text, DWORD itemData) {
 }
 void
 CPlayerDlg::PlayerStatusSet(LPCTSTR lpmsg) {
-	AutoLog al("PlayerStatusSet");
+//	AutoLog al("PlayerStatusSet");
 	CString msg(lpmsg);
 	PlayerStatusSet(msg);
 }
 
 void
 CPlayerDlg::PlayerStatusSet(CString & msg) {
-	AutoLog al("PlayerStatusSet");
+//	AutoLog al("PlayerStatusSet");
 	if (m_StatusTimerId == 0) {
 		m_PlayerStatus.setText(msg);
 	}
@@ -4050,13 +4050,13 @@ CPlayerDlg::PlayerStatusSet(CString & msg) {
 }
 void
 CPlayerDlg::PlayerStatusTempSet(LPCTSTR lpmsg) {
-	AutoLog al("PlayerStatusTempSet");
+//	AutoLog al("PlayerStatusTempSet");
 	CString msg(lpmsg);
 	PlayerStatusTempSet(msg);
 }
 void
 CPlayerDlg::PlayerStatusTempSet(CString & cmsg) {
-	AutoLog al("PlayerStatusTempSet");
+//	AutoLog al("PlayerStatusTempSet");
 	CString msg(cmsg);
 //	if (MBALL == msg)
 //		msg = m_mlib.getLibraryCounts();		
@@ -4067,7 +4067,7 @@ CPlayerDlg::PlayerStatusTempSet(CString & cmsg) {
 }
 void
 CPlayerDlg::PlayerStatusRevert() {
-	AutoLog al("PlayerStatusRevert");
+//	AutoLog al("PlayerStatusRevert");
 
     CTime t = CTime::GetCurrentTime();
     if (t.GetTime() > (m_PlayerStatusTime.GetTime() + PLAYER_STATUS_DELAY)) {
@@ -4860,19 +4860,19 @@ CPlayerDlg::OnMenuExportLibrary() {
 
 void 
 CPlayerDlg::StopTimers() {
-	AutoLog al("StopTimers");
+//	AutoLog al("StopTimers");
 	StopSeekTimer();
 	StopStatusTimer();
 }
 void 
 CPlayerDlg::StartStatusTimer(){
-	AutoLog al("StartStatusTimer");
+//	AutoLog al("StartStatusTimer");
 	StopStatusTimer();
 	m_StatusTimerId = SetTimer(MB_STATUS_TIMER_ID, 3000, NULL);
 }
 void 
 CPlayerDlg::StopStatusTimer(){
-	AutoLog al("StopStatusTimer");
+//	AutoLog al("StopStatusTimer");
 	if (m_StatusTimerId) {
 		KillTimer(m_StatusTimerId);
 		m_StatusTimerId = 0;
@@ -4880,7 +4880,7 @@ CPlayerDlg::StopStatusTimer(){
 }
 void 
 CPlayerDlg::StartSeekTimer() {
-	AutoLog al("StartSeekTimer");
+//	AutoLog al("StartSeekTimer");
     // Cancel any pending timer event
     StopSeekTimer();
 	m_PositionSlider.SetRange(0,100);	
@@ -4892,7 +4892,7 @@ CPlayerDlg::StartSeekTimer() {
 
 void 
 CPlayerDlg::StopSeekTimer() {
-	AutoLog al("StopSeekTimer");
+//	AutoLog al("StopSeekTimer");
     // Cancel the timer
     if(m_timerid)        
     {                
@@ -4954,19 +4954,19 @@ CPlayerDlg::updatePositionLabel(){
 }
 void 
 CPlayerDlg::adjustPosition() {
-	AutoLog al("adjustPosition");
+//	AutoLog al("adjustPosition");
 	m_Player->Seek(m_PositionSlider.GetPos(), TRUE);
 	updatePositionLabel();
 }
 void 
 CPlayerDlg::adjustPosition(int pct) {
-	AutoLog al("adjustPosition");
+//	AutoLog al("adjustPosition");
 	m_Player->Seek(pct, TRUE);
 	updatePositionLabel();
 }
 LRESULT
 CPlayerDlg::OnProgress(WPARAM wParam, LPARAM lParam) {
-	AutoLog al("OnProgress");
+//	AutoLog al("OnProgress");
 	adjustPosition();
 	return 0;
 }
@@ -5152,14 +5152,14 @@ CPlayerDlg::OnLogoButton() {
 }
 LRESULT
 CPlayerDlg::OnHoverCancelMsg(WPARAM wParam, LPARAM lParam) {
-	AutoLog al("OnHoverCancelMsg");
+//	AutoLog al("OnHoverCancelMsg");
 	PlayerStatusTempSet("");
 	return 0;
 }
 
 LRESULT
 CPlayerDlg::OnHoverMsg1(WPARAM wParam, LPARAM lParam) {
-	AutoLog al("OnHoverMsg1");
+//	AutoLog al("OnHoverMsg1");
 	CString msg;
 	switch(wParam) {
 
@@ -5265,73 +5265,85 @@ CPlayerDlg::OnInitMenuPopup(CMenu *pSysMenu,
 
 BEGIN_EVENTSINK_MAP(CPlayerDlg, CDialogClassImpl)
     //{{AFX_EVENTSINK_MAP(CPlayerDlg)
+	ON_EVENT(CPlayerDlg, IDC_WMP, 5501 /* Error */, OnErrorWmp, VTS_NONE)
+	ON_EVENT(CPlayerDlg, IDC_WMP, 5821 /* MediaError */, OnMediaErrorWmp, VTS_DISPATCH)
 	ON_EVENT(CPlayerDlg, IDC_WMP, 5101 /* PlayStateChange */, OnPlayStateChangeWmp, VTS_I4)
 	ON_EVENT(CPlayerDlg, IDC_WMP, 5202 /* PositionChange */, OnPositionChangeWmp, VTS_R8 VTS_R8)
-	ON_EVENT(CPlayerDlg, IDC_WMP, 5821 /* MediaError */, OnMediaErrorWmp, VTS_DISPATCH)
-	ON_EVENT(CPlayerDlg, IDC_WMP, 5501 /* Error */, OnErrorWmp, VTS_NONE)
 	ON_EVENT(CPlayerDlg, IDC_WMP, 5601 /* Warning */, OnWarningWmp, VTS_I4 VTS_I4 VTS_BSTR)
+	ON_EVENT(CPlayerDlg, IDC_WMP, 6517 /* DeviceSyncError */, OnDeviceSyncErrorWmp, VTS_UNKNOWN VTS_DISPATCH)
+	ON_EVENT(CPlayerDlg, IDC_WMP, 5002 /* StatusChange */, OnStatusChangeWmp, VTS_NONE)
+	ON_EVENT(CPlayerDlg, IDC_WMP, 6502 /* SwitchedToControl */, OnSwitchedToControlWmp, VTS_NONE)
+	ON_EVENT(CPlayerDlg, IDC_WMP, 6501 /* SwitchedToPlayerApplication */, OnSwitchedToPlayerApplicationWmp, VTS_NONE)
+	ON_EVENT(CPlayerDlg, IDC_WMP, 5201 /* EndOfStream */, OnEndOfStreamWmp, VTS_I4)
 	//}}AFX_EVENTSINK_MAP
 END_EVENTSINK_MAP()
-
 void 
 CPlayerDlg::OnPlayStateChangeWmp(long NewState) 
 {
-	AutoLog al("OnPlayStateChangeWmp");
-	logger.ods("OnPlayStateChangeWmp:"+numToString(NewState));
+	logger.logd("OnPlayStateChangeWmp:"+numToString(NewState)+":"+m_Player->file());
 	if (8 == NewState) {
 		KillTimer(m_PlayLoopTimerId);
 		m_PlayLoopTimerId = SetTimer(MB_PLAYLOOP_TIMER_ID, 1, NULL);
 	}
 }
-
 void 
 CPlayerDlg::OnPositionChangeWmp(double oldPosition, double newPosition) 
 {
-	AutoLog al("OnPositionChangeWmp");
+	logger.logd("OnPositionChangeWmp:"+m_Player->file());
 	updatePositionLabel();
 }
-
-
-// In event of these errors, stop MB from continuing so the user
-// can see which file has a problem. 
-
 void 
 CPlayerDlg::OnMediaErrorWmp(LPDISPATCH pMediaObject) 
 {
-	AutoLog al("OnMediaErrorWmp");
-	// TODO: Add your control notification handler code here
-	logger.log("Media Error Wmp");
-	//OnPlayStateChangeWmp(0);
+	// At this point an error dlg is thrown up by WMP
+	// I don't know how to get control of it at this point
+	// so all I can do is stop.
+	logger.log("Media Error Wmp:"+m_Player->file());
+	logger.log("Error:" + m_Player->GetError());
 	Stop();
 	InputClose();
-	//PlayLoop();
-	
+
+	// Tried this, it doesn't kill the dlg.
+	//delete m_Player;
+	//m_Player = new MusicPlayerWMP(&m_WMP);
+	//OnNextSong();
 }
 
 void 
 CPlayerDlg::OnErrorWmp() 
 {
-	AutoLog al("OnErrorWmp");
-	// TODO: Add your control notification handler code here
-	logger.log("Error Wmp");
-	//OnPlayStateChangeWmp(0);
+	logger.log("Error Wmp:"+m_Player->file());
+	logger.log("Error:" + m_Player->GetError());
 	Stop();
 	InputClose();
-	//PlayLoop();
-	
 }
-
 void 
 CPlayerDlg::OnWarningWmp(long WarningType, long Param, LPCTSTR Description) 
 {
-	AutoLog al("OnWarningWmp");
-	// TODO: Add your control notification handler code here
-	logger.log("Warning Wmp");
-	//OnPlayStateChangeWmp(0);
+	logger.log("Warning Wmp:"+m_Player->file());
+	logger.log("Error:" + m_Player->GetError());
 	Stop();
 	InputClose();
-	//PlayLoop();
-	
 }
+void CPlayerDlg::OnDeviceSyncErrorWmp(LPUNKNOWN pDevice, LPDISPATCH pMedia) 
+{
+	logger.log("OnDeviceSyncErrorWmp:"+m_Player->file());
+	logger.log("Error:" + m_Player->GetError());
+}
+void CPlayerDlg::OnStatusChangeWmp() 
+{
+	logger.logd("OnStatusChangeWmp:"+m_Player->GetStatus()+":"+m_Player->file());
 
-
+}
+void CPlayerDlg::OnSwitchedToControlWmp() 
+{
+	logger.logd("OnSwitchedToControlWmp:"+m_Player->file());
+}
+void CPlayerDlg::OnSwitchedToPlayerApplicationWmp() 
+{
+	logger.logd("OnSwitchedToPlayerApplicationWmp:"+m_Player->file());
+}
+void CPlayerDlg::OnEndOfStreamWmp(long Result) 
+{
+	logger.logd("OnEndOfStreamWmp:"+m_Player->file());
+}

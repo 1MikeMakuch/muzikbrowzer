@@ -436,6 +436,11 @@ public:
 	afx_msg void      OnVolDown();
 	afx_msg LRESULT   OnVolume(WPARAM wParam, LPARAM lParam);
 	afx_msg void      OnWarningWmp(long WarningType, long Param, LPCTSTR Description);
+	afx_msg void OnDeviceSyncErrorWmp(LPUNKNOWN pDevice, LPDISPATCH pMedia);
+	afx_msg void OnStatusChangeWmp();
+	afx_msg void OnSwitchedToControlWmp();
+	afx_msg void OnSwitchedToPlayerApplicationWmp();
+	afx_msg void OnEndOfStreamWmp(long Result);
 	DECLARE_EVENTSINK_MAP()
 	//}}AFX_MSG
 public:

@@ -3,6 +3,7 @@
 #define _MUSICPLAYERWMP_H_
 
 class CWMPPlayer4;
+class CWMPError;
 
 class MusicPlayerWMP
 {
@@ -24,6 +25,9 @@ public:
 	long GetFileDuration();
 	long ReadMediaPosition(void);
 	void ReadMediaPosition(long &, long &, long &);
+	CString file() { return m_file; }
+	CString GetStatus();
+	CString GetError();
 private:
 	CWMPPlayer4 * m_MP;
 	int m_State;
