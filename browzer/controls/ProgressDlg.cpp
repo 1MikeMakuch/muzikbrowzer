@@ -45,7 +45,11 @@ ProgressDlg::ProgressDlg(CDialog * pParent, int cflag, int abortflag)
 	m_InitStatus2.SetWordWrap(TRUE,TRUE);
 	time(&m_TotalStartTime);
 }
-
+ProgressDlg::~ProgressDlg() {
+	if (m_pThread) {
+		m_pThread->CloseHandle();
+	}
+}
 
 void ProgressDlg::DoDataExchange(CDataExchange* pDX)
 {

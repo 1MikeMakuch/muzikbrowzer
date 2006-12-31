@@ -23,6 +23,7 @@ class ProgressDlg : public CDialog
 // Construction
 public:
 	ProgressDlg(CDialog * parent, int cflag=0, int abortflag=0);   // standard constructor
+	~ProgressDlg();
 	void SetTitle(const CString &);
 	void SetLabel(const CString &);
 	void UpdateStatus(const CString &);
