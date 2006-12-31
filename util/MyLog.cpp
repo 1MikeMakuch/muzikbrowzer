@@ -8,6 +8,8 @@
 #include "muzikbrowzerVersion.h"
 #include "MyString.h"
 #include "FileUtils.h"
+#include <afxmt.h>
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -83,14 +85,13 @@ MyLog::logd(const CString &m1, const CString &m2,
 
 	log(m1,m2,m3,m4,m5,m6);
 }
+CCriticalSection MyLogCS;
 void
 MyLog::log(const CString &m1, const CString &m2, 
 		   const CString &m3, const CString &m4,
 		   const CString &m5, const CString &m6
 		   ) {
 	if (m_ready == FALSE) return;
-
-	trimIt();
 
     CString mx;
 	if (m_DTStamp) {
@@ -116,8 +117,14 @@ MyLog::log(const CString &m1, const CString &m2,
 	mx += "\r\n";
 	if (!m_NoODS)
 		OutputDebugString(mx);
+
+	CSingleLock lock(&MyLogCS);
+	lock.Lock();
+	trimIt();
+	_file.SeekToEnd();
 	_file.Write(mx,mx.GetLength());
     _file.Flush();
+	lock.Unlock();
 }
 void
 MyLog::trimIt() {
