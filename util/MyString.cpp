@@ -37,6 +37,7 @@ MyHash::getVal(const CString & key) {
 }
 BOOL
 MyHash::contains(const CString & key) {
+	if (!m_hash.GetCount()) return FALSE;
 	CString val;
 	if (m_hash.Lookup(key,val) == 0)
 		return FALSE;
@@ -1244,6 +1245,7 @@ String::CStringList2CStringArray(CStringArray & array, const CStringList & list)
 static MyHash tabhash;
 CString 
 String::numspaces(const int num) {
+
 	if (tabhash.contains(NTS(num)))
 		return tabhash.getVal(NTS(num));
 	

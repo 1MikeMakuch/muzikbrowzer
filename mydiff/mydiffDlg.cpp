@@ -100,10 +100,10 @@ BOOL CMydiffDlg::OnInitDialog()
 
 	m_Files.m_highlights = TRUE;
 
-    TestResult tr;
-    TestRegistry::runAllTests(tr);
-	if (tr.failures())
-		MessageBox(tr.results(), "mydiff Test Results");
+//    TestResult tr;
+//    TestRegistry::runAllTests(tr);
+//	if (tr.failures())
+//		MessageBox(tr.results(), "mydiff Test Results");
 
 	controlsEnable(FALSE);
 

@@ -42,7 +42,7 @@ RSC=rc.exe
 # PROP Intermediate_Dir "Release"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
-# ADD CPP /nologo /MD /W3 /GX /O2 /Op /I ".\include" /I "..\..\include" /I "..\..\..\ogg\libogg-1.0\include\\" /D VERSION=\"1.1.3\" /D "FLAC__NO_DLL" /D "FLAC__HAS_OGG" /D "FLAC__CPU_IA32" /D "FLAC__HAS_NASM" /D "FLAC__USE_3DNOW" /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
+# ADD CPP /nologo /MT /W3 /GX /O2 /Op /I ".\include" /I "..\..\include" /I "..\..\..\ogg\libogg-1.0\include\\" /D VERSION=\"1.1.3\" /D "FLAC__NO_DLL" /D "FLAC__HAS_OGG" /D "FLAC__CPU_IA32" /D "FLAC__HAS_NASM" /D "FLAC__USE_3DNOW" /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe

@@ -3877,7 +3877,7 @@ CPlayerDlg::OnUserEditSong() {
 
 void 
 CPlayerDlg::OnGetMinMaxInfo( MINMAXINFO FAR* lpMMI ) {
-	AutoLog al("OnGetMinMaxInfo");
+//	AutoLog al("OnGetMinMaxInfo");
    RECT r;
    GetWindowRect(&r);
    if ((r.right - r.left) > 0 && TRUE == m_FixedSize )

@@ -4949,7 +4949,7 @@ MSongLib::validate() {
 	return 0;
 }
 CString MusicLib::JustVerify() {
-	AutoLog("CString MusicLib::JustVerify");
+	AutoLog al("CString MusicLib::JustVerify");
     int num_albums1,num_songs1, num_albums2, num_songs2;
     num_albums1 = num_songs1 = num_albums2 = num_songs2 = 0;
 	CString msg("Test Verifying");
@@ -5289,11 +5289,6 @@ MusicLib::getComments(const CString & file) {
 	return comment;
 }
 
-
-#ifndef _DEBUG
-void MusicLib::garbageCollectTest() {};
-	AutoLog("void MusicLib::garbageCollectTest");
-#else
 void
 MusicLib::garbageCollectTest() {
 	AutoLog al("mdb::garbageCollectTest");
@@ -5371,4 +5366,3 @@ MusicLib::garbageCollectTest() {
 }
 
 
-#endif
