@@ -474,13 +474,40 @@ Package=<4>
     Project_Dep_Name libFLAC_static
     End Project Dependency
     Begin Project Dependency
-    Project_Dep_Name libFLAC++_static
-    End Project Dependency
-    Begin Project Dependency
     Project_Dep_Name replaygain_analysis_static
     End Project Dependency
     Begin Project Dependency
     Project_Dep_Name utf8_static
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name bitmaptest
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name getopt_static
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name grabbag_static
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name id3
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name id3tagger
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name mbpw
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name mbpwDlg
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name metaflac
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name mydiff
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name libFLAC++_static
     End Project Dependency
 }}}
 

@@ -139,7 +139,7 @@ LIB32=link.exe -lib
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MTd /W3 /GX /Z7 /Od /I "..\include" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /FD /c
 # SUBTRACT BASE CPP /YX
-# ADD CPP /nologo /MTd /W3 /GX /Z7 /Od /I "..\include" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /FD /c
+# ADD CPP /nologo /MTd /W3 /GX /Zi /Od /I "..\include" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /FD /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x809
 # ADD RSC /l 0x809

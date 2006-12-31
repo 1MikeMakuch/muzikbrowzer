@@ -214,6 +214,7 @@ MusicLib::MusicLib(): m_totalMp3s(0),
 	m_mp3Extensions.AddTail("mp3");
 	m_mp3Extensions.AddTail("wma");
 	m_mp3Extensions.AddTail("ogg");
+	m_mp3Extensions.AddTail("flac");
 }
 
 MusicLib::~MusicLib() {
@@ -1393,46 +1394,10 @@ MusicLib::createSongFromFile(const CString & mp3file,
 		ID3_Tag * id3 = new ID3_Tag;
 		size_t tagsize = id3->Link(mp3file, ID3TT_ALL);
 		song = createSongFromId3(id3);
-
-		if (!id3->HasV1Tag() && !id3->HasV2Tag()) {
-			sprintf(buf.p, "%s: No ID3 tag\r\n", (LPCTSTR)mp3file);
-			error_results += buf.p;
-		}
-
-#ifdef asdf
-		// If TLEN is set use it
-		tlen = song->getId3((CString)"TLEN");
-
-		if (tlen.GetLength() == 0) { // 1st try id3lib
-			const Mp3_Headerinfo* mp3i = id3->GetMp3HeaderInfo();
-			Mp3Header mp3;
-			if (mp3i && mp3i->time) {
-				tlen = numToString(mp3i->time * 1000);
-				tlen_method_1_count++;
-			} else if (mp3.mb_getFilePath(mp3file) == TRUE) { // else try mp3tagtools
-				int duration = mp3.getLengthInSeconds();
-				duration *= 1000;
-				tlen = numToString(duration);
-				tlen_method_2_count++;
-
-			} else { // else error
-				error_results += mp3file;
-				error_results += ": No valid mp3 headers found. Might not be an mp3 file.\r\n";
-				tlen_methods_failed_count++;
-			}
-		}
-#endif
 		delete id3;
-		WmaTag wma; // WMASDK does a better job of calcing duration
-		// Wma returns time in milliseconds * 10000. We store in milliseconds
+		WmaTag wma;
 		wma.read(mp3file,TRUE);
 		tlen = wma.getVal("Duration");
-// getVal now converts duration to milliseconds
-//		if (tlen.GetLength()) {
-//			float d = atof(tlen);
-//			d = d / 10000;
-//			int d2 = (int)d;
-//			tlen= numToString(d2);
 		if (tlen.GetLength()) {
 			song->setId3("TLEN", tlen);
 		}
@@ -1444,9 +1409,15 @@ MusicLib::createSongFromFile(const CString & mp3file,
 		WmaTag wma;
 		error_results += wma.read(mp3file);
 		song = createSongFromWma(&wma);
+	} else if (fext == "flac") {
+		MBTag mbtag;
+		mbtag.read(mp3file);
+		mbtag.logd("createSongFromFile");
+		song = createSongFromMBTag(mbtag);
 	}
 
     song->setId3("FILE", (LPCTSTR)mp3file);
+/*
 	CString genre = song->getId3((CString)"TCON");
 	genre = Genre_normalize(genre);
 	song->setId3((CString)"TCON", genre);
@@ -1457,7 +1428,7 @@ MusicLib::createSongFromFile(const CString & mp3file,
 	CString album = song->getId3((CString)"TALB");
 	if (album == "" || album == MBUNKNOWN)
 		song->setId3("TALB", MBUNKNOWN);
-
+*/
 	CString title = song->getId3("TIT2");
 	if (title == MBUNKNOWN) {
 		song->setId3("TIT2", mp3file);
@@ -1595,6 +1566,23 @@ MusicLib::writeSongToFile(Song song) {
 			}
 		}
 		result += wma.write();
+	} else if (fext == "flac") {
+		MBTag mbtag;
+		mbtag.read(file);
+		
+		POSITION pos;
+		CString key;
+		CString val;
+		for( pos = song->_obj.GetStartPosition(); pos != NULL; ) {
+			song->_obj.GetNextAssoc(pos, key, val);
+			if (key.GetLength() && val.GetLength() && val != MBUNKNOWN) {
+				mbtag.setVal(key, val);
+			}
+		}
+		BOOL r = mbtag.write();
+		if (!r)
+			result += "Unable to modify tags in "+file;
+
 	}
 	return result;
 }
@@ -2212,7 +2200,36 @@ MusicLib::createSongFromWma(WmaTag * wma) {
 
 	return song;
 }
+Song
+MusicLib::createSongFromMBTag(MBTag & mbtag) {
+	AutoLog al("mdb::createSongFromMBTag");
 
+	Song song = new CSong;
+	CString genre,artist,album,title;
+
+	genre = mbtag.getVal("TCON");
+	artist = mbtag.getVal("TPE1");
+	album = mbtag.getVal("TALB");
+	title = mbtag.getVal("TIT2");
+
+    CString ngenre = Genre_normalize(genre);
+
+	NormalizeTagField(ngenre);
+	NormalizeTagField(artist);
+	NormalizeTagField(album);
+	NormalizeTagField(title);
+
+    song->setId3("TCON", (LPCTSTR)ngenre);
+    song->setId3("TPE1", artist);
+    song->setId3("TALB", album);
+    song->setId3("TIT2", title);
+    song->setId3("TRCK", mbtag.getVal("TRCK"));
+    song->setId3("TYER", mbtag.getVal("TYER"));
+	song->setId3("TLEN", mbtag.getVal("TLEN"));
+	song->setId3("FILE", mbtag.getVal("FILE"));
+
+	return song;
+}
 void
 MusicLib::deletePlaylist(const CString & name) {
 	AutoLog al("mdb::deletePlaylist");
@@ -2678,6 +2695,7 @@ MusicLib::preModifyID3(Song & oldSong, Song & newSong) {
 	id3thread.m_pd = &pd;
 
 	pd.SetThreadFunc(&id3thread);
+//	modifyID3(NULL, songs, newSong, id3thread.m_results);
 	pd.DoModal();	// OnInitDialog invokes the run method, when it's done
 					// it calls EndDialog
 	if (id3thread.m_results.GetLength())
@@ -2726,8 +2744,8 @@ MusicLib::modifyID3(ProgressDlg *dialog, Playlist & songs, Song & newSong, CStri
     CString newTrack = newSong->getId3("TRCK");
     CString newYear = newSong->getId3("TYER");
 
-	dialog->SetTitle("Modifying tags...");
-	dialog->ProgressRange(0,songs.size());
+	if (dialog) dialog->SetTitle("Modifying tags...");
+	if (dialog) dialog->ProgressRange(0,songs.size());
     int ctr = 1;
     for (PlaylistNode * p = songs.head();
 		p != (PlaylistNode*)0; p = songs.next(p))
@@ -2735,8 +2753,8 @@ MusicLib::modifyID3(ProgressDlg *dialog, Playlist & songs, Song & newSong, CStri
 		CString file = p->_item->getId3("FILE");
 		ctr++;
 
-        dialog->UpdateStatus(file);
-        dialog->ProgressPos(ctr);
+        if (dialog) dialog->UpdateStatus(file);
+        if (dialog) dialog->ProgressPos(ctr);
 
 		int updateFlag = 0;
 		Song addsong = new CSong(p->_item);
@@ -2972,7 +2990,8 @@ MusicLib::IgetLibraryCounts() {
 
 
 BOOL
-MusicLib::apic(const CString & file, uchar *& rawdata, size_t & nDataSize, const CString & album) {
+MusicLib::apic(const CString & file, uchar *& rawdata, size_t & nDataSize, 
+			   const CString & album) {
 	AutoLog al("mdb::apic");
 
 	//	if (m_picCache.read(file, rawdata, nDataSize)) {
@@ -3005,6 +3024,9 @@ MusicLib::apic(const CString & file, uchar *& rawdata, size_t & nDataSize, const
 			}
 		}
 		delete iter;
+	} else if (fext == "flac") {
+		MBTag tag;
+		return tag.getArt(file,rawdata,nDataSize,album);
 	}
 
 	// not in apic so look for folder.jpg in dir
@@ -5260,6 +5282,9 @@ MusicLib::getComments(const CString & file) {
 		ogg.read(file);
 		comment = ogg.getVal("description");
 		comment += " "+ogg.getVal("comment");
+	} else if (fext == "flac") {
+		MBTag mbtag;
+		comment = mbtag.getComments(file);
 	}
 	return comment;
 }

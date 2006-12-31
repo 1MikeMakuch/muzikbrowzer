@@ -331,6 +331,7 @@ typedef MPtr<MSongLib> MSongLibP;
 class OggTag;
 class ExportDlg;
 class ProgressDlg;
+class MBTag;
 class MusicLib {
 	public:
 		MusicLib();
@@ -353,6 +354,7 @@ unsigned int	countSongsInGenre(const CString & genre, CArray<unsigned int, unsig
 	    Song	createSongFromId3(ID3_Tag *);
 	    Song	createSongFromOgg(OggTag *);
 	    Song	createSongFromWma(WmaTag *);
+		Song	createSongFromMBTag(MBTag & tag);
 		void	DeleteDb();
 	    void	deletePlaylist(const CString &);
 	     int	deleteSongFromPlaylist(PlaylistNode *p);

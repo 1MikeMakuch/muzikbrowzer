@@ -18,7 +18,10 @@ static char THIS_FILE[] = __FILE__;
 
 void
 MyHash::setVal(const CString & key, const CString & val) {
-    if (key.GetLength() && val.GetLength()) {
+	// Need this val.GetLength commented out for MBFlacTag::write!!!
+	// But as I do it I'm not sure if it'll break something else!!!!
+	// I just looked I think it's ok.
+    if (key.GetLength() /*&& val.GetLength()*/) {
         m_hash.SetAt(key, (LPCTSTR)val);
     }
     return;
@@ -64,6 +67,16 @@ MyHash::GetNextAssoc(POSITION & pos, CString & key, CString & val) {
 		key = "";val = "";
 	}
 	m_sortedKeys.GetNext(pos);
+}
+void
+MyHash::logd(const CString & msg) {
+	if (msg.GetLength())
+		logger.logd(msg);
+	CString key,val;
+	for(POSITION pos = GetSortedHead(); pos != NULL;) {
+		GetNextAssoc(pos,key,val);
+		logger.logd(key,val);
+	}
 }
 CString
 String::replace(const CString cstring, const char src, const CString target) {

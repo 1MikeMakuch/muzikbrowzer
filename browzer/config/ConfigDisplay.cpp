@@ -918,6 +918,9 @@ BOOL CConfigDisplay::verifySkin() {
 	return TRUE;
 }
 BOOL CConfigDisplay::verifySkin(CString skin, BOOL stopOnError) {
+#ifdef _DEBUGBC
+	return TRUE;
+#endif
 	AutoLog alog("CCD::verifySkin");
 	CStringList bmps;
 	bmps.AddTail(MB_SKIN_DEF);

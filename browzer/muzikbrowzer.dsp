@@ -82,7 +82,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 ..\3rdparty\flac-1.1.3\obj\debug\lib\utf8_static.lib ..\3rdparty\flac-1.1.3\obj\debug\lib\libFLAC++_static.lib ..\MBTag\Debug\MBTag.lib ../3rdparty/Wmp/Debug/Wmp.lib Version.lib config\Debug\config.lib ../3rdparty/ogg/libogg-1.0/win32/Debug/ogg_static_d.lib ../oggtagger/Debug/oggtagger.lib ../WmaEdit/Debug/WmaTagg.lib ../3rdparty/ogg/libvorbis-1.0/win32/Debug/vorbis_static_d.lib ../3rdparty/ogg/libvorbis-1.0/win32/Debug/vorbisfile_static_d.lib rpcrt4.lib ..\3rdparty/id3lib-3.8.3\libprj\Debug\id3libD.lib ..\3rdparty/id3lib-3.8.3\zlib\prj\Debug\zlibD.lib ..\TestHarness\Debug\TestHarness.lib Help\HtmlHelp.lib strmiids.lib config\Debug\config.lib controls\Debug\controls.lib ..\id3\id3libutils\Debug\id3utils.lib irman\Debug\irman.lib Serial\Debug\Serial.lib ..\util\Debug\util.lib dxguid.lib Quartz.lib ..\md5\Debug\md5.lib wmvcore.lib ..\GetBlackOut\Debug\GetBlackOut.lib /nologo /subsystem:windows /incremental:no /debug /machine:I386 /nodefaultlib:"msvcrt" /nodefaultlib:"libcmt" /nodefaultlib:"nafxcw" /out:"Debug/MuzikbrowzerD.exe" /pdbtype:sept /libpath:"..\3rdparty\WMFSDK9\lib"
+# ADD LINK32 ..\3rdparty\flac-1.1.3\obj\debug\lib\libFLAC++_static.lib  ..\3rdparty\flac-1.1.3\obj\debug\lib\getopt_static.lib ..\3rdparty\flac-1.1.3\obj\debug\lib\grabbag_static.lib ..\3rdparty\flac-1.1.3\obj\debug\lib\utf8_static.lib  ..\MBTag\Debug\MBTag.lib ../3rdparty/Wmp/Debug/Wmp.lib Version.lib config\Debug\config.lib ../3rdparty/ogg/libogg-1.0/win32/Debug/ogg_static_d.lib ../oggtagger/Debug/oggtagger.lib ../WmaEdit/Debug/WmaTagg.lib ../3rdparty/ogg/libvorbis-1.0/win32/Debug/vorbis_static_d.lib ../3rdparty/ogg/libvorbis-1.0/win32/Debug/vorbisfile_static_d.lib rpcrt4.lib ..\3rdparty/id3lib-3.8.3\libprj\Debug\id3libD.lib ..\3rdparty/id3lib-3.8.3\zlib\prj\Debug\zlibD.lib ..\TestHarness\Debug\TestHarness.lib Help\HtmlHelp.lib strmiids.lib config\Debug\config.lib controls\Debug\controls.lib ..\id3\id3libutils\Debug\id3utils.lib irman\Debug\irman.lib Serial\Debug\Serial.lib ..\util\Debug\util.lib dxguid.lib Quartz.lib ..\md5\Debug\md5.lib wmvcore.lib ..\GetBlackOut\Debug\GetBlackOut.lib /nologo /subsystem:windows /incremental:no /debug /machine:I386 /nodefaultlib:"msvcrt" /nodefaultlib:"libcmt" /nodefaultlib:"nafxcw" /out:"Debug/MuzikbrowzerD.exe" /pdbtype:sept /libpath:"..\3rdparty\WMFSDK9\lib"
 # SUBTRACT LINK32 /pdb:none
 
 !ELSEIF  "$(CFG)" == "muzikbrowzer - Win32 DebugBC"
@@ -101,7 +101,7 @@ LINK32=link.exe
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MTd /W3 /GX /Z7 /Od /I "../" /I "../3rdparty/ogg" /I "../3rdparty/ogg/libvorbis-1.0/include" /I "../3rdparty/ogg/libogg-1.0/include" /I "c:\DXSDK\include" /I "..\3rdparty/id3lib-3.8.3\include" /I "config" /I "controls" /I "../id3/id3libutils" /I "irman" /I "../util" /I "Serial" /D ID3LIB_LINKOPTION=1 /D "TEST_HARNESS" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_WIN32_DCOM" /FR /FD /c
 # SUBTRACT BASE CPP /YX /Yc /Yu
-# ADD CPP /nologo /MTd /W3 /GX /Zi /Od /I "../" /I "../3rdparty/ogg" /I "../3rdparty/ogg/libvorbis-1.0/include" /I "../3rdparty/ogg/libogg-1.0/include" /I "c:\DXSDK\include" /I "..\3rdparty/id3lib-3.8.3\include" /I "config" /I "controls" /I "../id3/id3libutils" /I "irman" /I "../util" /I "Serial" /I "../WmaEdit" /I "../fractal" /I "../3rdparty/Wmp" /I "../GetBlackOut" /D ID3LIB_LINKOPTION=1 /D "TEST_HARNESS" /D "WIN32" /D "_DEBUG" /D "_DEBUGBC" /D "_WINDOWS" /D "_WIN32_DCOM" /FR /FD /c
+# ADD CPP /nologo /MTd /W3 /GX /Zi /Od /I "..\MBTag" /I "../" /I "../3rdparty/ogg" /I "../3rdparty/ogg/libvorbis-1.0/include" /I "../3rdparty/ogg/libogg-1.0/include" /I "c:\DXSDK\include" /I "..\3rdparty/id3lib-3.8.3\include" /I "config" /I "controls" /I "../id3/id3libutils" /I "irman" /I "../util" /I "Serial" /I "../WmaEdit" /I "../fractal" /I "../3rdparty/Wmp" /I "../GetBlackOut" /D ID3LIB_LINKOPTION=1 /D "TEST_HARNESS" /D "WIN32" /D "_DEBUG" /D "_DEBUGBC" /D "_WINDOWS" /D "_WIN32_DCOM" /FR /FD /c
 # SUBTRACT CPP /YX /Yc /Yu
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
@@ -113,7 +113,7 @@ BSC32=bscmake.exe
 LINK32=link.exe
 # ADD BASE LINK32 Version.lib config\Debug\config.lib ../3rdparty/ogg/libogg-1.0/win32/Debug/ogg_static_d.lib ../oggtagger/Debug/oggtagger.lib ../3rdparty/ogg/libvorbis-1.0/win32/Debug/vorbis_static_d.lib ../3rdparty/ogg/libvorbis-1.0/win32/Debug/vorbisfile_static_d.lib rpcrt4.lib ..\3rdparty/id3lib-3.8.3\libprj\Debug\id3libD.lib ..\3rdparty/id3lib-3.8.3\zlib\prj\Debug\zlibD.lib ..\TestHarness\Debug\TestHarness.lib Help\HtmlHelp.lib strmiids.lib config\Debug\config.lib controls\Debug\controls.lib ..\id3\id3libutils\Debug\id3utils.lib irman\Debug\irman.lib Serial\Debug\Serial.lib ..\util\Debug\util.lib dxguid.lib Quartz.lib ..\md5\Debug\md5.lib /nologo /subsystem:windows /incremental:no /debug /debugtype:both /machine:I386 /nodefaultlib:"msvcrt" /nodefaultlib:"libcmt" /nodefaultlib:"nafxcw" /out:"Debug/muzikbrowzerD.exe" /pdbtype:sept
 # SUBTRACT BASE LINK32 /pdb:none
-# ADD LINK32 Version.lib config\DebugBC\config.lib ../3rdparty/ogg/libogg-1.0/win32/DebugBC/ogg_static_d.lib ../oggtagger/DebugBC/oggtagger.lib ../3rdparty/ogg/libvorbis-1.0/win32/DebugBC/vorbis_static_d.lib ../3rdparty/ogg/libvorbis-1.0/win32/DebugBC/vorbisfile_static_d.lib rpcrt4.lib ..\3rdparty/id3lib-3.8.3\libprj\DebugBC\id3libD.lib ..\3rdparty/id3lib-3.8.3\zlib\prj\DebugBC\zlibD.lib ..\TestHarness\DebugBC\TestHarness.lib Help\HtmlHelp.lib strmiids.lib config\Debug\config.lib controls\DebugBC\controls.lib ..\id3\id3libutils\DebugBC\id3utils.lib irman\DebugBC\irman.lib Serial\DebugBC\Serial.lib ..\util\DebugBC\util.lib dxguid.lib Quartz.lib ..\md5\DebugBC\md5.lib wmvcore.lib ..\3rdparty\Wmp\DebugBC\Wmp.lib ..\GetBlackOut\DebugBC\GetBlackOut.lib /nologo /subsystem:windows /incremental:no /debug /debugtype:both /machine:I386 /nodefaultlib:"msvcrt" /nodefaultlib:"libcmt" /nodefaultlib:"nafxcw" /out:"DebugBC/MuzikbrowzerD.exe" /pdbtype:sept /libpath:"..\3rdparty\WMFSDK9\lib"
+# ADD LINK32 ..\3rdparty\flac-1.1.3\obj\debugBC\lib\getopt_static.lib ..\3rdparty\flac-1.1.3\obj\debugBC\lib\grabbag_static.lib ..\3rdparty\flac-1.1.3\obj\debugBC\lib\utf8_static.lib ..\3rdparty\flac-1.1.3\obj\debugBC\lib\libFLAC++_static.lib ..\MBTag\DebugBC\MBTag.lib Version.lib config\DebugBC\config.lib ../3rdparty/ogg/libogg-1.0/win32/DebugBC/ogg_static_d.lib ../oggtagger/DebugBC/oggtagger.lib ../3rdparty/ogg/libvorbis-1.0/win32/DebugBC/vorbis_static_d.lib ../3rdparty/ogg/libvorbis-1.0/win32/DebugBC/vorbisfile_static_d.lib rpcrt4.lib ..\3rdparty/id3lib-3.8.3\libprj\DebugBC\id3libD.lib ..\3rdparty/id3lib-3.8.3\zlib\prj\DebugBC\zlibD.lib ..\TestHarness\DebugBC\TestHarness.lib Help\HtmlHelp.lib strmiids.lib config\DebugBC\config.lib controls\DebugBC\controls.lib ..\id3\id3libutils\DebugBC\id3utils.lib irman\DebugBC\irman.lib Serial\DebugBC\Serial.lib ..\util\DebugBC\util.lib dxguid.lib Quartz.lib ..\md5\DebugBC\md5.lib wmvcore.lib ..\3rdparty\Wmp\DebugBC\Wmp.lib ..\GetBlackOut\DebugBC\GetBlackOut.lib /nologo /subsystem:windows /incremental:no /debug /debugtype:both /machine:I386 /nodefaultlib:"msvcrt" /nodefaultlib:"libcmt" /nodefaultlib:"nafxcw" /out:"DebugBC/MuzikbrowzerD.exe" /pdbtype:sept /libpath:"..\3rdparty\WMFSDK9\lib"
 # SUBTRACT LINK32 /pdb:none
 
 !ENDIF 
@@ -734,31 +734,6 @@ SOURCE=.\res\xaudio.ico
 # End Group
 # End Target
 # End Project
-# Section muzikbrowzer : {9104D1AB-80C9-4FED-ABF0-2E6417A6DF14}
-# 	2:5:Class:CWMPSettings
-# 	2:10:HeaderFile:wmpsettings.h
-# 	2:8:ImplFile:wmpsettings.cpp
-# End Section
-# Section muzikbrowzer : {A12DCF7D-14AB-4C1B-A8CD-63909F06025B}
-# 	2:5:Class:CWMPError
-# 	2:10:HeaderFile:wmperror.h
-# 	2:8:ImplFile:wmperror.cpp
-# End Section
-# Section muzikbrowzer : {D5F0F4F1-130C-11D3-B14E-00C04F79FAA6}
-# 	2:5:Class:CWMPPlaylist
-# 	2:10:HeaderFile:wmpplaylist.h
-# 	2:8:ImplFile:wmpplaylist.cpp
-# End Section
-# Section muzikbrowzer : {4F2DF574-C588-11D3-9ED0-00C04FB6E937}
-# 	2:5:Class:CWMPClosedCaption
-# 	2:10:HeaderFile:wmpclosedcaption.h
-# 	2:8:ImplFile:wmpclosedcaption.cpp
-# End Section
-# Section muzikbrowzer : {EE4C8FE2-34B2-11D3-A3BF-006097C9B344}
-# 	2:5:Class:CWMPCdromCollection
-# 	2:10:HeaderFile:wmpcdromcollection.h
-# 	2:8:ImplFile:wmpcdromcollection.cpp
-# End Section
 # Section muzikbrowzer : {3614C646-3B3B-4DE7-A81E-930E3F2127B3}
 # 	2:5:Class:CWMPErrorItem
 # 	2:10:HeaderFile:wmperroritem.h
@@ -769,15 +744,15 @@ SOURCE=.\res\xaudio.ico
 # 	2:10:HeaderFile:wmpmedia.h
 # 	2:8:ImplFile:wmpmedia.cpp
 # End Section
-# Section muzikbrowzer : {10A13217-23A7-439B-B1C0-D847C79B7774}
-# 	2:5:Class:CWMPPlaylistCollection
-# 	2:10:HeaderFile:wmpplaylistcollection.h
-# 	2:8:ImplFile:wmpplaylistcollection.cpp
-# End Section
 # Section muzikbrowzer : {EC21B779-EDEF-462D-BBA4-AD9DDE2B29A7}
 # 	2:5:Class:CWMPNetwork
 # 	2:10:HeaderFile:wmpnetwork.h
 # 	2:8:ImplFile:wmpnetwork.cpp
+# End Section
+# Section muzikbrowzer : {10A13217-23A7-439B-B1C0-D847C79B7774}
+# 	2:5:Class:CWMPPlaylistCollection
+# 	2:10:HeaderFile:wmpplaylistcollection.h
+# 	2:8:ImplFile:wmpplaylistcollection.cpp
 # End Section
 # Section muzikbrowzer : {8363BC22-B4B4-4B19-989D-1CD765749DD1}
 # 	2:5:Class:CWMPMediaCollection
@@ -822,4 +797,29 @@ SOURCE=.\res\xaudio.ico
 # Section muzikbrowzer : {6BF52A52-394A-11D3-B153-00C04F79FAA6}
 # 	2:21:DefaultSinkHeaderFile:wmpplayer4.h
 # 	2:16:DefaultSinkClass:CWMPPlayer4
+# End Section
+# Section muzikbrowzer : {9104D1AB-80C9-4FED-ABF0-2E6417A6DF14}
+# 	2:5:Class:CWMPSettings
+# 	2:10:HeaderFile:wmpsettings.h
+# 	2:8:ImplFile:wmpsettings.cpp
+# End Section
+# Section muzikbrowzer : {A12DCF7D-14AB-4C1B-A8CD-63909F06025B}
+# 	2:5:Class:CWMPError
+# 	2:10:HeaderFile:wmperror.h
+# 	2:8:ImplFile:wmperror.cpp
+# End Section
+# Section muzikbrowzer : {D5F0F4F1-130C-11D3-B14E-00C04F79FAA6}
+# 	2:5:Class:CWMPPlaylist
+# 	2:10:HeaderFile:wmpplaylist.h
+# 	2:8:ImplFile:wmpplaylist.cpp
+# End Section
+# Section muzikbrowzer : {4F2DF574-C588-11D3-9ED0-00C04FB6E937}
+# 	2:5:Class:CWMPClosedCaption
+# 	2:10:HeaderFile:wmpclosedcaption.h
+# 	2:8:ImplFile:wmpclosedcaption.cpp
+# End Section
+# Section muzikbrowzer : {EE4C8FE2-34B2-11D3-A3BF-006097C9B344}
+# 	2:5:Class:CWMPCdromCollection
+# 	2:10:HeaderFile:wmpcdromcollection.h
+# 	2:8:ImplFile:wmpcdromcollection.cpp
 # End Section

@@ -17,6 +17,7 @@
 #include "FExtension.h"
 #include "oggtagger/oggtagger.h"
 #include "WmaTagger.h"
+#include "MBTag.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -80,6 +81,9 @@ ID3Display::displayTag(Song song) {
 	} else if (fext.ext() == "wma") {
 		WmaTag wma(file);
 		return wma.getInfo();
+	} else if (fext == "flac") {
+		MBTag tag;
+		return tag.getInfo(file);
 	}
 	return "";
 }

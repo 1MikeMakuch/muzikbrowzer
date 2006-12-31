@@ -91,7 +91,7 @@ BOOL CPlayerApp::InitInstance()
 	logger.log(cl);
 
 #ifdef _DEBUG
-	if (!m_rebuild)
+	if (!m_rebuild && !String::contains(cl,"killTests"))
 		RunTestHarness();
 	//return FALSE;
 #endif

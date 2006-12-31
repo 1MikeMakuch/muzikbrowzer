@@ -8,7 +8,10 @@
 class MyHash {
 public:
 	MyHash(){}
-	~MyHash(){}
+	~MyHash(){
+		m_hash.RemoveAll();
+		m_sortedKeys.RemoveAll();
+	}
 	void setVal(const CString & key, const CString & val);
 	CString getVal(const CString & key);
 	BOOL contains(const CString & key);
@@ -16,6 +19,9 @@ public:
 	POSITION GetSortedHead();
 	void GetNextAssoc(POSITION & pos, CString & key, CString & val);
 	CMapStringToString m_hash;
+	void logd(const CString & msg);
+	int GetCount() { return m_hash.GetCount(); }
+
 private:
 	CStringList m_sortedKeys;
 };
