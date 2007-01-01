@@ -388,7 +388,7 @@ Genre_getInt(CString genre) {
 }
 
 void
-Genre_getGenres(CStringList & glist) {
+Genre_getGenres(CStringArray & glist) {
     POSITION pos;
     for (pos = gdb.GetStartPosition(); pos != NULL;) {
         CString genre, val;

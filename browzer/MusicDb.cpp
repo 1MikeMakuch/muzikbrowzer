@@ -698,18 +698,16 @@ MusicLib::getGenres(CStringArray & box) {
 		genrehash.SetAt(genre.label(), 0);
 	}
 
-    CStringList glist;
+    CStringArray glist;
     Genre_getGenres(glist);
 
-    POSITION pos = glist.GetHeadPosition();
-    for (pos = glist.GetHeadPosition(); pos != NULL; ) {
-        CString genre = glist.GetAt(pos);
+    for (int i = 0 ; i < glist.GetSize(); i++) {
+        CString genre = glist.GetAt(i);
         genrehash.SetAt(genre, 0);
-        glist.GetNext(pos);
     }
     CString key;
     CString val;
-    for( pos = genrehash.GetStartPosition(); pos != NULL; ) {
+    for(POSITION pos = genrehash.GetStartPosition(); pos != NULL; ) {
         genrehash.GetNextAssoc(pos, key, val);
         String::insertSort(box, key);
     }

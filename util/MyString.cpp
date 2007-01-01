@@ -826,26 +826,30 @@ String::insertSort(CStringList &list, const CString &string) {
     if (!inserted)
         list.AddTail(string);
 }
+
 void
 String::insertSort(CStringArray &list, const CString &string) {
     int pos = 0;
-    if (!list.GetSize()) {
+	int length = list.GetSize();
+    if (0 == length) {
         list.Add(string);
         return;
     }
-    bool inserted = false;
-    for (pos = 0; pos < list.GetSize(); pos++) {
-        CString lstring = list.GetAt(pos);
 
-        // If string > lstring ...
-        if (string.CompareNoCase(lstring) == -1) {
-            list.InsertAt(pos, string);
-            inserted = true;
-            break;
-        }
-    }
-    if (!inserted)
-        list.Add(string);
+	int low = 0;
+	int high = length - 1;
+	int middle = high / 2;
+	while (low <= high) {
+		int comp = string.Compare(list[middle]);
+		if (0 == comp)
+			break;
+		if (comp < 0)
+			high = middle - 1;
+		else
+			low = middle + 1;
+		middle = ((high - low) / 2) + low;
+	}
+	list.InsertAt(middle, string);
 }
 TEST(String, insertSortCStringArray)
 {
@@ -856,19 +860,14 @@ TEST(String, insertSortCStringArray)
 	String::insertSort(list, CString("zbc"));
 	String::insertSort(list, CString("rbc"));
 	String::insertSort(list, CString("dbc"));
-    int pos;
-	CString lastone,string;
-	int first = 1;
-    for (pos = 0; pos < list.GetSize(); pos++) {
-		lastone = string;
-        string = list.GetAt(pos);
-		if (first) {
-			first = 0;
-		} else {
-			CHECK(lastone < string);
-		}
-    }
-	CHECK(lastone < string);
+    int pos = 0;
+	CHECK(list.GetAt(0) == "1bc");
+	CHECK(list.GetAt(1) == "abc");
+	CHECK(list.GetAt(2) == "dbc");
+	CHECK(list.GetAt(3) == "rbc");
+	CHECK(list.GetAt(4) == "xbc");
+	CHECK(list.GetAt(5) == "zbc");
+
 }
 TEST(StringinsertSortTest, StringinsertSort)
 {
