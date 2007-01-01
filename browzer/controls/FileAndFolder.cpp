@@ -30,9 +30,12 @@ CSystemImageList::CSystemImageList()
   {
     //Attach to the system image list
     SHFILEINFO sfi;
+	ZeroMemory(&sfi, sizeof(SHFILEINFO));
     HIMAGELIST hSystemImageList = (HIMAGELIST) SHGetFileInfo(_T("C:\\"), 0, &sfi, sizeof(SHFILEINFO),
                                                              SHGFI_SYSICONINDEX | SHGFI_SMALLICON);
     VERIFY(m_ImageList.Attach(hSystemImageList));
+	if (sfi.hIcon)
+	  DestroyIcon(sfi.hIcon);
   }  
 
   //Increment the reference count
@@ -154,6 +157,7 @@ CFileAndFolder::ShowDefault() {
 	HTREEITEM htree = m_Tree.GetNextItem(TVI_ROOT, TVGN_ROOT);
 	FindDefault(htree);
 	return;
+
 	while (htree) {
 		CString idrive = m_Tree.getItemText(htree);
 		if (idrive.CompareNoCase(drive) == 0) {
@@ -355,20 +359,28 @@ int CFileAndFolder::GetIconIndex(HTREEITEM hItem)
 }
 int CFileAndFolder::GetIconIndex(const CString& sFilename)
 {
-  //Retreive the icon index for a specified file/folder
-  SHFILEINFO sfi;
-  if (SHGetFileInfo(sFilename, 0, &sfi, sizeof(SHFILEINFO), SHGFI_ICON | SHGFI_SMALLICON) == 0)
-    return -1;
-  return sfi.iIcon;
+	//Retreive the icon index for a specified file/folder
+	SHFILEINFO sfi;
+	ZeroMemory(&sfi, sizeof(SHFILEINFO));
+	DWORD r = SHGetFileInfo(sFilename, 0, &sfi, sizeof(SHFILEINFO), SHGFI_ICON | SHGFI_SMALLICON);
+	if (sfi.hIcon) 
+		DestroyIcon(sfi.hIcon);
+	if (0 == r)
+		return -1;
+	return sfi.iIcon;
 }
 
 int CFileAndFolder::GetSelIconIndex(const CString& sFilename)
 {
-  //Retreive the icon index for a specified file/folder
-  SHFILEINFO sfi;
-  if (SHGetFileInfo(sFilename, 0, &sfi, sizeof(SHFILEINFO), SHGFI_ICON | SHGFI_OPENICON | SHGFI_SMALLICON) == 0)
-    return -1;
-  return sfi.iIcon;
+	//Retreive the icon index for a specified file/folder
+	SHFILEINFO sfi;
+	ZeroMemory(&sfi, sizeof(SHFILEINFO));
+	DWORD r = SHGetFileInfo(sFilename, 0, &sfi, sizeof(SHFILEINFO), SHGFI_ICON | SHGFI_OPENICON | SHGFI_SMALLICON);
+	if (sfi.hIcon) 
+		DestroyIcon(sfi.hIcon);
+	if (0 == r)
+		return -1;
+	return sfi.iIcon;
 }
 
 int CFileAndFolder::GetSelIconIndex(HTREEITEM hItem)
