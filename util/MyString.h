@@ -12,8 +12,8 @@ public:
 		m_hash.RemoveAll();
 		m_sortedKeys.RemoveAll();
 	}
-	void setVal(const CString & key, const CString & val);
-	CString getVal(const CString & key);
+	virtual void setVal(const CString & key, const CString & val);
+	virtual CString getVal(const CString & key);
 	BOOL contains(const CString & key);
 	void SortedKeys(CStringList & keys);
 	POSITION GetSortedHead();

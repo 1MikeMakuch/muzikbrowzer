@@ -54,14 +54,13 @@ public:
 		m_DurationOnly = TRUE;
 	}
 
-private:
-	CString Wma2id3(const CString & Wma) {
+	virtual CString NativeKey2Id3Key(const CString & Wma) {
 		if (m_convertKeys && m_Wma2id3.contains(Wma))
 			return m_Wma2id3.getVal(Wma);
 		else
 			return Wma;
 	}
-	CString id32Wma(const CString & id3) {
+	virtual CString Id3Key2NativeKey(const CString & id3) {
 		if (m_id32Wma.contains(id3))
 			return m_id32Wma.getVal(id3);
 		else
@@ -218,7 +217,7 @@ MBWmaTag::read(MBTag & tags, const CString & file, const BOOL xvert) {
 				out = "PrintAttributeString";
                 break;
             }
-			if ("Duration" == key) {
+			if ("Duration" == key && m_convertKeys) {
 				if (val.GetLength()) {
 					float d = atof(val);
 					if (d > 10000) {
@@ -228,7 +227,7 @@ MBWmaTag::read(MBTag & tags, const CString & file, const BOOL xvert) {
 					}
 				}
 			}
-			key = Wma2id3(key);
+			key = NativeKey2Id3Key(key);
 			tags.setVal(key, val);
 			if (m_DurationOnly && "TLEN" == key) {
 				break;
@@ -306,7 +305,7 @@ MBWmaTag::write(MBTag & tags, const CString &file) {
 		CString key,val,oldval;
 		for(pos = tags.GetSortedHead(); pos != NULL;) {
 			tags.GetNextAssoc(pos, key, val);
-			key = id32Wma(key);
+			key = Id3Key2NativeKey(key);
 			if (key.GetLength()) {
 				// set
 				LPTSTR  ptszAttribName  = (char*)(LPCTSTR)key;
@@ -374,7 +373,7 @@ MBWmaTag::getComments(MBTag & tags, const CString & file) {
 	CString key,val,comments;
 	for(POSITION pos = tags.GetSortedHead(); pos != NULL;) {
 		tags.GetNextAssoc(pos,key,val);
-		key = id32Wma(key);
+		key = Id3Key2NativeKey(key);
 		if (key.GetLength()) {
 			if (key.CompareNoCase("Description") == 0
 				|| key.CompareNoCase("Comments") == 0) {
@@ -394,7 +393,7 @@ MBWmaTag::getInfo(MBTag & tags, const CString & file) {
 	CString key,val,comments;
 	for(POSITION pos = tags.GetSortedHead(); pos != NULL;) {
 		tags.GetNextAssoc(pos,key,val);
-		key = id32Wma(key);
+		key = Id3Key2NativeKey(key);
 		if (key.GetLength())
 			comments += key + "=" + val + "\r\n";
 	}

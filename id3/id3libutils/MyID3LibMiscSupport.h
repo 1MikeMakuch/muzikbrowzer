@@ -32,8 +32,12 @@ int Genre_getInt(CString genre);
 void Genre_getGenres(CStringArray &);
 void Genre_addGenre(ID3_Tag & id3, const char * genre);
 
+class MBTag;
+
 CString
 displayTag(ID3_Tag *id3, BOOL showLabels=FALSE, CString file = "");
-CString displayTag2(ID3_Tag *id3, BOOL showLabels=FALSE, CString file = "");
+
+BOOL ReadAllTags(ID3_Tag *id3, MBTag * tag);
+
 
 #endif /* _ID3LIB_MISC_SUPPORT_H_ */

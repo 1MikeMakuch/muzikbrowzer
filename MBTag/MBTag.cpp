@@ -64,10 +64,10 @@ static int bogusWma = MBTag::addType("wma", new MBWmaTag());
 ///////////////////////////////////////////////////////////////
 
 
-MBTag::MBTag(): m_tagobj(NULL)
+MBTag::MBTag(): m_tagobj(NULL), m_ReadAllTags(FALSE)
 {
 }
-MBTag::MBTag(const CString & file): m_file(file)
+MBTag::MBTag(const CString & file): m_file(file), m_ReadAllTags(FALSE)
 {
 }
 
@@ -184,6 +184,29 @@ MBTag::getArt(
 			album);
 
 	return FALSE;
+}
+void
+MBTag::setValId3Key(const CString & key, const CString & val) {
+	if (!m_tagobj) {
+		FExtension fext(m_file);
+		m_tagobj = getType(fext);
+	}
+	CString ikey(key);
+	if (m_tagobj)
+		ikey = m_tagobj->Id3Key2NativeKey(key);
+	MyHash::setVal(ikey,val);
+	return;
+}
+CString
+MBTag::getValId3Key(const CString & key) {
+	if (!m_tagobj) {
+		FExtension fext(m_file);
+		m_tagobj = getType(fext);
+	}
+	CString ikey(key);
+	if (m_tagobj)
+		ikey = m_tagobj->Id3Key2NativeKey(key);
+	return MyHash::getVal(ikey);
 }
 
 // Look for art on disk.

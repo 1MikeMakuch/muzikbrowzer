@@ -62,14 +62,13 @@ public:
 	virtual CString getComments(MBTag & tags, const CString & file);
 	virtual CString getInfo(MBTag & tags, const CString & file);
 
-private:
-	CString Ogg2id3(const CString & Ogg) {
+	virtual CString NativeKey2Id3Key(const CString & Ogg) {
 		if (m_convertKeys && m_Ogg2id3.contains(Ogg))
 			return m_Ogg2id3.getVal(Ogg);
 		else
 			return Ogg;
 	}
-	CString id32Ogg(const CString & id3) {
+	CString Id3Key2NativeKey(const CString & id3) {
 		if (m_id32Ogg.contains(id3))
 			return m_id32Ogg.getVal(id3);
 		else
@@ -122,7 +121,7 @@ MBOggTag::read(MBTag & tags, const CString & file, const BOOL xvert) {
 			CString newvalue = String::extract(ucomment,"=","");
 			CString oldvalue;
 			key.MakeUpper();
-			key = Ogg2id3(key);
+			key = NativeKey2Id3Key(key);
 			oldvalue = tags.getVal(key);
 			if ((!key.CompareNoCase("description") 
 					|| !key.CompareNoCase("comments"))
@@ -180,7 +179,7 @@ MBOggTag::write(MBTag & tags, const CString &file) {
 
 		char * utf8_val;
 		utf8_encode(val, &utf8_val);
-		comm = id32Ogg(key);
+		comm = Id3Key2NativeKey(key);
 		comm += "=";
 		comm += utf8_val;
 		free(utf8_val);
@@ -220,7 +219,7 @@ MBOggTag::getComments(MBTag & tags, const CString & file) {
 	CString key,val,comments;
 	for(POSITION pos = tags.GetSortedHead(); pos != NULL;) {
 		tags.GetNextAssoc(pos,key,val);
-		key = id32Ogg(key);
+		key = Id3Key2NativeKey(key);
 		if (key.GetLength()) {
 			if (key.CompareNoCase("Description") == 0
 				|| key.CompareNoCase("Comments") == 0) {
@@ -240,7 +239,7 @@ MBOggTag::getInfo(MBTag & tags, const CString & file) {
 	CString key,val,comments;
 	for(POSITION pos = tags.GetSortedHead(); pos != NULL;) {
 		tags.GetNextAssoc(pos,key,val);
-		key = id32Ogg(key);
+		key = Id3Key2NativeKey(key);
 		if (key.GetLength())
 			comments += key + "=" + val + "\r\n";
 	}

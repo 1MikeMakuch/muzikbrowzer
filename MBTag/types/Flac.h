@@ -66,14 +66,13 @@ public:
 	virtual CString getComments(MBTag & tags, const CString & file);
 	virtual CString getInfo(MBTag & tags, const CString & file);
 
-private:
-	CString flac2id3(const CString & flac) {
+	virtual CString NativeKey2Id3Key(const CString & flac) {
 		if (m_convertKeys && m_flac2id3.contains(flac))
 			return m_flac2id3.getVal(flac);
 		else
 			return flac;
 	}
-	CString id32flac(const CString & id3) {
+	virtual CString Id3Key2NativeKey(const CString & id3) {
 		if (m_id32flac.contains(id3))
 			return m_id32flac.getVal(id3);
 		else
@@ -119,7 +118,7 @@ MBFlacTag::read(MBTag & tags, const CString & file, const BOOL xvert) {
 				free(decoded_value);
 				CString oldvalue;
 				key.MakeUpper();
-				key = flac2id3(key);
+				key = NativeKey2Id3Key(key);
 				oldvalue = tags.getVal(key);
 				if ((!key.CompareNoCase("DESCRIPTION") 
 						|| !key.CompareNoCase("COMMENTS"))
@@ -166,7 +165,7 @@ MBFlacTag::write(MBTag & tags, const CString &file) {
 	args.AddTail("--remove-all-tags");
 	for(POSITION pos = tags.GetSortedHead(); pos != NULL;) {
 		tags.GetNextAssoc(pos,key,val);
-		key = id32flac(key);
+		key = Id3Key2NativeKey(key);
 		if (key.GetLength()) {
 			args.AddTail("--set-tag=" + key + "=" + val);
 		}
@@ -215,7 +214,7 @@ MBFlacTag::getComments(MBTag & tags, const CString & file) {
 	CString key,val,comments;
 	for(POSITION pos = tags.GetSortedHead(); pos != NULL;) {
 		tags.GetNextAssoc(pos,key,val);
-		key = id32flac(key);
+		key = Id3Key2NativeKey(key);
 		if (key.GetLength()) {
 			if (key.CompareNoCase("Description") == 0
 				|| key.CompareNoCase("Comments") == 0) {
@@ -235,7 +234,7 @@ MBFlacTag::getInfo(MBTag & tags, const CString & file) {
 	CString key,val,comments;
 	for(POSITION pos = tags.GetSortedHead(); pos != NULL;) {
 		tags.GetNextAssoc(pos,key,val);
-		key = id32flac(key);
+		key = Id3Key2NativeKey(key);
 		if (key.GetLength())
 			comments += key + "=" + val + "\r\n";
 	}

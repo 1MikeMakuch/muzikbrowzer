@@ -41,6 +41,7 @@
 #include "MyID3LibMiscSupport.h"
 #include "MyString.h"
 #include "Mp3Header.h"
+#include "MBTag/MBTag.h"
 
 #include <id3/field.h>
 #include <id3/utils.h>
@@ -783,47 +784,30 @@ displayTag(ID3_Tag *id3, BOOL showLabels, CString file) {
 	
     return out;
 }
+BOOL
+ReadAllTags(ID3_Tag *id3, MBTag * tag) {
 
-CString
-displayTag2(ID3_Tag *id3, BOOL showLabels, CString file) {
-
-
-	CString line,filelabel;
-	CSortedArray<CString, CString &> tagsList;
-  if (showLabels) {
-	line +=     "Genre:  ";
-	line += Genre_normalize(id3_GetGenre(id3));
-	line += "\r\nArtist: ";
-	line += id3_GetArtist(id3);
-	line += "\r\nAlbum:  ";
-	line += id3_GetAlbum(id3);
-	line += "\r\nTitle:  ";
-	line += id3_GetTitle(id3);
-	line += "\r\nTrack:  ";
-	line += id3_GetTrack(id3);
-	line += "\r\nYear:   ";
-	line += id3_GetYear(id3);
-	line += "\r\n\r\nRaw id3 tag:\r\n";
-  }
 
   ID3_Tag::ConstIterator* iter = (ID3_Tag::ConstIterator *)id3->CreateIterator();
   const ID3_Frame* frame = NULL;
 
   while (NULL != (frame = iter->GetNext()))
   {
+	CString key,val;
+
     const char* desc = frame->GetDescription();
     if (!desc) desc = "";
 
-	line = "";
+	
     CString keylabel = (char*)frame->GetTextID();
     CString commkey;
-    filelabel = "";
+    key = keylabel;
     if (keylabel == "COMM") {
         commkey = keylabel;
-    } else {
-        line += keylabel;
-        line += " ";
-    }
+    }// else {
+//        out += keylabel;
+//        out += " ";
+//    }
     ID3_FrameID eFrameID = frame->GetID();
     switch (eFrameID)
     {
@@ -867,11 +851,8 @@ displayTag2(ID3_Tag *id3, BOOL showLabels, CString file) {
       case ID3FID_YEAR:
       {
         char *sText = ID3_GetString(frame, ID3FN_TEXT);
-        line += sText;
-        //line += (char*)"\r\n";
-		tagsList.Add(line);
-//       delete  sText;
-         ID3_FreeString(sText);
+		val = sText;
+        ID3_FreeString(sText);
         break;
       }
 //#ifdef asdf
@@ -880,11 +861,11 @@ displayTag2(ID3_Tag *id3, BOOL showLabels, CString file) {
         char 
         *sText = ID3_GetString(frame, ID3FN_TEXT), 
         *sDesc = ID3_GetString(frame, ID3FN_DESCRIPTION);
-        line += sDesc;
-        line += ": ";
-        line += sText;
-        //line += "\r\n";
-		tagsList.Add(line);
+		val = sDesc + CS(": ") + sText;
+//        out += sDesc;
+//        out += ": ";
+//        out += sText;
+//        out += "\r\n";
 //		delete sText;
 //		delete sDesc;
          ID3_FreeString(sText);
@@ -898,18 +879,18 @@ displayTag2(ID3_Tag *id3, BOOL showLabels, CString file) {
         *sText = ID3_GetString(frame, ID3FN_TEXT), 
         *sDesc = ID3_GetString(frame, ID3FN_DESCRIPTION), 
         *sLang = ID3_GetString(frame, ID3FN_LANGUAGE);
-        CString text = sText;
-        if (commkey == "COMM" && text.Left(4) == "FILE") {
-			file = text.Right(text.GetLength()-5);
-            filelabel = "\r\nOther info:\r\n" + text;
-        } else {
-            line += commkey ; line += " ";
-            line += sDesc;
-            line += " ";
-            line += sText;
-            //line += "\r\n";
-			tagsList.Add(line);
-        }
+//        CString text = sText;
+//        if (commkey == "COMM" && text.Left(4) == "FILE") {
+//			file = text.Right(text.GetLength()-5);
+//            filelabel = "\r\nOther info:\r\n" + text;
+//        } else {
+//            out += commkey ; out += " ";
+//            out += sDesc;
+//           out += " ";
+//            out += sText;
+//            out += "\r\n";
+//        }
+		val = sText;
 
          ID3_FreeString(  sText);
          ID3_FreeString(  sDesc);
@@ -926,9 +907,8 @@ displayTag2(ID3_Tag *id3, BOOL showLabels, CString file) {
       case ID3FID_WWWRADIOPAGE:
       {
         char *sURL = ID3_GetString(frame, ID3FN_URL);
-        line += sURL;
-        //line += "\r\n";
-		tagsList.Add(line);
+        val = sURL;
+//        out += "\r\n";
          ID3_FreeString(  sURL);
 //		delete sURL;
         break;
@@ -938,9 +918,8 @@ displayTag2(ID3_Tag *id3, BOOL showLabels, CString file) {
         char 
         *sURL = ID3_GetString(frame, ID3FN_URL),
         *sDesc = ID3_GetString(frame, ID3FN_DESCRIPTION);
-        line += "(";
-        line += sDesc; line += "): "; line += sURL; //line += "\r\n";
-		tagsList.Add(line);
+        val = "(";
+        val += sDesc; val += "): "; val += sURL;
          ID3_FreeString(  sURL);
          ID3_FreeString(  sDesc);
 //		delete sURL;
@@ -953,16 +932,15 @@ displayTag2(ID3_Tag *id3, BOOL showLabels, CString file) {
         for (size_t nIndex = 0; nIndex < nItems; nIndex++)
         {
           char *sPeople = ID3_GetString(frame, ID3FN_TEXT, nIndex);
-          line += sPeople;
+          val = sPeople;
            ID3_FreeString(  sPeople);
 //		  delete sPeople;
           if (nIndex + 1 < nItems)
           {
-            line += ", ";
+            val += ", ";
           }
         }
-        //line += "\r\n";
-		tagsList.Add(line);
+//        out += "\r\n";
         break;
       }
       case ID3FID_PICTURE:
@@ -974,17 +952,13 @@ displayTag2(ID3_Tag *id3, BOOL showLabels, CString file) {
         size_t
         nPicType   = frame->GetField(ID3FN_PICTURETYPE)->Get(),
         nDataSize  = frame->GetField(ID3FN_DATA)->Size();
-        line += "("; line += sDesc; line += ")["; line += sFormat; line += ", ";
-        line += nPicType; line += "]: ";line += sMimeType;line += ", ";line += nDataSize;
-        line += " bytes"; //line += "\r\n";
-		tagsList.Add(line);
+        val = "("; val += sDesc; val += ")["; val += sFormat; val += ", ";
+        val += nPicType; val += "]: ";val += sMimeType;val += ", ";val += nDataSize;
+        val += " bytes";
 
          ID3_FreeString(  sMimeType);
          ID3_FreeString(  sDesc);
          ID3_FreeString(  sFormat);
-//		delete sMimeType;
-//		delete sDesc;
-//		delete sFormat;
         break;
       }
       case ID3FID_GENERALOBJECT:
@@ -995,44 +969,31 @@ displayTag2(ID3_Tag *id3, BOOL showLabels, CString file) {
         *sFileName = ID3_GetString(frame, ID3FN_FILENAME);
         size_t 
         nDataSize = frame->GetField(ID3FN_DATA)->Size();
-        line += "(";
-		line += sDesc;
-		line += ")[" ;
-		line += sFileName;line += "]: "; line += sMimeType;line += ", ";line += nDataSize;
-        line += " bytes";//line += "\r\n";
-		tagsList.Add(line);
+        val = "(";
+		val += sDesc;
+		val += ")[" ;
+		val += sFileName;val += "]: "; val += sMimeType;val += ", ";val += nDataSize;
+        val += " bytes";
          ID3_FreeString(  sMimeType);
          ID3_FreeString(  sDesc);
          ID3_FreeString(  sFileName);
-//		delete sMimeType;
-//		delete sDesc;
-//		delete sFileName;
+
         break;
       }
-//#endif
+
       case ID3FID_UNIQUEFILEID:
       {
         CString sOwner = id3_GetStringUFID(frame, ID3FN_TEXT);
         if (sOwner.GetLength()) {
             size_t nDataSize = frame->GetField(ID3FN_DATA)->Size();
-//            line += sOwner;line += ", ";line += nDataSize;
-//                 + " bytes" + "\r\n";
-              line += sOwner;//line += "\r\n"; 
-
-//               ID3_FreeString(  sOwner);
-//			delete sOwner;
-        //} else {
-        //    line += "\r\n";
+              val = sOwner;
         }
-		tagsList.Add(line);
         break;
       }
-//#ifdef asdf
       case ID3FID_PLAYCOUNTER:
       {
         size_t nCounter = frame->GetField(ID3FN_COUNTER)->Get();
-        line += nCounter ;//+ "\r\n";
-		tagsList.Add(line);
+        val = nCounter ;
         break;
       }
       case ID3FID_POPULARIMETER:
@@ -1041,11 +1002,9 @@ displayTag2(ID3_Tag *id3, BOOL showLabels, CString file) {
         size_t
         nCounter = frame->GetField(ID3FN_COUNTER)->Get(),
         nRating = frame->GetField(ID3FN_RATING)->Get();
-        line += sEmail;line += ", counter="; 
-		line += nCounter; line += " rating=";line += nRating; //line += "\r\n";
-		tagsList.Add(line);
-         ID3_FreeString(  sEmail);
-//		delete sEmail;
+        val += sEmail;val += ", counter="; 
+		val += nCounter; val += " rating=";val += nRating;
+        ID3_FreeString(  sEmail);
         break;
       }
       case ID3FID_CRYPTOREG:
@@ -1055,9 +1014,8 @@ displayTag2(ID3_Tag *id3, BOOL showLabels, CString file) {
         size_t 
         nSymbol = frame->GetField(ID3FN_ID)->Get(),
         nDataSize = frame->GetField(ID3FN_DATA)->Size();
-        line += "("; line += nSymbol;line += "): "; line += sOwner;
-		line += ", "; line += nDataSize; line += " bytes"; //line += "\r\n";
-		tagsList.Add(line);
+        val = "("; val += nSymbol;val += "): "; val += sOwner;
+		val += ", "; val += nDataSize; val += " bytes";
         break;
       }
       case ID3FID_SYNCEDLYRICS:
@@ -1068,36 +1026,32 @@ displayTag2(ID3_Tag *id3, BOOL showLabels, CString file) {
         size_t nTimestamp = frame->GetField(ID3FN_TIMESTAMPFORMAT)->Get();
         size_t nRating = frame->GetField(ID3FN_CONTENTTYPE)->Get();
         const char* format = (2 == nTimestamp) ? "ms" : "frames";
-        line += "(";line += sDesc;line += ")["; line += sLang; line += "]: ";
+        val = "(";val += sDesc;val += ")["; val += sLang; val += "]: ";
         switch (nRating)
         {
-          case ID3CT_OTHER:    line += "Other"; break;
-          case ID3CT_LYRICS:   line += "Lyrics"; break;
-          case ID3CT_TEXTTRANSCRIPTION:     line += "Text transcription"; break;
-          case ID3CT_MOVEMENT: line += "Movement/part name"; break;
-          case ID3CT_EVENTS:   line += "Events"; break;
-          case ID3CT_CHORD:    line += "Chord"; break;
-          case ID3CT_TRIVIA:   line += "Trivia/'pop up' information"; break;
+          case ID3CT_OTHER:    val += "Other"; break;
+          case ID3CT_LYRICS:   val += "Lyrics"; break;
+          case ID3CT_TEXTTRANSCRIPTION:     val += "Text transcription"; break;
+          case ID3CT_MOVEMENT: val += "Movement/part name"; break;
+          case ID3CT_EVENTS:   val += "Events"; break;
+          case ID3CT_CHORD:    val += "Chord"; break;
+          case ID3CT_TRIVIA:   val += "Trivia/'pop up' information"; break;
         }
-        //line += "\r\n";
-		tagsList.Add(line);
+
         ID3_Field* fld = frame->GetField(ID3FN_DATA);
         if (fld)
         {
           ID3_MemoryReader mr(fld->GetRawBinary(), fld->BinSize());
           while (!mr.atEnd())
           {
-            line += io::readString(mr).c_str();
-            line += " ["; line += io::readBENumber(mr, sizeof(uint32)); line += " " ;
-			line += format; line += "] ";
+            val += io::readString(mr).c_str();
+            val += " ["; val += io::readBENumber(mr, sizeof(uint32)); val += " " ;
+			val += format; val += "] ";
           }
         }
-        //line += "\r\n";
-		tagsList.Add(line);
+
          ID3_FreeString(  sDesc);
          ID3_FreeString(  sLang);
-//		delete sDesc;
-//		delete sLang;
         break;
       }
       case ID3FID_AUDIOCRYPTO:
@@ -1114,32 +1068,21 @@ displayTag2(ID3_Tag *id3, BOOL showLabels, CString file) {
       case ID3FID_SYNCEDTEMPO:
       case ID3FID_METACRYPTO:
       {
-        line += " (unimplemented)"; //line += "\r\n";
-		tagsList.Add(line);
+        val = "(unimplemented)";
         break;
       }
-//#endif
       default:
       {
-//        line += " frame"; line += "\r\n";
+//        out += " frame"; out += "\r\n";
         break;
       }
     }
+	if (key.GetLength() && val.GetLength())
+		tag->setVal(key,val);
   }
-//   ID3_Free((void*)iter);
     delete iter;
-	tagsList.Add(filelabel);
-    //line += filelabel;
-//	line += "\r\n";
-	tagsList.SetCompareFunction(String::CompareCase);
-	tagsList.Sort();
 
-	line = "";
-	for (int i=0; i < tagsList.GetSize(); i++) {
-		CString& rkey = tagsList.ElementAt(i);
-		line += rkey + "\r\n";
-	}
-
+#ifdef adsf
 	AutoBuf buf(2000);
     Mp3Header mpg;
     if (mpg.mb_getFilePath(file) == TRUE) { 
@@ -1157,11 +1100,13 @@ displayTag2(ID3_Tag *id3, BOOL showLabels, CString file) {
         chpos += sprintf((char*)buf.p + chpos, "Bitrate    %d\r\n", mpg.getBitrate() );
         chpos += sprintf((char*)buf.p + chpos, "Frequency  %d\r\n", mpg.getFrequency() );
         chpos += sprintf((char*)buf.p + chpos, "Mode       %s\r\n", (LPCTSTR)mpg.getMode() );
-		line += buf.p;     
+		out += buf.p;     
     } else {
         sprintf(buf.p, "No valid mp3 headers found\r\nDoes not appear to be an mp3 file.\r\n");
-		line += buf.p;     
+		out += buf.p;     
     }
+#endif
 	
-    return line;
+    return TRUE;
 }
+

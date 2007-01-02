@@ -1965,8 +1965,6 @@ MusicLib::createSongFromMBTag(MBTag & mbtag) {
 	artist = mbtag.getVal("TPE1");
 	album = mbtag.getVal("TALB");
 	title = mbtag.getVal("TIT2");
-	if (title == MBUNKNOWN)
-		title = mbtag.getVal("FILE");;
 
     CString ngenre = Genre_normalize(genre);
 
@@ -1974,6 +1972,9 @@ MusicLib::createSongFromMBTag(MBTag & mbtag) {
 	NormalizeTagField(artist);
 	NormalizeTagField(album);
 	NormalizeTagField(title);
+
+	if (title == MBUNKNOWN)
+		title = mbtag.getVal("FILE");
 
     song->setId3("TCON", (LPCTSTR)ngenre);
     song->setId3("TPE1", artist);

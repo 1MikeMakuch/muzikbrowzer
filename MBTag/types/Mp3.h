@@ -7,7 +7,6 @@
 #include "TestHarness/TestHarness.h"
 #include "id3/tag.h"
 #include "id3/misc_support.h"
-//#include "WmaTagger.h"
 #include "MyID3LibMiscSupport.h"
 #include "MyLog.h"
 #include "types/Wma.h"
@@ -18,6 +17,8 @@ class MBMp3Tag : public MBTagType {
 	virtual BOOL write(MBTag & tags, const CString & file);
 	virtual CString getComments(MBTag & tags, const CString & file);
 	virtual CString getInfo(MBTag & tags, const CString & file);
+	virtual CString NativeKey2Id3Key(const CString & id3) {return id3;}
+	virtual CString Id3Key2NativeKey(const CString & id3) {return id3;}
 	virtual BOOL getArt(
 			MBTag & tags,
 			const CString & file, 
@@ -64,23 +65,54 @@ MBMp3Tag::read(MBTag & tags, const CString & file, const BOOL xvert) {
 	if (!file.GetLength())
 		return FALSE;
 
-	ID3_Tag * id3 = new ID3_Tag;
-	size_t tagsize = id3->Link(file, ID3TT_ALL);
+	if (!tags.ReadAllTags()) {
+		MBTag wmatags;
+		MBWmaTag wma;
+		wma.SetReadDurationOnly();
+		wma.read(wmatags,file,TRUE);
+		tags.setVal("TLEN", wmatags.getVal("TLEN"));  // milliseconds
+	}
 
-	MBTag wmatags;
-	MBWmaTag wma;
-	wma.SetReadDurationOnly();
-	wma.read(wmatags,file,TRUE);
+	{
+		ID3_Tag * id3 = new ID3_Tag;
+		size_t tagsize = id3->Link(file, /*ID3TT_ALL */ID3TT_ID3V1);
 
-	tags.setVal("TCON", id3_GetGenre(id3));
-	tags.setVal("TPE1", id3_GetArtist(id3));
-	tags.setVal("TALB", id3_GetAlbum(id3));
-	tags.setVal("TIT2", id3_GetTitle(id3));
-	tags.setVal("TYER", id3_GetYear(id3));
-	tags.setVal("TRCK", id3_GetTrack(id3));
-	tags.setVal("TLEN", wmatags.getVal("TLEN"));  // milliseconds
+		if (tags.ReadAllTags()) {
+			ReadAllTags(id3,&tags);
+		} else {
+			tags.setVal("TCON", id3_GetGenre(id3));
+			tags.setVal("TPE1", id3_GetArtist(id3));
+			tags.setVal("TALB", id3_GetAlbum(id3));
+			tags.setVal("TIT2", id3_GetTitle(id3));
+			tags.setVal("TYER", id3_GetYear(id3));
+			tags.setVal("TRCK", id3_GetTrack(id3));
+			
+		}
+		delete id3;
+	}
+	{ // v2 overwrites v1
+		ID3_Tag * id3 = new ID3_Tag;
+		size_t tagsize = id3->Link(file, ID3TT_ID3V2);
 
-	delete id3;
+		if (tags.ReadAllTags()) {
+			ReadAllTags(id3,&tags);
+		} else {
+			CString tmp;
+			tmp = id3_GetGenre(id3);
+			if (tmp.GetLength()) tags.setVal("TCON",tmp);
+			tmp = id3_GetArtist(id3);
+			if (tmp.GetLength()) tags.setVal("TPE1",tmp);
+			tmp = id3_GetAlbum(id3);
+			if (tmp.GetLength()) tags.setVal("TALB",tmp);
+			tmp = id3_GetTitle(id3);
+			if (tmp.GetLength()) tags.setVal("TIT2",tmp);
+			tmp = id3_GetYear(id3);
+			if (tmp.GetLength()) tags.setVal("TYER",tmp);
+			tmp = id3_GetTrack(id3);
+			if (tmp.GetLength()) tags.setVal("TRCK",tmp);
+		}
+		delete id3;
+	}
 
 	return TRUE;
 }

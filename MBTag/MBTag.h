@@ -31,9 +31,15 @@ class MBTag : public MyHash {
 			size_t & nDataSize, 
 			const CString & album);
 		void SetType(const CString & type);
+		BOOL ReadAllTags() { return m_ReadAllTags;}
+		void SetReadAllTags(const BOOL r) { m_ReadAllTags=r;}
+		
+		void setValId3Key(const CString & key, const CString & val);
+		CString getValId3Key(const CString & key);
 	private:
 		CString m_file;
 		MBTagType * m_tagobj;
+		BOOL m_ReadAllTags;
 		
 };
 
@@ -54,6 +60,8 @@ public:
 	
 	virtual CString getComments(MBTag & tags, const CString & file)=0;
 	virtual CString getInfo(MBTag & tags, const CString & file)=0;
+	virtual CString Id3Key2NativeKey(const CString & key)=0;
+	virtual CString NativeKey2Id3Key(const CString & key)=0;
 	
 	// optional
 	virtual BOOL getArt(

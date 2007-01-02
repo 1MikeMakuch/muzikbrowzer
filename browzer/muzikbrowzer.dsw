@@ -75,6 +75,18 @@ Package=<4>
 
 ###############################################################################
 
+Project: "MBTagger"=..\MBTag\tagger\MBTagger.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
 Project: "MetadataEdit"=..\WmaEdit\MetadataEdit.dsp - Package Owner=<4>
 
 Package=<5>
@@ -124,18 +136,6 @@ Package=<4>
 ###############################################################################
 
 Project: "TestHarness"=..\TestHarness\TestHarness.dsp - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
-Project: "WmaTagg"=..\WMAEDIT\WmaTagg.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -435,9 +435,6 @@ Package=<4>
     Project_Dep_Name md5
     End Project Dependency
     Begin Project Dependency
-    Project_Dep_Name WmaTagg
-    End Project Dependency
-    Begin Project Dependency
     Project_Dep_Name GetBlackOut
     End Project Dependency
     Begin Project Dependency
@@ -463,9 +460,6 @@ Package=<4>
     End Project Dependency
     Begin Project Dependency
     Project_Dep_Name regset
-    End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name oggtagger
     End Project Dependency
     Begin Project Dependency
     Project_Dep_Name MBTag
@@ -621,9 +615,6 @@ Package=<4>
     Project_Dep_Name ogg_static
     End Project Dependency
     Begin Project Dependency
-    Project_Dep_Name oggtagger
-    End Project Dependency
-    Begin Project Dependency
     Project_Dep_Name vorbis_static
     End Project Dependency
     Begin Project Dependency
@@ -634,6 +625,18 @@ Package=<4>
 ###############################################################################
 
 Project: "vorbisfile_static"="..\3rdparty\ogg\libvorbis-1.0\win32\vorbisfile_static.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "win32console"=..\..\win32console\win32console.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
