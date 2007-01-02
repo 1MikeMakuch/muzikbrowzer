@@ -1,3 +1,5 @@
+#ifndef _MBTAG_TYPES_MP3_H
+#define _MBTAG_TYPES_MP3_H
 
 #include "StdAfx.h"
 #include "MBTag.h"
@@ -5,9 +7,10 @@
 #include "TestHarness/TestHarness.h"
 #include "id3/tag.h"
 #include "id3/misc_support.h"
-#include "WmaTagger.h"
+//#include "WmaTagger.h"
 #include "MyID3LibMiscSupport.h"
 #include "MyLog.h"
+#include "types/Wma.h"
 
 class MBMp3Tag : public MBTagType {
 	virtual ~MBMp3Tag() {};
@@ -15,8 +18,47 @@ class MBMp3Tag : public MBTagType {
 	virtual BOOL write(MBTag & tags, const CString & file);
 	virtual CString getComments(MBTag & tags, const CString & file);
 	virtual CString getInfo(MBTag & tags, const CString & file);
+	virtual BOOL getArt(
+			MBTag & tags,
+			const CString & file, 
+			unsigned char *& rawdata, 
+			size_t & nDataSize, 
+			const CString & album);
 };
+BOOL
+MBMp3Tag::getArt(
+		MBTag & tags,
+			const CString & file, 
+			unsigned char *& rawdata, 
+			size_t & nDataSize, 
+			const CString & album)
+{
+	ID3_Tag id3;
+	size_t tagsize = id3.Link(file, ID3TT_ALL);
 
+	ID3_Tag::Iterator* iter = id3.CreateIterator();
+	const ID3_Frame* frame = NULL; 
+
+	while (rawdata == NULL && NULL != (frame = iter->GetNext())) { 
+		ID3_FrameID eFrameID = frame->GetID();
+		if (eFrameID == ID3FID_PICTURE) {
+
+			nDataSize  = frame->GetField(ID3FN_DATA)->Size();
+
+			rawdata = new BYTE [ nDataSize ];
+			memcpy(rawdata, frame->GetField(ID3FN_DATA)->GetRawBinary(),
+				nDataSize);
+			if (nDataSize) {
+				delete iter;
+				return TRUE;
+			}
+
+
+		}
+	}
+	delete iter;
+	return MBTagType::getArt(tags,file,rawdata,nDataSize,album);
+}
 BOOL
 MBMp3Tag::read(MBTag & tags, const CString & file, const BOOL xvert) {
 	if (!file.GetLength())
@@ -25,8 +67,10 @@ MBMp3Tag::read(MBTag & tags, const CString & file, const BOOL xvert) {
 	ID3_Tag * id3 = new ID3_Tag;
 	size_t tagsize = id3->Link(file, ID3TT_ALL);
 
-	WmaTag wma;
-	wma.read(file,TRUE);
+	MBTag wmatags;
+	MBWmaTag wma;
+	wma.SetReadDurationOnly();
+	wma.read(wmatags,file,TRUE);
 
 	tags.setVal("TCON", id3_GetGenre(id3));
 	tags.setVal("TPE1", id3_GetArtist(id3));
@@ -34,7 +78,7 @@ MBMp3Tag::read(MBTag & tags, const CString & file, const BOOL xvert) {
 	tags.setVal("TIT2", id3_GetTitle(id3));
 	tags.setVal("TYER", id3_GetYear(id3));
 	tags.setVal("TRCK", id3_GetTrack(id3));
-	tags.setVal("TLEN", wma.getVal("Duration"));
+	tags.setVal("TLEN", wmatags.getVal("TLEN"));  // milliseconds
 
 	delete id3;
 
@@ -44,14 +88,17 @@ CString
 MBMp3Tag::getComments(MBTag & tags, const CString & file) {
 	if (!file.GetLength())
 		return "";
-	WmaTag wma;
-	wma.read(file,TRUE);
-	CString comment = wma.getVal("Description");
-	CString tmp = wma.getVal("WM/Lyrics");
+
+	MBTag wmatags;
+	MBWmaTag wma;
+	wma.read(wmatags,file,FALSE);
+
+	CString comment = wmatags.getVal("Description");
+	CString tmp = wmatags.getVal("WM/Lyrics");
 	if (tmp.GetLength()) {
 		comment += " Lyrics: "+tmp;
 	}
-	tmp = wma.getVal("WM/Composer");
+	tmp = wmatags.getVal("WM/Composer");
 	if (tmp.GetLength()) {
 		comment += " Composer(s): "+tmp;
 	}
@@ -115,8 +162,6 @@ MBMp3Tag::write(MBTag & tags, const CString & file) {
 	}
 	return TRUE;
 }
-static int bogusmpg = MBTag::addType("mpg", new MBMp3Tag());
-static int bogusmp1 = MBTag::addType("mp1", new MBMp3Tag());
-static int bogusmp2 = MBTag::addType("mp2", new MBMp3Tag());
-static int bogusmp3 = MBTag::addType("mp3", new MBMp3Tag());
 
+
+#endif

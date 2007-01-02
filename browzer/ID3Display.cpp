@@ -8,7 +8,6 @@
 #include "MyID3LibMiscSupport.h"
 #include "MyString.h"
 #include "FExtension.h"
-#include "WmaTagger.h"
 #include "MBTag.h"
 
 #ifdef _DEBUG
@@ -60,18 +59,7 @@ CString
 ID3Display::displayTag(Song song) {
 	CString file = song->getId3(CS("FILE"));
 	FExtension fext(file);
-	if (fext == "mp3"
-		|| fext == "mpg"
-		|| fext == "mp1"
-		|| fext == "mp2"
-		|| fext == "flac"
-		|| fext == "ogg") {
-		MBTag tag;
-		return tag.getInfo(file);
-	} else if (fext.ext() == "wma") {
-		WmaTag wma(file);
-		return wma.getInfo();
-	}
-	return "";
+	MBTag tag;
+	return tag.getInfo(file);
 }
 

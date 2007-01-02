@@ -1,3 +1,5 @@
+#ifndef _MBTAG_TYPES_FLAC_H_
+#define _MBTAG_TYPES_FLAC_H_
 
 #include "StdAfx.h"
 #include "MBTag.h"
@@ -7,7 +9,6 @@
 #include <afxtempl.h>
 #include "SortedArray.h"
 #include "MyLog.h"
-#include "WmaTagger.h"
 
 #include "FLAC++/metadata.h"
 
@@ -140,6 +141,7 @@ MBFlacTag::read(MBTag & tags, const CString & file, const BOOL xvert) {
 			UINT64 ts = si.get_total_samples();
 			if (ts > 0) {
 				UINT D = ts / sr; // seconds
+				D *= 1000; // milliseconds
 				tags.setVal("TLEN",NTS(D));
 			}
 		}
@@ -266,5 +268,4 @@ void freemakeargv(int argc, char * argv[]) {
 	free(argv);
 }
 
-// Register ourselves with the "type manger"
-static int bogus1 = MBTag::addType("flac", new MBFlacTag());
+#endif

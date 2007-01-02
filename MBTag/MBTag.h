@@ -30,7 +30,7 @@ class MBTag : public MyHash {
 			unsigned char *& rawdata, 
 			size_t & nDataSize, 
 			const CString & album);
-
+		void SetType(const CString & type);
 	private:
 		CString m_file;
 		MBTagType * m_tagobj;

@@ -9,7 +9,6 @@
 #include "Mp3Header.h"
 #include "TestHarness/TestHarness.h"
 #include "FileUtils.h"
-#include "WmaTagger.h"
 #include "MyID3LibMiscSupport.h"
 #include "ExportDlg.h"
 #include <afxtempl.h> 
@@ -1386,32 +1385,12 @@ MusicLib::createSongFromFile(const CString & mp3file,
 		|| fext == "mp2"
 		|| fext == "flac"
 		|| fext == "ogg"
+		|| fext == "wma"
 		) {
 		MBTag mbtag;
 		mbtag.read(mp3file);
 		song = createSongFromMBTag(mbtag);
-	} else if (fext == "wma") {
-		WmaTag wma;
-		error_results += wma.read(mp3file);
-		song = createSongFromWma(&wma);
-	}
-
-    song->setId3("FILE", (LPCTSTR)mp3file);
-/*
-	CString genre = song->getId3((CString)"TCON");
-	genre = Genre_normalize(genre);
-	song->setId3((CString)"TCON", genre);
-
-	CString artist = song->getId3((CString)"TPE1");
-	if (artist == "" || artist == MBUNKNOWN)
-		song->setId3("TPE1", MBUNKNOWN);
-	CString album = song->getId3((CString)"TALB");
-	if (album == "" || album == MBUNKNOWN)
-		song->setId3("TALB", MBUNKNOWN);
-*/
-	CString title = song->getId3("TIT2");
-	if (title == MBUNKNOWN) {
-		song->setId3("TIT2", mp3file);
+		song->setId3("FILE",mp3file);
 	}
 
 	return song;
@@ -1447,6 +1426,7 @@ MusicLib::writeSongToFile(Song song) {
 	}
 	FExtension fext(file);
 	if (fext == "mp3"
+		|| fext == "wma"
 		|| fext == "mpg"
 		|| fext == "mp1"
 		|| fext == "mp2"
@@ -1468,44 +1448,6 @@ MusicLib::writeSongToFile(Song song) {
 		BOOL r = mbtag.write();
 		if (!r)
 			result += "Unable to modify tags in "+file;
-	} else if (fext == "wma") {
-// WMA attributes
-// Title
-// Author
-// WM/TrackNumber
-// WM/AlbumArtist
-// WM/AlbumTitle
-// WM/Genre
-// WM/GenreID
-// WM/Year
-// Duration
-
-		WmaTag wma(file);
-		POSITION pos;
-		CString key;
-		CString val;
-		for( pos = song->_obj.GetStartPosition(); pos != NULL; ) {
-			song->_obj.GetNextAssoc(pos, key, val);
-			if (key.GetLength() && val.GetLength() && val != MBUNKNOWN) {
-				if (key == "TCON" ) {
-		            wma.setVal("WM/Genre", val);
-					int gid = Genre_getInt(val);
-					// if we get -1 back, leave it since there's no match
-					wma.setVal("WM/GenreID", numToString(gid));
-				} else if (key == "TPE1" ) {
-				    wma.setVal("WM/AlbumArtist", val);
-				} else if (key == "TALB" ) {
-					wma.setVal("WM/AlbumTitle", val);
-				} else if (key == "TIT2" ) {
-					wma.setVal("Title", val);
-				} else if (key == "TRCK" ) {
-					wma.setVal("WM/TrackNumber", val);
-				} else if (key == "TYER" ) {
-					wma.setVal("WM/Year", val);
-				}
-			}
-		}
-		result += wma.write();
 	}
 	return result;
 }
@@ -2013,86 +1955,6 @@ MusicLib::iSearch(const CString keyword, MSongLib & db, MSongLib & results) {
 }
 
 Song
-MusicLib::createSongFromId3(ID3_Tag * id3) {
-	AutoLog al("mdb::createSongFromId3");
-    CString genre = id3_GetGenre(id3);
-    CString artist = id3_GetArtist(id3);
-    CString album = id3_GetAlbum(id3);
-    CString title = id3_GetTitle(id3);
-    CString year = id3_GetYear(id3);
-    CString track = id3_GetTrack(id3);
-	CString tlen = id3_GetTLEN(id3);
-
-    CString cgenre = Genre_normalize(genre);
-    Song song = new CSong;
-	
-	NormalizeTagField(cgenre);
-	NormalizeTagField(artist);
-	NormalizeTagField(album);
-	NormalizeTagField(title);
-
-    song->setId3("TCON", (LPCTSTR)cgenre);
-    song->setId3("TPE1", artist);
-    song->setId3("TALB", album);
-    song->setId3("TIT2", title);
-    song->setId3("TRCK", track);
-    song->setId3("TYER", year);
-	if (tlen != "")
-		song->setId3("TLEN", tlen);
-    return song;
-}
-
-// WMA attributes
-// Title
-// Author
-// WM/TrackNumber
-// WM/AlbumTitle
-// WM/Genre
-// WM/GenreID
-// WM/Year
-// Duration
-
-Song
-MusicLib::createSongFromWma(WmaTag * wma) {
-	AutoLog al("mdb::createSongFromWma");
-
-	CString kv,key,val;
-	Song song = new CSong;
-	CString genre,artist,album,title,year,track, duration;
-
-	genre = wma->getVal("WM/Genre");
-	artist = wma->getVal("WM/AlbumArtist");
-	album = wma->getVal("WM/AlbumTitle");
-	title = wma->getVal("Title");
-	year = wma->getVal("WM/Year");
-	track = wma->getVal("WM/TrackNumber");
-	duration = wma->getVal("Duration");
-// getVal now converts duration to milliseconds
-//	if (duration.GetLength()) {
-//		float d = atof(duration);
-//		d = d / 10000;
-//		int d2 = (int)d;
-//		duration = numToString(d2);
-//	}
-
-    CString cgenre = Genre_normalize(genre);
-
-	NormalizeTagField(cgenre);
-	NormalizeTagField(artist);
-	NormalizeTagField(album);
-	NormalizeTagField(title);
-
-    song->setId3("TCON", (LPCTSTR)cgenre);
-    song->setId3("TPE1", artist);
-    song->setId3("TALB", album);
-    song->setId3("TIT2", title);
-    song->setId3("TRCK", track);
-    song->setId3("TYER", year);
-	song->setId3("TLEN", duration);
-
-	return song;
-}
-Song
 MusicLib::createSongFromMBTag(MBTag & mbtag) {
 	AutoLog al("mdb::createSongFromMBTag");
 
@@ -2103,6 +1965,8 @@ MusicLib::createSongFromMBTag(MBTag & mbtag) {
 	artist = mbtag.getVal("TPE1");
 	album = mbtag.getVal("TALB");
 	title = mbtag.getVal("TIT2");
+	if (title == MBUNKNOWN)
+		title = mbtag.getVal("FILE");;
 
     CString ngenre = Genre_normalize(genre);
 
@@ -2894,108 +2758,9 @@ MusicLib::apic(const CString & file, uchar *& rawdata, size_t & nDataSize,
 	//	if (m_picCache.read(file, rawdata, nDataSize)) {
 	//		return TRUE;
 	//	}
-	FExtension fext(file);
-	if (fext == "mp3") {
-		ID3_Tag id3;
-		size_t tagsize = id3.Link(file, ID3TT_ALL);
+	MBTag tag;
+	return tag.getArt(file,rawdata,nDataSize,album);
 
-		ID3_Tag::Iterator* iter = id3.CreateIterator();
-		const ID3_Frame* frame = NULL; 
-
-		while (rawdata == NULL && NULL != (frame = iter->GetNext())) { 
-			ID3_FrameID eFrameID = frame->GetID();
-			if (eFrameID == ID3FID_PICTURE) {
-
-				nDataSize  = frame->GetField(ID3FN_DATA)->Size();
-
-				rawdata = new BYTE [ nDataSize ];
-				memcpy(rawdata, frame->GetField(ID3FN_DATA)->GetRawBinary(),
-					nDataSize);
-	//			m_picCache.write(file, rawdata, nDataSize);
-				if (nDataSize) {
-					delete iter;
-					return TRUE;
-				}
-
-
-			}
-		}
-		delete iter;
-	} else if (fext == "flac") {
-		MBTag tag;
-		return tag.getArt(file,rawdata,nDataSize,album);
-	}
-
-	// not in apic so look for folder.jpg in dir
-	CString folderjpg = FileUtil::dirname(file);
-	folderjpg += "\\folder.jpg";
-	int fd = _open(folderjpg, _O_RDONLY|_O_BINARY);
-	if (fd > 0) {
-		struct _stat statbuf;
-		int fs = _stat(folderjpg, &statbuf );
-		if (fs != 0) {
-			close(fd);
-			return FALSE;
-		}
-
-		nDataSize = statbuf.st_size;
-		rawdata = new BYTE [ nDataSize ];
-		int r = _read(fd, (void*) rawdata, nDataSize);
-		close(fd);
-		if (r != nDataSize) {
-			delete rawdata;
-			return FALSE;
-		}
-//		m_picCache.write(file, rawdata, nDataSize);
-		return TRUE;
-	}
-	// not in folder.jpg so look for cover.jpg in dir
-	folderjpg = FileUtil::dirname(file);
-	folderjpg += "\\cover.jpg";
-	fd = _open(folderjpg, _O_RDONLY|_O_BINARY);
-	if (fd > 0) {
-		struct _stat statbuf;
-		int fs = _stat(folderjpg, &statbuf );
-		if (fs != 0) {
-			close(fd);
-			return FALSE;
-		}
-
-		nDataSize = statbuf.st_size;
-		rawdata = new BYTE [ nDataSize ];
-		int r = _read(fd, (void*) rawdata, nDataSize);
-		close(fd);
-		if (r != nDataSize) {
-			delete rawdata;
-			return FALSE;
-		}
-//		m_picCache.write(file, rawdata, nDataSize);
-		return TRUE;
-	}
-	// not in cover.jpg so look for albumname.jpg in dir
-	folderjpg = FileUtil::dirname(file);
-	folderjpg += "\\" + album + ".jpg";
-	fd = _open(folderjpg, _O_RDONLY|_O_BINARY);
-	if (fd > 0) {
-		struct _stat statbuf;
-		int fs = _stat(folderjpg, &statbuf );
-		if (fs != 0) {
-			close(fd);
-			return FALSE;
-		}
-
-		nDataSize = statbuf.st_size;
-		rawdata = new BYTE [ nDataSize ];
-		int r = _read(fd, (void*) rawdata, nDataSize);
-		close(fd);
-		if (r != nDataSize) {
-			delete rawdata;
-			return FALSE;
-		}
-//		m_picCache.write(file, rawdata, nDataSize);
-		return TRUE;
-	}
-	return FALSE;
 }
 
 
@@ -5159,26 +4924,10 @@ MusicLib::getComments(const CString & file) {
 		|| fext == "mp2"
 		|| fext == "flac"
 		|| fext == "ogg"
+		|| fext == "wma"
 		) {
 		MBTag mbtag;
 		comment = mbtag.getComments(file);
-	} else if (fext == "wma") {
-		WmaTag wma;
-		wma.read(file);
-		comment = wma.getVal("Description");
-		CString tmp = wma.getVal("WM/Lyrics");
-		if (tmp.GetLength()) {
-			comment += " Lyrics: "+tmp;
-		}
-		tmp = wma.getVal("WM/Composer");
-		if (tmp.GetLength()) {
-			comment += " Composer(s): "+tmp;
-		}
-// Author no good, it's usually just Artist
-//		tmp = wma.getVal("Author");
-//		if (tmp.GetLength()) {
-//			comment += " Author(s): "+tmp;
-//		}
 	}
 	return comment;
 }

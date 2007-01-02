@@ -50,9 +50,17 @@ AudioTypeHash * MBTag::m_types = &AudioFileTypes;            //
 // modifying this base code.                                 //
 //                                                           //
 #include "types/Mp3.h"                                       //
-#include "types/Ogg.h"                                     //
-//#include "types/Wma.h"                                     //
+#include "types/Ogg.h"                                       //
+#include "types/Wma.h"                                       //
 #include "types/Flac.h"                                      //
+
+static int bogusmpg = MBTag::addType("mpg", new MBMp3Tag());
+static int bogusmp1 = MBTag::addType("mp1", new MBMp3Tag());
+static int bogusmp2 = MBTag::addType("mp2", new MBMp3Tag());
+static int bogusmp3 = MBTag::addType("mp3", new MBMp3Tag());
+static int bogusogg = MBTag::addType("ogg", new MBOggTag());
+static int bogusflac= MBTag::addType("flac",new MBFlacTag());
+static int bogusWma = MBTag::addType("wma", new MBWmaTag());
 ///////////////////////////////////////////////////////////////
 
 
@@ -78,7 +86,11 @@ MBTag::getType(FExtension & fext) {
 	}
 	return NULL;
 }
-
+void
+MBTag::SetType(const CString & type) {
+	FExtension fext(type);
+	m_tagobj = getType(fext);
+}
 // xvert tells whether or not to convert to "standard" keys
 BOOL
 MBTag::read(const CString & file, const BOOL xvert) {

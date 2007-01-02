@@ -12,8 +12,6 @@
 
 class MyLog;
 
-class WmaTag;
-
 // A MemDb is a hierarchical tree looking structure not
 // unlike a file system directory structure. It is comprised
 // of doubly linked lists, each list node is either a data
@@ -350,8 +348,6 @@ class MusicLib {
 unsigned int	countSongsInGenre(const CString & genre, CArray<unsigned int, unsigned int> & array);
 	    Song	createSongFromFile(const CString & mp3file);
 	    Song	createSongFromFile(const CString & mp3file, CString & error_results, int & t1, int & t2, int & fc);
-	    Song	createSongFromId3(ID3_Tag *);
-	    Song	createSongFromWma(WmaTag *);
 		Song	createSongFromMBTag(MBTag & tag);
 		void	DeleteDb();
 	    void	deletePlaylist(const CString &);

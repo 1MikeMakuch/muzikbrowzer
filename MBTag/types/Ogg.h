@@ -1,3 +1,5 @@
+#ifndef _MBTAG_TYPES_OGG_H
+#define _MBTAG_TYPES_OGG_H
 
 #include "StdAfx.h"
 #include "MBTag.h"
@@ -7,7 +9,6 @@
 #include <afxtempl.h>
 #include "SortedArray.h"
 #include "MyLog.h"
-#include "WmaTagger.h"
 #include "vcedit.h"
 #include "vorbis/codec.h"
 #include "vorbis/vorbisfile.h"
@@ -133,8 +134,8 @@ MBOggTag::read(MBTag & tags, const CString & file, const BOOL xvert) {
 			}
         }
     }
-
-	tags.setVal("TLEN", NTS(ov_time_total(ogg, -1)));
+	// ov_time_total returns in seconds, we write milliseconds
+	tags.setVal("TLEN", NTS((int)(1000 * ov_time_total(ogg, -1))));
 	ov_clear(ogg);
 	fclose(OF);
 	delete ogg;
@@ -246,5 +247,6 @@ MBOggTag::getInfo(MBTag & tags, const CString & file) {
 	return comments;
 }
 
-// Register ourselves with the "type manger"
-static int bogusogg = MBTag::addType("ogg", new MBOggTag());
+
+
+#endif

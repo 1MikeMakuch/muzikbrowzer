@@ -26,7 +26,6 @@
 #include "ModifyIDThree.h"
 #include "MusicDb.h"
 #include "MyID3LibMiscSupport.h"
-#include "WmaTagger.h"
 #include "PlayerApp.h"
 #include "SavePlaylistDlg.h"
 #include "TestHarness/TestHarness.h"
