@@ -328,7 +328,6 @@ typedef MPtr<MSongLib> MSongLibP;
 #include <afxtempl.h>
 #include "SortedArray.h"
 
-class OggTag;
 class ExportDlg;
 class ProgressDlg;
 class MBTag;
@@ -352,7 +351,6 @@ unsigned int	countSongsInGenre(const CString & genre, CArray<unsigned int, unsig
 	    Song	createSongFromFile(const CString & mp3file);
 	    Song	createSongFromFile(const CString & mp3file, CString & error_results, int & t1, int & t2, int & fc);
 	    Song	createSongFromId3(ID3_Tag *);
-	    Song	createSongFromOgg(OggTag *);
 	    Song	createSongFromWma(WmaTag *);
 		Song	createSongFromMBTag(MBTag & tag);
 		void	DeleteDb();

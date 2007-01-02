@@ -65,7 +65,7 @@ LIB32=link.exe -lib
 # PROP Intermediate_Dir "Debug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /nologo /MTd /W3 /Gm /GX /Zi /Od /I "..\3rdparty\flac-1.1.3\include" /I "..\3rdparty\flac-1.1.3\src\metaflac" /I "..\WmaEdit" /I "..\util" /I "..\\" /I "." /I "../3rdparty/ogg/libogg-1.0/include" /I "../3rdparty/ogg/libvorbis-1.0/include" /I "../" /I "../util" /D "FLAC__NO_DLL" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /FD /GZ /c
+# ADD CPP /nologo /MTd /W3 /Gm /GX /Zi /Od /I "../3rdparty/ogg/libogg-1.0/include" /I "../3rdparty/ogg/libvorbis-1.0/include" /I "../id3/id3libutils" /I "..\3rdparty/id3lib-3.8.3\include" /I "..\3rdparty\flac-1.1.3\include" /I "..\3rdparty\flac-1.1.3\src\metaflac" /I "..\WmaEdit" /I "..\util" /I "..\\" /I "../" /I "../util" /D ID3LIB_LINKOPTION=1 /D "FLAC__NO_DLL" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /FD /GZ /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
@@ -170,6 +170,10 @@ SOURCE=.\MBTag.h
 # Begin Source File
 
 SOURCE=.\types\Mp3.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\types\Ogg.h
 # End Source File
 # Begin Source File
 

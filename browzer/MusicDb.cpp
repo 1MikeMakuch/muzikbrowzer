@@ -16,9 +16,9 @@
 #include "SortedArray.h"
 #include "MBtag.h"
 
-#include "vorbis/codec.h"
-#include "vorbis/vorbisfile.h"
-#include "oggtagger/oggtagger.h"
+//#include "vorbis/codec.h"
+//#include "vorbis/vorbisfile.h"
+//#include "oggtagger/oggtagger.h"
 #include <io.h>
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -1385,14 +1385,11 @@ MusicLib::createSongFromFile(const CString & mp3file,
 		|| fext == "mp1"
 		|| fext == "mp2"
 		|| fext == "flac"
+		|| fext == "ogg"
 		) {
 		MBTag mbtag;
 		mbtag.read(mp3file);
 		song = createSongFromMBTag(mbtag);
-	} else if (fext == "ogg") {
-		OggTag ogg;
-		error_results += ogg.read(mp3file);
-		song = createSongFromOgg(&ogg);
 	} else if (fext == "wma") {
 		WmaTag wma;
 		error_results += wma.read(mp3file);
@@ -1453,7 +1450,8 @@ MusicLib::writeSongToFile(Song song) {
 		|| fext == "mpg"
 		|| fext == "mp1"
 		|| fext == "mp2"
-		|| fext == "flac") {
+		|| fext == "flac"
+		|| fext == "ogg") {
 		MBTag mbtag;
 //		if (fext == "flac")
 			mbtag.read(file);
@@ -1470,31 +1468,6 @@ MusicLib::writeSongToFile(Song song) {
 		BOOL r = mbtag.write();
 		if (!r)
 			result += "Unable to modify tags in "+file;
-
-	} else if (fext == "ogg") {
-		OggTag ogg(file);
-		POSITION pos;
-		CString key;
-		CString val;
-		for( pos = song->_obj.GetStartPosition(); pos != NULL; ) {
-			song->_obj.GetNextAssoc(pos, key, val);
-			if (key.GetLength() && val.GetLength() && val != MBUNKNOWN) {
-				if (key == "TCON" ) {
-		            ogg.setVal("genre", val);
-				} else if (key == "TPE1" ) {
-				    ogg.setVal("artist", val);
-				} else if (key == "TALB" ) {
-					ogg.setVal("album", val);
-				} else if (key == "TIT2" ) {
-					ogg.setVal("title", val);
-				} else if (key == "TRCK" ) {
-					ogg.setVal("tracknumber", val);
-				} else if (key == "TYER" ) {
-					ogg.setVal("date", val);
-				}
-			}
-		}
-		result += ogg.write();
 	} else if (fext == "wma") {
 // WMA attributes
 // Title
@@ -2068,38 +2041,7 @@ MusicLib::createSongFromId3(ID3_Tag * id3) {
 		song->setId3("TLEN", tlen);
     return song;
 }
-Song
-MusicLib::createSongFromOgg(OggTag * ogg) {
-	AutoLog al("mdb::createSongFromOgg");
 
-	CString kv,key,val;
-	Song song = new CSong;
-	CString genre,artist,album,title,year,track;
-
-	genre = ogg->getVal("genre");
-	artist = ogg->getVal("artist");
-	album = ogg->getVal("album");
-	title = ogg->getVal("title");
-	year = ogg->getVal("date");
-	track = ogg->getVal("tracknumber");
-
-    CString cgenre = Genre_normalize(genre);
-
-	NormalizeTagField(cgenre);
-	NormalizeTagField(artist);
-	NormalizeTagField(album);
-	NormalizeTagField(title);
-
-    song->setId3("TCON", (LPCTSTR)cgenre);
-    song->setId3("TPE1", artist);
-    song->setId3("TALB", album);
-    song->setId3("TIT2", title);
-    song->setId3("TRCK", track);
-    song->setId3("TYER", year);
-	song->setId3("TLEN", numToString(ogg->getTime()*1000));
-
-	return song;
-}
 // WMA attributes
 // Title
 // Author
@@ -5216,6 +5158,7 @@ MusicLib::getComments(const CString & file) {
 		|| fext == "mp1"
 		|| fext == "mp2"
 		|| fext == "flac"
+		|| fext == "ogg"
 		) {
 		MBTag mbtag;
 		comment = mbtag.getComments(file);
@@ -5236,11 +5179,6 @@ MusicLib::getComments(const CString & file) {
 //		if (tmp.GetLength()) {
 //			comment += " Author(s): "+tmp;
 //		}
-	} else if (fext == "ogg") {
-		OggTag ogg;
-		ogg.read(file);
-		comment = ogg.getVal("description");
-		comment += " "+ogg.getVal("comment");
 	}
 	return comment;
 }

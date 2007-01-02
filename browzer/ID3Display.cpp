@@ -4,18 +4,10 @@
 
 
 #include "stdafx.h"
-#include "id3/tag.h"
 #include "ID3Display.h"
-//#include "ace/SString.h"
-#include <id3/utils.h>
-#include <id3/misc_support.h>
-#include <id3/readers.h>
-#include <id3/io_helpers.h>
 #include "MyID3LibMiscSupport.h"
-#include "Mp3Header.h"
 #include "MyString.h"
 #include "FExtension.h"
-#include "oggtagger/oggtagger.h"
 #include "WmaTagger.h"
 #include "MBTag.h"
 
@@ -72,12 +64,10 @@ ID3Display::displayTag(Song song) {
 		|| fext == "mpg"
 		|| fext == "mp1"
 		|| fext == "mp2"
-		|| fext == "flac") {
+		|| fext == "flac"
+		|| fext == "ogg") {
 		MBTag tag;
 		return tag.getInfo(file);
-	} else if (fext.ext() == "ogg") {
-		OggTag ogg(file);
-		return ogg.getInfo();
 	} else if (fext.ext() == "wma") {
 		WmaTag wma(file);
 		return wma.getInfo();

@@ -25,10 +25,14 @@ public:
 		}
 	}
 	void SetAt(const CString & key, MBTagType * type) {
-		m_types.SetAt(key,type);
+		CString low(key);
+		low.MakeLower();
+		m_types.SetAt(low,type);
 	}
 	BOOL Lookup(const CString & key, MBTagType *& type) {
-		return m_types.Lookup(key,(void*&)type);
+		CString low(key);
+		low.MakeLower();
+		return m_types.Lookup(low,(void*&)type);
 	}
 private:
 	CMapStringToPtr m_types;
@@ -46,7 +50,7 @@ AudioTypeHash * MBTag::m_types = &AudioFileTypes;            //
 // modifying this base code.                                 //
 //                                                           //
 #include "types/Mp3.h"                                       //
-//#include "types/Ogg.h"                                     //
+#include "types/Ogg.h"                                     //
 //#include "types/Wma.h"                                     //
 #include "types/Flac.h"                                      //
 ///////////////////////////////////////////////////////////////
