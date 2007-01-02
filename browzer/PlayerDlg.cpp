@@ -16,7 +16,7 @@
 #include "FontCombo.h"
 #include "FontTipWnd.h"
 #include "HtmlHelp.h"
-#include "id3/misc_support.h"
+//#include "id3/misc_support.h"
 #include "IRCodes.h"
 #include "Registry.h"
 #include "LoadPlaylistDlg.h"
@@ -3805,7 +3805,6 @@ CPlayerDlg::OnUserEditSong() {
 	    int sel = m_Songs.GetCurSel();
 		DWORD data = m_Songs.GetItemData(sel);
 		song = m_mlib.m_SongLib.getSong(data);
-
 		CString filename = song->getId3("FILE");
 		if (!FileUtil::IsReadable(filename)) {
 			CString msg = "unable to open ";
@@ -5069,21 +5068,6 @@ CPlayerDlg::displayAlbumArt(const CString & file, const CString & album) {
 
 //	RedrawWindow();
 
-}
-
-TEST(WmaTag2, read2)
-{
-	CString file = "..\\testdata\\x.wma";
-	WmaTag wma(file);
-//	CString info = wma.getInfo();
-	file = "..\\testdata\\01.ogg";
-	OggTag ogg(file);
-//	info = ogg.getInfo();
-	file = "..\\testdata\\311AllMixedUp.mp3";
-	ID3_Tag id3;
-	id3.Link(file, ID3TT_ALL);
-//	info = ::displayTag2(&id3, FALSE, file);
-//	MBMessageBox("test",info);
 }
 
 void 

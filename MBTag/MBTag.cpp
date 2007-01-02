@@ -45,7 +45,7 @@ AudioTypeHash * MBTag::m_types = &AudioFileTypes;            //
 // even though it breaks the idea of adding types w/out      //
 // modifying this base code.                                 //
 //                                                           //
-//#include "types/Mp3.h"                                       //
+#include "types/Mp3.h"                                       //
 //#include "types/Ogg.h"                                     //
 //#include "types/Wma.h"                                     //
 #include "types/Flac.h"                                      //

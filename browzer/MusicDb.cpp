@@ -3,12 +3,9 @@
 #include "MusicDb.h"
 #include "MyLog.h"
 #include "MyString.h"
-#include "id3/tag.h"
-#include "id3/misc_support.h"
 #include "FExtension.h"
 #include "Registry.h"
 #include "MBMessageBox.h"
-#include "MyID3LibMiscSupport.h"
 #include "Mp3Header.h"
 #include "TestHarness/TestHarness.h"
 #include "FileUtils.h"
@@ -1387,18 +1384,11 @@ MusicLib::createSongFromFile(const CString & mp3file,
 		|| fext == "mpg"
 		|| fext == "mp1"
 		|| fext == "mp2"
+		|| fext == "flac"
 		) {
-
-		ID3_Tag * id3 = new ID3_Tag;
-		size_t tagsize = id3->Link(mp3file, ID3TT_ALL);
-		song = createSongFromId3(id3);
-		delete id3;
-		WmaTag wma;
-		wma.read(mp3file,TRUE);
-		tlen = wma.getVal("Duration");
-		if (tlen.GetLength()) {
-			song->setId3("TLEN", tlen);
-		}
+		MBTag mbtag;
+		mbtag.read(mp3file);
+		song = createSongFromMBTag(mbtag);
 	} else if (fext == "ogg") {
 		OggTag ogg;
 		error_results += ogg.read(mp3file);
@@ -1407,11 +1397,6 @@ MusicLib::createSongFromFile(const CString & mp3file,
 		WmaTag wma;
 		error_results += wma.read(mp3file);
 		song = createSongFromWma(&wma);
-	} else if (fext == "flac") {
-		MBTag mbtag;
-		mbtag.read(mp3file);
-		mbtag.logd("createSongFromFile");
-		song = createSongFromMBTag(mbtag);
 	}
 
     song->setId3("FILE", (LPCTSTR)mp3file);
@@ -1464,44 +1449,28 @@ MusicLib::writeSongToFile(Song song) {
 		return result;
 	}
 	FExtension fext(file);
-	if (fext == "mp3") {
-		ID3_Tag * id3 = new ID3_Tag;
-		size_t tagsize = id3->Link(file, ID3TT_ALL);
-		flags_t uflag = ID3TT_ID3V2;
-		if (id3->HasV1Tag()) {
-			uflag |= ID3TT_ID3V1;
-		}
-		if (id3->HasV2Tag()) {
-			uflag |= ID3TT_ID3V2;
-		}
-
+	if (fext == "mp3"
+		|| fext == "mpg"
+		|| fext == "mp1"
+		|| fext == "mp2"
+		|| fext == "flac") {
+		MBTag mbtag;
+//		if (fext == "flac")
+			mbtag.read(file);
+		
 		POSITION pos;
 		CString key;
 		CString val;
 		for( pos = song->_obj.GetStartPosition(); pos != NULL; ) {
 			song->_obj.GetNextAssoc(pos, key, val);
 			if (key.GetLength() && val.GetLength() && val != MBUNKNOWN) {
-				if (key == "TCON" ) {
-		            Genre_addGenre(*id3, (LPCTSTR)val);
-				} else if (key == "TPE1" ) {
-				    ID3_AddArtist(id3, (LPCTSTR)val, true);
-				} else if (key == "TALB" ) {
-					ID3_AddAlbum(id3, (LPCTSTR)val, true);
-				} else if (key == "TIT2" ) {
-					ID3_AddTitle(id3, (LPCTSTR)val, true);
-				} else if (key == "TRCK" ) {
-					int t = atoi((LPCTSTR)val);
-					ID3_AddTrack(id3, t, 0, true);
-				} else if (key == "TYER" ) {
-					ID3_AddYear(id3, (LPCTSTR)val, true);
-				}
+				mbtag.setVal(key, val);
 			}
 		}
-		flags_t tags = id3->Update(uflag);
-		if (tags == ID3TT_NONE) {
-			result += "unable to update id3 tag in " + file;
-		}
-		delete id3;
+		BOOL r = mbtag.write();
+		if (!r)
+			result += "Unable to modify tags in "+file;
+
 	} else if (fext == "ogg") {
 		OggTag ogg(file);
 		POSITION pos;
@@ -1564,23 +1533,6 @@ MusicLib::writeSongToFile(Song song) {
 			}
 		}
 		result += wma.write();
-	} else if (fext == "flac") {
-		MBTag mbtag;
-		mbtag.read(file);
-		
-		POSITION pos;
-		CString key;
-		CString val;
-		for( pos = song->_obj.GetStartPosition(); pos != NULL; ) {
-			song->_obj.GetNextAssoc(pos, key, val);
-			if (key.GetLength() && val.GetLength() && val != MBUNKNOWN) {
-				mbtag.setVal(key, val);
-			}
-		}
-		BOOL r = mbtag.write();
-		if (!r)
-			result += "Unable to modify tags in "+file;
-
 	}
 	return result;
 }
@@ -2618,11 +2570,16 @@ MusicLib::preModifyID3(Song & oldSong, Song & newSong) {
     newTrack = newSong->getId3("TRCK");
     oldYear = oldSong->getId3("TYER");
     newYear = newSong->getId3("TYER");
+	CString file = oldSong->getId3("FILE");
 
 	Playlist songs;
     if (oldGenre == "") oldGenre = MBALL;
 	// old* vars need to be null to search as wildcard
-	searchForMp3s(songs, oldGenre, oldArtist, oldAlbum, oldTitle);
+	if (file.GetLength()) {
+		songs.append(createSongFromFile(file));
+	} else {
+		searchForMp3s(songs, oldGenre, oldArtist, oldAlbum, oldTitle);
+	}
 
 	int count = songs.size();
 	logger.log("modifyID3: songs to modify = " + numToString(count) );
@@ -5258,8 +5215,11 @@ MusicLib::getComments(const CString & file) {
 		|| fext == "mpg"
 		|| fext == "mp1"
 		|| fext == "mp2"
-		|| fext == "wma"
+		|| fext == "flac"
 		) {
+		MBTag mbtag;
+		comment = mbtag.getComments(file);
+	} else if (fext == "wma") {
 		WmaTag wma;
 		wma.read(file);
 		comment = wma.getVal("Description");
@@ -5281,9 +5241,6 @@ MusicLib::getComments(const CString & file) {
 		ogg.read(file);
 		comment = ogg.getVal("description");
 		comment += " "+ogg.getVal("comment");
-	} else if (fext == "flac") {
-		MBTag mbtag;
-		comment = mbtag.getComments(file);
 	}
 	return comment;
 }

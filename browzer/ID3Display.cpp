@@ -68,22 +68,19 @@ CString
 ID3Display::displayTag(Song song) {
 	CString file = song->getId3(CS("FILE"));
 	FExtension fext(file);
-	if (fext.ext() == "mp3") {
-		ID3_Tag id3;
-		id3.Link(file, ID3TT_ALL);
-		CString msg = ::displayTag(&id3, FALSE, file);
-		msg += "\r\n";
-		msg += file;
-		return msg;
+	if (fext == "mp3"
+		|| fext == "mpg"
+		|| fext == "mp1"
+		|| fext == "mp2"
+		|| fext == "flac") {
+		MBTag tag;
+		return tag.getInfo(file);
 	} else if (fext.ext() == "ogg") {
 		OggTag ogg(file);
 		return ogg.getInfo();
 	} else if (fext.ext() == "wma") {
 		WmaTag wma(file);
 		return wma.getInfo();
-	} else if (fext == "flac") {
-		MBTag tag;
-		return tag.getInfo(file);
 	}
 	return "";
 }
