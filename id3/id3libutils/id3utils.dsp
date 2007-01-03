@@ -66,7 +66,7 @@ LIB32=link.exe -lib
 # PROP Intermediate_Dir "Debug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /Yu"stdafx.h" /FD /GZ /c
-# ADD CPP /nologo /MTd /W3 /GX /Zi /Od /I "../../ogg/" /I "../../ogg/libogg-1.0/include" /I "../../ogg/libvorbis-1.0/include/" /I "..\\" /I "..\controls" /I "..\..\util" /I "..\irman" /I "..\..\3rdparty\id3lib-3.8.3\include" /I "..\id3utils" /I "..\Serial" /I "..\config" /D ID3LIB_LINKOPTION=1 /D "TEST_HARNESS" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_WIN32_DCOM" /FR /FD /GZ /c
+# ADD CPP /nologo /MTd /W3 /GX /Zi /Od /I "../../" /I "../../ogg/" /I "../../ogg/libogg-1.0/include" /I "../../ogg/libvorbis-1.0/include/" /I "..\\" /I "..\controls" /I "..\..\util" /I "..\irman" /I "..\..\3rdparty\id3lib-3.8.3\include" /I "..\id3utils" /I "..\Serial" /I "..\config" /D ID3LIB_LINKOPTION=1 /D "TEST_HARNESS" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_WIN32_DCOM" /FR /FD /GZ /c
 # SUBTRACT CPP /YX /Yc /Yu
 # ADD BASE RSC /l 0x409 /d "_DEBUG" /d "_AFXDLL"
 # ADD RSC /l 0x409 /d "_DEBUG"

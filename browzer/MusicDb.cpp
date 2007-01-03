@@ -14,10 +14,6 @@
 #include <afxtempl.h> 
 #include "SortedArray.h"
 #include "MBtag.h"
-
-//#include "vorbis/codec.h"
-//#include "vorbis/vorbisfile.h"
-//#include "oggtagger/oggtagger.h"
 #include <io.h>
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -203,14 +199,8 @@ MusicLib::MusicLib(): m_totalMp3s(0),
 	m_Searching(FALSE),m_pSearchFiles(NULL),m_RebuildOnly(FALSE)
 {
 	AutoLog al("mdb::MusicLib");
-	m_mp3Extensions.RemoveAll();
-	m_mp3Extensions.AddTail("mpg");
-	m_mp3Extensions.AddTail("mp1");
-	m_mp3Extensions.AddTail("mp2");
-	m_mp3Extensions.AddTail("mp3");
-	m_mp3Extensions.AddTail("wma");
-	m_mp3Extensions.AddTail("ogg");
-	m_mp3Extensions.AddTail("flac");
+	MBTag mbtag;
+	mbtag.GetExtensions(m_mp3Extensions);
 }
 
 MusicLib::~MusicLib() {
@@ -1378,17 +1368,9 @@ MusicLib::createSongFromFile(const CString & mp3file,
 	AutoBuf buf(1000);
 	CString tlen;
 	Song song = new CSong;
-	FExtension fext(mp3file);
-	if (fext == "mp3"
-		|| fext == "mpg"
-		|| fext == "mp1"
-		|| fext == "mp2"
-		|| fext == "flac"
-		|| fext == "ogg"
-		|| fext == "wma"
-		) {
-		MBTag mbtag;
-		mbtag.read(mp3file);
+
+	MBTag mbtag;
+	if (mbtag.read(mp3file)) {
 		song = createSongFromMBTag(mbtag);
 		song->setId3("FILE",mp3file);
 	}
@@ -1424,18 +1406,9 @@ MusicLib::writeSongToFile(Song song) {
 		result += " is unwriteable";
 		return result;
 	}
-	FExtension fext(file);
-	if (fext == "mp3"
-		|| fext == "wma"
-		|| fext == "mpg"
-		|| fext == "mp1"
-		|| fext == "mp2"
-		|| fext == "flac"
-		|| fext == "ogg") {
-		MBTag mbtag;
-//		if (fext == "flac")
-			mbtag.read(file);
-		
+	BOOL r = FALSE;;
+	MBTag mbtag;
+	if (mbtag.read(file)) {
 		POSITION pos;
 		CString key;
 		CString val;
@@ -1445,10 +1418,11 @@ MusicLib::writeSongToFile(Song song) {
 				mbtag.setVal(key, val);
 			}
 		}
-		BOOL r = mbtag.write();
-		if (!r)
-			result += "Unable to modify tags in "+file;
+		r = mbtag.write();
 	}
+	if (!r)
+		result += "Unable to modify tags in "+file;
+
 	return result;
 }
 
@@ -4918,18 +4892,9 @@ MusicLib::getComments(const CString & file) {
 
 	CString comment ;
 
-	FExtension fext(file);
-	if (fext == "mp3"
-		|| fext == "mpg"
-		|| fext == "mp1"
-		|| fext == "mp2"
-		|| fext == "flac"
-		|| fext == "ogg"
-		|| fext == "wma"
-		) {
-		MBTag mbtag;
-		comment = mbtag.getComments(file);
-	}
+	MBTag mbtag;
+	comment = mbtag.getComments(file);
+
 	return comment;
 }
 

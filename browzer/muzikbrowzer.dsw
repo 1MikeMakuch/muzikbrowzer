@@ -83,6 +83,63 @@ Package=<5>
 
 Package=<4>
 {{{
+    Begin Project Dependency
+    Project_Dep_Name getopt_static
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name grabbag_static
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name id3
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name id3lib
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name id3tagger
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name id3utils
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name libFLAC_static
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name libFLAC++_static
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name MBTag
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name ogg_static
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name oggtagger
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name replaygain_analysis_static
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name TestHarness
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name utf8_static
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name util
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name vorbis_static
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name vorbiscomment
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name vorbisfile_static
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name zlib
+    End Project Dependency
 }}}
 
 ###############################################################################
@@ -503,6 +560,9 @@ Package=<4>
     Begin Project Dependency
     Project_Dep_Name libFLAC++_static
     End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name MBTagger
+    End Project Dependency
 }}}
 
 ###############################################################################
@@ -625,18 +685,6 @@ Package=<4>
 ###############################################################################
 
 Project: "vorbisfile_static"="..\3rdparty\ogg\libvorbis-1.0\win32\vorbisfile_static.dsp" - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
-Project: "win32console"=..\..\win32console\win32console.dsp - Package Owner=<4>
 
 Package=<5>
 {{{

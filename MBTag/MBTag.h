@@ -36,6 +36,7 @@ class MBTag : public MyHash {
 		
 		void setValId3Key(const CString & key, const CString & val);
 		CString getValId3Key(const CString & key);
+		BOOL GetExtensions(CStringList & list);
 	private:
 		CString m_file;
 		MBTagType * m_tagobj;

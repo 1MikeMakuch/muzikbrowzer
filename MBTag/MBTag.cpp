@@ -34,7 +34,7 @@ public:
 		low.MakeLower();
 		return m_types.Lookup(low,(void*&)type);
 	}
-private:
+
 	CMapStringToPtr m_types;
 };
 
@@ -85,6 +85,16 @@ MBTag::getType(FExtension & fext) {
 		return type;
 	}
 	return NULL;
+}
+BOOL
+MBTag::GetExtensions(CStringList & list) {
+	CString key;
+	void * p;
+	for(POSITION pos = MBTag::m_types->m_types.GetStartPosition(); pos !=NULL;) {
+		MBTag::m_types->m_types.GetNextAssoc(pos,key,p);
+		list.AddTail(key);
+	}
+	return TRUE;
 }
 void
 MBTag::SetType(const CString & type) {
@@ -298,6 +308,7 @@ TEST(MBTag,test)
 	mbtag.read("..\\testdata\\1.flac");
 //	mbtag.logd("test 1.flac");
 	CTime t = CTime::GetCurrentTime();
+	CString OrigName = mbtag.getVal("TPE1");
 	CString name = "artist name " + t.Format("%Y%m%d:%H%M%S ");
 
 	
@@ -310,6 +321,8 @@ TEST(MBTag,test)
 
 	CString namecheck = mbtag2.getVal("TPE1");
 	CHECK(name == namecheck);
+	mbtag2.setVal("TPE1", OrigName);
+	mbtag2.write();
 
 //	MBTag mp3tag;
 //	mp3tag.read("..\\testdata\\Amber.mp3");
