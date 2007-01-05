@@ -15,7 +15,14 @@
 // Just a little hash to manage the types and free memory at shutdown.
 class AudioTypeHash {
 public:
-	AudioTypeHash(){};
+	AudioTypeHash(){
+		m_MBKeys.setVal("TCON","1");
+		m_MBKeys.setVal("TPE1","1");
+		m_MBKeys.setVal("TALB","1");
+		m_MBKeys.setVal("TIT2","1");
+		m_MBKeys.setVal("TYER","1");
+		m_MBKeys.setVal("TRCK","1");
+	};
 	~AudioTypeHash() {
 		CString k;
 		MBTagType * p;
@@ -36,6 +43,7 @@ public:
 	}
 
 	CMapStringToPtr m_types;
+	MyHash m_MBKeys;
 };
 
 ///////////////////////////////////////////////////////////////
@@ -62,13 +70,16 @@ static int bogusogg = MBTag::addType("ogg", new MBOggTag());
 static int bogusflac= MBTag::addType("flac",new MBFlacTag());
 static int bogusWma = MBTag::addType("wma", new MBWmaTag());
 ///////////////////////////////////////////////////////////////
+BOOL
+MBTag::IsAnMBKey(const CString & key) {
+	return MBTag::m_types->m_MBKeys.contains(key);
+}
 
-
-MBTag::MBTag(): m_tagobj(NULL), m_ReadAllTags(FALSE)
+MBTag::MBTag(): m_tagobj(NULL), m_ReadAllTags(FALSE),m_KeyCounter(NULL)
 {
 }
 MBTag::MBTag(const CString & file): m_tagobj(NULL), m_file(file), 
-	m_ReadAllTags(FALSE)
+	m_ReadAllTags(FALSE),m_KeyCounter(NULL)
 {
 }
 
@@ -129,7 +140,27 @@ MBTag::read(const CString & file, const BOOL xvert) {
 	
 	return TRUE;
 }
-
+BOOL 
+MBTag::HasMultiVals(const CString & file) {
+	if (file.GetLength())
+		m_file = file;
+	else if (!m_file.GetLength())
+		return FALSE;
+	MyHash KeyCounter;
+	m_KeyCounter = &KeyCounter;
+	SetReadAllTags(TRUE);
+	read(m_file,TRUE);
+	SetReadAllTags(FALSE);
+	m_KeyCounter = NULL;
+	CString key,val;
+	for(POSITION pos = MBTag::m_types->m_MBKeys.GetSortedHead(); pos != NULL; ) {
+		MBTag::m_types->m_MBKeys.GetNextAssoc(pos,key,val);
+		int c = atoi(KeyCounter.getVal(key));
+		if (c > 1)
+			return TRUE;
+	}
+	return FALSE;
+}
 BOOL
 MBTag::write() {
 	if (!m_file.GetLength())
@@ -178,6 +209,7 @@ MBTag::getInfo(const CString & file) {
 
 	return "";
 }
+
 BOOL
 MBTag::getArt(
 			const CString & file, 

@@ -36,7 +36,7 @@ class MBTag;
 
 CString
 displayTag(ID3_Tag *id3, BOOL showLabels=FALSE, CString file = "");
-
+class MyHash;
 BOOL ReadAllTags(ID3_Tag *id3, MBTag * tag);
 
 

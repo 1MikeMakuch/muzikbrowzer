@@ -2397,17 +2397,22 @@ MusicLib::preModifyID3(Song & oldSong, Song & newSong) {
 	msg += "\r\n";
 
 	BOOL writeable = TRUE;
-	CString unwmsg;
+	CString unwmsg,multiVals;
     for (PlaylistNode *p = songs.head();
 	  p != (PlaylistNode*)0; p = songs.next(p))
     {
-		if (FileUtil::IsWriteable(p->_item->getId3("FILE")) == TRUE) {
-			msg += p->_item->getId3("FILE");
+		CString file = p->_item->getId3("FILE");
+		if (FileUtil::IsWriteable(file) == TRUE) {
+			msg += file;
 			msg += "\r\n";
 		} else {
-			unwmsg += p->_item->getId3("FILE");
+			unwmsg += file;
 			unwmsg += "\r\n";
 			writeable = FALSE;
+		}
+		MBTag mbtag;
+		if (mbtag.HasMultiVals(file)) {
+			multiVals += file + "\r\n";
 		}
     }
 	if (!writeable) {
@@ -2416,7 +2421,15 @@ MusicLib::preModifyID3(Song & oldSong, Song & newSong) {
 		logger.log("modifyID3: Can't perform edit " + unwmsg);
 		return FALSE;
 	}
-
+	if (multiVals.GetLength()) {
+		CString mmsg = "The following files have more than one\r\nGenre, Artist, Album, Title, Date or Track tag field.\r\nContinuing with this edit will replace the multiple\r\nfields with a single one. Ok to continue or Cancel.\r\n\r\n";
+		mmsg += multiVals;
+		int r = MBMessageBox("Advisory",mmsg,TRUE,TRUE);
+		if (0 == 1) {
+			logger.log("Edit cancelled due to "+mmsg);
+			return FALSE;
+		}
+	}
 
 	logger.log(msg);
 	int r = MBMessageBox("Confirmation", msg, FALSE, TRUE);
@@ -2565,6 +2578,8 @@ MusicLib::searchForMp3s(Playlist & songs, Song & song) {
 	CString artistname = song->getId3("TPE1");
 	CString albumname = song->getId3("TALB");
 	CString songname = song->getId3("TIT2");
+
+	// these need to be "" for wildcard search
 	if (MBUNKNOWN == artistname)
 		artistname = "";
 	if (MBUNKNOWN == albumname)

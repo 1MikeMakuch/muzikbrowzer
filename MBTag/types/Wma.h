@@ -90,7 +90,6 @@ HRESULT ConvertMBtoWC( LPCTSTR ptszInString, LPWSTR *ppwszOutString );
 #define SAFE_ARRAYDELETE( x ) if( NULL != x ){delete [] x;x = NULL;}
 #endif // SAFE_ARRAYDELETE
 
-
 BOOL
 MBWmaTag::read(MBTag & tags, const CString & file, const BOOL xvert) {
 	m_convertKeys = xvert;
@@ -231,6 +230,12 @@ MBWmaTag::read(MBTag & tags, const CString & file, const BOOL xvert) {
 			tags.setVal(key, val);
 			if (m_DurationOnly && "TLEN" == key) {
 				break;
+			}
+			if (tags.m_KeyCounter && tags.IsAnMBKey(key)) {
+				CString tmp = tags.m_KeyCounter->getVal(key);
+				int c = atoi(tmp);
+				c++;
+				tags.m_KeyCounter->setVal(key,NTS(c));
 			}
         }
         

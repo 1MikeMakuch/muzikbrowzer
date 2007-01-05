@@ -21,6 +21,10 @@ public:
 	CMapStringToString m_hash;
 	void logd(const CString & msg);
 	int GetCount() { return m_hash.GetCount(); }
+	void RemoveAll() {
+		m_sortedKeys.RemoveAll();
+		m_hash.RemoveAll();
+	}
 
 private:
 	CStringList m_sortedKeys;

@@ -65,7 +65,6 @@ public:
 	virtual BOOL write(MBTag & tags, const CString & file);
 	virtual CString getComments(MBTag & tags, double & rggain, const CString & file);
 	virtual CString getInfo(MBTag & tags, const CString & file);
-
 	virtual CString NativeKey2Id3Key(const CString & flac) {
 		if (m_convertKeys && m_flac2id3.contains(flac))
 			return m_flac2id3.getVal(flac);
@@ -126,8 +125,13 @@ MBFlacTag::read(MBTag & tags, const CString & file, const BOOL xvert) {
 					newvalue = oldvalue + " " + newvalue;
 				}
 				if (key.GetLength() && newvalue.GetLength()) {
-
 					tags.setVal(key, newvalue);
+					if (tags.m_KeyCounter && tags.IsAnMBKey(key)) {
+						CString tmp = tags.m_KeyCounter->getVal(key);
+						int c = atoi(tmp);
+						c++;
+						tags.m_KeyCounter->setVal(key,NTS(c));
+					}
 				}
 			}
         }

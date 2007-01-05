@@ -26,6 +26,7 @@ class MBMp3Tag : public MBTagType {
 			size_t & nDataSize, 
 			const CString & album);
 };
+
 BOOL
 MBMp3Tag::getArt(
 		MBTag & tags,
@@ -95,6 +96,8 @@ MBMp3Tag::read(MBTag & tags, const CString & file, const BOOL xvert) {
 		size_t tagsize = id3->Link(file, ID3TT_ID3V2);
 
 		if (tags.ReadAllTags()) {
+			if (tags.m_KeyCounter) // for HasMultiVal check, don't count id2v1s
+				tags.m_KeyCounter->RemoveAll();
 			ReadAllTags(id3,&tags);
 		} else {
 			CString tmp;

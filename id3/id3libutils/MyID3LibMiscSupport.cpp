@@ -1127,8 +1127,15 @@ ReadAllTags(ID3_Tag *id3, MBTag * tag) {
         break;
       }
     }
-	if (key.GetLength() && val.GetLength())
+	if (key.GetLength() && val.GetLength()) {
 		tag->setVal(key,val);
+		if (tag->m_KeyCounter /*&& tag->IsAnMBKey(key)*/) {
+			CString tmp = tag->m_KeyCounter->getVal(key);
+			int c = atoi(tmp);
+			c++;
+			tag->m_KeyCounter->setVal(key,NTS(c));
+		}
+	}
   }
     delete iter;
 

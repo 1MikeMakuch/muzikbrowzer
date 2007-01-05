@@ -61,7 +61,6 @@ public:
 	virtual BOOL write(MBTag & tags, const CString & file);
 	virtual CString getComments(MBTag & tags, double & rggain, const CString & file);
 	virtual CString getInfo(MBTag & tags, const CString & file);
-
 	virtual CString NativeKey2Id3Key(const CString & Ogg) {
 		if (m_convertKeys && m_Ogg2id3.contains(Ogg))
 			return m_Ogg2id3.getVal(Ogg);
@@ -79,7 +78,6 @@ private:
 	MyHash m_id32Ogg;
 	BOOL m_convertKeys;
 };
-
 BOOL
 MBOggTag::read(MBTag & tags, const CString & file, const BOOL xvert) {
 	m_convertKeys = xvert;
@@ -130,6 +128,12 @@ MBOggTag::read(MBTag & tags, const CString & file, const BOOL xvert) {
 			}
 			if (key.GetLength() && newvalue.GetLength()) {
 				tags.setVal(key, newvalue);
+				if (tags.m_KeyCounter && tags.IsAnMBKey(key)) {
+					CString tmp = tags.m_KeyCounter->getVal(key);
+					int c = atoi(tmp);
+					c++;
+					tags.m_KeyCounter->setVal(key,NTS(c));
+				}
 			}
         }
     }
