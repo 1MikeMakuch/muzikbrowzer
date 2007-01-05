@@ -59,7 +59,7 @@ public:
 	virtual BOOL read(MBTag & tags, const CString & file,
 		const BOOL xvert);
 	virtual BOOL write(MBTag & tags, const CString & file);
-	virtual CString getComments(MBTag & tags, const CString & file);
+	virtual CString getComments(MBTag & tags, double & rggain, const CString & file);
 	virtual CString getInfo(MBTag & tags, const CString & file);
 
 	virtual CString NativeKey2Id3Key(const CString & Ogg) {
@@ -212,23 +212,21 @@ MBOggTag::write(MBTag & tags, const CString &file) {
 	return TRUE;
 }
 CString
-MBOggTag::getComments(MBTag & tags, const CString & file) {
+MBOggTag::getComments(MBTag & tags, double & rggain, const CString & file) {
 	if (tags.GetCount() == 0) {
 		read(tags,file,FALSE); // FALSE = don't convert keys
 	}
-	CString key,val,comments;
-	for(POSITION pos = tags.GetSortedHead(); pos != NULL;) {
-		tags.GetNextAssoc(pos,key,val);
-		key = Id3Key2NativeKey(key);
-		if (key.GetLength()) {
-			if (key.CompareNoCase("Description") == 0
-				|| key.CompareNoCase("Comments") == 0) {
-				if (comments.GetLength())
-					comments += " ";
-				comments += val;
-			}
-		}
+	CString rg,comments;
+	if (tags.contains("DESCRIPTION"))
+		comments = tags.getVal("DESCRIPTION");
+	if (tags.contains("COMMENTS")) {
+		if (comments.GetLength())
+			comments += " ";
+		comments += tags.getVal("COMMENTS");
 	}
+	rg = tags.getVal("REPLAYGAIN_TRACK_GAIN");
+	if (rg.GetLength())
+		rggain = atof(rg);
 	return comments;
 }
 CString

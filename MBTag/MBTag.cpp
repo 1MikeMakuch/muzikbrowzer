@@ -101,6 +101,14 @@ MBTag::SetType(const CString & type) {
 	FExtension fext(type);
 	m_tagobj = getType(fext);
 }
+void
+MBTag::setVal(const CString & key, const CString & val) {
+	MyHash::setVal(String::upcase(key),val);
+}
+CString
+MBTag::getVal(const CString & key) {
+	return MyHash::getVal(String::upcase(key));
+}
 // xvert tells whether or not to convert to "standard" keys
 BOOL
 MBTag::read(const CString & file, const BOOL xvert) {
@@ -138,7 +146,7 @@ MBTag::write() {
 	return TRUE;
 }
 CString
-MBTag::getComments(const CString & file) {
+MBTag::getComments(double & rggain, const CString & file) {
 	if (file.GetLength())
 		m_file = file;
 	else if (!m_file.GetLength())
@@ -149,7 +157,7 @@ MBTag::getComments(const CString & file) {
 		m_tagobj = getType(fext);
 	}
 	if (m_tagobj)
-		return m_tagobj->getComments(*this, m_file);
+		return m_tagobj->getComments(*this, rggain, m_file);
 
 	return "";
 }

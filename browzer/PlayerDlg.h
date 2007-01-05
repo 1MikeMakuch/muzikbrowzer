@@ -193,6 +193,7 @@ private:
 //	void updateVolumeLabel();
 	void adjustVolume(int level);
 	void adjustVolume();
+	void VolumeGainAdjust(const double rg);
 	void updatePositionLabel();
 	void adjustPosition();
 	void adjustPosition(int pct);
@@ -226,6 +227,7 @@ private:
 	UINT m_timerid;
 	UINT m_StatusTimerId;
 	UINT m_VolumeTimerId;
+	UINT m_VolumeGainBase;
 	UINT m_PlayLoopTimerId;
 
 	CString m_HelpMsg;

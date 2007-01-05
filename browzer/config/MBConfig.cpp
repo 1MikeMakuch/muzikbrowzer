@@ -393,3 +393,7 @@ MBConfig::logging() {
 	return m_Files->logging();
 }
 
+BOOL
+MBConfig::ReplayGain() {
+	return m_Files->ReplayGain();
+}

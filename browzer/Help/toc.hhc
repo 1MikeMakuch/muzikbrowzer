@@ -13,11 +13,11 @@
 		<param name="Local" value="Html/Introduction.htm">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="Trial & License">
+		<param name="Name" value="License">
 		<param name="Local" value="Html/License.htm">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="Quick Start">
+		<param name="Name" value="Quick Start/Trial">
 		<param name="Local" value="Html/QuickStart.htm">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
@@ -52,16 +52,12 @@
 			<param name="Local" value="Html/Configuration.htm#Display">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Irman">
-			<param name="Local" value="Html/Configuration.htm#Irman">
+			<param name="Name" value="RemoteControl">
+			<param name="Local" value="Html/Configuration.htm#RemoteControl">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="License">
 			<param name="Local" value="Html/Configuration.htm#License">
-			</OBJECT>
-		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Ogg Vorbis">
-			<param name="Local" value="Html/Configuration.htm#OggVorbis">
 			</OBJECT>
 	</UL>
 	<LI> <OBJECT type="text/sitemap">
@@ -79,6 +75,18 @@
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Name" value="Files">
 		<param name="Local" value="Html/Files.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="ReplayGain">
+		<param name="Local" value="Html/ReplayGain.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Tags">
+		<param name="Local" value="Html/Tags.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Creating Skins">
+		<param name="Local" value="Html/Skinning.htm">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Name" value="Appendix">

@@ -114,9 +114,6 @@ Package=<4>
     Project_Dep_Name ogg_static
     End Project Dependency
     Begin Project Dependency
-    Project_Dep_Name oggtagger
-    End Project Dependency
-    Begin Project Dependency
     Project_Dep_Name replaygain_analysis_static
     End Project Dependency
     Begin Project Dependency
@@ -580,18 +577,6 @@ Package=<4>
 ###############################################################################
 
 Project: "ogg_static"="..\3rdparty\ogg\libogg-1.0\win32\ogg_static.dsp" - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
-Project: "oggtagger"=..\oggtagger\oggtagger.dsp - Package Owner=<4>
 
 Package=<5>
 {{{

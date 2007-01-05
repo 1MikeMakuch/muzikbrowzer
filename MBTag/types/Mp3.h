@@ -15,7 +15,7 @@ class MBMp3Tag : public MBTagType {
 	virtual ~MBMp3Tag() {};
 	virtual BOOL read(MBTag & tags, const CString & file, const BOOL xvert=TRUE);
 	virtual BOOL write(MBTag & tags, const CString & file);
-	virtual CString getComments(MBTag & tags, const CString & file);
+	virtual CString getComments(MBTag & tags, double & rggain, const CString & file);
 	virtual CString getInfo(MBTag & tags, const CString & file);
 	virtual CString NativeKey2Id3Key(const CString & id3) {return id3;}
 	virtual CString Id3Key2NativeKey(const CString & id3) {return id3;}
@@ -117,39 +117,36 @@ MBMp3Tag::read(MBTag & tags, const CString & file, const BOOL xvert) {
 	return TRUE;
 }
 CString
-MBMp3Tag::getComments(MBTag & tags, const CString & file) {
+MBMp3Tag::getComments(MBTag & tags, double & rggain, const CString & file) {
 	if (!file.GetLength())
 		return "";
 
-	MBTag wmatags;
-	MBWmaTag wma;
-	wma.read(wmatags,file,FALSE);
+	ID3_Tag id3;
+	id3.Link(file, ID3TT_ALL);
+	ReadAllTags(&id3,&tags);
+	CString comments = tags.getVal("COMM");
+	CString rg = tags.getVal("RVA2");
+	if (rg.GetLength())
+		rggain = atof(rg);
 
-	CString comment = wmatags.getVal("Description");
-	CString tmp = wmatags.getVal("WM/Lyrics");
-	if (tmp.GetLength()) {
-		comment += " Lyrics: "+tmp;
-	}
-	tmp = wmatags.getVal("WM/Composer");
-	if (tmp.GetLength()) {
-		comment += " Composer(s): "+tmp;
-	}
-// Author no good, it's usually just Artist
-//		tmp = wma.getVal("Author");
-//		if (tmp.GetLength()) {
-//			comment += " Author(s): "+tmp;
-//		}
-	return comment;
+	return comments;
 }
 CString
 MBMp3Tag::getInfo(MBTag & tags, const CString & file) {
 	if (!file.GetLength())
 		return "";
+
+	
 	ID3_Tag id3;
 	id3.Link(file, ID3TT_ALL);
-	CString msg = ::displayTag(&id3, FALSE, file);
-	msg += "\r\n";
-	msg += file;
+	ReadAllTags(&id3,&tags);
+	CString msg,key,val;
+	for(POSITION pos = tags.GetSortedHead(); pos != NULL;) {
+		tags.GetNextAssoc(pos,key,val);
+		msg += key + " = " + val + "\r\n";
+	}
+
+	msg += "\r\n"+ file;
 	return msg;
 }
 BOOL

@@ -7,13 +7,13 @@ Default Window=Default
 Default topic=Html\Introduction.htm
 Display compile progress=No
 Full-text search=Yes
-Index file=idx.hhk
+Index file=
 Language=0x409 English (United States)
 Title=muzikbrowzer Help
 
 [WINDOWS]
-Default="muzikbrowzer Help","toc.hhc","idx.hhk","Html\Introduction.htm","Html\Introduction.htm",,,,,0x42521,,0x304e,[200,200,1000,800],,,,,,,0
-MB Help=,"toc.hhc","idx.hhk","Html\Introduction.htm","Html\Introduction.htm",,,,,0x40520,,0xe,[271,372,593,566],0x230000,,,,,,0
+Default="muzikbrowzer Help","toc.hhc","","Html\Introduction.htm","Html\Introduction.htm",,,,,0x42521,,0x304e,[200,200,1000,800],,,,,,,0
+MB Help=,"toc.hhc","","Html\Introduction.htm","Html\Introduction.htm",,,,,0x40520,,0xe,[271,372,593,566],0x230000,,,,,,0
 
 
 [FILES]

@@ -23,7 +23,10 @@ class MBTag : public MyHash {
 		BOOL read(const CString & file="", const BOOL xvert=TRUE);
 		BOOL write();
 
-		CString getComments(const CString & file="");
+		virtual void setVal(const CString & key, const CString & val);
+		virtual CString getVal(const CString & key);
+
+		CString getComments(double & rggain, const CString & file="");
 		CString getInfo(const CString & file="");
 		BOOL getArt(
 			const CString & file, 
@@ -59,7 +62,8 @@ public:
 						const BOOL xvert=TRUE)=0;
 	virtual BOOL write(MBTag & tags, const CString & file)=0;
 	
-	virtual CString getComments(MBTag & tags, const CString & file)=0;
+	virtual CString getComments(MBTag & tags, double & rggain,
+		const CString & file)=0;
 	virtual CString getInfo(MBTag & tags, const CString & file)=0;
 	virtual CString Id3Key2NativeKey(const CString & key)=0;
 	virtual CString NativeKey2Id3Key(const CString & key)=0;

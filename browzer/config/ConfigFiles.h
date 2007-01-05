@@ -28,6 +28,7 @@ public:
 // Dialog Data
 	//{{AFX_DATA(CConfigFiles)
 	enum { IDD = IDD_CONFIG_FILES };
+	CButton		m_ReplayGainButton;
 	CButton		m_LoggingButton;
 	CButton		m_RunAtStartup;
 	CStatic		m_MdbLocation;
@@ -70,6 +71,7 @@ protected:
 	afx_msg void OnDirclear();
 	afx_msg void OnExcludeclear();
 	afx_msg void OnDebugLog();
+	afx_msg void OnReplaygain();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 private:
@@ -93,6 +95,8 @@ private:
 	BOOL m_ResetNeeded;
 	BOOL m_HideGenre;
 	BOOL m_InitialHideGenre;
+	BOOL m_ReplayGain;
+	BOOL m_InitialReplayGain;
 	int  m_Logging;
 	int  m_InitialLogging;
 
@@ -118,6 +122,7 @@ public:
 	void AddDeletedFiles(const CStringArray & files);
 	void getSettings(MyHash & settings);
 	int logging() { return m_Logging; }
+	BOOL ReplayGain() { return m_ReplayGain; }
 
 };
 

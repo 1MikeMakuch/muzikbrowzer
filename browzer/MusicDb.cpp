@@ -4887,13 +4887,13 @@ MSongLib::setSongVal(const CString & key, const CString & value,
 	return r;
 }
 CString 
-MusicLib::getComments(const CString & file) {
+MusicLib::getComments(double & rggain, const CString & file) {
 	AutoLog al("mdb::getComments");
 
 	CString comment ;
 
 	MBTag mbtag;
-	comment = mbtag.getComments(file);
+	comment = mbtag.getComments(rggain, file);
 
 	return comment;
 }

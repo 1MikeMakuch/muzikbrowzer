@@ -145,6 +145,7 @@ public:
 	void logSettings();
 	void getSettings(MyHash & settings);
 	int logging();
+	BOOL ReplayGain();
 };
 
 /////////////////////////////////////////////////////////////////////////////

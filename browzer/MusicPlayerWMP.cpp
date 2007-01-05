@@ -151,17 +151,17 @@ MusicPlayerWMP::Seek(long pos, BOOL /*endpos*/) {
 int
 MusicPlayerWMP::SetVolume(int volume) {
 	int dcb;
-	if (volume >= 50) {
+	if (volume >= 100) {
 		dcb = 100;
 	} else if (volume < 1) {
 		dcb = 0;
 	} else {
-		dcb = volume * 2;
+		dcb = volume;
 	}
 
 	// WMP volume range == 0 - 100;
 	m_MP->GetSettings().SetVolume(dcb);
-	return 0;
+	return 1;
 
 }
 

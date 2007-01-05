@@ -149,7 +149,8 @@ CPlayerDlg::CPlayerDlg(CPlayerApp * theApp,
 	m_Ready2Reset(FALSE),
 	m_RebuildOnly(FALSE),
 	m_ModifyDelete(FALSE),
-	m_HandlingIRMessage(FALSE)
+	m_HandlingIRMessage(FALSE),
+	m_VolumeGainBase(75)
 {
 	//{{AFX_DATA_INIT(CPlayerDlg)
 	//}}AFX_DATA_INIT
@@ -574,9 +575,9 @@ CPlayerDlg::OnInitDialog() {
 
     // set some of the control's properties
 	// progress slider must be 0 to 100 in order for percentage
-	// stuff to work - see updatePosition
+	// stuff to work - see updatePosition. Same for volume.
     m_PositionSlider.SetRange(0,100);
-	m_VolumeSlider.SetRange(0,50);
+	m_VolumeSlider.SetRange(0,100);
 
     // instanciate a Player
 	m_Player = new MusicPlayerWMP(&m_WMP);
@@ -729,15 +730,18 @@ void
 CPlayerDlg::saveConfig() {
 	AutoLog al("saveConfig");
 	int v = m_VolumeSlider.GetPos();
+	if (m_Config.ReplayGain())
+		v = m_VolumeGainBase;
 	m_Config.setRegistry("Volume", v);
 	SaveWindowPos();
 }
 void
 CPlayerDlg::readConfig() {
 	AutoLog al("readConfig");
-	int v=50;
-	m_Config.getRegistry("Volume", v, 50);
+	int v=m_VolumeGainBase;
+	m_Config.getRegistry("Volume", v, m_VolumeGainBase);
 	adjustVolume(v);
+	m_VolumeGainBase = v;
 }
 
 void 
@@ -3069,7 +3073,11 @@ CPlayerDlg::OnMenuOptions() {
 	
 	CString skinnameOrig = m_Config.getCurrentSkin();
 	CWaitCursor cw;
+	if (m_Config.ReplayGain())
+		saveConfig();
 	m_Config.DoModal();
+	if (m_Config.ReplayGain())
+		readConfig();
 	logger.loglevel(m_Config.logging()); // set logging level
 	cw.Restore();
 	m_Config.initSkins();
@@ -3518,7 +3526,7 @@ CPlayerDlg::PlayLoop() {
 			} else {
 				good = 0;
 			}
-        
+			
 			CString msg;
 			if (good) { // Get comments first cause it locks the file and races with WMP
 				msg = m_mlib._playlist[m_PlaylistCurrent]->getId3("TIT2");
@@ -3528,8 +3536,9 @@ CPlayerDlg::PlayLoop() {
 				msg += m_mlib._playlist[m_PlaylistCurrent]->getId3("TALB");
 				msg += " in ";
 				msg += m_mlib._playlist[m_PlaylistCurrent]->getId3("TCON");
-
-				CString comments = m_mlib.getComments(file);
+				
+				double rggain = 0;        
+				CString comments = m_mlib.getComments(rggain,file);
 				if (comments.GetLength()) {
 					msg += ". ";
 					msg += comments;
@@ -3538,11 +3547,11 @@ CPlayerDlg::PlayLoop() {
 				if (m_Config.trialMode() == 1) {
 					PlayerStatusTempSet("Trial Mode. See Settings/License.");
 				}
+				if (0 != rggain)
+					VolumeGainAdjust(rggain);
 			}
+			
             if (good && m_Player->InputOpen(file) && Play()) {
-//				Play();
-//				adjustVolume();
-				good = 1;
 				displayAlbumArt(file,m_mlib._playlist[m_PlaylistCurrent]->getId3("TALB"));
 			} else {
 				good = 0;
@@ -4966,6 +4975,7 @@ LRESULT
 CPlayerDlg::OnProgress(WPARAM wParam, LPARAM lParam) {
 //	AutoLog al("OnProgress");
 	adjustPosition();
+	PlayerStatusTempSet(NTS(m_PositionSlider.GetPos())+"%");
 	return 0;
 }
 void 
@@ -4981,23 +4991,40 @@ CPlayerDlg::OnReverse() {
 
 LRESULT
 CPlayerDlg::OnVolume(WPARAM wParam, LPARAM lParam) {
-	AutoLog al("OnVolume");
+	AutoLog al("OnVolume(W,P)");
 	adjustVolume();
+	m_VolumeGainBase = m_VolumeSlider.GetPos();
+	PlayerStatusTempSet(NTS(m_VolumeGainBase)+"%");
 	return 0;
 }
 void 
 CPlayerDlg::adjustVolume() {
-	AutoLog al("adjustVolume");
+	AutoLog al("adjustVolume()");
 	if (m_Player->SetVolume(m_VolumeSlider.GetPos())) {
+		logger.ods("Volume:"+NTS(m_VolumeSlider.GetPos()));
 //		updateVolumeLabel();
 	} else {
 //		logger.log("Unable to set volume");
 //		PlayerStatusTempSet("Unable to set volume");
 	}
 }
+// From;
+// http://replaygain.hydrogenaudio.org/rg_data_format.html
+// The replay gain adjustment must be between -51.0dB and +51.0dB. 
+// 
+// So to map rg to MB's 0-100 range we double it.
+
+void
+CPlayerDlg::VolumeGainAdjust(const double rg) {
+	if (!m_Config.ReplayGain())
+		return;
+	int newVol = m_VolumeGainBase + ((double)2 * rg);
+	logger.ods("VGA "+NTS(m_VolumeGainBase)+" + (2*"+NTS(rg)+") = "+NTS(newVol));
+	adjustVolume(newVol);
+}
 void 
 CPlayerDlg::adjustVolume(int level) {
-	AutoLog al("adjustVolume");
+	AutoLog al("adjustVolume(L)");
 	m_VolumeSlider.SetPos(level);
 	adjustVolume();
 }

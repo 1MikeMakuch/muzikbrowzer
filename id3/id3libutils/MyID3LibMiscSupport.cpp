@@ -42,6 +42,7 @@
 #include "MyString.h"
 #include "Mp3Header.h"
 #include "MBTag/MBTag.h"
+#include "MyLog.h"
 
 #include <id3/field.h>
 #include <id3/utils.h>
@@ -1073,7 +1074,56 @@ ReadAllTags(ID3_Tag *id3, MBTag * tag) {
       }
       default:
       {
-//        out += " frame"; out += "\r\n";
+			if ("RVA2" == key) {
+				size_t s = frame->GetDataSize();
+				if (7 != s) {// not a Media Monkey rva2
+					logger.log("found RVA2 but unknown format");
+					break;
+				}
+				unsigned char * data = new BYTE[ s ];
+				memcpy(data, frame->GetField(ID3FN_DATA)->GetRawBinary(),s);
+//				BYTE * buf = new BYTE[ (s * 3)+1 ];
+//				char * p = (char*)buf;
+//				for (int i = 0 ; i < s; ++i) {
+//					sprintf(p,"%02x ",data[i]);
+//					p += 3;
+//				}
+//				buf[(s*3)] = 0;
+//				val = "hex: "+CS(buf);
+//				delete buf;
+
+				if (1 != data[1]) {
+					delete data;
+					logger.log("found RVA2 but unknown format");
+					break;
+				}
+
+				int rgfixed;
+				double rgfloat;
+				rgfixed = (data[3] << 8) | (data[2] << 0);
+				rgfixed |= -(rgfixed & 0x8000);
+				rgfloat = (double) rgfixed / 512;
+
+				val = NTS(rgfloat);
+
+//				unsigned int peak_bits;
+//				peak_bits = data[4];
+//				if (16 != peak_bits) {
+//					delete data;
+//					break;
+//				}
+//				rgfixed = (data[6] << 8) | (data[5] << 0);
+//				rgfixed |= -(rgfixed & 0x8000);
+//				rgfloat = (double) rgfixed / 512;
+//
+//				val += " " + NTS(rgfloat);
+
+				delete data;
+			} else {
+				val = NTS(eFrameID) + " unknown ";
+				size_t s = frame->GetDataSize();
+				val += NTS(s);
+			}
         break;
       }
     }
