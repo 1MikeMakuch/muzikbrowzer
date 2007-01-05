@@ -646,7 +646,7 @@ MusicLib::loadPlaylist(const CString & name, CString & error_msg) {
 					addSongToPlaylist(s);
 				else {
 					if (addFileToPlaylist(p) == 0) {
-						error_msg += "not found: " + CS(p);
+						error_msg += "not found: " + CS(p)+"\r\n";
 						if (0 == ecount)
 							ecount++;
 					}
