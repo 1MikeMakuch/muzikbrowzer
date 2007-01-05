@@ -409,7 +409,7 @@ unsigned int	countSongsInGenre(const CString & genre, CArray<unsigned int, unsig
 	    void	SearchClear();
 	    void	searchForAlbums(Playlist & songs, MList & albumList);
 	    void	searchForArtists(Playlist & songs, MList & artistList);
-	    void	searchForMp3s(Playlist & songs, const CString & genre, const CString & artist, const CString & album, const CString & song);
+	    void	searchForMp3s(Playlist & songs, Song & song);
 	    void	searchForSongs(Playlist & songs, MList & songList,	   const	CString & song = "");
 	    void	SearchSetup();
 	    void	setDbLocation(const CString & loc);

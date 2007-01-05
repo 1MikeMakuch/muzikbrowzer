@@ -12,7 +12,7 @@ Type: files; Name: "{commonprograms}\Muzikbrowzer.lnk";
 AppMutex=MuzikbrowzerAppMutex,Global\MuzikbrowzerAppMutex
 ;AppMutex=MuzikbrowzerAppMutex,Global\MuzikbrowzerAppMutex,MuzikbrowzerBitMapCutterAppMutex,Global\MuzikbrowzerBitMapCutterAppMutex
 AppName=Muzikbrowzer
-AppVerName=Muzikbrowzer 2.0.2 (built 2006-12-31 13:35:41)
+AppVerName=Muzikbrowzer 2.0.2 (built 2007-01-05 00:00:27)
 AppCopyright=Copyright (C) 2001-Present Pecan Ventures, LLC
 DefaultDirName={pf}\Muzikbrowzer
 DefaultGroupName=Muzikbrowzer

@@ -2254,7 +2254,7 @@ MusicLib::preDeleteSong(Song & oldSong, CStringArray & deletes) {
 	Playlist songs;
     if (oldGenre == "") oldGenre = MBALL;
 	// old* vars need to be null to search as wildcard
-	searchForMp3s(songs, oldGenre, oldArtist, oldAlbum, oldTitle);
+	searchForMp3s(songs, oldSong);
 
 	int count = songs.size();
 	logger.log("preDeleteSong: songs = " + numToString(count) );
@@ -2358,11 +2358,11 @@ MusicLib::preModifyID3(Song & oldSong, Song & newSong) {
 	Playlist songs;
     if (oldGenre == "") oldGenre = MBALL;
 	// old* vars need to be null to search as wildcard
-	if (file.GetLength()) {
-		songs.append(createSongFromFile(file));
-	} else {
-		searchForMp3s(songs, oldGenre, oldArtist, oldAlbum, oldTitle);
-	}
+//	if (file.GetLength()) {
+//		songs.append(createSongFromFile(file));
+//	} else {
+		searchForMp3s(songs, oldSong);
+//	}
 
 	int count = songs.size();
 	logger.log("modifyID3: songs to modify = " + numToString(count) );
@@ -2560,9 +2560,19 @@ MusicLib::updatePlaylist(Song oldsong, Song newsong) {
 
 
 void
-MusicLib::searchForMp3s(Playlist & songs, const CString & genrename_,
-	const CString & artistname, const CString & albumname,
-	const CString & songname) {
+MusicLib::searchForMp3s(Playlist & songs, Song & song) {
+	CString genrename_ = song->getId3("TCON");
+	CString artistname = song->getId3("TPE1");
+	CString albumname = song->getId3("TALB");
+	CString songname = song->getId3("TIT2");
+	if (MBUNKNOWN == artistname)
+		artistname = "";
+	if (MBUNKNOWN == albumname)
+		albumname = "";
+	if (MBUNKNOWN == songname)
+		songname = "";
+
+
 	AutoLog al("mdb::searchForMp3s");
 
 	if (m_pSearchFiles) {
@@ -2580,7 +2590,7 @@ MusicLib::searchForMp3s(Playlist & songs, const CString & genrename_,
 		if (albumname != "") {
 			MList songList = m_SongLib.songList(genrename, artistname,
 				albumname);
-			searchForSongs(songs, songList, songname);
+			searchForSongs(songs, songList, song->getId3("FILE"));
 		} else {
 			searchForAlbums(songs, albumList);
 		}
@@ -2616,18 +2626,17 @@ MusicLib::searchForAlbums(Playlist & songs, MList & albumList) {
 
 void
 MusicLib::searchForSongs(Playlist & songs, MList & songList,
-						 const CString & songname) {
+						 const CString & filename) {
 	AutoLog al("mdb::searchForSongs");
-	if (songname != "") {
-		MRecord song = songList.record(songname);
-		songs.append(song.createSong());
-	} else {
-		MList::Iterator songIter(songList);
-		CString tmp;
-		int at=0;
-		while (songIter.more()) {
-			MRecord song = songIter.next();
-			tmp = song.lookupVal("FILE");
+
+	MList::Iterator songIter(songList);
+	CString tmp;
+	int at=0;
+	while (songIter.more()) {
+		MRecord song = songIter.next();
+		tmp = song.lookupVal("FILE");
+		if (0 == filename.GetLength() || filename == tmp) {
+			// To guarantee we don't add the same file more than once
 			if (!m_pSearchFiles->contains(tmp, at)) {
 				songs.append(song.createSong());
 				m_pSearchFiles->add(at, tmp);
