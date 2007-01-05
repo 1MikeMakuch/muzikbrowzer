@@ -1125,6 +1125,20 @@ String::Sort(CStringArray & list) {
 	}
 }
 void
+String::SortNoCase(CStringArray & list) {
+
+	CSortedArray<CString, CString&> slist;
+	for(int i = 0 ; i < list.GetSize(); i++) {
+		slist.Add(list[i]);
+	}
+	slist.SetCompareFunction(String::CompareNoCase);
+	slist.Sort();
+	list.RemoveAll();
+	for(i = 0 ; i < slist.GetSize() ; i++) {
+		list.Add(slist[i]);
+	}
+}
+void
 String::Uniq(CStringArray & list) {
 
 	CStringArray newlist;

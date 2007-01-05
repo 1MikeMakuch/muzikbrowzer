@@ -283,6 +283,9 @@ MBWmaTag::write(MBTag & tags, const CString &file) {
 
 	WCHAR   * pwszAttribValue   = NULL;
 
+	MBTag oldtag;
+	oldtag.read(file);
+
     do
     {
 #ifndef UNICODE
@@ -302,11 +305,13 @@ MBWmaTag::write(MBTag & tags, const CString &file) {
         }
 
 		POSITION pos;
-		CString key,val,oldval;
+		CString key,val,oldkey,oldval;
 		for(pos = tags.GetSortedHead(); pos != NULL;) {
 			tags.GetNextAssoc(pos, key, val);
+			oldval = oldtag.getVal(key);
 			key = Id3Key2NativeKey(key);
-			if (key.GetLength()) {
+			// Only modify fields the user has changed.
+			if (key.GetLength() && oldval != val) {
 				// set
 				LPTSTR  ptszAttribName  = (char*)(LPCTSTR)key;
 				LPTSTR  ptszAttribValue = (char*)(LPCTSTR)val;

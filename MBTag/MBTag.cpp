@@ -67,7 +67,8 @@ static int bogusWma = MBTag::addType("wma", new MBWmaTag());
 MBTag::MBTag(): m_tagobj(NULL), m_ReadAllTags(FALSE)
 {
 }
-MBTag::MBTag(const CString & file): m_file(file), m_ReadAllTags(FALSE)
+MBTag::MBTag(const CString & file): m_tagobj(NULL), m_file(file), 
+	m_ReadAllTags(FALSE)
 {
 }
 

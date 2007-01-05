@@ -119,14 +119,14 @@ MBOggTag::read(MBTag & tags, const CString & file, const BOOL xvert) {
 
 			CString key = String::field(ucomment,"=",1);
 			CString newvalue = String::extract(ucomment,"=","");
-			CString oldvalue;
+			CString prevvalue;
 			key.MakeUpper();
 			key = NativeKey2Id3Key(key);
-			oldvalue = tags.getVal(key);
+			prevvalue = tags.getVal(key);
 			if ((!key.CompareNoCase("description") 
 					|| !key.CompareNoCase("comments"))
-					&& oldvalue.GetLength() && newvalue.GetLength()) {
-				newvalue = oldvalue + " " + newvalue;
+					&& prevvalue.GetLength() && newvalue.GetLength()) {
+				newvalue = prevvalue + " " + newvalue;
 			}
 			if (key.GetLength() && newvalue.GetLength()) {
 				tags.setVal(key, newvalue);
@@ -142,9 +142,46 @@ MBOggTag::read(MBTag & tags, const CString & file, const BOOL xvert) {
 	m_convertKeys = TRUE;
 	return TRUE;
 }
+static BOOL ReadOldTagOgg(const CString & file, CStringList & list) {
+	OggVorbis_File * ogg = new OggVorbis_File;
+	FILE * OF = fopen(file, "rb");
+	if (OF == NULL) {
+		logger.log("unable to open " + file);
+		delete ogg;
+		return FALSE;
+	}
+	if (ov_open(OF, ogg, NULL, 0) < 0) {
+		CString error = file;
+		logger.log(" does not appear to be an ogg file");
+		fclose(OF);
+		delete ogg;
+		return FALSE;
+	}
 
+	int i;
+    char *decoded_value;
+	CString out,error;
+	vorbis_comment *vc = ov_comment(ogg, -1);
+	for (i = 0; i < vc->comments; i++)
+    {
+	    if (utf8_decode(vc->user_comments[i], &decoded_value) >= 0)
+        {
+			list.AddTail(decoded_value);
+            free(decoded_value);
+        }
+    }
+
+	ov_clear(ogg);
+	fclose(OF);
+	delete ogg;
+	return TRUE;
+}
 BOOL
 MBOggTag::write(MBTag & tags, const CString &file) {
+	CStringList oldvals;
+	if (!ReadOldTagOgg(file,oldvals))
+		return FALSE;
+
 	CString error;
 	FILE * oggfile;
 	vcedit_state *state;
@@ -172,14 +209,34 @@ MBOggTag::write(MBTag & tags, const CString &file) {
 	vorbis_comment_init(vc);
 
 	POSITION pos;
-	CString key,val, comm;
+	CString key,val, comm,oldkey,oldval,tmp;
+	CStringArray newcomments;
 
+	// 1st put back all the stuff we're not mucking with
+	for(pos = oldvals.GetHeadPosition(); pos != NULL; oldvals.GetNext(pos)) {
+		oldkey = String::field(oldvals.GetAt(pos),"=",1);
+		oldval = String::extract(oldvals.GetAt(pos),"=","");
+		if (!tags.contains(NativeKey2Id3Key(String::upcase(oldkey)))) {
+			tmp = oldkey + "=" + oldval;
+			newcomments.Add(tmp);
+		}
+	}
+		
+	// Now make the edit
 	for(pos = tags.GetSortedHead(); pos != NULL;) {
 		tags.GetNextAssoc(pos, key, val);
-
+		comm = Id3Key2NativeKey(key);
+		if (comm.GetLength()) {
+			tmp = comm + "=" + val;
+			newcomments.Add(tmp);
+		}
+	}
+	String::SortNoCase(newcomments);
+	for(int idx = 0 ; idx < newcomments.GetSize(); ++idx) {
+		comm = String::field(newcomments.GetAt(idx),"=",1);
+		val = String::extract(newcomments.GetAt(idx),"=","");
 		char * utf8_val;
 		utf8_encode(val, &utf8_val);
-		comm = Id3Key2NativeKey(key);
 		comm += "=";
 		comm += utf8_val;
 		free(utf8_val);
@@ -196,12 +253,14 @@ MBOggTag::write(MBTag & tags, const CString &file) {
 		fclose(oggfile);
 		CString msg = "unable to create temp ogg file";
 		logger.log(msg);
+		vcedit_clear(state);
 		return FALSE;
 	}
 
 	vcedit_write(state, tmpfile);
 	fclose(oggfile);
 	fclose(tmpfile);
+	vcedit_clear(state);
 
 	remove(file);
 	if (rename(tmpfilename, file)) {

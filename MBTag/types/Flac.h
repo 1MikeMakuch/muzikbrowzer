@@ -150,6 +150,42 @@ MBFlacTag::read(MBTag & tags, const CString & file, const BOOL xvert) {
 	return TRUE;
 }
 
+static BOOL ReadOldTagFlac(const CString & file, CStringList & list) {
+	VorbisComment vc;
+	bool r = FLAC::Metadata::get_tags(file, vc);
+	if (!r || NULL == &vc)
+		return FALSE;
+
+	int i;
+    char *decoded_value;
+	CString out,error;
+	
+	if (vc.get_num_comments() < 1) {
+		return FALSE;
+	}
+	CString val;
+	int ectr = 0;
+	for (i = 0; i < vc.get_num_comments(); i++)
+    {
+	    if (vc.get_comment(i).get_field_name_length() && 
+			utf8_decode(vc.get_comment(i).get_field_name(), &decoded_value) 
+			>= 0)
+        {
+			val = decoded_value;
+            free(decoded_value);
+			if (vc.get_comment(i).get_field_value_length() &&
+				utf8_decode(vc.get_comment(i).get_field_value(), 
+					&decoded_value) >= 0)
+			{
+				val += CS("=") + decoded_value;
+				free(decoded_value);
+			}
+			if (val.GetLength())
+				list.AddTail(val);
+        }
+    }
+	return TRUE;
+}
 static void freemakeargv(int n, char * argv[]);
 static int makeargv(CStringList & slist, char *** argvp);
 
@@ -158,18 +194,39 @@ MBFlacTag::write(MBTag & tags, const CString &file) {
 	// This is a total hack! Using metaflac,
 	// creating a cl and calling it! It was too easy
 	// to do this way.
+	CStringList oldvals;
+	if (!ReadOldTagFlac(file,oldvals))
+		return FALSE;
 
-	CString key,val;
+	CString key,val,oldkey,oldval,tmp;
 	CStringList args;
+	CStringArray newcomments;
 	args.AddTail("bogus");
 	args.AddTail("--remove-all-tags");
-	for(POSITION pos = tags.GetSortedHead(); pos != NULL;) {
-		tags.GetNextAssoc(pos,key,val);
-		key = Id3Key2NativeKey(key);
-		if (key.GetLength()) {
-			args.AddTail("--set-tag=" + key + "=" + val);
+
+	// 1st put back everything we're not changing
+	for(POSITION pos = oldvals.GetHeadPosition(); pos != NULL; oldvals.GetNext(pos)) {
+		oldkey = String::field(oldvals.GetAt(pos),"=",1);
+		oldval = String::extract(oldvals.GetAt(pos),"=","");
+		if (!tags.contains(NativeKey2Id3Key(String::upcase(oldkey)))) {
+			tmp = "--set-tag=" + oldkey + "=" + oldval;
+			newcomments.Add(tmp);
 		}
 	}
+	// Now make the edit
+	for(pos = tags.GetSortedHead(); pos != NULL;) {
+		tags.GetNextAssoc(pos, key, val);
+		key = Id3Key2NativeKey(key);
+		if (key.GetLength()) {
+			tmp = "--set-tag=" + key + "=" + val;
+			newcomments.Add(tmp);
+		}
+	}
+	String::SortNoCase(newcomments);
+	for(int idx = 0 ; idx < newcomments.GetSize(); ++idx) {
+		args.AddTail(newcomments.GetAt(idx));
+	}
+
 	args.AddTail(file);
 	UINT n = args.GetCount();
 

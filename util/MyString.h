@@ -103,6 +103,7 @@ class String {
 		const CString & string);
 	static void Sort(CStringList & list);
 	static void Sort(CStringArray & list);
+	static void SortNoCase(CStringArray & list);
 	static void Uniq(CStringArray & list);
 	static BOOL CStringArray2File(const CString & file, CStringArray & array);
 	static BOOL CStringArrayFromFile(CStringArray & array,const CString & file);

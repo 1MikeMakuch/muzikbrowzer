@@ -1407,8 +1407,10 @@ MusicLib::writeSongToFile(Song song) {
 		return result;
 	}
 	BOOL r = FALSE;;
-	MBTag mbtag;
-	if (mbtag.read(file)) {
+	MBTag mbtag(file);
+// No longer reading here, that way I don't modify attributes that
+// the user isn't.
+//	if (mbtag.read(file)) {
 		POSITION pos;
 		CString key;
 		CString val;
@@ -1419,7 +1421,7 @@ MusicLib::writeSongToFile(Song song) {
 			}
 		}
 		r = mbtag.write();
-	}
+//	}
 	if (!r)
 		result += "Unable to modify tags in "+file;
 
@@ -2470,7 +2472,8 @@ MusicLib::deleteSong(ProgressDlg *dialog, Playlist & songs, CString & results) {
     return TRUE;
 }
 BOOL
-MusicLib::modifyID3(ProgressDlg *dialog, Playlist & songs, Song & newSong, CString & results) {
+MusicLib::modifyID3(ProgressDlg *dialog, Playlist & songs, Song & newSong, 
+					CString & results) {
 	AutoLog al("mdb::modifyID3");
 
     CString newGenre = newSong->getId3("TCON",0);
@@ -4149,9 +4152,10 @@ MSongLib::removeSong(Song & song2remove) {
 			}
 			delete tagList;
 		}
-		songList.remove(*song);
-		delete song;
-
+		if (song) { // measure of protection in case tag was edited outside MB
+			songList.remove(*song);
+			delete song;
+		}
 		if (songList.count() == 0) {
 			albumList.remove(albumname);
 			if (albumList.count() == 0) {
@@ -4186,9 +4190,10 @@ MSongLib::removeSong(Song & song2remove) {
 		} else {
 			song = new MRecord ( albumList.record(songname));
 		}
-		songList.remove(*song);
-		delete song;
-
+		if (song) {// measure of protection in case tag was edited outside MB
+			songList.remove(*song);
+			delete song;
+		}
 		if (songList.count() == 0) {
 			albumList.remove(albumname);
 			if (albumList.count() == 0) {
@@ -4222,9 +4227,10 @@ MSongLib::removeSong(Song & song2remove) {
 		} else {
 			song = new MRecord ( albumList.record(songname));
 		}
-		songList.remove(*song);
-		delete song;
-
+		if (song) {// measure of protection in case tag was edited outside MB
+			songList.remove(*song);
+			delete song;
+		}
 		if (songList.count() == 0) {
 			albumList.remove(albumname);
 			if (albumList.count() == 0) {
@@ -4257,8 +4263,11 @@ MSongLib::removeSong(Song & song2remove) {
 		} else {
 			song = new MRecord ( albumList.record(songname));
 		}
-		songList.remove(*song);
-		delete song;
+		if (song) { // This needed to be here even before I found
+					// the ones above needed to be here
+			songList.remove(*song);
+			delete song;
+		}
 
 		if (songList.count() == 0) {
 			albumList.remove(albumname);
@@ -4293,7 +4302,7 @@ MSongLib::removeSong(Song & song2remove) {
 		} else {
 			song = new MRecord ( albumList.record(songname));
 		}
-		if (song) {
+		if (song) { // same as above
 			songList.remove(*song);
 			delete song;
 		}
@@ -4330,7 +4339,7 @@ MSongLib::removeSong(Song & song2remove) {
 		} else {
 			song = new MRecord ( albumList.record(songname));
 		}
-		if (song) {
+		if (song) {// same as above
 			songList.remove(*song);
 			delete song;
 		}

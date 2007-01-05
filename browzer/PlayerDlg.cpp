@@ -3788,6 +3788,7 @@ CPlayerDlg::OnContextMenu(CWnd* pWnd, CPoint ScreenPnt) {
 			}
             popup->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON,ScreenPnt.x,
                 ScreenPnt.y, AfxGetMainWnd());
+			popup->DestroyMenu();
         }
     }
 }
