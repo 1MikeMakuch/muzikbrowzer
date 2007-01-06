@@ -665,6 +665,16 @@ BOOL MBUtil::system(CWnd * cwnd, const CString & command, UINT msg2post) {
 #endif
 	return TRUE;
 }
+void
+MBUtil::MemDump(const char *p, const UINT length) {
+	AutoBuf buf(4 * length);
+	char * bp = buf.p;
+	for(int i = 0 ; i < length; i++) {
+		sprintf(bp,"%02x ",p[i]);
+		bp += 3;
+	}
+	logger.logd(buf.p);
+}
 #ifdef _DEBUG
 static MBAutoTimerI MBAUTOTIMER;
 

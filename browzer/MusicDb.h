@@ -30,6 +30,12 @@ class MyLog;
 // 0 terminated to make it simpler to retrieve them, i.e.
 // just return the address of the label, i.e. (char*)(p +
 // MEMDB_LABL_OS)
+// 2007/01/06 modification DB VERSION 6:
+// Now the label is a single 0 terminated string for plain labels
+// and it's 2 0 terminated strings for k/v pairs, i.e. TCON0Rock0.
+// This is a performance enhancement so that 2 char*'s can be returned
+// pointing to the k/v pair. In this case the key must be 4 bytes long,
+// which it already was.
 // 
 // The requirements behind MemDb design:
 // 
@@ -71,6 +77,7 @@ class CSong {
 		SongKeys _obj;
 		int setId3(const CString &, const CString &);
 		CString getId3(const CString &, int unknown = 1);
+
         SongKeys * createSongKeys();
 		int removeId3(const CString &);
 		int GetCount() { return _obj.GetCount(); }
@@ -111,7 +118,9 @@ class MMemory {
 		BOOL dbchanged();
 	private:
 		int _refcnt;
+	public:
 		char * m_space;
+	private:
 		int m_size;
 		int m_sizeOrig;
 		int m_next;
@@ -143,12 +152,16 @@ class MRecord {
 		int & next();
 		int & ptr();
 		CString label();
+		const char * labelp();
 		void label(const CString &);
+		void label(const CString & k, const CString & v);
 		static int needed(const CString &);
 #pragma hack
 		// xxx hack alert: getVal should be in something like MSong
-		CString getKey();
-		CString getVal();
+//		CString getKey();
+//		CString getVal();
+		const char * getKeyp();
+		const char * getValp();
 		CString lookupVal(const CString & key);
 		Song createSong();
 		int i() { return m_i; }
@@ -172,6 +185,7 @@ class MList {
 //		MList(const MRecord & r);
 		~MList(){};
 		int prepend(const CString & label);
+		int prependKV(const CString &k, const CString & val);
 		void remove(const CString & label);
 		void removeg(const CString & label);
 		void remove(MRecord & record);

@@ -30,7 +30,7 @@
 #define MB_GARBAGE_INTERVAL 500
 #endif
 
-#define MB_DB_VERSION 5
+#define MB_DB_VERSION 6
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -927,7 +927,7 @@ MusicLib::getSong(const CString & genre, const CString & artist,
 	MList::Iterator songKViter(songKVL);
 	while (songKViter.more()) {
 		MRecord kv = songKViter.next();
-		song->setId3(kv.getKey(), kv.getVal());
+		song->setId3(kv.getKeyp(), kv.getValp());
 	}
 
     return song;
@@ -3080,10 +3080,27 @@ MRecord::label() {
 	CString r (p);
 	return r;
 }
+const char *
+MRecord::labelp() {
+	char * p = ((char*)m_mem->addr(m_i)) + sizeof(MRecordt);
+	return p;
+}
 void
 MRecord::label(const CString & val) {
 	char * p = ((char*)m_mem->addr(m_i)) + sizeof(MRecordt);
 	strcpy(p, (LPCTSTR)val);
+}
+void
+MRecord::label(const CString & k, const CString & v) {
+	if (k.GetLength() != 4) {
+		MBMessageBox("Error","Bad key passed to MRecord::label: "+k+" "+v,TRUE);
+		return;
+	}
+	char * p = ((char*)m_mem->addr(m_i)) + sizeof(MRecordt);
+	char * psave = p;
+	strcpy(p, (LPCTSTR)k);
+	p += k.GetLength() + 1;
+	strcpy(p, v);
 }
 int
 MRecord::needed(const CString & val) {
@@ -3093,6 +3110,7 @@ int
 MRecord::ptrIdx() {
 	return m_i + (3 * sizeof(int));
 }
+
 TEST(MRecordTests, MRecord) 
 {
 	PMemory m;
@@ -3150,14 +3168,65 @@ TEST(MRecordTests, MRecord)
 
 	CFile::Remove(MBTESTFILE);
 }
+TEST(MRecordTestsLabelKVs, MRecord) 
+{
+	PMemory m;
+	m = new MMemory(MBTESTFILE);
+	int pi = m->alloc(100);
 
-CString
-MRecord::getKey() {
-	return String::substring(label(),0,4);
+	MRecord r(m,pi);
+	r.length() = 1;
+	r.prev() = 2;
+	r.next() = 3;
+	r.ptr() = 4;
+	r.label("abcd","123"); // for kv's, the key must be length 4!
+	MBUtil::MemDump(m->m_space + pi,50);
+
+	CHECK(r.length() == 1);
+	CHECK(r.prev() == 2);
+	CHECK(r.next() == 3);
+	CHECK(r.ptr() == 4);
+	CHECK(r.label() == (CString)"abcd");
+	CHECK(r.getKeyp() == CS("abcd"));  // key must be len 4
+	CHECK(r.getValp() == CS("123"));
+
+	m->writeToFile();
+
+	PMemory m2;
+	m2 = new MMemory(MBTESTFILE);
+	m2->readFromFile();
+	pi = m2->alloc(50);
+
+	MRecord r2(m2,0);
+	CHECK(r2.length() == 1);
+	CHECK(r2.prev() == 2);
+	CHECK(r2.next() == 3);
+	CHECK(r2.ptr() == 4);
+	CHECK(r2.label() == (CString)"abcd");
+	CHECK(r2.getKeyp() == CS("abcd"));
+	CHECK(r2.getValp() == CS("123"));
+	CFile::Remove(MBTESTFILE);
 }
-CString
-MRecord::getVal() {
-	return String::substring(label(),5);
+//CString
+//MRecord::getKey() {
+//	return String::substring(label(),0,4);
+//}
+//CString
+//MRecord::getVal() {
+//	return String::substring(label(),5);
+//}
+const char * 
+MRecord::getKeyp() {
+	return labelp();
+	//return String::substring(label(),0,4);
+}
+// Key must be 4 bytes long plus NULL!
+const char * 
+MRecord::getValp() {
+	char * p = (char *)labelp();
+	p += 5;
+	return p;
+	//return String::substring(label(),5);
 }
 CString
 MRecord::lookupVal(const CString & key) {
@@ -3167,8 +3236,8 @@ MRecord::lookupVal(const CString & key) {
 	MList::Iterator iter(keyValList);
 	while (iter.more()) {
 		MRecord kv = iter.next();
-		if (kv.getKey() == key) {
-			return kv.getVal();
+		if (kv.getKeyp() == key) {
+			return kv.getValp();
 		}
 	}
 	return CString("");
@@ -3180,7 +3249,7 @@ MRecord::createSong() {
 	MList::Iterator kvIter(keyvals);
 	while (kvIter.more()) {
 		MRecord kv = kvIter.next();
-		song->setId3(kv.getKey(), kv.getVal());
+		song->setId3(kv.getKeyp(), kv.getValp());
 	}
 	return song;
 }
@@ -3416,6 +3485,34 @@ MList::prepend(const CString & label)
 	r.next() = head();
 	r.ptr() = 0;
 	r.label(label);
+	
+	// head becomes the newrecord
+	head() = pi;
+	return pi;
+}
+int
+MList::prependKV(const CString & k, const CString & v) 
+{
+	CString tmp = k + " " + v;
+	int s = MRecord::needed(tmp) + 1; // one more NULL
+	int pi = m_mem->alloc(s);
+	if (head() == -1)
+		head() = 0;
+
+	// point head->prev = new record
+	if (head() != 0) {
+		MRecord oldhead(m_mem, head());
+		oldhead.prev() = pi;
+	}
+
+	// newrecord->next = head;
+	MRecord r(m_mem, pi);
+	r.length() = s;
+	r.prev() = 0;
+	r.next() = head();
+	r.ptr() = 0;
+	//r.label(label);
+	r.label(k,v);
 	
 	// head becomes the newrecord
 	head() = pi;
@@ -4100,14 +4197,17 @@ MSongLib::addSong(Song & song) {
 	MRecord allTitlesForArtistRecord = allTitlesForArtistList.record(titlename);
 	MRecord allTitlesForAllGenreArtistRecord = 
 		allTitlesForAllGenreArtistList.record(titlename);
-    AutoBuf buf(1000);
+    //AutoBuf buf(1000);
+
     POSITION pos;
+
     for (pos = song->_obj.GetStartPosition(); pos != NULL;) {
         CString key,val;
         song->_obj.GetNextAssoc(pos, key, val);
         if (val != "") {
-		    sprintf(buf.p, "%s %s", (LPCTSTR)key, (LPCTSTR)val);
-			id3List.prepend(buf.p);
+		    //sprintf(buf.p, "%s %s", (LPCTSTR)key, (LPCTSTR)val);
+			//id3List.prepend(buf.p);
+			id3List.prependKV(key,val);
         }
     }
 
@@ -4561,9 +4661,17 @@ MSongLib::dump(CString name) {
     i = (MMEMORY_RESERVE_BYTES);
     while (i < m_mem->next()) {
 		MRecord r(m_mem, i);
+		MBUtil::MemDump(m_mem->m_space + r.i(), r.length());
+		CString label(r.label());
+		if (r.length() >
+			(sizeof(MRecordt) + label.GetLength() + 1))
+			label += CS(" ") + r.getValp();
 
+//        sprintf(buf.p, "%07d %07d %07d %07d %07d %s\n",i,
+//			r.length(), r.prev(), r.next(), r.ptr(), r.label());
         sprintf(buf.p, "%07d %07d %07d %07d %07d %s\n",i,
-			r.length(), r.prev(), r.next(), r.ptr(), r.label());
+			r.length(), r.prev(), r.next(), r.ptr(), label);
+
         myFile.Write(buf.p, strlen(buf.p));
 		if (r.length() < 1) {
 			CString msg = "Error: length < 1 found";

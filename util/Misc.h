@@ -94,6 +94,7 @@ public:
 	static BOOL system(CWnd * cwnd, const CString & command, UINT msg=0);
 	static void FontStr2LogFont(const char * fontstr, LPLOGFONT lplf);
 	static CString LogFont2FontStr(const LPLOGFONT lplf);
+	static void MemDump(const char * p, const UINT length);
 
 };
 
