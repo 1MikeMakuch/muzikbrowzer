@@ -67,11 +67,9 @@ MBMp3Tag::read(MBTag & tags, const CString & file, const BOOL xvert) {
 		return FALSE;
 
 	if (!tags.ReadAllTags()) {
-		MBTag wmatags;
 		MBWmaTag wma;
-		wma.SetReadDurationOnly();
-		wma.read(wmatags,file,TRUE);
-		tags.setVal("TLEN", wmatags.getVal("TLEN"));  // milliseconds
+		CString duration = wma.GetDuration(file);
+		tags.setVal("TLEN", duration);  // milliseconds
 	}
 
 	{

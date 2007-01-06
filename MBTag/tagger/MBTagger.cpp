@@ -150,6 +150,7 @@ int help(MBTag & tag, const char * value){
 		endl <<
 		"id3 keys supported: TCON,TPE1,TALB,TIT2,TRCK,TYER,COMM" << endl <<
 		"ogg, flac, wma: anything goes" << endl <<
+		"For wma's only type STRING fields are supported." <<
 		endl;
 return 0;
 }

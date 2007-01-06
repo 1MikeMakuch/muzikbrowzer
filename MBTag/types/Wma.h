@@ -54,6 +54,22 @@ public:
 	void SetReadDurationOnly() {
 		m_DurationOnly = TRUE;
 	}
+	CString GetKey(const CString & file, const CString & key);
+	CString GetDuration(const CString & file){
+		return WmaDuration2MilliSeconds(GetKey(file,"Duration"));
+	};
+	CString WmaDuration2MilliSeconds(const CString & val) {
+		CString duration(val);
+		if (val.GetLength()) {
+			float d = atof(val);
+			if (d > 10000) {
+				d = d / 10000; // milliseconds
+				int d2 = (int) d;
+				duration = numToString(d2);
+			}
+		}
+		return duration;
+	}
 
 	virtual CString NativeKey2Id3Key(const CString & Wma) {
 		if (m_convertKeys && m_Wma2id3.contains(Wma))
@@ -219,20 +235,14 @@ MBWmaTag::read(MBTag & tags, const CString & file, const BOOL xvert) {
                 break;
             }
 			if ("Duration" == key && m_convertKeys) {
-				if (val.GetLength()) {
-					float d = atof(val);
-					if (d > 10000) {
-						d = d / 10000; // milliseconds
-						int d2 = (int) d;
-						val = numToString(d2);
-					}
-				}
+				val = WmaDuration2MilliSeconds(val);
 			}
+
 			key = NativeKey2Id3Key(key);
 			tags.setVal(key, val);
-			if (m_DurationOnly && "TLEN" == key) {
-				break;
-			}
+//			if (m_DurationOnly && "TLEN" == key) {
+//				break;
+//			}
 			if (tags.m_KeyCounter && tags.IsAnMBKey(key)) {
 				CString tmp = tags.m_KeyCounter->getVal(key);
 				int c = atoi(tmp);
@@ -267,6 +277,156 @@ MBWmaTag::read(MBTag & tags, const CString & file, const BOOL xvert) {
 	m_convertKeys = TRUE;
 	m_DurationOnly = FALSE;
 	return TRUE;
+}
+CString
+MBWmaTag::GetKey(const CString & file, const CString &key) {
+
+	WORD				wStreamNum			= 0;
+	WCHAR				* pwszInFile		= (WCHAR*)(LPCTSTR)file;
+    HRESULT             hr                  = S_OK;
+
+    IWMMetadataEditor   * pEditor           = NULL;
+    IWMHeaderInfo*      pHeaderInfo         = NULL;
+	IWMHeaderInfo3*      pHeaderInfo3         = NULL;
+
+    WCHAR               * pwszAttribName    = NULL;
+    WORD                wAttribNameLen      = 0;
+    BYTE                * pbAttribValue     = NULL;
+    DWORD                wAttribValueLen     = 0;
+	WORD				pwLangIndex			= 0;
+	WORD				pwCount				= 0;
+	WORD				* pwIndices			= 0;
+	WMT_ATTR_DATATYPE   wAttribType;
+
+	char buf[500];
+	strcpy(buf,(LPCTSTR)file);
+    LPTSTR				ptszInFile			= buf;;
+
+	CString val,out;
+
+	do {
+		hr = ConvertMBtoWC( ptszInFile, &pwszInFile );
+		if( FAILED( hr ) )
+		{
+			out = "ConvertMBtoWC";
+			break;
+		}
+
+		hr = EditorOpenFile( pwszInFile, &pEditor, NULL, &pHeaderInfo3);
+		if(FAILED( hr ) )
+		{
+			out = "EditorOpenFile";
+			break;
+		}
+
+		LPTSTR  ptszAttribName  = (char*)(LPCTSTR)"Duration";
+		ConvertMBtoWC(ptszAttribName, &pwszAttribName);
+
+		hr = pHeaderInfo3->GetAttributeIndices(
+								wStreamNum,
+								pwszAttribName,
+								NULL,
+								NULL,
+								&pwCount);
+		if (FAILED(hr)) {
+			break;
+		}
+		pwIndices = new WORD[ pwCount ];
+		hr = pHeaderInfo3->GetAttributeIndices(
+								wStreamNum,
+								pwszAttribName,
+								NULL,
+								pwIndices,
+								&pwCount);
+		if (FAILED(hr)) {
+			break;
+		}
+		SAFE_ARRAYDELETE( pwszAttribName );
+		if (pwCount < 1) {
+			break;
+		}
+		WORD wAttribIndex = pwIndices[0];
+
+        hr = pHeaderInfo3->GetAttributeByIndexEx(
+											   wStreamNum,
+											   wAttribIndex,
+                                               pwszAttribName,
+                                               &wAttribNameLen,
+                                               &wAttribType,
+											   &pwLangIndex,
+                                               pbAttribValue,
+                                               &wAttribValueLen );
+        if( FAILED( hr ) )
+        {
+            _stprintf(buf, _T( "WMA:GetAttributeByIndex failed for index = %d ( hr=0x%08x ).\n" ), 
+                wAttribIndex, hr );
+			logger.log(buf);
+			out = buf;
+            break;
+        }
+
+        pwszAttribName = new WCHAR[ wAttribNameLen ];
+        if( NULL == pwszAttribName )
+        {
+            hr = E_OUTOFMEMORY;
+            break;
+        }
+
+        pbAttribValue = new BYTE[ wAttribValueLen ];
+        if( NULL == pbAttribValue )
+        {
+            hr = E_OUTOFMEMORY;
+            break;
+        }
+
+        hr = pHeaderInfo3->GetAttributeByIndexEx(
+											   wStreamNum,
+											   wAttribIndex,
+                                               pwszAttribName,
+                                               &wAttribNameLen,
+                                               &wAttribType,
+											   &pwLangIndex,
+                                               pbAttribValue,
+                                               &wAttribValueLen );
+		if (FAILED(hr)) {
+			break;
+		}
+
+        hr = PrintAttributeString( wAttribIndex, 
+                             wStreamNum, 
+                             pwszAttribName, 
+                             wAttribType, 
+                             0, 
+                             pbAttribValue, 
+                             wAttribValueLen, val);
+        if( FAILED( hr ) )
+        {
+			out = "PrintAttributeString";
+            break;
+        }
+
+		SAFE_ARRAYDELETE( pwIndices );
+
+        hr = pEditor->Close();
+        if( FAILED( hr ) )
+        {
+            _stprintf(buf, _T( "WMA:Could not close the file %ws ( hr=0x%08x ).\n" ), pwszInFile, hr );
+			logger.log(buf);
+            break;
+        }
+	} while (FALSE);
+
+	pEditor->Close();
+	SAFE_ARRAYDELETE( pwIndices );
+    SAFE_RELEASE( pHeaderInfo );
+    SAFE_RELEASE( pEditor );
+
+    SAFE_ARRAYDELETE( pwszAttribName );
+    SAFE_ARRAYDELETE( pbAttribValue );
+	SAFE_ARRAYDELETE(pwszInFile );
+
+	return val;
+
 }
 
 BOOL
