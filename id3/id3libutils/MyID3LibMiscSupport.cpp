@@ -1135,6 +1135,10 @@ ReadAllTags(ID3_Tag *id3, MBTag * tag) {
 			c++;
 			tag->m_KeyCounter->setVal(key,NTS(c));
 		}
+		if (tag->GettingInfo())
+			tag->AppendInfo(key,val);
+		if ("COMM" == key && tag->GettingComments())
+			tag->AppendComments(val);
 	}
   }
     delete iter;

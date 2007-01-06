@@ -32,22 +32,37 @@ int deleteTag(MBTag & tag, const char * value);
 int deleteField(MBTag & tag, const char * value);
 int getArt(MBTag & tag, const char * value);
 int updateApic(MBTag & tag, const char * value);
-//int updateVersion(MBTag & tag, const char * value);
-int updateGenre(MBTag & tag, const char * value);
-int updateArtist(MBTag & tag, const char * value);
-int updateAlbum(MBTag & tag, const char * value);
-int updateTitle(MBTag & tag, const char * value);
-int updateTrack(MBTag & tag, const char * value);
-int updateLength(MBTag & tag, const char * value);
-int updateYear(MBTag & tag, const char * value);
-//int updatePart(MBTag & tag, const char * value);
-//int updatePublisher(MBTag & tag, const char * value);
-//int updateVolume(MBTag & tag, const char * value);
-//int updateUFID(MBTag & tag, const char * value);
-//int updateMedia(MBTag & tag, const char * value);
-int updateComment(MBTag & tag, const char * value);
+int help(MBTag & tag, const char * value);
+int showComments(MBTag & tag, const char * value);
 
-int	updateFlag = 0;
+static BOOL SetField = FALSE;
+static CString Key ;
+static CString Val;
+static int	updateFlag = 0;
+static int commentsOnly = 0;
+
+int setKey(MBTag & tag, const char * value){
+	Key = tag.Id3Key2NativeKey(value);
+	if (Key.GetLength() && Val.GetLength()) {
+		tag.setValNativeKey(Key,Val);
+		updateFlag = 1;
+	}
+	return 0;
+}
+int setVal(MBTag & tag, const char * value){
+	Val = value;
+	if (Key.GetLength() && Val.GetLength()) {
+		tag.setValNativeKey(Key,Val);
+		updateFlag = 1;
+	}
+	return 0;
+}
+
+int showComments(MBTag & tag, const char * x) {
+	commentsOnly = 1;
+	return 0;
+}
+
 
 typedef int (*Handler)(MBTag &tag, const char * value);
 typedef struct {
@@ -58,23 +73,14 @@ typedef struct {
 } MBTagHandler;
 
 MBTagHandler tagopts[] = {
-	{"dt", "delete tag", deleteTag, 0},
-	{"df", "delete tag field", deleteField, 1},
-	{"getart", "getart, writes to <file>", getArt, 1},
-	{"TCON", "genre", updateGenre, 1},
-	{"TPE1", "artist", updateArtist, 1},
-	{"TALB", "album", updateAlbum, 1},
-	{"TIT2", "title", updateTitle, 1},
-	{"TRCK", "track", updateTrack, 1},
-	{"TLEN", "length", updateLength, 1},
-	{"TYER", "year", updateYear, 1},
-//	{"TPOS", "part in set", updatePart, 1},
-//	{"TPUB", "publisher", updatePublisher, 1},
-// 	{"RVAD", "volume", updateVolume, 1},
-//	{"UFID", "ufid", updateUFID, 1},
-//	{"TMED", "dig...", updateMedia, 1},
-	{"COMM", "comment", updateComment, 1},
-	{"APIC", "art file, reads from <file>", updateApic, 1},
+	{"k",	"key, use with -v", setKey, 1},
+	{"v",	"val, use with -k to set key/val", setVal, 1},
+	{"dt",	"delete tag", deleteTag, 0},
+	{"df",	"delete tag field", deleteField, 1},
+	{"c",	"display comments only (COMM, COMMENTS, DESCRIPTION",showComments, 0},
+//	{"getart", "gets art from tag, writes to <file>", getArt, 1},
+//	{"setart", "read from <file>, add to tag (if applicable)", updateApic, 1},
+	{"help",	"full help", help, 0},
 	{ 0, 0, 0 }
 };
 
@@ -93,10 +99,13 @@ static char * getExtension(char * file) {
 }
 
 int deleteTag(MBTag & tag, const char * value) {
-	//flags_t ulTags = tag.Strip(MBTag_ver);
+	updateFlag = 1;
+	tag.SetDeleteTag();
 	return 0;
 }
 int deleteField(MBTag & tag, const char * value) {
+	tag.SetDeleteKey(value);
+	updateFlag = 1;
 	return 0;
 }
 
@@ -106,67 +115,48 @@ int getArt(MBTag & tag, const char * value) {
 int updateApic(MBTag & tag, const char * value) {
 	return 0;
 }
-int updateGenre(MBTag & tag, const char * genre){ 
-	tag.setValId3Key("TCON", genre);
-	updateFlag = 1;
-	return 0;
-}
-int updateComment(MBTag & tag, const char * value){ 
-	tag.setValId3Key("COMM", value);
-	updateFlag = 1;
-	return 0;
-}
-int updateArtist(MBTag & tag, const char * value){ 
-	tag.setValId3Key("TPE1", value);
-	updateFlag = 1;
-	return 0;
-}
-int updateAlbum(MBTag & tag, const char * value){ 
-	tag.setValId3Key("TALB", value);
-	updateFlag = 1;
-	return 0;
-}
-int updateTitle(MBTag & tag, const char * value){ 
-	tag.setValId3Key("TIT2", value);
-	updateFlag = 1;
-	return 0;
-}
-int updateTrack(MBTag & tag, const char * value){ 
-	tag.setValId3Key("TRCK", value);
-	updateFlag = 1;
-	return 0;
-}
-int updateLength(MBTag & tag, const char * value){ 
-	tag.setValId3Key("TLEN", value);
-	updateFlag = 1;
-	return 0;
-}
-int updateYear(MBTag & tag, const char * value){ 
-	tag.setValId3Key("TYER", value);
-	updateFlag = 1;
-	return 0;
-}
-int updatePart(MBTag & tag, const char * value){ 
-	updateFlag = 0;
-	return 0;
-}
-int updatePublisher(MBTag & tag, const char * value){ 
-	updateFlag = 0;
-	return 0;
-}
-int updateVolume(MBTag & tag, const char * value){ 
-	return 0;
-}
-int updateMedia(MBTag & tag, const char * value){ 
-	updateFlag = 0;
-	return 0;
-}
+void usage();
 
+int help(MBTag & tag, const char * value){
+	CStringList types;
+	MBTag t;
+	t.GetExtensions(types);
+	CString ts;
+	for(POSITION pos = types.GetHeadPosition();pos != NULL; types.GetNext(pos)){
+		ts += types.GetAt(pos) + " ";
+	}
+	cout << "mbtag from Muzikbrowzer www.muzikbrowzer.com" << endl <<
+		"Standalone command line tag editor/viewer. Feel free" << endl <<
+		"to distribute mbtag.exe." << endl << endl;
+	cout << "usage:" << endl;
 
+	usage();
+
+	cout << endl << 
+		"Examples:"<<endl<<endl<<
+		"Set Genre:"<<endl<<
+		"   mbtag -k TCON -v \"Texas Rock\" Fandango.mp3" << endl <<
+		"   mbtag -k GENRE -v RockAndRollBaby ElvisLives.flac" << endl <<
+		"Set Artist:"<<endl<<
+		"   mbtag -k WM/AlbumArtist -v RockAndRollBaby ElvisLives.wma" << endl <<
+		"   mbtag -k ARTIST -v \"The King\" ElvisLives.ogg" << endl <<
+		"   mbtag -k TPE1 -v \"XYZZY\" TwistyLittleMaze.mp3" << endl <<
+		endl <<
+		"id3 keys converted to appropriate corresponding key when used on"<< endl <<
+		"ogg, flac, wma files. Example:" << endl << 
+		"   mbtag -k TCON -v \"Classical\" BethovensFifth.ogg" << endl <<
+		"      is converted to" << endl <<
+		"   mbtag -k GENRE -v \"Classical\" BethovensFifth.ogg" << endl <<
+		endl <<
+		"id3 keys supported: TCON,TPE1,TALB,TIT2,TRCK,TYER,COMM" << endl <<
+		"ogg, flac, wma: anything goes" << endl <<
+		endl;
+return 0;
+}
 void usage() {
-cout << 
-"mbtag [options] <file> # w/out options display tag info.  options:" << endl;
-// 		cout << "     -d   # deletes all id3 tag info from file" << endl;
+	cout << 
+		"mbtag [options] <file> # w/out options display tag info.  options:" 
+		<< endl;
 
 	int i = 0;
 	while (tagopts[i].key != 0) {
@@ -179,13 +169,7 @@ cout <<
 		printf( "     -%-6s %-7s # %s\n", tagopts[i].key, arg, tagopts[i].desc);
 		++i;
 	}
-}
-void dumptag(MBTag & tag) {
-	CString key,val;
-	for(POSITION pos = tag.GetSortedHead(); pos != NULL;) {
-		tag.GetNextAssoc(pos,key,val);
-		printf("%s = %s\n",key,val);
-	}
+
 }
 
 CWinApp theApp;
@@ -198,10 +182,16 @@ int _tmain(int argc, TCHAR * argv[], TCHAR * envp[])
 		cerr << _T("Fatal Error: MFC initialization failed") << endl;
 		return 1;
 	}
+//	logger.open("c:\\temp\\mbtag.log");
 
 
 	if (argc < 2) {
 		usage();
+		exit(0);
+	}
+	if (argv[1] == CS("-help")) {
+		MBTag m;
+		help(m,"");
 		exit(0);
 	}
 	char * filename = argv[argc-1];
@@ -216,9 +206,8 @@ int _tmain(int argc, TCHAR * argv[], TCHAR * envp[])
 	if (argc < 3) { // just display tag
 		{
 			MBTag tag;
-			tag.SetReadAllTags(TRUE);
-			tag.read(filename,FALSE); // FALSE=don't convert keys to id3 names
-			dumptag(tag);
+			tag.read(filename,FALSE);
+			printf("%s",tag.getInfo());
 		}
 		exit(0);
 	}
@@ -264,7 +253,7 @@ int _tmain(int argc, TCHAR * argv[], TCHAR * envp[])
 	// Update tag
 	MBTag tag;
 	tag.SetReadAllTags(TRUE);
-    size_t pbytes2 = tag.read(filename,FALSE);
+    size_t pbytes2 = tag.read(filename);
 
 	i = 1;
 	updateFlag = 0;
@@ -272,7 +261,6 @@ int _tmain(int argc, TCHAR * argv[], TCHAR * envp[])
 		char * opt = argv[i];
 		opt++;
 		int j = 0;
-// 		printf("opt:%s\n", opt);
 		while (tagopts[j].key != 0) {
 			if (strcmp(tagopts[j].key, opt) == 0) {
 				char * arg;
@@ -283,15 +271,15 @@ int _tmain(int argc, TCHAR * argv[], TCHAR * envp[])
 					arg = NULL;
 					i++;
 				}
-// 				printf("   calling %s\n", tagopts[j].desc);
-				(*tagopts[j].func)(
-// 					MBTag_ver == ID3TT_ID3V1 ? tag1 : tag2,
-						tag,
-						arg);
+				(*tagopts[j].func)(tag,arg);
 				break;
 			}
 			++j;
 		}
+	}
+	if (commentsOnly) {
+		double rg;
+		printf("%s\n", tag.getComments(rg,filename));
 	}
 	if (updateFlag) {
 		if (!tag.write()) {
@@ -299,7 +287,8 @@ int _tmain(int argc, TCHAR * argv[], TCHAR * envp[])
 			exit(-1);
 		}
 
-		dumptag(tag);
+//		MBTag tag(filename);
+//		printf("%s",tag.getInfo());
 
 	}
 

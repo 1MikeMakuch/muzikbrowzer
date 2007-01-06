@@ -54,6 +54,7 @@ public:
 		m_id32flac.setVal("TIT2","TITLE");
 		m_id32flac.setVal("TRCK","TRACKNUMBER");
 		m_id32flac.setVal("TYER","DATE");
+		m_id32flac.setVal("COMM","COMMENTS"); // for mbtag only
 		m_id32flac.setVal("TLEN",""); // NULL removes it so it doesn't go
 		m_id32flac.setVal("FILE",""); // into the actual flac tag
 	}
@@ -107,31 +108,31 @@ MBFlacTag::read(MBTag & tags, const CString & file, const BOOL xvert) {
 			utf8_decode(vc.get_comment(i).get_field_name(), &decoded_value) 
 			>= 0)
         {
-			CString key = decoded_value;
+			CString okey = decoded_value;
             free(decoded_value);
 			if (vc.get_comment(i).get_field_value_length() &&
 				utf8_decode(vc.get_comment(i).get_field_value(), 
 					&decoded_value) >= 0)
 			{
-				CString newvalue = decoded_value;
+				CString val = decoded_value;
 				free(decoded_value);
-				CString oldvalue;
+				CString key(okey);
 				key.MakeUpper();
 				key = NativeKey2Id3Key(key);
-				oldvalue = tags.getVal(key);
-				if ((!key.CompareNoCase("DESCRIPTION") 
-						|| !key.CompareNoCase("COMMENTS"))
-						&& oldvalue.GetLength() && newvalue.GetLength()) {
-					newvalue = oldvalue + " " + newvalue;
-				}
-				if (key.GetLength() && newvalue.GetLength()) {
-					tags.setVal(key, newvalue);
+				if (key.GetLength() && val.GetLength()) {
+					tags.setVal(key, val);
 					if (tags.m_KeyCounter && tags.IsAnMBKey(key)) {
 						CString tmp = tags.m_KeyCounter->getVal(key);
 						int c = atoi(tmp);
 						c++;
 						tags.m_KeyCounter->setVal(key,NTS(c));
 					}
+					if (tags.GettingInfo())
+						tags.AppendInfo(okey,val);
+					if (tags.GettingComments() 
+						&& (0 == key.CompareNoCase("DESCRIPTION")
+						|| 0 == key.CompareNoCase("COMMENTS")))
+						tags.AppendComments(val);
 				}
 			}
         }
@@ -207,23 +208,33 @@ MBFlacTag::write(MBTag & tags, const CString &file) {
 	CStringArray newcomments;
 	args.AddTail("bogus");
 	args.AddTail("--remove-all-tags");
+	POSITION pos ;
 
 	// 1st put back everything we're not changing
-	for(POSITION pos = oldvals.GetHeadPosition(); pos != NULL; oldvals.GetNext(pos)) {
-		oldkey = String::field(oldvals.GetAt(pos),"=",1);
-		oldval = String::extract(oldvals.GetAt(pos),"=","");
-		if (!tags.contains(NativeKey2Id3Key(String::upcase(oldkey)))) {
-			tmp = "--set-tag=" + oldkey + "=" + oldval;
-			newcomments.Add(tmp);
+	if (!tags.IsDeleteTag()) {
+		for(pos = oldvals.GetHeadPosition(); pos != NULL; oldvals.GetNext(pos)) {
+			oldkey = String::field(oldvals.GetAt(pos),"=",1);
+			oldval = String::extract(oldvals.GetAt(pos),"=","");
+			key = NativeKey2Id3Key(String::upcase(oldkey));
+			if (!tags.contains(key)
+				&& !tags.IsDeleteKey(key)
+				) {
+				tmp = "--set-tag=" + oldkey + "=" + oldval;
+				newcomments.Add(tmp);
+				logger.ods(tmp);
+			}
 		}
-	}
+	
 	// Now make the edit
-	for(pos = tags.GetSortedHead(); pos != NULL;) {
-		tags.GetNextAssoc(pos, key, val);
-		key = Id3Key2NativeKey(key);
-		if (key.GetLength()) {
-			tmp = "--set-tag=" + key + "=" + val;
-			newcomments.Add(tmp);
+	
+		for(pos = tags.GetSortedHead(); pos != NULL;) {
+			tags.GetNextAssoc(pos, key, val);
+			key = Id3Key2NativeKey(key);
+			if (key.GetLength() && !tags.IsDeleteKey(key)) {
+				tmp = "--set-tag=" + key + "=" + val;
+				newcomments.Add(tmp);
+				logger.ods(tmp);
+			}
 		}
 	}
 	String::SortNoCase(newcomments);
@@ -238,11 +249,11 @@ MBFlacTag::write(MBTag & tags, const CString &file) {
 	int argc = makeargv(args,&argv);
 	if (0 == argc) return FALSE;
 
-//	int i=0;
-//	while(argv[i]) {
-//		logger.logd("argv["+NTS(i)+"] "+CS(argv[i]));
-//		++i;
-//	}
+	int i=0;
+	while(argv[i]) {
+		logger.ods("argv["+NTS(i)+"] "+CS(argv[i]));
+		++i;
+	}
 
 // This is basically metaflac here...
 
@@ -269,36 +280,21 @@ MBFlacTag::write(MBTag & tags, const CString &file) {
 }
 CString
 MBFlacTag::getComments(MBTag & tags, double & rggain, const CString & file) {
-	if (tags.GetCount() == 0) {
-		read(tags,file,FALSE); // FALSE = don't convert keys
-	}
-	CString rg,comments;
-	if (tags.contains("DESCRIPTION"))
-		comments = tags.getVal("DESCRIPTION");
-	if (tags.contains("COMMENTS")) {
-		if (comments.GetLength())
-			comments += " ";
-		comments += tags.getVal("COMMENTS");
-	}
-	rg = tags.getVal("REPLAYGAIN_TRACK_GAIN");
+	tags.GettingComments(TRUE);
+	read(tags,file,FALSE); // FALSE = don't convert keys
+	tags.GettingComments(FALSE);
+	CString rg = tags.getVal("REPLAYGAIN_TRACK_GAIN");
 	if (rg.GetLength())
 		rggain = atof(rg);
-	
-	return comments;
+	return tags.GetComments();
 }
 CString
 MBFlacTag::getInfo(MBTag & tags, const CString & file) {
-	if (tags.GetCount() == 0) {
-		read(tags,file,FALSE); // FALSE = don't convert keys
-	}
-	CString key,val,comments;
-	for(POSITION pos = tags.GetSortedHead(); pos != NULL;) {
-		tags.GetNextAssoc(pos,key,val);
-		key = Id3Key2NativeKey(key);
-		if (key.GetLength())
-			comments += key + "=" + val + "\r\n";
-	}
-	return comments;
+
+	tags.GettingInfo(TRUE);
+	read(tags,file,FALSE); // FALSE = don't convert keys
+	tags.GettingInfo(FALSE);
+	return tags.GetInfo();
 }
 int makeargv(CStringList & slist, char *** argvp) {
 	int n = slist.GetCount();

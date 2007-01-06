@@ -50,8 +50,8 @@ BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
 LINK32=link.exe
-# ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib  kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386
-# ADD LINK32 nafxcw.lib libcmt.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib  kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib  ..\..\3rdparty\\WMFSDK9\lib\wmvcore.lib /nologo /subsystem:console /machine:I386
+# ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386
+# ADD LINK32 nafxcw.lib libcmt.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ..\..\3rdparty\\WMFSDK9\lib\wmvcore.lib /nologo /subsystem:console /machine:I386
 
 !ELSEIF  "$(CFG)" == "MBTagger - Win32 Debug"
 
@@ -66,15 +66,15 @@ LINK32=link.exe
 # PROP Intermediate_Dir "Debug"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
-# ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /Yu"stdafx.h" /FD /GZ  /c
-# ADD CPP /nologo /MTd /W3 /Gm /GX /Zi /Od /I ".." /I "..\..\util" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /D "FLAC__NO_DLL" /FR /Yu"stdafx.h" /FD /GZ  /c
+# ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /Yu"stdafx.h" /FD /GZ /c
+# ADD CPP /nologo /MTd /W3 /Gm /GX /Zi /Od /I ".." /I "..\..\util" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /D "FLAC__NO_DLL" /FR /Yu"stdafx.h" /FD /GZ /c
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
 LINK32=link.exe
-# ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib  kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
+# ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
 # ADD LINK32 nafxcwd.lib libcmtd.lib ..\..\3rdparty\flac-1.1.3\obj\debug\lib\replaygain_analysis_static.lib ..\..\TestHarness\Debug\TestHarness.lib ..\..\3rdparty\flac-1.1.3\obj\debug\lib\libFLAC_static.lib ..\..\3rdparty\flac-1.1.3\obj\debug\lib\libFLAC++_static.lib ..\..\3rdparty\flac-1.1.3\obj\debug\lib\getopt_static.lib ..\..\3rdparty\flac-1.1.3\obj\debug\lib\grabbag_static.lib ..\..\3rdparty\flac-1.1.3\obj\debug\lib\utf8_static.lib ..\Debug\MBTag.lib Version.lib ..\..\3rdparty\ogg\libogg-1.0\win32\Debug\ogg_static_d.lib ..\..\3rdparty\ogg\libvorbis-1.0\win32\Debug\vorbis_static_d.lib ..\..\3rdparty\ogg\libvorbis-1.0\win32\Debug\vorbisfile_static_d.lib rpcrt4.lib ..\..\3rdparty\id3lib-3.8.3\libprj\Debug\id3libD.lib ..\..\3rdparty\id3lib-3.8.3\zlib\prj\Debug\zlibD.lib strmiids.lib ..\..\id3\id3libutils\Debug\id3utils.lib ..\..\util\Debug\util.lib dxguid.lib Quartz.lib ..\..\3rdparty\\WMFSDK9\lib\wmvcore.lib /nologo /subsystem:console /incremental:no /debug /machine:I386 /nodefaultlib:"msvcrt" /nodefaultlib:"libcmt" /nodefaultlib:"nafxcw" /out:"c:\mkm\bin/mbtag.exe" /pdbtype:sept
 # SUBTRACT LINK32 /pdb:none
 
@@ -92,8 +92,8 @@ LINK32=link.exe
 # PROP Intermediate_Dir "DebugBC"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
-# ADD BASE CPP /nologo /MTd /W3 /Gm /GX /Zi /Od /I ".." /I "..\..\util" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /D "FLAC__NO_DLL" /FR /Yu"stdafx.h" /FD /GZ  /c
-# ADD CPP /nologo /MTd /W3 /Gm /GX /Zi /Od /I ".." /I "..\..\util" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /D "FLAC__NO_DLL" /FR /Yu"stdafx.h" /FD /GZ  /c
+# ADD BASE CPP /nologo /MTd /W3 /Gm /GX /Zi /Od /I ".." /I "..\..\util" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /D "FLAC__NO_DLL" /FR /Yu"stdafx.h" /FD /GZ /c
+# ADD CPP /nologo /MTd /W3 /Gm /GX /Zi /Od /I ".." /I "..\..\util" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /D "FLAC__NO_DLL" /FR /Yu"stdafx.h" /FD /GZ /c
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe

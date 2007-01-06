@@ -39,6 +39,7 @@ public:
 		m_id32Wma.setVal("TIT2","Title");
 		m_id32Wma.setVal("TRCK","WM/TrackNumber");
 		m_id32Wma.setVal("TYER","WM/Year");
+		m_id32Wma.setVal("COMM","Description"); // for mbtag only
 		m_id32Wma.setVal("TLEN",""); // NULL removes it so it doesn't go
 		m_id32Wma.setVal("FILE",""); // into the actual Wma tag
 	}
@@ -67,6 +68,7 @@ public:
 			return id3;
 	}
 private:
+	BOOL DeleteTagField(MBTag & tags, const CString & file, const CString & key);
 	MyHash m_Wma2id3;
 	MyHash m_id32Wma;
 	BOOL m_convertKeys;
@@ -75,7 +77,7 @@ private:
 
 HRESULT EditorOpenFile( WCHAR* pwszInFile, IWMMetadataEditor ** ppEditor,IWMHeaderInfo ** ppHeaderInfo, IWMHeaderInfo3 ** ppHeaderInfo3 );
 HRESULT AddAttrib( WCHAR * pwszInFile, WORD wStreamNum, WCHAR * pwszAttribName, WORD wAttribType, WCHAR * pwszAttribValue, WORD wLangIndex );
-HRESULT SetAttrib( WCHAR * pwszInFile, WORD wStreamNum, WCHAR * pwszAttribName, WORD wAttribType, WCHAR * pwszAttribValue );
+//HRESULT SetAttrib( WCHAR * pwszInFile, WORD wStreamNum, WCHAR * pwszAttribName, WORD wAttribType, WCHAR * pwszAttribValue );
 HRESULT PrintAttributeString( WORD wIndex,WORD wStream,WCHAR * wszName,WMT_ATTR_DATATYPE AttribDataType,WORD wLangID,BYTE * pbValue,DWORD dwValueLen,CString & value);
 #ifndef UNICODE
 HRESULT ConvertMBtoWC( LPCTSTR ptszInString, LPWSTR *ppwszOutString );
@@ -237,6 +239,12 @@ MBWmaTag::read(MBTag & tags, const CString & file, const BOOL xvert) {
 				c++;
 				tags.m_KeyCounter->setVal(key,NTS(c));
 			}
+			if (tags.GettingInfo())
+				tags.AppendInfo(key,val);
+			if (tags.GettingComments() 
+				&& (0 == key.CompareNoCase("DESCRIPTION")
+				|| 0 == key.CompareNoCase("COMMENTS")))
+				tags.AppendComments(val);
         }
         
         hr = pEditor->Close();
@@ -262,7 +270,130 @@ MBWmaTag::read(MBTag & tags, const CString & file, const BOOL xvert) {
 }
 
 BOOL
+MBWmaTag::DeleteTagField(MBTag & tags, const CString &file, const CString &key) {
+	WORD				wStreamNum			= 0;
+	WCHAR				* pwszInFile		= (WCHAR*)(LPCTSTR)file;
+    HRESULT             hr                  = S_OK;
+
+    IWMMetadataEditor   * pEditor           = NULL;
+    IWMHeaderInfo*      pHeaderInfo         = NULL;
+	IWMHeaderInfo3*      pHeaderInfo3         = NULL;
+
+    WCHAR               * pwszAttribName    = NULL;
+    WORD                wAttribNameLen      = 0;
+    BYTE                * pbAttribValue     = NULL;
+    DWORD                wAttribValueLen     = 0;
+	WORD				pwLangIndex			= 0;
+	WORD				pwCount				= 0;
+	WORD				* pwIndices			= 0;
+
+	char buf[500];
+	strcpy(buf,(LPCTSTR)file);
+    LPTSTR				ptszInFile			= buf;;
+
+	CString val,out;
+
+	do {
+		hr = ConvertMBtoWC( ptszInFile, &pwszInFile );
+		if( FAILED( hr ) )
+		{
+			out = "ConvertMBtoWC";
+			break;
+		}
+
+		hr = EditorOpenFile( pwszInFile, &pEditor, NULL, &pHeaderInfo3);
+		if(FAILED( hr ) )
+		{
+			out = "EditorOpenFile";
+			break;
+		}
+
+		LPTSTR  ptszAttribName  = (char*)(LPCTSTR)key;
+		ConvertMBtoWC(ptszAttribName, &pwszAttribName);
+
+		hr = pHeaderInfo3->GetAttributeIndices(
+								wStreamNum,
+								pwszAttribName,
+								NULL,
+								NULL,
+								&pwCount);
+		if (FAILED(hr)) {
+			break;
+		}
+		pwIndices = new WORD[ pwCount ];
+		hr = pHeaderInfo3->GetAttributeIndices(
+								wStreamNum,
+								pwszAttribName,
+								NULL,
+								pwIndices,
+								&pwCount);
+		if (FAILED(hr)) {
+			break;
+		}
+		SAFE_ARRAYDELETE( pwszAttribName );
+
+		WORD idx;
+		int i;
+		for(i = pwCount-1 ; i >= 0 ; --i) {
+			idx = pwIndices[i];
+			hr = pHeaderInfo3->DeleteAttribute(wStreamNum, idx);
+			if (FAILED(hr)) {
+				break;
+			}
+		}
+		SAFE_ARRAYDELETE( pwIndices );
+		hr = pEditor->Flush();
+		if( FAILED( hr ) )
+        {
+            _stprintf(buf, _T( "WMA:Could not close the file %ws ( hr=0x%08x ).\n" ), pwszInFile, hr );
+			logger.log(buf);
+            break;
+        }
+        hr = pEditor->Close();
+        if( FAILED( hr ) )
+        {
+            _stprintf(buf, _T( "WMA:Could not close the file %ws ( hr=0x%08x ).\n" ), pwszInFile, hr );
+			logger.log(buf);
+            break;
+        }
+	} while (FALSE);
+
+	pEditor->Close();
+	SAFE_ARRAYDELETE( pwIndices );
+    SAFE_RELEASE( pHeaderInfo );
+    SAFE_RELEASE( pEditor );
+
+    SAFE_ARRAYDELETE( pwszAttribName );
+    SAFE_ARRAYDELETE( pbAttribValue );
+	SAFE_ARRAYDELETE(pwszInFile );
+
+	return (! FAILED(hr));
+
+}
+
+
+
+
+
+
+
+
+
+BOOL
 MBWmaTag::write(MBTag & tags, const CString &file) {
+
+	if (tags.IsDeleteTag()) {
+		return FALSE; // can't do it with wma's.
+	} else if (tags.IsDeleteKeys()) {
+		CStringList dkeys;
+		tags.GetDeleteKeys(dkeys);
+		BOOL r = TRUE;
+		for(POSITION pos = dkeys.GetHeadPosition(); pos != NULL; dkeys.GetNext(pos)) {
+			r &= DeleteTagField(tags, file, dkeys.GetAt(pos));
+		}
+		return r;
+	}
+
 	CString error="WmaTag::write error ";
 	CString out;
 	char buf[500];
@@ -287,6 +418,8 @@ MBWmaTag::write(MBTag & tags, const CString &file) {
     LPTSTR				ptszInFile			= buf;
 
 	WCHAR   * pwszAttribValue   = NULL;
+	WORD				pwCount				= 0;
+	WORD				* pwIndices			= 0;
 
 	MBTag oldtag;
 	oldtag.read(file);
@@ -301,7 +434,7 @@ MBWmaTag::write(MBTag & tags, const CString &file) {
             break;
         }
 #endif
-        hr = EditorOpenFile( pwszInFile, &pEditor, &pHeaderInfo,
+        hr = EditorOpenFile( pwszInFile, &pEditor, NULL,
 			&pHeaderInfo3 );
         if(FAILED( hr ) )
         {
@@ -327,13 +460,44 @@ MBWmaTag::write(MBTag & tags, const CString &file) {
 					sizeof (WCHAR);
 				pbAttribValue = (BYTE *)pwszAttribValue;
 	
-				// sdk docs say not to use SetAttribute but it seems to
-				// work.
-				hr = pHeaderInfo->SetAttribute( wStreamNum,
-												pwszAttribName,
-												wAttribType,                                        
-												pbAttribValue,
-												wAttribValueLen );
+				hr = pHeaderInfo3->GetAttributeIndices(
+										wStreamNum,
+										pwszAttribName,
+										NULL,
+										NULL,
+										&pwCount);
+				if (FAILED(hr)) {
+					break;
+				}
+				pwIndices = new WORD[ pwCount ];
+				hr = pHeaderInfo3->GetAttributeIndices(
+										wStreamNum,
+										pwszAttribName,
+										NULL,
+										pwIndices,
+										&pwCount);
+				if (FAILED(hr)) {
+					break;
+				}
+				WORD idx;
+				int i;
+				for(i = pwCount-1 ; i >= 0 ; --i) {
+					idx = pwIndices[i];
+					hr = pHeaderInfo3->DeleteAttribute(wStreamNum, idx);
+					if (FAILED(hr)) {
+						break;
+					}
+				}
+				SAFE_ARRAYDELETE( pwIndices );
+				WORD pwIdx=0;
+				hr = pHeaderInfo3->AddAttribute(
+					wStreamNum,
+					pwszAttribName,
+					&pwIdx,
+					WMT_TYPE_STRING,
+					0,
+					pbAttribValue,
+					wAttribValueLen);
 
 				if( FAILED( hr ) )
 				{
@@ -377,27 +541,21 @@ MBWmaTag::write(MBTag & tags, const CString &file) {
 }
 CString
 MBWmaTag::getComments(MBTag & tags, double & rggain, const CString & file) {
-	if (tags.GetCount() == 0) {
-		read(tags,file,FALSE); // FALSE = don't convert keys
-	}
-	CString rg,comments;
-	if (tags.contains("DESCRIPTION"))
-		comments = tags.getVal("DESCRIPTION");
-	if (tags.contains("COMMENTS")) {
-		if (comments.GetLength())
-			comments += " ";
-		comments += tags.getVal("COMMENTS");
-	}
-	rg = tags.getVal("REPLAYGAIN_TRACK_GAIN");
+	tags.GettingComments(TRUE);
+	read(tags,file,FALSE); // FALSE = don't convert keys
+	tags.GettingComments(FALSE);
+	CString rg = tags.getVal("REPLAYGAIN_TRACK_GAIN");
 	if (rg.GetLength())
 		rggain = atof(rg);
-	return comments;
+	return tags.GetComments();
 }
 CString
 MBWmaTag::getInfo(MBTag & tags, const CString & file) {
-	if (tags.GetCount() == 0) {
-		read(tags,file,FALSE); // FALSE = don't convert keys
-	}
+	tags.GettingInfo(TRUE);
+	read(tags,file,FALSE); // FALSE = don't convert keys
+	tags.GettingInfo(FALSE);
+	return tags.GetInfo();
+	
 	CString key,val,comments;
 	for(POSITION pos = tags.GetSortedHead(); pos != NULL;) {
 		tags.GetNextAssoc(pos,key,val);
@@ -603,7 +761,7 @@ HRESULT AddAttrib( WCHAR * pwszInFile,
 
     return( hr );
 }
-
+#ifdef asdf
 //------------------------------------------------------------------------------
 // Name: SetAttrib()
 // Desc: Adds an attribute by using IWMHeaderInfo::SetAttribute.
@@ -726,6 +884,7 @@ HRESULT SetAttrib( WCHAR * pwszInFile,
 
     return( hr );
 }
+#endif
 
 //------------------------------------------------------------------------------
 // Name: PrintAttribute()

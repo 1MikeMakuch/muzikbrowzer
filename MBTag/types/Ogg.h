@@ -50,6 +50,7 @@ public:
 		m_id32Ogg.setVal("TIT2","TITLE");
 		m_id32Ogg.setVal("TRCK","TRACKNUMBER");
 		m_id32Ogg.setVal("TYER","DATE");
+		m_id32Ogg.setVal("COMM","COMMENTS"); // for mbtag only
 		m_id32Ogg.setVal("TLEN",""); // NULL removes it so it doesn't go
 		m_id32Ogg.setVal("FILE",""); // into the actual Ogg tag
 	}
@@ -115,25 +116,25 @@ MBOggTag::read(MBTag & tags, const CString & file, const BOOL xvert) {
 			CString ucomment = decoded_value;
             free(decoded_value);
 
-			CString key = String::field(ucomment,"=",1);
-			CString newvalue = String::extract(ucomment,"=","");
-			CString prevvalue;
+			CString okey = String::field(ucomment,"=",1);
+			CString val = String::extract(ucomment,"=","");
+			CString key = okey;
 			key.MakeUpper();
 			key = NativeKey2Id3Key(key);
-			prevvalue = tags.getVal(key);
-			if ((!key.CompareNoCase("description") 
-					|| !key.CompareNoCase("comments"))
-					&& prevvalue.GetLength() && newvalue.GetLength()) {
-				newvalue = prevvalue + " " + newvalue;
-			}
-			if (key.GetLength() && newvalue.GetLength()) {
-				tags.setVal(key, newvalue);
+			if (key.GetLength() && val.GetLength()) {
+				tags.setVal(key, val);
 				if (tags.m_KeyCounter && tags.IsAnMBKey(key)) {
 					CString tmp = tags.m_KeyCounter->getVal(key);
 					int c = atoi(tmp);
 					c++;
 					tags.m_KeyCounter->setVal(key,NTS(c));
 				}
+				if (tags.GettingInfo())
+					tags.AppendInfo(okey,val);
+				if (tags.GettingComments() 
+					&& (0 == key.CompareNoCase("DESCRIPTION")
+					|| 0 == key.CompareNoCase("COMMENTS")))
+					tags.AppendComments(val);
 			}
         }
     }
@@ -217,22 +218,25 @@ MBOggTag::write(MBTag & tags, const CString &file) {
 	CStringArray newcomments;
 
 	// 1st put back all the stuff we're not mucking with
-	for(pos = oldvals.GetHeadPosition(); pos != NULL; oldvals.GetNext(pos)) {
-		oldkey = String::field(oldvals.GetAt(pos),"=",1);
-		oldval = String::extract(oldvals.GetAt(pos),"=","");
-		if (!tags.contains(NativeKey2Id3Key(String::upcase(oldkey)))) {
-			tmp = oldkey + "=" + oldval;
-			newcomments.Add(tmp);
+	if (!tags.IsDeleteTag()) {
+		for(pos = oldvals.GetHeadPosition(); pos != NULL; oldvals.GetNext(pos)) {
+			oldkey = String::field(oldvals.GetAt(pos),"=",1);
+			oldval = String::extract(oldvals.GetAt(pos),"=","");
+			key = NativeKey2Id3Key(String::upcase(oldkey));
+			if (!tags.contains(key) && !tags.IsDeleteKey(key)) {
+				tmp = oldkey + "=" + oldval;
+				newcomments.Add(tmp);
+			}
 		}
-	}
-		
-	// Now make the edit
-	for(pos = tags.GetSortedHead(); pos != NULL;) {
-		tags.GetNextAssoc(pos, key, val);
-		comm = Id3Key2NativeKey(key);
-		if (comm.GetLength()) {
-			tmp = comm + "=" + val;
-			newcomments.Add(tmp);
+			
+		// Now make the edit
+		for(pos = tags.GetSortedHead(); pos != NULL;) {
+			tags.GetNextAssoc(pos, key, val);
+			comm = Id3Key2NativeKey(key);
+			if (comm.GetLength() && !tags.IsDeleteKey(comm)) {
+				tmp = comm + "=" + val;
+				newcomments.Add(tmp);
+			}
 		}
 	}
 	String::SortNoCase(newcomments);
@@ -276,35 +280,20 @@ MBOggTag::write(MBTag & tags, const CString &file) {
 }
 CString
 MBOggTag::getComments(MBTag & tags, double & rggain, const CString & file) {
-	if (tags.GetCount() == 0) {
-		read(tags,file,FALSE); // FALSE = don't convert keys
-	}
-	CString rg,comments;
-	if (tags.contains("DESCRIPTION"))
-		comments = tags.getVal("DESCRIPTION");
-	if (tags.contains("COMMENTS")) {
-		if (comments.GetLength())
-			comments += " ";
-		comments += tags.getVal("COMMENTS");
-	}
-	rg = tags.getVal("REPLAYGAIN_TRACK_GAIN");
+	tags.GettingComments(TRUE);
+	read(tags,file,FALSE); // FALSE = don't convert keys
+	tags.GettingComments(FALSE);
+	CString rg = tags.getVal("REPLAYGAIN_TRACK_GAIN");
 	if (rg.GetLength())
 		rggain = atof(rg);
-	return comments;
+	return tags.GetComments();
 }
 CString
 MBOggTag::getInfo(MBTag & tags, const CString & file) {
-	if (tags.GetCount() == 0) {
-		read(tags,file,FALSE); // FALSE = don't convert keys
-	}
-	CString key,val,comments;
-	for(POSITION pos = tags.GetSortedHead(); pos != NULL;) {
-		tags.GetNextAssoc(pos,key,val);
-		key = Id3Key2NativeKey(key);
-		if (key.GetLength())
-			comments += key + "=" + val + "\r\n";
-	}
-	return comments;
+	tags.GettingInfo(TRUE);
+	read(tags,file,FALSE); // FALSE = don't convert keys
+	tags.GettingInfo(FALSE);
+	return tags.GetInfo();
 }
 
 

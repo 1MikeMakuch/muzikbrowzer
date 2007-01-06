@@ -62,25 +62,32 @@ AudioTypeHash * MBTag::m_types = &AudioFileTypes;            //
 #include "types/Wma.h"                                       //
 #include "types/Flac.h"                                      //
 
-static int bogusmpg = MBTag::addType("mpg", new MBMp3Tag());
-static int bogusmp1 = MBTag::addType("mp1", new MBMp3Tag());
-static int bogusmp2 = MBTag::addType("mp2", new MBMp3Tag());
+//static int bogusmpg = MBTag::addType("mpg", new MBMp3Tag());
+//static int bogusmp1 = MBTag::addType("mp1", new MBMp3Tag());
+//static int bogusmp2 = MBTag::addType("mp2", new MBMp3Tag());
 static int bogusmp3 = MBTag::addType("mp3", new MBMp3Tag());
 static int bogusogg = MBTag::addType("ogg", new MBOggTag());
 static int bogusflac= MBTag::addType("flac",new MBFlacTag());
 static int bogusWma = MBTag::addType("wma", new MBWmaTag());
 ///////////////////////////////////////////////////////////////
-BOOL
-MBTag::IsAnMBKey(const CString & key) {
-	return MBTag::m_types->m_MBKeys.contains(key);
-}
 
-MBTag::MBTag(): m_tagobj(NULL), m_ReadAllTags(FALSE),m_KeyCounter(NULL)
-{
+
+void
+MBTag::init() {
+	m_tagobj = NULL; 
+	m_ReadAllTags = FALSE;
+	m_KeyCounter = NULL;
+	m_GetInfo = FALSE;
+	m_GetComments = FALSE;
+	m_DeleteTag = FALSE;
 }
-MBTag::MBTag(const CString & file): m_tagobj(NULL), m_file(file), 
-	m_ReadAllTags(FALSE),m_KeyCounter(NULL)
+MBTag::MBTag() {
+	init();
+}
+MBTag::MBTag(const CString & file):
+	m_file(file)
 {
+	init();	
 }
 
 // static member called by the individual <types>.h at startup
@@ -97,6 +104,15 @@ MBTag::getType(FExtension & fext) {
 		return type;
 	}
 	return NULL;
+}
+CString
+MBTag::getType() {
+	FExtension fext(m_file);
+	return fext.ext();
+}
+BOOL
+MBTag::IsAnMBKey(const CString & key) {
+	return MBTag::m_types->m_MBKeys.contains(key);
 }
 BOOL
 MBTag::GetExtensions(CStringList & list) {
@@ -120,6 +136,14 @@ MBTag::setVal(const CString & key, const CString & val) {
 CString
 MBTag::getVal(const CString & key) {
 	return MyHash::getVal(String::upcase(key));
+}
+void
+MBTag::GetDeleteKeys(CStringList & list) {
+	CString key,val;
+	for(POSITION pos = m_DeleteKeys.GetSortedHead(); pos != NULL;) {
+		m_DeleteKeys.GetNextAssoc(pos,key,val);
+		list.AddTail(key);
+	}
 }
 // xvert tells whether or not to convert to "standard" keys
 BOOL
@@ -236,6 +260,17 @@ MBTag::getArt(
 
 	return FALSE;
 }
+CString
+MBTag::Id3Key2NativeKey(const CString & key) {
+	if (!m_tagobj) {
+		FExtension fext(m_file);
+		m_tagobj = getType(fext);
+	}
+	CString ikey(key);
+	if (m_tagobj)
+		ikey = m_tagobj->Id3Key2NativeKey(key);
+	return ikey;
+}
 void
 MBTag::setValId3Key(const CString & key, const CString & val) {
 	if (!m_tagobj) {
@@ -259,6 +294,30 @@ MBTag::getValId3Key(const CString & key) {
 		ikey = m_tagobj->Id3Key2NativeKey(key);
 	return MyHash::getVal(ikey);
 }
+void
+MBTag::setValNativeKey(const CString & key, const CString & val) {
+	if (!m_tagobj) {
+		FExtension fext(m_file);
+		m_tagobj = getType(fext);
+	}
+	CString ikey(key);
+	if (m_tagobj)
+		ikey = m_tagobj->NativeKey2Id3Key(key);
+	MyHash::setVal(ikey,val);
+	return;
+}
+CString
+MBTag::getValNativeKey(const CString & key) {
+	if (!m_tagobj) {
+		FExtension fext(m_file);
+		m_tagobj = getType(fext);
+	}
+	CString ikey(key);
+	if (m_tagobj)
+		ikey = m_tagobj->NativeKey2Id3Key(key);
+	return MyHash::getVal(ikey);
+}
+
 
 // Look for art on disk.
 // Derived members call this one if art not found in 

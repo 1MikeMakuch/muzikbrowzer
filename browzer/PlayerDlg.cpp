@@ -44,6 +44,7 @@
 #include "ExportDlg.h"
 #include "oggtagger/oggtagger.h"
 #include "FileAndFolder.h"
+#include "MBTag.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -1173,6 +1174,12 @@ BOOL RecreateListBox(CExtendedListBox* pList, LPVOID lpParam/*=NULL*/)
 	return TRUE;
 }
 void
+CPlayerDlg::reloadDB() {
+	if (m_mlib.checkReReadDb()) {
+		init();
+	}
+}
+void
 CPlayerDlg::resetControls() {
 	AutoLog al("resetControls");
 	if (!m_Ready2Reset) return;
@@ -1754,10 +1761,6 @@ CPlayerDlg::resetControls() {
 		BOOL r = ::DeleteObject((HBRUSH)hbr);
 	}
 	m_CtlColors.RemoveAll();
-
-	if (m_mlib.checkReReadDb()) {
-		init();
-	}
 }
 void
 CPlayerDlg::ShowSearchDlg() {
@@ -2135,15 +2138,38 @@ void
 CPlayerDlg::OnOpenFileButton() {
 	AutoLog al("OnOpenFileButton");
     // open a file
+//	CString oargs = "mp3,wma,wav,ogg files{*.mp3;*.wma;*.wav;*.ogg;*.mpg;*.mp1;*.mp2}|*.mp3;*.wma;*.wav;*.ogg;*.mpg;*.mp1;*.mp2|All Files {*.*}|*.*||";
+
+	MBTag mbtag;
+	CStringList list;
+	mbtag.GetExtensions(list);
+	list.AddTail("wav");
+	String::Sort(list);
+	CString arg1,arg2,arg3,arg,allargs;
+	for(POSITION pos = list.GetHeadPosition(); pos != NULL;list.GetNext(pos)) {
+		arg = list.GetAt(pos);
+		if (arg1.GetLength())
+			arg1 += ",";
+		arg1 += arg;
+		if (arg2.GetLength())
+			arg2 += ";";
+		arg2 += "*." + arg;
+		if (arg3.GetLength())
+			arg3 += ";";
+		arg3 += "*." + arg;
+	}
+	allargs = arg1 + " files{" + arg2 + "}|" + arg3;
+	allargs += "|All Files {*.*}|*.*||";
+
 	CFileDialog *dialog;
 
 	dialog = new CFileDialog(TRUE, 
-							"mp3",
+							"",
 							"",
 							OFN_FILEMUSTEXIST    | 
 							OFN_HIDEREADONLY     |
 							OFN_EXPLORER,
-"mp3,wma,wav,ogg files{*.mp3;*.wma;*.wav;*.ogg;*.mpg;*.mp1;*.mp2}|*.mp3;*.wma;*.wav;*.ogg;*.mpg;*.mp1;*.mp2|All Files {*.*}|*.*||");
+							allargs);
 
 
 	int ret;
@@ -2629,6 +2655,8 @@ CPlayerDlg::PreTranslateMessage(MSG* pMsg){
 		} else if (pMsg->wParam == VK_F5) {
 			resetControls();
 			return TRUE;
+		} else if (pMsg->wParam == VK_F6) {
+			reloadDB();
         }
     }
 	// Since the SearchGo button is the only default button, hitting

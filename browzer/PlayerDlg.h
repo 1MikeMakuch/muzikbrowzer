@@ -186,6 +186,7 @@ private:
 	int m_trialCounter;
 
     void resetControls();
+	void reloadDB();
 	void AdjustLibraryWidths(CPoint & point);
     void SaveWindowPos();
     void ReadWindowPos(int &, CRect &);

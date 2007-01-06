@@ -98,6 +98,7 @@ MBMp3Tag::read(MBTag & tags, const CString & file, const BOOL xvert) {
 		if (tags.ReadAllTags()) {
 			if (tags.m_KeyCounter) // for HasMultiVal check, don't count id2v1s
 				tags.m_KeyCounter->RemoveAll();
+
 			ReadAllTags(id3,&tags);
 		} else {
 			CString tmp;
@@ -125,32 +126,33 @@ MBMp3Tag::getComments(MBTag & tags, double & rggain, const CString & file) {
 		return "";
 
 	ID3_Tag id3;
-	id3.Link(file, ID3TT_ALL);
+	id3.Link(file, ID3TT_ID3V2);
+	tags.GettingComments(TRUE);
 	ReadAllTags(&id3,&tags);
-	CString comments = tags.getVal("COMM");
+	tags.GettingComments(FALSE);
 	CString rg = tags.getVal("RVA2");
 	if (rg.GetLength())
 		rggain = atof(rg);
-
-	return comments;
+	return tags.GetComments();
 }
 CString
 MBMp3Tag::getInfo(MBTag & tags, const CString & file) {
 	if (!file.GetLength())
 		return "";
-
 	
 	ID3_Tag id3;
-	id3.Link(file, ID3TT_ALL);
+	id3.Link(file, ID3TT_ID3V1);
+	tags.GettingInfo(TRUE);
+	tags.AppendInfo("id3v1","");
 	ReadAllTags(&id3,&tags);
-	CString msg,key,val;
-	for(POSITION pos = tags.GetSortedHead(); pos != NULL;) {
-		tags.GetNextAssoc(pos,key,val);
-		msg += key + " = " + val + "\r\n";
-	}
+	id3.Clear();
 
-	msg += "\r\n"+ file;
-	return msg;
+	id3.Link(file, ID3TT_ID3V2);
+	tags.AppendInfo("id3v2","");
+	ReadAllTags(&id3,&tags);
+	tags.GettingInfo(FALSE);
+	id3.Clear();
+	return tags.GetInfo();
 }
 BOOL
 MBMp3Tag::write(MBTag & tags, const CString & file) {
@@ -158,37 +160,64 @@ MBMp3Tag::write(MBTag & tags, const CString & file) {
 		return FALSE;
 	ID3_Tag * id3 = new ID3_Tag;
 	size_t tagsize = id3->Link(file, ID3TT_ALL);
-	flags_t uflag = ID3TT_ID3V2;
+	flags_t uflag = 0;//ID3TT_ID3V2;
 	if (id3->HasV1Tag()) {
 		uflag |= ID3TT_ID3V1;
 	}
 	if (id3->HasV2Tag()) {
 		uflag |= ID3TT_ID3V2;
 	}
-
-	POSITION pos;
-	CString key;
-	CString val;
-	for( pos = tags.GetSortedHead(); pos != NULL; ) {
-		tags.GetNextAssoc(pos, key, val);
-		if (key == "TCON" ) {
-		    Genre_addGenre(*id3, (LPCTSTR)val);
-		} else if (key == "TPE1" ) {
-			ID3_AddArtist(id3, (LPCTSTR)val, true);
-		} else if (key == "TALB" ) {
-			ID3_AddAlbum(id3, (LPCTSTR)val, true);
-		} else if (key == "TIT2" ) {
-			ID3_AddTitle(id3, (LPCTSTR)val, true);
-		} else if (key == "TRCK" ) {
-			int t = atoi((LPCTSTR)val);
-			ID3_AddTrack(id3, t, 0, true);
-		} else if (key == "TYER" ) {
-			ID3_AddYear(id3, (LPCTSTR)val, true);
+	if (tags.IsDeleteTag()) {
+		BOOL r = id3->Strip(uflag);
+		delete id3;
+		return r;
+	} else if (tags.IsDeleteKeys()) {
+		if (tags.IsDeleteKey("TCON"))
+			ID3_RemoveGenres(id3);
+		if (tags.IsDeleteKey("TPE1"))
+			ID3_RemoveArtists(id3);
+		if (tags.IsDeleteKey("TALB"))
+			ID3_RemoveAlbums(id3);
+		if (tags.IsDeleteKey("TIT2"))
+			ID3_RemoveTitles(id3);
+		if (tags.IsDeleteKey("TRCK"))
+			ID3_RemoveTracks(id3);
+		if (tags.IsDeleteKey("TYER"))
+			ID3_RemoveYears(id3);
+		if (tags.IsDeleteKey("COMM"))
+			ID3_RemoveComments(id3);
+	} else {
+		POSITION pos;
+		CString key;
+		CString val;
+		for( pos = tags.GetSortedHead(); pos != NULL; ) {
+			tags.GetNextAssoc(pos, key, val);
+			if (key == "TCON" ) {
+				Genre_addGenre(*id3, (LPCTSTR)val);
+			} else if (key == "TPE1" ) {
+				ID3_AddArtist(id3, (LPCTSTR)val, true);
+			} else if (key == "TALB" ) {
+				ID3_AddAlbum(id3, (LPCTSTR)val, true);
+			} else if (key == "TIT2" ) {
+				ID3_AddTitle(id3, (LPCTSTR)val, true);
+			} else if (key == "TRCK" ) {
+				int t = atoi((LPCTSTR)val);
+				ID3_AddTrack(id3, t, 0, true);
+			} else if (key == "TYER" ) {
+				ID3_AddYear(id3, (LPCTSTR)val, true);
+			} else if ("COMM" == key) {
+				ID3_RemoveComments(id3,NULL);
+				ID3_AddComment(id3, val,TRUE);
+//			} else {
+//				delete id3;
+//				logger.log("bad or unsupported id3 key specified "+key);
+//				return FALSE;
+			}
 		}
 	}
 	flags_t result = id3->Update(uflag);
 	delete id3;
-	if (result == ID3TT_NONE) {
+	if (!result /*== ID3TT_NONE*/) {
 		return FALSE;
 		logger.log("unable to update id3 tag in " + file);
 	}
