@@ -4661,14 +4661,10 @@ MSongLib::dump(CString name) {
     i = (MMEMORY_RESERVE_BYTES);
     while (i < m_mem->next()) {
 		MRecord r(m_mem, i);
-		MBUtil::MemDump(m_mem->m_space + r.i(), r.length());
 		CString label(r.label());
 		if (r.length() >
 			(sizeof(MRecordt) + label.GetLength() + 1))
 			label += CS(" ") + r.getValp();
-
-//        sprintf(buf.p, "%07d %07d %07d %07d %07d %s\n",i,
-//			r.length(), r.prev(), r.next(), r.ptr(), r.label());
         sprintf(buf.p, "%07d %07d %07d %07d %07d %s\n",i,
 			r.length(), r.prev(), r.next(), r.ptr(), label);
 

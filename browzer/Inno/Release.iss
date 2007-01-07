@@ -12,7 +12,7 @@ Type: files; Name: "{commonprograms}\Muzikbrowzer.lnk";
 AppMutex=MuzikbrowzerAppMutex,Global\MuzikbrowzerAppMutex
 ;AppMutex=MuzikbrowzerAppMutex,Global\MuzikbrowzerAppMutex,MuzikbrowzerBitMapCutterAppMutex,Global\MuzikbrowzerBitMapCutterAppMutex
 AppName=Muzikbrowzer
-AppVerName=Muzikbrowzer 2.0.2 (built 2007-01-05 00:00:27)
+AppVerName=Muzikbrowzer 2.0.2 (built 2007-01-06 18:37:10)
 AppCopyright=Copyright (C) 2001-Present Pecan Ventures, LLC
 DefaultDirName={pf}\Muzikbrowzer
 DefaultGroupName=Muzikbrowzer
@@ -31,6 +31,7 @@ WelcomeLabel2=This will install [name/ver] on your computer.%n%nIt is recommende
 
 [Files]
 Source: "..\Release\Muzikbrowzer.exe"; DestDir: "{app}"; CopyMode: alwaysoverwrite
+Source: "..\..\MBTag\tagger\Release\mbtag.exe"; DestDir: "{app}"; CopyMode: alwaysoverwrite
 ;Source: "..\res\Muzikbrowzer.wav"; DestDir: "{app}"; CopyMode: alwaysoverwrite
 
 Source: "..\Help\Muzikbrowzer.chm"; DestDir: "{app}"; CopyMode: alwaysoverwrite
