@@ -729,7 +729,6 @@ CPlayerDlg::ShowBetaWarning() {
 
 void
 CPlayerDlg::saveConfig() {
-	AutoLog al("saveConfig");
 	int v = m_VolumeSlider.GetPos();
 	if (m_Config.ReplayGain())
 		v = m_VolumeGainBase;
@@ -738,7 +737,6 @@ CPlayerDlg::saveConfig() {
 }
 void
 CPlayerDlg::readConfig() {
-	AutoLog al("readConfig");
 	int v=m_VolumeGainBase;
 	m_Config.getRegistry("Volume", v, m_VolumeGainBase);
 	adjustVolume(v);
@@ -2307,7 +2305,7 @@ rememberSelections(CMapStringToString & map, CString sel,
 
 void 
 CPlayerDlg::OnSelchangeGenres(){
-	AutoLog al("OnSelchangeGenres");
+	//AutoLog al("OnSelchangeGenres");
 	m_UpdateNeeded[0] = TRUE;
 	m_UpdateNeeded[1] = TRUE;
 	m_UpdateNeeded[2] = TRUE;
@@ -2315,25 +2313,25 @@ CPlayerDlg::OnSelchangeGenres(){
 }
 void 
 CPlayerDlg::OnSelchangeArtists() {
-	AutoLog al("OnSelchangeArtists");
+	//AutoLog al("OnSelchangeArtists");
 	m_UpdateNeeded[1] = TRUE;
 	m_UpdateNeeded[2] = TRUE;
 	m_Albums.invalidate();
 }
 void 
 CPlayerDlg::OnSelchangeAlbums() {
-	AutoLog al("OnSelchangeAlbums");
+	//AutoLog al("OnSelchangeAlbums");
 	m_UpdateNeeded[2] = TRUE;
 	m_Songs.invalidate();
 }
 void 
 CPlayerDlg::OnSelchangeSongs() {
-	AutoLog al("OnSelchangeSongs");
+	//AutoLog al("OnSelchangeSongs");
 }
  // called by m_Artists::OnPaint
 BOOL 
 CPlayerDlg::UpdateArtists(){
-	AutoLog al("UpdateArtists");
+	//AutoLog al("UpdateArtists");
 	BOOL updated = FALSE;
 	static int lastsel = -1;
 	if (DBLOCKED) return updated;
@@ -2362,7 +2360,7 @@ CPlayerDlg::UpdateArtists(){
 // called by m_Albums::OnPaint
 BOOL 
 CPlayerDlg::UpdateAlbums() {
-	AutoLog al("UpdateAlbums");
+	//AutoLog al("UpdateAlbums");
 	BOOL updated = FALSE;
 	static int lastsel = -1;
 	if (DBLOCKED) return updated;
@@ -2389,7 +2387,7 @@ CPlayerDlg::UpdateAlbums() {
 }
 BOOL 
 CPlayerDlg::UpdateSongs(){
-	AutoLog al("UpdateSongs");
+	//AutoLog al("UpdateSongs");
 	BOOL updated = FALSE;
 	static int lastsel = -1;
 	if (DBLOCKED) return updated;
@@ -2436,7 +2434,7 @@ CPlayerDlg::UpdateSongs(){
 
 void 
 CPlayerDlg::OnSelchangePlaylist() {
-	AutoLog al("OnSelchangePlaylist");
+	//AutoLog al("OnSelchangePlaylist");
 	if (DBLOCKED) return;
 	int sel = m_Playlist.GetCurSel();
 	if (sel > -1) {
@@ -2450,7 +2448,7 @@ CPlayerDlg::OnSelchangePlaylist() {
 }
 void 
 CPlayerDlg::OnKillfocusVirtuals() {
-	AutoLog al("OnKillfocusVirtuals");
+	//AutoLog al("OnKillfocusVirtuals");
 	// Now that we have non virtual controls, need this
 	// to prevent misdirected actions from going to the
 	// most recent active virtual control.
@@ -2463,7 +2461,7 @@ CPlayerDlg::OnKillfocusVirtuals() {
 }
 void
 CPlayerDlg::OnGenresFocus( ) {
-	AutoLog al("OnGenresFocus");
+	//AutoLog al("OnGenresFocus");
 	*m_Control = (CExtendedListBox*)GetDlgItem(IDC_GENRES);
     PlayerStatusTempSet(_selectedGenre);
 	//OnSelchangeGenres();
@@ -2471,7 +2469,7 @@ CPlayerDlg::OnGenresFocus( ) {
 }
 void
 CPlayerDlg::OnArtistsFocus() {
-	AutoLog al("OnArtistsFocus");
+	//AutoLog al("OnArtistsFocus");
 	*m_Control = (CExtendedListBox*)GetDlgItem(IDC_ARTISTS);
     PlayerStatusTempSet(_selectedArtist);
 	//OnSelchangeArtists();
@@ -2479,7 +2477,7 @@ CPlayerDlg::OnArtistsFocus() {
 }
 void
 CPlayerDlg::OnAlbumsFocus() {
-	AutoLog al("OnAlbumsFocus");
+	//AutoLog al("OnAlbumsFocus");
 	*m_Control = (CExtendedListBox*)GetDlgItem(IDC_ALBUMS);
     PlayerStatusTempSet(_selectedAlbum);
 	//OnSelchangeAlbums();
@@ -2487,7 +2485,7 @@ CPlayerDlg::OnAlbumsFocus() {
 }
 void
 CPlayerDlg::OnSongsFocus() {
-	AutoLog al("OnSongsFocus");
+	//AutoLog al("OnSongsFocus");
 	*m_Control = (CExtendedListBox*)GetDlgItem(IDC_SONGS);
     PlayerStatusTempSet(_selectedSong);
 	//OnSelchangeSongs();
@@ -2495,7 +2493,7 @@ CPlayerDlg::OnSongsFocus() {
 }
 void
 CPlayerDlg::OnPlaylistFocus() {
-	AutoLog al("OnPlaylistFocus");
+	//AutoLog al("OnPlaylistFocus");
 	*m_Control = (CExtendedListBox*)GetDlgItem(IDC_PLAYLIST);
 	int sel = m_Playlist.GetCurSel();
 	if (sel > -1) {
@@ -2764,7 +2762,7 @@ CPlayerDlg::OnDelete() {
 
 void
 CPlayerDlg::OnPageUp() {
-	AutoLog al("OnPageUp");
+	//AutoLog al("OnPageUp");
     if (!m_Control->isList()) {
         return;
     }
@@ -2780,7 +2778,7 @@ CPlayerDlg::OnPageUp() {
 
 void
 CPlayerDlg::OnPageDown() {
-	AutoLog al("OnPageDown");
+	//AutoLog al("OnPageDown");
     if (!m_Control->isList()) {
         return;
     }
@@ -2880,14 +2878,14 @@ NULL);
 
 LRESULT
 CPlayerDlg::OnGraphNotify(WPARAM wParam, LPARAM lParam) {
-	AutoLog al("OnGraphNotify");
+	//AutoLog al("OnGraphNotify");
 	m_Player->HandleGraphEvent();
 	return 0;
 }
 
 LRESULT
 CPlayerDlg::OnPlayloop(WPARAM wParam, LPARAM lParam) {
-	AutoLog al("OnPlayloop");
+	//AutoLog al("OnPlayloop");
 	PlayLoop();
 	return 0;
 }
@@ -3011,7 +3009,7 @@ CPlayerDlg::HandleIRMessage(int key) {
 }
 void
 CPlayerDlg::nextDlgCtrl() {
-	AutoLog al("nextDlgCtrl");
+	//AutoLog al("nextDlgCtrl");
 	CWnd * f = GetFocus();
 	if ((CWnd * )&m_Playlist == f
 		|| &m_SearchClear == f
@@ -3028,7 +3026,7 @@ CPlayerDlg::nextDlgCtrl() {
 }
 void
 CPlayerDlg::prevDlgCtrl() {
-	AutoLog al("prevDlgCtrl");
+	//AutoLog al("prevDlgCtrl");
 	CWnd * f = GetFocus();
 	if ((&m_Genres== f
 		|| &m_SearchClear == f
@@ -3061,8 +3059,7 @@ PostMyIdleMessage() {
 }
 LRESULT
 CPlayerDlg::OnPostMyIdle(WPARAM wParam, LPARAM lParam) {
-	AutoLog al("OnPostMyIdle");
-//	OutputDebugString("OnPostMyIdle");
+	//AutoLog al("OnPostMyIdle");
     PlayerStatusRevert();
     return 0;
 }
@@ -3669,7 +3666,7 @@ CPlayerDlg::calcDuration() {
 	for(i = 0 ; i < size ; ++i) {
 		duration = 0;
 		CString sDuration = m_mlib._playlist[i]->getId3("TLEN");
-		logger.ods("Duration "+sDuration);
+		//logger.ods("Duration "+sDuration);
 		if (sDuration != "") {
 			// TLEN is in milliseconds but we're counting up seconds
 			int millis = atoi((LPCTSTR)sDuration);
@@ -3876,7 +3873,7 @@ CPlayerDlg::OnUserEditSong() {
 
 	if (ret == IDOK) {
 		DBLOCKED = TRUE;
-		logger.ods("Deleting, DBLOCKED=TRUE");
+		//logger.ods("Deleting, DBLOCKED=TRUE");
 		OnSearchClear();
 		CStringArray deletes;
 		CWaitCursor c;
@@ -3887,23 +3884,17 @@ CPlayerDlg::OnUserEditSong() {
 		}
 		if (ret) {
 			CWaitCursor c;
-			logger.ods("pre initDb");
 			initDb();
-			logger.ods("post initDb");
 //			DBLOCKED = FALSE;
 //			_selectedGenre = "";
 			OnSelchangeGenres();
-			logger.ods("post 0");
 			updatePlaylistPostEdit();
-			logger.ods("post 1");
 			if (m_ModifyDelete) {
 				m_Config.AddDeletedFiles(deletes);
 			}
-			logger.ods("post 2");
 
 		}
 		DBLOCKED = FALSE;
-		logger.ods("Deleting, DBLOCKED=FALSE");
 	}
 
 	if (dialog)
@@ -4203,7 +4194,7 @@ CPlayerDlg::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message) {
 
 void 
 CPlayerDlg::OnNcLButtonDown(UINT nHitTest, CPoint point) {
-	AutoLog al("OnNcLButtonDown");
+	//AutoLog al("OnNcLButtonDown");
 	CPoint cpoint(point);
 	ScreenToClient(&cpoint);
 	m_AdjustLibrary = 0;
@@ -4225,14 +4216,14 @@ CPlayerDlg::OnNcLButtonDown(UINT nHitTest, CPoint point) {
 }
 void 
 CPlayerDlg::OnLButtonUp(UINT nFlags, CPoint point) {
-	AutoLog al("OnLButtonUp");
+	//AutoLog al("OnLButtonUp");
 	ClientToScreen(&point);
 	OnNcLButtonUp(nFlags,point);
 }
 
 void 
 CPlayerDlg::OnNcLButtonUp(UINT nHitTest, CPoint point) {
-	AutoLog al("OnNcLButtonUp");
+	//AutoLog al("OnNcLButtonUp");
 	if (m_LibDrag) {
 		ReleaseCapture();
 		m_LibDrag = FALSE;
@@ -4333,7 +4324,7 @@ CPlayerDlg::OnNcMouseMove(UINT nHitTest, CPoint point) {
 
 void
 CPlayerDlg::AdjustLibraryWidths(CPoint &apoint) {
-	AutoLog al("AdjustLibraryWidths");
+	//AutoLog al("AdjustLibraryWidths");
 	Control * p1,*p2, *p3, *p4 ;
 	CPoint point = m_LibDragPoint;
 
@@ -4523,7 +4514,7 @@ CPlayerDlg::OnSkinPic(UINT wParam) {
 }
 void
 CPlayerDlg::OnMusicAdd() {
-	AutoLog al("OnMusicAdd");
+	//AutoLog al("OnMusicAdd");
 	OnSearchClear();
 	CStringArray dirs,excludes;
 	CString dflt;
@@ -4557,7 +4548,7 @@ CPlayerDlg::OnMusicAdd() {
 }
 void 
 CPlayerDlg::OnMusicScan() {
-	AutoLog al("OnMusicScan");
+	//AutoLog al("OnMusicScan");
 	OnSearchClear();
 	CStringArray dirs,excludes;
 	m_Config.GetDirs(dirs,excludes);
@@ -4572,7 +4563,7 @@ CPlayerDlg::OnMusicScan() {
 }
 void
 CPlayerDlg::OnMusicScanNew() {
-	AutoLog al("OnMusicScanNew");
+	//AutoLog al("OnMusicScanNew");
 	OnSearchClear();
 	CStringArray dirs,excludes;
 	m_Config.GetDirs(dirs,excludes);
@@ -4697,7 +4688,7 @@ CPlayerDlg::OnCtlColor( CDC* pDC, CWnd* pWnd, UINT nCtlColor ) {
 
 void 
 CPlayerDlg::OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruct) {
-	AutoLog al("OnDrawItem");
+	//AutoLog al("OnDrawItem");
 
     switch (nIDCtl)	{
 //    case IDC_BUTTON_MINIMIZE:
@@ -5020,7 +5011,7 @@ CPlayerDlg::OnReverse() {
 
 LRESULT
 CPlayerDlg::OnVolume(WPARAM wParam, LPARAM lParam) {
-	AutoLog al("OnVolume(W,P)");
+	//AutoLog al("OnVolume(W,P)");
 	adjustVolume();
 	m_VolumeGainBase = m_VolumeSlider.GetPos();
 	PlayerStatusTempSet(NTS(m_VolumeGainBase)+"%");
@@ -5028,9 +5019,9 @@ CPlayerDlg::OnVolume(WPARAM wParam, LPARAM lParam) {
 }
 void 
 CPlayerDlg::adjustVolume() {
-	AutoLog al("adjustVolume()");
+	//AutoLog al("adjustVolume()");
 	if (m_Player->SetVolume(m_VolumeSlider.GetPos())) {
-		logger.ods("Volume:"+NTS(m_VolumeSlider.GetPos()));
+		//logger.ods("Volume:"+NTS(m_VolumeSlider.GetPos()));
 //		updateVolumeLabel();
 	} else {
 //		logger.log("Unable to set volume");
@@ -5048,23 +5039,23 @@ CPlayerDlg::VolumeGainAdjust(const double rg) {
 	if (!m_Config.ReplayGain())
 		return;
 	int newVol = m_VolumeGainBase + ((double)2 * rg);
-	logger.ods("VGA "+NTS(m_VolumeGainBase)+" + (2*"+NTS(rg)+") = "+NTS(newVol));
+	logger.logd("VGA "+NTS(m_VolumeGainBase)+" + (2*"+NTS(rg)+") = "+NTS(newVol));
 	adjustVolume(newVol);
 }
 void 
 CPlayerDlg::adjustVolume(int level) {
-	AutoLog al("adjustVolume(L)");
+	//AutoLog al("adjustVolume(L)");
 	m_VolumeSlider.SetPos(level);
 	adjustVolume();
 }
 void 
 CPlayerDlg::OnVolUp() {
-	AutoLog al("OnVolUp");
+	//AutoLog al("OnVolUp");
 	adjustVolume(m_VolumeSlider.GetPos() + 1);
 }
 void 
 CPlayerDlg::OnVolDown() {
-	AutoLog al("OnVolDown");
+	//AutoLog al("OnVolDown");
 	adjustVolume(m_VolumeSlider.GetPos() - 1);
 }
 
@@ -5077,12 +5068,12 @@ CPlayerDlg::InputClose() {
 
 void 
 CPlayerDlg::killAlbumArt() {
-	AutoLog al("killAlbumArt");
+	//AutoLog al("killAlbumArt");
 	m_Picture.unload();
 }
 void 
 CPlayerDlg::displayAlbumArt(const CString & file, const CString & album) {
-	AutoLog al("displayAlbumArt");
+	//AutoLog al("displayAlbumArt");
 //	return;
 
 	if (""== file) {

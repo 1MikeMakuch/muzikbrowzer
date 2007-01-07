@@ -702,7 +702,7 @@ MusicLib::getGenres(CStringArray & box) {
 }
 int
 MusicLib::getArtists(const CString & genrename, CExtendedListBox & box) {
-	AutoLog al("mdb::getArtists");
+	//AutoLog al("mdb::getArtists");
 	MList artistList = m_SongLib.artistList(genrename);
 	MList::Iterator artistIter(artistList);
 	
@@ -788,7 +788,7 @@ public:
 int
 MusicLib::getAlbums(const CString & genrename, const CString & artistname,
 				   CExtendedListBox & box, BOOL AlbumSortAlpha) {
-	AutoLog al("mdb::getAlbums");
+	//AutoLog al("mdb::getAlbums");
 
 	MList albumList = m_SongLib.albumList(genrename, artistname);
 	MList::Iterator albumIter(albumList);
@@ -837,12 +837,12 @@ MusicLib::getAlbums(const CString & genrename, const CString & artistname,
 }
 int
 MusicLib::getSongCount() {
-	AutoLog al("mdb::getSongCount");
+	//AutoLog al("mdb::getSongCount");
 	return m_SongLib.m_files.getLength();
 }
 CString
 MusicLib::getSongFileName(const int i) {
-	AutoLog al("mdb::getSongFileName");
+	//AutoLog al("mdb::getSongFileName");
 	return m_SongLib.m_files.getAt(i);
 }
 
@@ -851,7 +851,7 @@ MusicLib::getSongs(const CString & genrename,
 				  const CString & artistname,
 				  const CString & albumname,
 				  CExtendedListBox & box) {
-	AutoLog al("mdb::getSongs");
+	//AutoLog al("mdb::getSongs");
 //	MBAutoTimer t("MusicLib::getSongs");
 	MList songList = m_SongLib.songList(genrename, artistname, albumname);
 	MList::Iterator songIter(songList);
@@ -884,7 +884,7 @@ MusicLib::getSongs(const CString & genrename,
 
 int
 MusicLib::getPlaylist(CExtendedListBox & box) {
-	AutoLog al("mdb::getPlaylist");
+	//AutoLog al("mdb::getPlaylist");
 	for (PlaylistNode *p = _playlist.head();
 			p != (PlaylistNode*)0;
 			p = _playlist.next(p)) {
@@ -916,7 +916,7 @@ MusicLib::getPlaylist(CExtendedListBox & box) {
 Song
 MusicLib::getSong(const CString & genre, const CString & artist,
 				const CString & album, const CString & title) {
-	AutoLog al("mdb::getSong");
+	//AutoLog al("mdb::getSong");
 	MRecord songr = m_SongLib.getSong(genre, artist, album, title);
 	Song song = new CSong;
 	song->setId3("TCON", genre);
@@ -1691,7 +1691,7 @@ MusicLib::export(ProgressDlg * dialog, ExportDlg * exp,
 	if (exp->m_Html) {
 		ExpHtm.log(HtmlTmplTail);
 	}
-	logger.ods("exported " + numToString(ctr) + " songs");
+	logger.logd("exported " + numToString(ctr) + " songs");
 
 }
 
@@ -2703,7 +2703,7 @@ MusicLib::dumpPL(int playlistCurrent) {
         buf += " ";
     }
     buf += "\r\n";
-    logger.ods(buf);
+    //logger.ods(buf);
 
 }
 void
@@ -2720,7 +2720,7 @@ MusicLib::movePlaylistUp(int plcurrent, int element) {
 }
 CString
 MusicLib::getLibraryCounts() {
-	AutoLog al("mdb::getLibraryCounts");
+	//AutoLog al("mdb::getLibraryCounts");
 	if (m_libCounts.GetLength())
 		return m_libCounts;
 	else
@@ -2728,7 +2728,7 @@ MusicLib::getLibraryCounts() {
 }
 CString
 MusicLib::IgetLibraryCounts() {
-	AutoLog al("mdb::IgetLibraryCounts");
+	//AutoLog al("mdb::IgetLibraryCounts");
 	int genrecount, artistcount, albumcount, songcount;
 	genrecount = artistcount = albumcount = songcount = 0;
 	MList genreList = m_SongLib.genreList();
@@ -2779,7 +2779,7 @@ MusicLib::IgetLibraryCounts() {
 BOOL
 MusicLib::apic(const CString & file, uchar *& rawdata, size_t & nDataSize, 
 			   const CString & album) {
-	AutoLog al("mdb::apic");
+	//AutoLog al("mdb::apic");
 
 	//	if (m_picCache.read(file, rawdata, nDataSize)) {
 	//		return TRUE;
