@@ -66,6 +66,12 @@ public:
 	virtual BOOL write(MBTag & tags, const CString & file);
 	virtual CString getComments(MBTag & tags, double & rggain, const CString & file);
 	virtual CString getInfo(MBTag & tags, const CString & file);
+	virtual BOOL getArt(
+			MBTag & tags,
+			const CString & file, 
+			unsigned char *& rawdata, 
+			size_t & nDataSize, 
+			const CString & album);
 	virtual CString NativeKey2Id3Key(const CString & flac) {
 		if (m_convertKeys && m_flac2id3.contains(flac))
 			return m_flac2id3.getVal(flac);
@@ -83,6 +89,32 @@ private:
 	MyHash m_id32flac;
 	BOOL m_convertKeys;
 };
+BOOL
+MBFlacTag::getArt(
+			MBTag & tags,
+			const CString & file, 
+			unsigned char *& rawdata, 
+			size_t & nDataSize, 
+			const CString & album) {
+	Picture picture;
+	FLAC__StreamMetadata_Picture_Type type = (FLAC__StreamMetadata_Picture_Type)(-1);
+	char * mime_type=0;
+	FLAC__byte * desc=0;
+	unsigned int width,height,depth,colors;
+	width=height=1000;
+	depth=32;
+	colors=-1;
+	bool r = FLAC::Metadata::get_picture(file,picture,type,mime_type,desc,
+		width,height,depth,colors);
+	if (r) {
+		nDataSize = picture.get_data_length();
+		rawdata = new BYTE [ nDataSize ];
+		memcpy(rawdata,picture.get_data(),nDataSize);
+		
+		return TRUE;
+	}
+	return MBTagType::getArt(tags,file,rawdata,nDataSize,album);
+}
 
 BOOL
 MBFlacTag::read(MBTag & tags, const CString & file, const BOOL xvert) {

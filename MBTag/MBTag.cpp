@@ -416,6 +416,9 @@ TEST(MBTag,test)
 	CTime t = CTime::GetCurrentTime();
 	CString OrigName = mbtag.getVal("TPE1");
 	CString name = "artist name " + t.Format("%Y%m%d:%H%M%S ");
+	uchar * rawdata = NULL;
+	size_t size=0;
+	mbtag.getArt("..\\testdata\\1.flac",rawdata,size,"test");
 
 	
 	mbtag.setVal("TPE1",name);

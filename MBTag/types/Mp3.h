@@ -199,13 +199,14 @@ MBMp3Tag::write(MBTag & tags, const CString & file) {
 		return FALSE;
 	ID3_Tag * id3 = new ID3_Tag;
 	size_t tagsize = id3->Link(file, ID3TT_ALL);
-	flags_t uflag = 0;//ID3TT_ID3V2;
-	if (id3->HasV1Tag()) {
-		uflag |= ID3TT_ID3V1;
-	}
-	if (id3->HasV2Tag()) {
-		uflag |= ID3TT_ID3V2;
-	}
+	flags_t uflag = ID3TT_ID3V1 | ID3TT_ID3V2;
+//	if (id3->HasV1Tag()) {
+//		uflag |= ID3TT_ID3V1;
+//	}
+//	if (id3->HasV2Tag()) {
+//		uflag |= ID3TT_ID3V2;
+//	}
+	
 	if (tags.IsDeleteTag()) {
 		BOOL r = id3->Strip(uflag);
 		delete id3;
