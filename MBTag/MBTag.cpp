@@ -266,6 +266,30 @@ MBTag::getArt(
 
 	return FALSE;
 }
+BOOL
+MBTag::setArt(
+			const CString & file, 
+			unsigned char *& rawdata, 
+			size_t & nDataSize)
+{
+	if (file.GetLength())
+		m_file = file;
+	else if (!m_file.GetLength())
+		return FALSE;
+
+	if (!m_tagobj) {
+		FExtension fext(m_file);
+		m_tagobj = getType(fext);
+	}
+	if (m_tagobj)
+		return m_tagobj->setArt(
+			*this,
+			m_file,
+			rawdata,
+			nDataSize);
+
+	return FALSE;
+}
 CString
 MBTag::Id3Key2NativeKey(const CString & key) {
 	if (!m_tagobj) {
@@ -418,7 +442,8 @@ TEST(MBTag,test)
 	CString name = "artist name " + t.Format("%Y%m%d:%H%M%S ");
 	uchar * rawdata = NULL;
 	size_t size=0;
-	mbtag.getArt("..\\testdata\\1.flac",rawdata,size,"test");
+	BOOL r =mbtag.getArt("..\\testdata\\1.flac",rawdata,size,"test");
+	CHECK(TRUE == r);
 
 	
 	mbtag.setVal("TPE1",name);

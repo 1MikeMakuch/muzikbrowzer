@@ -7,6 +7,8 @@
 #include "MBTag.h"
 #define LOGOWNER
 #include "MyLog.h"
+#include "FileUtils.h"
+#include "FExtension.h"
 
 #ifdef WIN32
 //	#include <config.h.win32>
@@ -40,6 +42,7 @@ static CString Key ;
 static CString Val;
 static int	updateFlag = 0;
 static int commentsOnly = 0;
+static char * filename =NULL;
 
 int setKey(MBTag & tag, const char * value){
 	Key = tag.Id3Key2NativeKey(value);
@@ -78,8 +81,8 @@ MBTagHandler tagopts[] = {
 	{"dt",	"delete tag", deleteTag, 0},
 	{"df",	"delete tag field", deleteField, 1},
 	{"c",	"display comments only (COMM, COMMENTS, DESCRIPTION",showComments, 0},
-//	{"getart", "gets art from tag, writes to <file>", getArt, 1},
-//	{"setart", "read from <file>, add to tag (if applicable)", updateApic, 1},
+	{"getart", "gets art from tag, writes to <file> (mp3/ogg)", getArt, 1},
+	{"setart", "read from <file>, add to tag (mp3/ogg)", updateApic, 1},
 	{"help",	"full help", help, 0},
 	{ 0, 0, 0 }
 };
@@ -110,9 +113,44 @@ int deleteField(MBTag & tag, const char * value) {
 }
 
 int getArt(MBTag & tag, const char * value) {
+	size_t size = 0;
+	unsigned char * data = NULL;
+
+	BOOL pic = tag.getArt(filename,data,size,"");
+	
+
+	if (pic && size > 50) {
+		if (!FileUtil::BufToFile(data,size,value)) {
+			printf("unable to write %s\n",value);
+			if (data)
+				delete [] data;
+			return 0;
+		}
+	} else {
+		printf("no art");
+	}
+	if (data)
+		delete [] data;
+
+
 	return 0;
 }
 int updateApic(MBTag & tag, const char * value) {
+	unsigned char * buf=NULL;
+	unsigned size = 0;
+	if (!FileUtil::FileToBuf(buf,size,value)) // get size
+		return 0;
+	buf = new BYTE[size];
+	if (!FileUtil::FileToBuf(buf,size,value)) { // get buf
+		delete buf;
+		return 0;
+	}
+	FExtension f(value);
+	tag.setVal("mimetype","image/"+f.ext());
+	BOOL r = tag.setArt(filename,buf,size);
+
+
+	delete buf;
 	return 0;
 }
 void usage();
@@ -195,7 +233,7 @@ int _tmain(int argc, TCHAR * argv[], TCHAR * envp[])
 		help(m,"");
 		exit(0);
 	}
-	char * filename = argv[argc-1];
+	filename = argv[argc-1];
 	int fd = open(filename, O_RDONLY);
 	if (fd < 1) {
 		cerr << "can't open " << filename << "!" << endl;

@@ -288,6 +288,45 @@ FileUtil::StringToFile(const CString & string, const CString & file) {
 	cfile.Flush();
 	return TRUE;
 }
+BOOL
+FileUtil::BufToFile(const unsigned char * string, const UINT size, const CString & file) {
+	CFile cfile;
+	CFileException e;
+    BOOL r = cfile.Open(file, 
+        CFile::modeCreate
+        |CFile::modeWrite
+        |CFile::shareDenyNone,
+        &e);
+	if (0 == r)
+		return r;
+	cfile.Write(string, size);
+	cfile.Flush();
+	return TRUE;
+}
+BOOL 
+FileUtil::FileToBuf(unsigned char * buf, UINT & size, const CString & file) {
+	CString string;
+	CFile myFile;
+	CFileException fileException;
+
+	if ( !myFile.Open( file,
+        CFile::modeRead,
+        &fileException ))
+	{
+        return FALSE;
+	}
+	size = myFile.GetLength();
+	if (NULL == buf)
+		return TRUE;
+
+    if (size && buf) {
+        myFile.Read(buf, size );
+		myFile.Close();
+	}
+	return TRUE;
+}
+
+
 TEST(FileUtilFileToString,StringToFile)
 {
 	CString s = "123";

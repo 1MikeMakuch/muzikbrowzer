@@ -5,6 +5,7 @@
 #include "MBTag.h"
 #include "MyString.h"
 #include "TestHarness/TestHarness.h"
+#include "id3.h"
 #include "id3/tag.h"
 #include "id3/misc_support.h"
 #include "MyID3LibMiscSupport.h"
@@ -25,6 +26,11 @@ class MBMp3Tag : public MBTagType {
 			unsigned char *& rawdata, 
 			size_t & nDataSize, 
 			const CString & album);
+	virtual BOOL setArt(
+		MBTag & tags,
+		const CString & file,
+		unsigned char *& rawdata, 
+		size_t & nDataSize);
 };
 
 BOOL
@@ -61,6 +67,43 @@ MBMp3Tag::getArt(
 	delete iter;
 	return MBTagType::getArt(tags,file,rawdata,nDataSize,album);
 }
+size_t id3_RemoveFrame(ID3_FrameID frameid, ID3_Tag *tag) {
+	size_t num_removed = 0;
+	ID3_Frame *frame = NULL;
+
+	if (NULL == tag) {
+		return num_removed;
+	}
+
+	while ((frame = tag->Find(frameid))) {
+		frame = tag->RemoveFrame(frame);
+		delete frame;
+		num_removed++;
+	}
+	return num_removed;
+}
+BOOL 
+MBMp3Tag::setArt(
+		MBTag & tags,
+		const CString & file,
+		unsigned char *& rawdata, 
+		size_t & nDataSize){
+	ID3_Tag id3;
+	size_t tagsize = id3.Link(file, ID3TT_ALL);
+
+	id3_RemoveFrame(ID3FID_PICTURE, &id3);
+
+	ID3_Frame *hFrame = new ID3_Frame(ID3FID_PICTURE);
+// 	hFrame->GetField(ID3FN_DESCRIPTION)->Set(pic_description);
+	hFrame->GetField(ID3FN_PICTURETYPE)->Set((uint32) 0);
+	hFrame->GetField(ID3FN_MIMETYPE)->Set(tags.getVal("mimetype"));
+	hFrame->GetField(ID3FN_DATA)->Set(rawdata, nDataSize);
+	id3.AttachFrame(hFrame);
+	flags_t updated = id3.Update(ID3TT_ID3V2);
+	return TRUE;
+}
+
+
 static BOOL
 GetId3Version(const CString & file, int & version) {
 	version = 0;

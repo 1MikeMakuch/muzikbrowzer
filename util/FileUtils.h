@@ -18,6 +18,8 @@ public:
 	static void BmpLog(HBITMAP, CString);
 	static CString FileToString(const CString file);
 	static BOOL StringToFile(const CString & string, const CString & file);
+	static BOOL BufToFile(const unsigned char * buf, const UINT size, const CString & file);
+	static BOOL FileToBuf(unsigned char * buf, UINT & size, const CString & file);
 	static BOOL IsParentPath(const CString & fullPath,
 		const CString & candPath);
 	static CString ParentDir(const CString & path);

@@ -49,6 +49,10 @@ class MBTag : public MyHash {
 			unsigned char *& rawdata, 
 			size_t & nDataSize, 
 			const CString & album);
+		BOOL setArt(
+			const CString & file, 
+			unsigned char *& rawdata, 
+			size_t & nDataSize);
 		void SetType(const CString & type);
 		BOOL ReadAllTags() { return m_ReadAllTags;}
 		void SetReadAllTags(const BOOL r) { m_ReadAllTags=r;}
@@ -124,6 +128,11 @@ public:
 			unsigned char *& rawdata, 
 			size_t & nDataSize, 
 			const CString & album);
+	virtual BOOL setArt(
+		MBTag & tags,
+		const CString & file,
+		unsigned char *& rawdata, 
+		size_t & nDataSize){return FALSE;};
 };
 
 #endif

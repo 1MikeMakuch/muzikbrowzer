@@ -9,6 +9,8 @@
 #include <afxtempl.h>
 #include "SortedArray.h"
 #include "MyLog.h"
+#include "ocidl.h"
+#include "olectl.h"
 
 #include "FLAC++/metadata.h"
 
@@ -72,6 +74,11 @@ public:
 			unsigned char *& rawdata, 
 			size_t & nDataSize, 
 			const CString & album);
+	virtual BOOL setArt(
+		MBTag & tags,
+		const CString & file,
+		unsigned char *& rawdata, 
+		size_t & nDataSize);
 	virtual CString NativeKey2Id3Key(const CString & flac) {
 		if (m_convertKeys && m_flac2id3.contains(flac))
 			return m_flac2id3.getVal(flac);
@@ -115,7 +122,72 @@ MBFlacTag::getArt(
 	}
 	return MBTagType::getArt(tags,file,rawdata,nDataSize,album);
 }
+BOOL 
+MBFlacTag::setArt(
+		MBTag & tags,
+		const CString & file,
+		unsigned char *& rawdata, 
+		size_t & nDataSize) {
 
+	IPicture*		iPicture;
+	HGLOBAL hGlobal = GlobalAlloc(GMEM_MOVEABLE, nDataSize);
+	void* pData = GlobalLock(hGlobal);
+	memcpy(pData, rawdata, nDataSize);
+	GlobalUnlock(hGlobal);
+	IStream* pStream = NULL;
+	BOOL loaded = FALSE;
+	if (CreateStreamOnHGlobal(hGlobal, TRUE, &pStream) == S_OK) {
+		HRESULT hr ;
+		if ((hr = OleLoadPicture(pStream, nDataSize, FALSE, IID_IPicture, 
+			(LPVOID *)&iPicture)) == S_OK) {
+			loaded = TRUE;
+		}
+		pStream->Release();
+	}
+	if (!loaded) 
+		return FALSE;
+	long width,height;
+	iPicture->get_Width(&width);
+	iPicture->get_Height(&height);
+	//iPicture->
+	iPicture->Release();
+
+	width = MulDiv(width,	96/*pDC->GetDeviceCaps(LOGPIXELSX)*/, 2540);
+	height = MulDiv(height,	96/*pDC->GetDeviceCaps(LOGPIXELSY)*/, 2540);	
+
+	Picture * picture = new Picture;
+	picture->set_data((FLAC__byte*)rawdata,nDataSize);
+
+	picture->set_depth(32);
+	picture->set_width(width);
+	picture->set_height(height);
+	picture->set_mime_type(tags.getVal("mimetype"));
+
+	FLAC::Metadata::Chain chain;
+	if (!chain.is_valid())
+		return FALSE;
+	if (!chain.read(file))
+		return FALSE;
+	FLAC::Metadata::Iterator iter;
+	iter.init(chain);
+	if (!iter.is_valid())
+		return FALSE;
+	bool more = TRUE;
+	BOOL added = FALSE;
+	while(more) {
+		FLAC__MetadataType type = iter.get_block_type();
+		if (FLAC__METADATA_TYPE_PICTURE == type) {
+			iter.set_block(picture);
+			added = TRUE;
+			break;
+		}
+		more = iter.next();
+	}
+	if (!added)
+		iter.insert_block_after(picture);
+
+	return chain.write();
+}
 BOOL
 MBFlacTag::read(MBTag & tags, const CString & file, const BOOL xvert) {
 	m_convertKeys = xvert;
@@ -128,10 +200,11 @@ MBFlacTag::read(MBTag & tags, const CString & file, const BOOL xvert) {
 	int i;
     char *decoded_value;
 	CString out,error;
-	
-	if (vc.get_num_comments() < 1) {
-		return FALSE;
-	}
+
+//  Don't do this, might have an image and/or Duration for getInfo.
+//	if (vc.get_num_comments() < 1) {
+//		return FALSE;
+//	}
 	tags.setVal("FILE", file);
 	int ectr = 0;
 	for (i = 0; i < vc.get_num_comments(); i++)
@@ -180,6 +253,28 @@ MBFlacTag::read(MBTag & tags, const CString & file, const BOOL xvert) {
 				D *= 1000; // milliseconds
 				tags.setVal("TLEN",NTS(D));
 			}
+		}
+	}
+	if (tags.GettingInfo()) {
+		Picture picture;
+		FLAC__StreamMetadata_Picture_Type type = (FLAC__StreamMetadata_Picture_Type)(-1);
+		char * mime_type=0;
+		FLAC__byte * desc=0;
+		unsigned int width,height,depth,colors;
+		width=height=1000;
+		depth=32;
+		colors=-1;
+		bool r = FLAC::Metadata::get_picture(file,picture,type,mime_type,desc,
+			width,height,depth,colors);
+		if (r) {
+			mime_type = (char *)picture.get_mime_type();
+			width = picture.get_width();
+			height = picture.get_height();
+			desc = (unsigned char*)picture.get_description();
+			CString tmp;
+			tmp = CS(mime_type) + " " + 
+				NTS(width)+"x"+NTS(height)+" "+desc;
+			tags.AppendInfo("Image",tmp);
 		}
 	}
 
