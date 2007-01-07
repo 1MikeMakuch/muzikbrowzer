@@ -2397,7 +2397,7 @@ MusicLib::preModifyID3(Song & oldSong, Song & newSong) {
 	msg += "\r\n";
 
 	BOOL writeable = TRUE;
-	CString unwmsg,multiVals;
+	CString unwmsg,multiVals,VerCompProbFiles,VerCompDesc,lastVCD,tmp;
     for (PlaylistNode *p = songs.head();
 	  p != (PlaylistNode*)0; p = songs.next(p))
     {
@@ -2414,6 +2414,14 @@ MusicLib::preModifyID3(Song & oldSong, Song & newSong) {
 		if (mbtag.HasMultiVals(file)) {
 			multiVals += file + "\r\n";
 		}
+		if (mbtag.VerCompProb()) {
+			VerCompProbFiles += file + "\r\n";
+			tmp = mbtag.VerCompDesc();
+			if (tmp != lastVCD) {
+				VerCompDesc += tmp + "\r\n";
+				lastVCD = tmp;
+			}
+		}
     }
 	if (!writeable) {
 		unwmsg = "The following file(s) are unwriteable.\r\nEdit not performed.\r\n\r\n" + unwmsg;
@@ -2425,8 +2433,24 @@ MusicLib::preModifyID3(Song & oldSong, Song & newSong) {
 		CString mmsg = "The following files have more than one\r\nGenre, Artist, Album, Title, Date or Track tag field.\r\nContinuing with this edit will replace the multiple\r\nfields with a single one. Ok to continue or Cancel.\r\n\r\n";
 		mmsg += multiVals;
 		int r = MBMessageBox("Advisory",mmsg,TRUE,TRUE);
-		if (0 == 1) {
+		if (0 == r) {
 			logger.log("Edit cancelled due to "+mmsg);
+			return FALSE;
+		}
+	}
+	if (VerCompDesc.GetLength()) {
+		CString vmsg ;
+		vmsg 
+		<< "There is a tag version compatibility issue with the file(s)"<<"\r\n"
+		<< "listed below. You should be familiar with the Help chapter"<<"\r\n"
+		<< "on Tags before proceeding. Click Ok to proceed or Cancel."<<"\r\n"
+		<< "\r\n"
+		<< "Advisory: " + VerCompDesc
+		<< "\r\n\r\n" + VerCompProbFiles;
+
+		int r = MBMessageBox("Advisory",vmsg,TRUE,TRUE);
+		if (0 == r) {
+			logger.log("Edit cancelled due to "+vmsg);
 			return FALSE;
 		}
 	}
@@ -3494,7 +3518,7 @@ int
 MList::prependKV(const CString & k, const CString & v) 
 {
 	CString tmp = k + " " + v;
-	int s = MRecord::needed(tmp) + 1; // one more NULL
+	int s = MRecord::needed(tmp);
 	int pi = m_mem->alloc(s);
 	if (head() == -1)
 		head() = 0;
@@ -4710,12 +4734,18 @@ MSongLib::validate() {
 		char * label = (char*)m_mem->addr(i + sizeof(MRecordt));
 		if (label) {
 			int llen = strlen(label);
-			if (llen != rlength - (sizeof(MRecordt) + 1)) {
-				init(TRUE);
-				CString msg = "Muzikbrowzer database corrupted.\r\n";
-				msg += "Perform a Complete Rebuild.";
-				MBMessageBox("Error", msg);
-				return -1;
+			int accum = sizeof(MRecordt) + 1 + llen;
+			// Check for single label or k/v pair
+			if (accum != rlength) {
+				char * val = label + llen + 1;
+				accum += strlen(val) + 1;
+				if (accum != rlength) {
+					init(TRUE);
+					CString msg = "Muzikbrowzer database corrupted.\r\n";
+					msg += "Perform a Complete Rebuild.";
+					MBMessageBox("Error", msg);
+					return -1;
+				}
 			}
 		}
         i += rlength;

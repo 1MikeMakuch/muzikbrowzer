@@ -75,6 +75,11 @@ class MBTag : public MyHash {
 		void ClearComments() { m_comments="";}
 		CString GetComments() { return m_comments; }
 
+		BOOL VerCompProb(){return m_VerCompProb;}
+		CString VerCompDesc() { return m_VerCompDesc;}
+		void VerCompDesc(const CString & desc);
+
+
 	private:
 		CString m_file;
 		MBTagType * m_tagobj;
@@ -85,6 +90,8 @@ class MBTag : public MyHash {
 		CString m_comments;
 		BOOL m_DeleteTag;
 		MyHash m_DeleteKeys;
+		CString m_VerCompDesc;
+		BOOL m_VerCompProb;
 		
 		
 };

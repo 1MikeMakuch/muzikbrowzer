@@ -61,10 +61,51 @@ MBMp3Tag::getArt(
 	delete iter;
 	return MBTagType::getArt(tags,file,rawdata,nDataSize,album);
 }
+static BOOL
+GetId3Version(const CString & file, int & version) {
+	version = 0;
+	CFile myFile;
+	CFileException fileException;
+    int count1 = 0;
+    int count3 = 0;
+
+	if ( !myFile.Open( file,
+        CFile::modeRead,
+        &fileException ))
+	{
+        CString msg = "Unable to read ";
+		msg += file;
+		msg += "\r\n";
+        return FALSE;
+	}
+	BOOL r = FALSE;
+    if (myFile.GetLength() > 4) {
+        char buf[5];
+        myFile.Read(buf, 4);
+		buf[4] = 0;
+		if (strnicmp("id3",buf,3) == 0) {
+			version = buf[3];
+			r = TRUE;
+		}
+	}
+	myFile.Close();
+
+	return r;
+}
 BOOL
 MBMp3Tag::read(MBTag & tags, const CString & file, const BOOL xvert) {
 	if (!file.GetLength())
 		return FALSE;
+
+	int version;
+	if (GetId3Version(file,version) && 4 == version) {
+		MBWmaTag wma;
+		BOOL r = wma.read(tags,file,xvert);
+		if (r) {
+			tags.VerCompDesc("ID3v2.4 tag will be converted to ID3v2.3");
+		}
+		return r;
+	}
 
 	if (!tags.ReadAllTags()) {
 		MBWmaTag wma;

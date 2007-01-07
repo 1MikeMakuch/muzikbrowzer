@@ -80,6 +80,7 @@ MBTag::init() {
 	m_GetInfo = FALSE;
 	m_GetComments = FALSE;
 	m_DeleteTag = FALSE;
+	m_VerCompProb = FALSE;
 }
 MBTag::MBTag() {
 	init();
@@ -184,6 +185,11 @@ MBTag::HasMultiVals(const CString & file) {
 			return TRUE;
 	}
 	return FALSE;
+}
+void
+MBTag::VerCompDesc(const CString & desc) {
+	m_VerCompDesc = desc;
+	m_VerCompProb = TRUE;
 }
 BOOL
 MBTag::write() {
