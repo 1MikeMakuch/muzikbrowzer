@@ -41,9 +41,8 @@ CFG=Help - Win32 Debug
 # PROP Use_Debug_Libraries 0
 # PROP Output_Dir "Release"
 # PROP Intermediate_Dir "Release"
-# PROP Cmd_Line "nmake /f "Help.mak""
-# PROP Rebuild_Opt "/a"
-# PROP Target_File "Help.exe"
+# PROP Cmd_Line "nmake /f Help.mak"
+# PROP Rebuild_Opt ""
 # PROP Bsc_Name ""
 # PROP Target_Dir ""
 
@@ -62,9 +61,8 @@ CFG=Help - Win32 Debug
 # PROP Use_Debug_Libraries 1
 # PROP Output_Dir "Help___Win32_Debug"
 # PROP Intermediate_Dir "Help___Win32_Debug"
-# PROP Cmd_Line "nmake /f "Help.mak""
-# PROP Rebuild_Opt "/a"
-# PROP Target_File "Help.exe"
+# PROP Cmd_Line "nmake /f Help.mak"
+# PROP Rebuild_Opt ""
 # PROP Bsc_Name ""
 # PROP Target_Dir ""
 

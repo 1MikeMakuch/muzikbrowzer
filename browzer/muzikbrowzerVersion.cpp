@@ -105,13 +105,13 @@ MBVersion::timeToPhoneHome() {
 
 	// 1st check last time we phoned home. Only do it
 	// once in a while to be less annoying
-	int lastmonthchecked = reg.Read("DbRev",0);
-	CTime t = CTime::GetCurrentTime();
-	CString mx = t.Format("%m");
-	int check = atoi(mx);
-	if (check == lastmonthchecked)
+	time_t now;
+	time(&now);
+	time_t lastchecked = reg.Read("DbRev",0);
+	if (now - lastchecked < 86400 * 30)
 		return FALSE;
-	reg.Write("DbRev",check);
+	
+	reg.Write("DbRev",now);
 	return TRUE;
 }
 BOOL

@@ -61,7 +61,7 @@ associated with that function. <p class="text">
 	song in the Playlist you wish to move up or down. Then use the Alt+Up or
 	Alt+Down to move the selected song up or down in the Playlist.
 
-	<li>Delete key will delete a song in the Playlist. It has no function in the other windows.
+	<li>Delete key will delete a song in the Playlist/Library. 
 	<li>Right click on any Genre, Artist, Album or Song to access and optionally edit tag information. 
 	<li>Menu. Click on the Menu button in the upper left corner of Muzikbrowzer to access the menu of the following functions:
 
@@ -135,7 +135,7 @@ associated with that function. <p class="text">
 	<tr><td>Alt+Up</td>                         <td>Move song up in Playlist</td></tr>
 	<tr><td>Alt+U</td>                          <td>Volume up</td></tr>
 	<tr><td>Alt+V</td>                          <td>Save</td></tr>
-	<tr><td>Delete</td>                         <td>delete song from Playlist</td></tr>
+	<tr><td>Delete</td>                         <td>delete song from Playlist/Library</td></tr>
 	<tr><td>Enter/Return</td>                   <td>Add selected music to playlist</td></tr>
 	<tr><td>F5</td>                             <td>Reload current skin and other reinitialization.</td></tr>
 	<tr><td>F6</td>                             <td>Reread database if modified.</td></tr>
@@ -153,7 +153,7 @@ associated with that function. <p class="text">
 	Tag editing is a two step process. First by right clicking on a particular library item you're choosing "search" criteria. If "all" is chosen then the "all" will act as a wildcard during the search.
 	<li>Edit the data fields on the right side of the Tag editor dialog to reflect the changes you wish to make. Click Next.
 	<li>A search is performed and you are presented with the list of files matching the search criteria. At this point either confirm or cancel.
-	<li>Muzikbrowzers database periodically performs a <i>garbage collection</i>, once every 50 edits performed. This process will take a few minutes to complete. When it occurs a dialog will indicate it's progress. I intend to eliminate this annoyance in a future release.
+	<li>Muzikbrowzers database periodically performs a <i>garbage collection</i>, once every 500 file edits performed. This process will take a few minutes to complete. When it occurs a dialog will indicate it's progress. I intend to eliminate this annoyance in a future release.
 
 	</ul>
 <a name="Miscellaneous">
@@ -179,7 +179,6 @@ associated with that function. <p class="text">
 	This follows Windows XP convention.
 	And lastly [AlbumName].jpg following MediaMonkey convention.
 
-	<li>The Player Status field is the smaller field to the left of the Playing Status field. It shows the current status of the player, i.e. Playing, Paused etc.
 	<li>Screen savers: Muzikbrowzer attempts to wakeup your screen saver in response to pressing a remote control button, just as if you have pressed a keyboard key or moved the mouse.
 	<li>If Muzikbrowzer is minimized, it will maximize itself when a remote control button is pressed.
 	<li>Playlist and Song duration: 
@@ -195,6 +194,9 @@ associated with that function. <p class="text">
 		<li>Flac file: Description(s), Comment(s)
 		</ul>
 
+	<li>Update notification. Upon starting Muzikbrowzer it checks to see if it has
+	"phoned home" in the past month. If not it checks in with www.muzikbrowzer.com to see
+	if a software update is available. If so it will let you know. 
 	</ul>
 </ul>
 	
