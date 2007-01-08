@@ -142,12 +142,14 @@ MBMp3Tag::read(MBTag & tags, const CString & file, const BOOL xvert) {
 
 	int version;
 	if (GetId3Version(file,version) && 4 == version) {
-		MBWmaTag wma;
-		BOOL r = wma.read(tags,file,xvert);
-		if (r) {
+//		wmfsdk doesn't work like I thought, it's not reading the 2.4 tag,
+//		just v1
+//		MBWmaTag wma;
+//		BOOL r = wma.read(tags,file,xvert);
+//		if (r) {
 			tags.VerCompDesc("ID3v2.4 tag will be converted to ID3v2.3");
-		}
-		return r;
+//		}
+//		return r;
 	}
 
 	if (!tags.ReadAllTags()) {
@@ -169,7 +171,6 @@ MBMp3Tag::read(MBTag & tags, const CString & file, const BOOL xvert) {
 			tags.setVal("TIT2", id3_GetTitle(id3));
 			tags.setVal("TYER", id3_GetYear(id3));
 			tags.setVal("TRCK", id3_GetTrack(id3));
-			
 		}
 		delete id3;
 	}
