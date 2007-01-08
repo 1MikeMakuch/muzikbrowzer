@@ -474,17 +474,17 @@ void CConfigFiles::StoreReg() {
 
 	m_HideGenre = ((CButton*)GetDlgItem(IDC_HIDE_GENRE))->GetCheck();
 	reg.Write("HideGenre",m_HideGenre);
-	m_InitialHideGenre = m_HideGenre;
+//	m_InitialHideGenre = m_HideGenre;
 	
 	m_ReplayGain = m_ReplayGainButton.GetCheck();
 	reg.Write("ReplayGain",m_ReplayGain);
 	if (m_ReplayGain && !m_InitialReplayGain)
 		reg.Write("Volume",75);
-	m_InitialReplayGain = m_ReplayGain;
+//	m_InitialReplayGain = m_ReplayGain;
 
 	m_DisplayComments = m_DisplayCommentsButton.GetCheck();
 	reg.Write("DisplayComments",m_DisplayComments);
-	m_InitialDisplayComments = m_DisplayComments;
+//	m_InitialDisplayComments = m_DisplayComments;
 
     if (m_RunAtStartup.GetCheck() == 0) {
         m_RunAtStartupUL = 0;
@@ -497,7 +497,7 @@ void CConfigFiles::StoreReg() {
 
     setRunAtStartup();
 	reg.Write(RegAlbumSort, (unsigned long)m_AlbumSortAlpha);
-	m_InitialAlbumSortAlpha = m_AlbumSortAlpha;
+//	m_InitialAlbumSortAlpha = m_AlbumSortAlpha;
 
 	reg.Write(RegLogging,m_Logging);
 
@@ -706,7 +706,8 @@ void CConfigFiles::OnOK()
 	if (m_LocDirModified) {
 		(*m_playercallbacks->initDb)();
 	}
-	if (m_AlbumSortAlpha != m_InitialAlbumSortAlpha) {
+	if (m_AlbumSortAlpha != m_InitialAlbumSortAlpha
+		|| m_HideGenre != m_InitialHideGenre) {
 		m_ResetNeeded = TRUE;
 		//MBMessageBox("Notice","Changes to the \"Album sort\" parameter will take effect\r\nthe next time you start Muzikbrowzer. Alternatively hit \"F5\".",FALSE);
 	}
