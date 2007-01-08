@@ -96,10 +96,12 @@ MusicPlayerWMP::Pause() {
 BOOL
 MusicPlayerWMP::Play() {
 //	m_MP->openPlayer(m_file);
-	if (m_FileLoaded) 
+	if (m_FileLoaded) {
 		m_MP->GetControls().play();
 	logger.logd("WMP status:" ,m_MP->GetStatus());
 	logger.logd("WMP playstate:", numToString(m_MP->GetPlayState()));
+	} else
+		return FALSE;
 	return TRUE;
 }
 

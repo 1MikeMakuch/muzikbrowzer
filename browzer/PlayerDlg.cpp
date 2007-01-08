@@ -2517,6 +2517,7 @@ void CPlayerDlg::updatePlaylist(const BOOL save) {
 	m_Playlist.ResetContent();
 	m_mlib.getPlaylist(m_Playlist);
 	m_Playlist.SetCurSel(m_Playlist.GetCount()-1);
+	m_StopFlag = FALSE;
 
 	calcDuration();
 
@@ -3427,10 +3428,12 @@ CPlayerDlg::OnPreviousSong() {
 BOOL 
 CPlayerDlg::Play() {
 	AutoLog al("Play");
-	StartSeekTimer();
-	adjustVolume() ;
 	BOOL r = m_Player->Play();
-	m_PositionLabel.setText ( "");
+	if (r) {
+		StartSeekTimer();
+		adjustVolume() ;
+		m_PositionLabel.setText ( "");
+	}
 	return r;
 
 }
