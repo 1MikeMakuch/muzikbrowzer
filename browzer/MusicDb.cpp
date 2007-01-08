@@ -24,10 +24,13 @@
 #define MMEMORY_SIZE_INCREMENT 5000
 #define MMEMORY_RESERVE_BYTES 100
 
+// Figure that each song file takes about 700 bytes in the db.
+// Figure if I want to do garbage collecting when the garbage
+// is over 1mb, then that's about 1428 edits.
 #ifdef _DEBUG
-#define MB_GARBAGE_INTERVAL 500
+#define MB_GARBAGE_INTERVAL 1428
 #else
-#define MB_GARBAGE_INTERVAL 500
+#define MB_GARBAGE_INTERVAL 1428
 #endif
 
 #define MB_DB_VERSION 6
@@ -1303,6 +1306,7 @@ MusicLib::scanDirectories(const CStringArray & directories,
     return results;
 }
 BOOL ItsBeenModified(const CString & fname, const CFileStatus & lastScan) {
+	// Relying upon FileUtil::GetFileStatus to set 0 if file not present
 	if (lastScan.m_mtime == 0)
 		return FALSE;
 	CFileStatus status;
@@ -2536,7 +2540,6 @@ MusicLib::deleteSong(ProgressDlg *dialog, Playlist & songs, CString & results) {
 
 		Song delsong = new CSong(p->_item);
 		m_SongLib.removeSong(delsong);
-		m_SongLib.m_garbagecollector++;
     }
 
 
@@ -2613,7 +2616,6 @@ MusicLib::modifyID3(ProgressDlg *dialog, Playlist & songs, Song & newSong,
 			}
 
         }
-		m_SongLib.m_garbagecollector++;
     }
 
     garbageCollect(dialog);
@@ -4543,6 +4545,7 @@ MSongLib::removeSong(Song & song2remove) {
 		}
 	}
 	DUMPRECORDS("6");
+	m_SongLib.m_garbagecollector++;
 
 	m_files.remove(filename);
 	--m_songcount;
@@ -5085,6 +5088,7 @@ MSongLib::setSongVal(const CString & key, const CString & value,
 			const CString & artistname, const CString & albumname,
 			const CString & songname)
 {
+	return 0; // disabled no longer using it.
 	int r = 0;
 	MRecord song = getSong(genrename, artistname, albumname, songname);
 	MList id3list(song);
