@@ -456,3 +456,23 @@ TEST(FileUtil,SortEliminateDupsAndSubDirs)
 
 
 }
+BOOL
+FileUtil::GetFileStatus(CFileStatus & status, const CString & file) {
+    const char * pszFileName = (LPCTSTR) file;
+	CFile myFile;
+	CFileException fileException;
+
+	if ( !myFile.Open( pszFileName,
+        CFile::modeRead,
+        &fileException ))
+	{
+		status.m_ctime = 0;
+		status.m_mtime = 0;
+		status.m_atime = 0;
+		status.m_size = 0;
+		status.m_attribute = 0;
+        return FALSE;
+	}
+	myFile.GetStatus(status);
+	return TRUE;
+}

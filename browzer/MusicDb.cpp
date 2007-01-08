@@ -287,6 +287,12 @@ MusicLib::addSongToDb(ProgressDlg *pd, Song &song, const CString & file) {
 
 	return m_SongLib.addSong(song);
 }
+BOOL
+MusicLib::removeSongFromDb(const CString & file) {
+	Song song = m_SongLib.getSong(file);
+	m_SongLib.removeSong(song);
+	return TRUE;
+}
 void
 MusicLib::MovePlaylistsToDir() {
 	AutoLog al("mdb::MovePlaylistsToDir");
@@ -1083,7 +1089,7 @@ MusicLib::Scan(const CStringArray & dirs,const CStringArray & excludes, BOOL bne
 
 	CString text,dir;
 	if (bnew) {
-		text = "Search the music folders below for new music and\r\nadd to Library?\r\n\r\n";
+		text = "Search the music folders below for new/modified files and\r\nadd to Library?\r\n\r\n";
 	} else if (!bAdd) {
 		text = "Search the music folders below for all music and\r\nrebuild Library from scratch?\r\n\r\n";
 	}
@@ -1149,24 +1155,30 @@ MusicLib::scanDirectories(const CStringArray & directories,
 	if (!bAdd && !scanNew) {
 		m_SongLib.init(TRUE); // does an m_files.removeAll()
 	}
+
+	// First get timestamp from last search
+	CString ts = m_dir + "\\" + "Muzikbrowzer.mblastsearch";
+	CFileStatus lastScan;
+	if (scanNew) {
+		FileUtil::GetFileStatus(lastScan,ts);
+	}
+	// Set timestamp for finding new/modified files later on.
+	if (scanNew || !bAdd) 
+		FileUtil::StringToFile("",ts);
     
     int pos;
 	logger.log("Scan folders:");
 	for (pos = 0; pos < directories.GetSize(); pos++) {
 		logger.log(directories.GetAt(pos));
 	}
-//	if (excludes.GetSize())
-//		logger.log("Excludes:");
-//	for(int i=0 ; i < excludes.GetSize(); ++i) {
-//		logger.log(excludes[i]);
-//	}
+
 	if (pd) pd->SetTitle("Searching folders for audio files");
 	CString dir;
     for (pos = 0; pos < directories.GetSize(); pos++) {
 		dir = directories.GetAt(pos);
 		if (!String::CStringArrayContains(excludes,dir)) {
 			scanDirectory(pd, mp3Files, excludes, directories.GetAt(pos), 
-				scanNew, bAdd);
+				scanNew, bAdd, lastScan);
 		} else {
 			logger.log("excluded "+dir);
 		}
@@ -1190,6 +1202,7 @@ MusicLib::scanDirectories(const CStringArray & directories,
 	int tlen_method_2_count = 0;
 	int tlen_methods_failed_count = 0;
 	int added_count = 0;
+	int modded_count = 0;
 
 	if (pd) pd->SetTitle("Adding music...");
 
@@ -1228,6 +1241,11 @@ MusicLib::scanDirectories(const CStringArray & directories,
 		ctr++;
 		if (pd) pd->UpdateStatus2(genre + ", " + artist + ", " + album 
 			+ ", " + track);
+		if (scanNew && m_SongLib.m_files.contains(mp3file)) {
+			removeSongFromDb(mp3file);
+			modded_count++;
+			--added_count;
+		}
 		added_count += addSongToDb(pd, song, mp3file);
 		if (m_RebuildOnly && ctr > (mp3Files.GetSize() * pctctr)) {
 			logger.log("Rebuild "+NTS(ctr)+"/"+NTS(mp3Files.GetSize())
@@ -1244,19 +1262,23 @@ MusicLib::scanDirectories(const CStringArray & directories,
 
     CString results;
 	if (scanNew) {
-		results += "Searched for new audio files.\r\n";
-	} else if (bAdd) {
+		results += "Searched for new/modified audio files.\r\n";
+	}
+	if (bAdd) {
 		results += "Added audio files.\r\n";
-	} else {
+	}
+	if (!bAdd && !scanNew) {
 		results += "Searched for audio files - complete database build.\r\n";
 	}
+
 	if (added_count) {
-		results += numToString(added_count);
-		results += " audio files added.\r\n";
-	} else if (scanNew) {
-		results += "No new audio files found.\r\n";
-	} else {
-		results += "No audio files found.\r\n";
+		results += NTS(added_count)+" new files added.\r\n";
+	}
+	if (scanNew && modded_count) {
+		results += NTS(modded_count)+ " modified files and re-added.\r\n";
+	} 
+	if (!added_count && !modded_count) {
+		results += "No new/modified files found.\r\n";
 	}
 
 	results += good_results;
@@ -1280,11 +1302,20 @@ MusicLib::scanDirectories(const CStringArray & directories,
 
     return results;
 }
-
+BOOL ItsBeenModified(const CString & fname, const CFileStatus & lastScan) {
+	if (lastScan.m_mtime == 0)
+		return FALSE;
+	CFileStatus status;
+	FileUtil::GetFileStatus(status,fname);
+	if (status.m_mtime > lastScan.m_mtime)
+		return TRUE;
+	return FALSE;
+}
 int
 MusicLib::scanDirectory(ProgressDlg * pd, CStringArray &mp3Files,
 					   const CStringArray & excludes,
-					   const CString & directory, BOOL scanNew, BOOL bAdd) {
+					   const CString & directory, BOOL scanNew, BOOL bAdd,
+					   CFileStatus &lastScan) {
 	AutoLog al("mdb::scanDirectory");
 
     CString glob(directory);
@@ -1325,14 +1356,21 @@ MusicLib::scanDirectory(ProgressDlg * pd, CStringArray &mp3Files,
 				}
                 newDir += fname;
 				if (!String::CStringArrayContains(excludes,newDir)) {
-					scanDirectory(pd, mp3Files, excludes, newDir, scanNew, bAdd);
+					scanDirectory(pd, mp3Files, excludes, newDir, scanNew, 
+						bAdd,lastScan);
 				} else {
 					logger.log("excluded "+newDir);
 				}
             } else {
 				fname = finder.GetFilePath();
-				if ((!scanNew && !bAdd) ||
-						!m_SongLib.m_files.contains(fname)) {
+				if (
+					(	!scanNew && !bAdd) 
+					||	!m_SongLib.m_files.contains(fname)
+					||	ItsBeenModified(fname,lastScan)	
+					)
+				{
+
+
 		if (!String::CStringArrayContains(excludes,fname)) {
 			FExtension ext(fname);
 			if (m_mp3Extensions.Find(String::downcase(ext.ext())) != NULL) {
@@ -1341,6 +1379,8 @@ MusicLib::scanDirectory(ProgressDlg * pd, CStringArray &mp3Files,
 		} else {
 			logger.log("excluded "+fname);
 		}
+				
+				
 				}
             }
         }
@@ -4630,6 +4670,10 @@ MSongLib::getSong(const CString & genrename, const CString & artistname,
 	MList songlist = songList(genrename, artistname, albumname);
 	MRecord song = songlist.record(songname);
 	return song;
+}
+Song
+MSongLib::getSong(const CString & file) {
+	return m_files.getSong(file);
 }
 CString
 MSongLib::getSongVal(const CString & key, const CString & genrename,

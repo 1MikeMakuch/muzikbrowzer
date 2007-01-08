@@ -989,11 +989,8 @@ BEGIN
         POPUP "Music Library"
         BEGIN
             MENUITEM "Add music to Library",        ID_MENU_ADD
-            POPUP "Rebuild Music Library"
-            BEGIN
-                MENUITEM "Complete Rebuild from folders", ID_MENU_SCAN
-                MENUITEM "Search for new music in folders", ID_MENU_SCANNEW
-            END
+            MENUITEM "Search for new/modified files", ID_MENU_SCANNEW
+            MENUITEM "Complete Rebuild",            ID_MENU_SCAN
             MENUITEM SEPARATOR
             MENUITEM "Export tags",                 ID_EXPORT_TAGS
         END

@@ -295,6 +295,7 @@ class MSongLib {
 			const CString & artistname, const CString & albumname,
 			const CString & songname);
 		Song getSong(int pi);
+		Song getSong(const CString & file);
 		CString getSongVal(const CString & key, const CString & genrename,
 			const CString & artistname, const CString & albumname,
 			const CString & songname);
@@ -412,6 +413,7 @@ unsigned int	countSongsInGenre(const CString & genre, CArray<unsigned int, unsig
 	    UINT	readDb();
 	    void	readDbLocation();
 		void	RebuildOnly(const CStringArray & dirs,const CStringArray & excludes);
+		BOOL	removeSongFromDb(const CString & file);
 	    BOOL	renamePlaylist(const CString src,const CString dest, BOOL overwrite=FALSE);
 	    void	savePlaylist(const CString &);
 	    void	savePlaylist(const CStringArray & list, const CString & file);
@@ -447,7 +449,7 @@ private:
 
         int scanDirectory(ProgressDlg * pd, CStringArray & mp3files, 
 			const CStringArray & excludes, const CString &,
-			BOOL scanNew, BOOL bAdd);
+			BOOL scanNew, BOOL bAdd, CFileStatus & lastScan);
         int garbageCollect(ProgressDlg * dlg, BOOL test=FALSE);
 
 		CString IgetLibraryCounts();

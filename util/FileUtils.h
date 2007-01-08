@@ -25,6 +25,7 @@ public:
 	static CString ParentDir(const CString & path);
 	static BOOL IsInSubDir(const CString & dir, const CString & candFilePath);
 	static void SortUniqDelSubDirs(CStringArray & list);
+	static BOOL GetFileStatus(CFileStatus & status,const CString & file);
 };
 
 #endif
