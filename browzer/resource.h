@@ -474,6 +474,7 @@
 #define IDC_HIDE_GENRE                  2080
 #define IDC_DEBUG_LOG                   2082
 #define IDC_REPLAYGAIN                  2083
+#define IDC_DISPLAY_COMMENTS            2084
 #define IDS_UNKNOWN_ERROR               5000
 #define IDC_BUTTON_LOGO                 12052
 #define ID_XXX                          32775

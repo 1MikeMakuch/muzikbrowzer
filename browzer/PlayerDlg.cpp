@@ -3563,8 +3563,11 @@ CPlayerDlg::PlayLoop() {
 				msg += m_mlib._playlist[m_PlaylistCurrent]->getId3("TCON");
 				
 				double rggain = 0;        
-				CString comments = m_mlib.getComments(rggain,file);
-				if (comments.GetLength()) {
+				CString comments ;
+				if (m_Config.ReplayGain() || m_Config.DisplayComments()) {
+					comments = m_mlib.getComments(rggain,file);
+				}
+				if (m_Config.DisplayComments() && comments.GetLength()) {
 					msg += ". ";
 					msg += comments;
 				}
@@ -3572,8 +3575,11 @@ CPlayerDlg::PlayLoop() {
 				if (m_Config.trialMode() == 1) {
 					PlayerStatusTempSet("Trial Mode. See Settings/License.");
 				}
-				if (0 != rggain)
+				if (m_Config.ReplayGain()) {// set it even if rggain==0
+											// for case when a song doesn't
+											// have it set
 					VolumeGainAdjust(rggain);
+				}
 			}
 			
             if (good && m_Player->InputOpen(file) && Play()) {

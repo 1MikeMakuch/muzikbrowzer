@@ -397,3 +397,7 @@ BOOL
 MBConfig::ReplayGain() {
 	return m_Files->ReplayGain();
 }
+BOOL
+MBConfig::DisplayComments() {
+	return m_Files->DisplayComments();
+}

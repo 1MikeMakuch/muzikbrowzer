@@ -34,7 +34,8 @@ CConfigFiles::CConfigFiles(CWnd *p, PlayerCallbacks * pcb) : CPropertyPage(CConf
 	m_playercallbacks(pcb), m_ResetNeeded(FALSE),
 	m_OrigRunAtStartup(FALSE),m_HideGenre(FALSE),
 	m_InitialLogging(TRUE),m_Logging(TRUE),m_ReplayGain(FALSE),
-	m_InitialReplayGain(FALSE)
+	m_InitialReplayGain(FALSE),m_DisplayComments(FALSE),
+	m_InitialDisplayComments(FALSE)
 
 {
 	//{{AFX_DATA_INIT(CConfigFiles)
@@ -55,6 +56,7 @@ void CConfigFiles::DoDataExchange(CDataExchange* pDX)
 {
 	CPropertyPage::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CConfigFiles)
+	DDX_Control(pDX, IDC_DISPLAY_COMMENTS, m_DisplayCommentsButton);
 	DDX_Control(pDX, IDC_REPLAYGAIN,	m_ReplayGainButton);
 	DDX_Control(pDX, IDC_DEBUG_LOG,		m_LoggingButton);
 	DDX_Control(pDX, IDC_RUNATSTARTUP,	m_RunAtStartup);
@@ -86,6 +88,7 @@ BEGIN_MESSAGE_MAP(CConfigFiles, CPropertyPage)
 	ON_BN_CLICKED(IDC_EXCLUDECLEAR, OnExcludeclear)
 	ON_BN_CLICKED(IDC_DEBUG_LOG, OnDebugLog)
 	ON_BN_CLICKED(IDC_REPLAYGAIN, OnReplaygain)
+	ON_BN_CLICKED(IDC_DISPLAY_COMMENTS, OnDisplayComments)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -314,6 +317,8 @@ void CConfigFiles::ReadReg() {
 	m_InitialHideGenre = m_HideGenre;
 	m_ReplayGain = (reg.Read("ReplayGain",0) && 1);
 	m_InitialReplayGain = m_ReplayGain;
+	m_DisplayComments = (reg.Read("DisplayComments",0) && 1);
+	m_InitialDisplayComments = m_DisplayComments;
 
     if (Location.GetLength()) {
         m_origMdbLocation = Location;
@@ -470,11 +475,16 @@ void CConfigFiles::StoreReg() {
 	m_HideGenre = ((CButton*)GetDlgItem(IDC_HIDE_GENRE))->GetCheck();
 	reg.Write("HideGenre",m_HideGenre);
 	m_InitialHideGenre = m_HideGenre;
+	
 	m_ReplayGain = m_ReplayGainButton.GetCheck();
 	reg.Write("ReplayGain",m_ReplayGain);
 	if (m_ReplayGain && !m_InitialReplayGain)
 		reg.Write("Volume",75);
 	m_InitialReplayGain = m_ReplayGain;
+
+	m_DisplayComments = m_DisplayCommentsButton.GetCheck();
+	reg.Write("DisplayComments",m_DisplayComments);
+	m_InitialDisplayComments = m_DisplayComments;
 
     if (m_RunAtStartup.GetCheck() == 0) {
         m_RunAtStartupUL = 0;
@@ -642,6 +652,7 @@ BOOL CConfigFiles::OnInitDialog()
 	((CButton*)GetDlgItem(IDC_HIDE_GENRE))->SetCheck(m_HideGenre);
 	m_LoggingButton.SetCheck(m_Logging);
 	m_ReplayGainButton.SetCheck(m_ReplayGain);
+	m_DisplayCommentsButton.SetCheck(m_DisplayComments);
 
     UpdateWindow();
 
@@ -744,6 +755,9 @@ void CConfigFiles::OnCancel()
 	m_ReplayGainButton.SetCheck(m_InitialReplayGain);
 	m_ReplayGain = m_InitialReplayGain;
 
+	m_DisplayCommentsButton.SetCheck(m_InitialDisplayComments);
+	m_DisplayComments = m_InitialDisplayComments;
+
 	StoreReg();
 	EnableDisable();
 //    UpdateData(FALSE);
@@ -822,4 +836,12 @@ void CConfigFiles::OnReplaygain()
 	m_ReplayGain = m_ReplayGainButton.GetCheck();
 	UpdateData(FALSE);
 	SetModified(TRUE);
+}
+
+void CConfigFiles::OnDisplayComments() 
+{
+	m_DisplayComments = m_DisplayCommentsButton.GetCheck();
+	UpdateData(FALSE);
+	SetModified(TRUE);
+	
 }

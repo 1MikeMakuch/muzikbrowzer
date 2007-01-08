@@ -146,6 +146,7 @@ public:
 	void getSettings(MyHash & settings);
 	int logging();
 	BOOL ReplayGain();
+	BOOL DisplayComments();
 };
 
 /////////////////////////////////////////////////////////////////////////////

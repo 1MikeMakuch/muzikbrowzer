@@ -312,14 +312,14 @@ BEGIN
     GROUPBOX        "Location of muzikbrowzer database files, playlists, etc.",
                     IDC_STATIC,4,140,389,27
     CONTROL         "Run Muzikbrowzer at Startup?",IDC_RUNATSTARTUP,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,92,189,111,8
+                    BS_AUTOCHECKBOX | WS_TABSTOP,65,189,111,8
     CONTROL         "Date",IDC_ALBUMSORT_DATE,"Button",BS_AUTORADIOBUTTON | 
                     WS_GROUP,13,180,28,9
     CONTROL         "Alpha",IDC_ALBUMSORT_ALPHA,"Button",BS_AUTORADIOBUTTON | 
                     WS_GROUP,13,189,30,10
     LTEXT           "Sort albums by",IDC_STATIC,11,170,48,8
     CONTROL         "Hide Genre column?",IDC_HIDE_GENRE,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,92,175,83,9
+                    BS_AUTOCHECKBOX | WS_TABSTOP,65,175,83,9
     LISTBOX         IDC_DIRLIST2,10,82,340,52,LBS_SORT | 
                     LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_HSCROLL
     PUSHBUTTON      "Add",IDC_DIRADD2,355,82,33,11
@@ -329,9 +329,11 @@ BEGIN
     PUSHBUTTON      "Clear",IDC_DIRCLEAR,355,52,33,11
     PUSHBUTTON      "Clear",IDC_EXCLUDECLEAR,355,122,33,11
     CONTROL         "Debug Logging",IDC_DEBUG_LOG,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,230,189,65,10
+                    WS_TABSTOP,179,189,65,10
     CONTROL         "ReplayGain volume leveling",IDC_REPLAYGAIN,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,230,174,103,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,179,174,103,10
+    CONTROL         "Display comments",IDC_DISPLAY_COMMENTS,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,295,175,73,10
 END
 
 IDD_CONFIG_IRMAN DIALOG DISCARDABLE  0, 0, 402, 199
