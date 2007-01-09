@@ -10,6 +10,7 @@
 #include "ID3Display.h"
 #include "MyID3LibMiscSupport.h"
 #include "MyString.h"
+#include "MBTag.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -36,7 +37,9 @@ void ModifyIDThree::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(ModifyIDThree)
-	DDX_Control(pDX, IDC_TAG_FILE, m_File);
+	DDX_Control(pDX, IDC_ID3_SEARCHFOR_LABEL, m_OldValsLabel);
+	DDX_Control(pDX, IDC_TAGDATA, m_TagData);
+	DDX_Control(pDX, IDC_TAGFILE, m_File);
 	DDX_Control(pDX, IDC_EDIT_GENRE, m_Genre);
 	DDX_Control(pDX, IDC_OLDYEAR, m_OldYear);
 	DDX_Control(pDX, IDC_OLDTRACK, m_OldTrack);
@@ -94,12 +97,12 @@ BOOL ModifyIDThree::OnInitDialog()
 	newtrack = oldtrack;
 	newyear = oldyear;
 
-	oldgenre = "\"" + oldgenre + "\"";
-	oldartist = "\"" + oldartist + "\"";
-	oldalbum = "\"" + oldalbum + "\"";
-	oldtitle = "\"" + oldtitle + "\"";
-	oldtrack = "\"" + oldtrack + "\"";
-	oldyear = "\"" + oldyear + "\"";
+//	oldgenre = "\"" + oldgenre + "\"";
+//	oldartist = "\"" + oldartist + "\"";
+//	oldalbum = "\"" + oldalbum + "\"";
+//	oldtitle = "\"" + oldtitle + "\"";
+//	oldtrack = "\"" + oldtrack + "\"";
+//	oldyear = "\"" + oldyear + "\"";
 
 	if (MBALL == newartist) {
 		newartist = "";
@@ -144,6 +147,8 @@ BOOL ModifyIDThree::OnInitDialog()
 //			m_Album.EnableWindow(FALSE);
 //		}
     }
+	m_TagData.ShowWindow(FALSE);
+	m_File.ShowWindow(FALSE);
     if (mWindowFlag >= 4) {
         m_Title.EnableWindow(TRUE);
         m_Track.EnableWindow(TRUE);
@@ -151,6 +156,15 @@ BOOL ModifyIDThree::OnInitDialog()
 		m_OldTitle.SetWindowText(oldtitle);
 		m_Track.SetWindowText(newtrack);
 		m_OldTrack.SetWindowText(oldtrack);
+		m_TagData.ShowWindow(TRUE);
+		m_File.ShowWindow(TRUE);
+		MBTag tag;
+		CStringList list;
+		tag.getInfo(file,list);
+		for(POSITION pos = list.GetHeadPosition();pos!=NULL;list.GetNext(pos)) {
+			m_TagData.AddString(list.GetAt(pos));
+		}
+		m_OldValsLabel.SetWindowText("Old value");
     }
 	
 	return TRUE;  // return TRUE unless you set the focus to a control

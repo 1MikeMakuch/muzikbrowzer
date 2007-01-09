@@ -9,6 +9,7 @@
 #include "Resource.h"
 #include "id3/tag.h"
 #include "MusicDb.h"
+#include "HListBox.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // ModifyIDThree dialog
@@ -23,14 +24,16 @@ public:
 // Dialog Data
 	//{{AFX_DATA(ModifyIDThree)
 	enum { IDD = IDD_ID3TAG_DIALOG };
-	CStatic	m_File;
+	CStatic	m_OldValsLabel;
+	CHListBox	m_TagData;
+	CEdit		m_File;
 	CComboBox	m_Genre;
-	CStatic	m_OldYear;
-	CStatic	m_OldTrack;
-	CStatic	m_OldTitle;
-	CStatic	m_OldGenre;
-	CStatic	m_OldArtist;
-	CStatic	m_OldAlbum;
+	CEdit	m_OldYear;
+	CEdit	m_OldTrack;
+	CEdit	m_OldTitle;
+	CEdit	m_OldGenre;
+	CEdit	m_OldArtist;
+	CEdit	m_OldAlbum;
 	CEdit	m_Year;
 	CEdit	m_Track;
 	CEdit	m_Title;

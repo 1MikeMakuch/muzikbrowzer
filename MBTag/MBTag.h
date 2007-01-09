@@ -44,6 +44,8 @@ class MBTag : public MyHash {
 
 		CString getComments(double & rggain, const CString & file="");
 		CString getInfo(const CString & file="");
+		void getInfo(const CString & file, CStringList & list);
+
 		BOOL getArt(
 			const CString & file, 
 			unsigned char *& rawdata, 

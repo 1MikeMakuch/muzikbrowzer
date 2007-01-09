@@ -239,7 +239,14 @@ MBTag::getInfo(const CString & file) {
 
 	return "";
 }
-
+void
+MBTag::getInfo(const CString & file, CStringList & list) {
+	CString tmp = getInfo(file);
+	int n = String::delCount(tmp,"\r\n");
+	for(int i = 1 ; i < n; i++) {
+		list.AddTail(String::field(tmp,"\r\n",i));
+	}
+}
 BOOL
 MBTag::getArt(
 			const CString & file, 
