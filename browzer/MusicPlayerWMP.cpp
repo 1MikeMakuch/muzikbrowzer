@@ -11,6 +11,7 @@
 #include "util/MyLog.h"
 #include "util/Misc.h"
 #include "util/MyString.h"
+#include "FileUtils.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -58,26 +59,39 @@ MusicPlayerWMP::GetError() {
 		if (msg.GetLength())
 			msg += ", ";
 		msg += ei.GetErrorDescription();
+		logger.log("WMP:"+msg);
 	}
 	return msg;
 }
 int
 MusicPlayerWMP::InputOpen(const char *file) {
 	m_file = file;
-	logger.logd("InputOpen ",m_file);
-//	logger.log("InputOpen playcount:",numToString(m_MP->GetSettings().GetPlayCount()));
+	logger.logd("InputOpen:",m_file);
+	if (!m_MP) {
+		logger.log("WMP unitialized:0");
+		return 0;
+	}
+	if (!m_MP->GetSettings()) {
+		logger.log("WMP unitialized:1");
+		return 0;
+	}
+	if (!FileUtil::IsReadable(m_file)) {
+		logger.log("file unreadable: " + m_file);
+		return 0;
+	}
 
 	m_MP->GetSettings().SetAutoStart(FALSE);
+	logger.logd("WMP status0:" ,m_MP->GetStatus());
+	
 	CWMPMedia nm = m_MP->newMedia(m_file);
+	logger.logd("WMP status1:" ,m_MP->GetStatus());
+	
 	m_MP->SetCurrentMedia(nm);
+	logger.logd("WMP status2:" ,m_MP->GetStatus());
+	
 	m_FileLoaded = TRUE;
-//	logger.log("InputOpen playcount:",numToString(m_MP->GetSettings().GetPlayCount()));
-//	logger.log("WMP status:" ,m_MP->GetStatus());
 
 	return 1;
-//	m_MP->ResetDirectShow();
-//	HRESULT hr = m_MP->PrepareMedia((char*)file);
-//	return !FAILED(hr);
 }
 
 int
@@ -98,8 +112,8 @@ MusicPlayerWMP::Play() {
 //	m_MP->openPlayer(m_file);
 	if (m_FileLoaded) {
 		m_MP->GetControls().play();
-	logger.logd("WMP status:" ,m_MP->GetStatus());
-	logger.logd("WMP playstate:", numToString(m_MP->GetPlayState()));
+		logger.logd("WMP status:" ,m_MP->GetStatus());
+		logger.logd("WMP playstate:", numToString(m_MP->GetPlayState()));
 	} else
 		return FALSE;
 	return TRUE;

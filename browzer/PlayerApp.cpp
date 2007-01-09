@@ -78,6 +78,7 @@ BOOL CPlayerApp::InitInstance()
 	//  the specific initialization routines you do not need.
 	RegistryKey reg(HKEY_LOCAL_MACHINE, RegKey);
 	CString lfile = reg.ReadCString(RegDbLocation,"C:\\Program Files\\Muzikbrowzer");
+	int log = reg.Read("Logging",1);
 	if (m_rebuild) {
 		if (m_dir.GetLength())
 			lfile = m_dir;
@@ -86,6 +87,7 @@ BOOL CPlayerApp::InitInstance()
 		lfile += "\\Muzikbrowzer.log";
 	}
 	logger.open(lfile);
+	logger.loglevel(log);
 	logger.log(CS("Muzikbrowzer version: ") + CS(MUZIKBROWZER_VERSION));
 	CString cl = ::GetCommandLine();
 	logger.log(cl);
@@ -113,6 +115,7 @@ BOOL CPlayerApp::InitInstance()
 	
 	int nResponse = m_PlayerDlg->DoModal();
 	delete m_PlayerDlg;
+	logger.log("shutdown");
 
 //	delete splashDlg;
 	// Since the dialog has been closed, return FALSE so that we exit the

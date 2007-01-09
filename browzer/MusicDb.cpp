@@ -212,15 +212,15 @@ MusicLib::~MusicLib() {
 
 void
 MusicLib::readDbLocation() {
-	AutoLog al("mdb::readDbLocation");
     RegistryKey reg( HKEY_LOCAL_MACHINE, RegKey );
     AutoBuf buf(1000);
     reg.Read(RegDbLocation, buf.p, 999, "");
     setDbLocation(buf.p);
+	logger.logd(CS("readDbLocation:")+buf.p);
 }
 void 
 MusicLib::setDbLocation(const CString & loc) {
-	AutoLog al("mdb::setDbLocation");
+	logger.logd("setDbLocation:"+loc);
 	m_dir = loc;
 	m_SongLib.setDbLocation(loc);
 
@@ -275,7 +275,7 @@ MusicLib::writeDb() {
 
 UINT
 MusicLib::addSongToDb(ProgressDlg *pd, Song &song, const CString & file) {
-	AutoLog al("mdb::addSongToDb");
+	//AutoLog al("mdb::addSongToDb");
 	CString dir;
 
 	static CString lastdir;
@@ -616,7 +616,7 @@ MusicLib::getSongsInPlaylist(const CString & name,
 }
 int
 MusicLib::loadPlaylist(const CString & name, CString & error_msg) {
-	AutoLog al("mdb::loadPlaylist");
+	AutoLog al("mdb::loadPlaylist:"+name);
 
     CString dbfilename(m_dir);
     dbfilename += "\\" + CS(MBPLAYLISTDIR) + "\\";
@@ -671,7 +671,7 @@ MusicLib::loadPlaylist(const CString & name, CString & error_msg) {
 }
 int
 MusicLib::getGenres(CExtendedListBox & box) {
-	AutoLog al("mdb::getGenres");
+	//AutoLog al("mdb::getGenres");
 	MList genreList = m_SongLib.genreList();
 	MList::Iterator genreIter(genreList);
 	
@@ -683,7 +683,7 @@ MusicLib::getGenres(CExtendedListBox & box) {
 }
 int
 MusicLib::getGenres(CStringArray & box) {
-	AutoLog al("mdb::getGenres");
+	//AutoLog al("mdb::getGenres");
     CMapStringToString genrehash;
 	MList genreList = m_SongLib.genreList();
 	MList::Iterator genreIter(genreList);
@@ -949,7 +949,7 @@ MSongLib::getSong(int pi) {
 
 int
 MusicLib::addFileToPlaylist(const CString & file) {
-	AutoLog al("mdb::addFileToPlaylist");
+	AutoLog al("mdb::addFileToPlaylist:"+file);
 	if (FileUtil::IsReadable(file)) {
 		Song addsong = createSongFromFile(file);
 		if (addsong->GetCount()) {
@@ -964,7 +964,7 @@ MusicLib::addFileToPlaylist(const CString & file) {
 }
 int
 MusicLib::addSongToPlaylist(const Song & song) {
-	AutoLog al("mdb::addSongToPlaylist");
+	//AutoLog al("mdb::addSongToPlaylist");
 	_playlist.append(song);
 	return 1;
 }
@@ -973,7 +973,7 @@ int
 MusicLib::addSongToPlaylist(const CString & genrename,
 		const CString & artistname, const CString & albumname,
 		const CString & songname) {
-	AutoLog al("mdb::addSongToPlaylist");
+	AutoLog al("mdb::addSongToPlaylist:"+songname);
     int count = 0;
 	MList songList = m_SongLib.songList(genrename, artistname, albumname);
 	MList::Iterator songIter(songList);
@@ -989,7 +989,7 @@ MusicLib::addSongToPlaylist(const CString & genrename,
 int
 MusicLib::addAlbumToPlaylist(const CString & genrename,
 		const CString & artistname, const CString & albumname) {
-	AutoLog al("mdb::addAlbumToPlaylist");
+	AutoLog al("mdb::addAlbumToPlaylist:"+albumname);
 	int count = 0;
 	MList songList = m_SongLib.songList(genrename, artistname, albumname);
 	MList::Iterator songIter(songList);
@@ -1015,7 +1015,7 @@ MusicLib::addAlbumToPlaylist(const CString & genrename,
 int
 MusicLib::addArtistToPlaylist(const CString & genrename,
 		const CString & artistname) {
-	AutoLog al("mdb::addArtistToPlaylist");
+	AutoLog al("mdb::addArtistToPlaylist:"+artistname);
 
 	MList albumList = m_SongLib.albumList(genrename, artistname);
 	MList::Iterator albumIter(albumList);
@@ -1050,7 +1050,7 @@ MusicLib::addArtistToPlaylist(const CString & genrename,
 
 int
 MusicLib::addGenreToPlaylist(const CString & genrename) {
-	AutoLog al("mdb::addGenreToPlaylist");
+	AutoLog al("mdb::addGenreToPlaylist:"+genrename);
 	MList artistList = m_SongLib.artistList(genrename);
 	MList::Iterator artistIter(artistList);
 	while (artistIter.more()) {
@@ -1099,7 +1099,7 @@ MusicLib::Scan(const CStringArray & dirs,const CStringArray & excludes, BOOL bne
 	MyScanThread scanThread;
 	String::copyCStringArray(scanThread.m_dirs,dirs);
 	String::copyCStringArray(scanThread.m_excludes,excludes);
-	logger.log("Scan and build dirs:");
+	logger.logd("Scan and build dirs:");
 	int pos;
 	for(pos = 0; pos < dirs.GetSize(); pos++) {
 		dir = dirs.GetAt(pos);
@@ -1170,9 +1170,9 @@ MusicLib::scanDirectories(const CStringArray & directories,
 		FileUtil::StringToFile("",ts);
     
     int pos;
-	logger.log("Scan folders:");
+	logger.logd("Scan folders:");
 	for (pos = 0; pos < directories.GetSize(); pos++) {
-		logger.log(directories.GetAt(pos));
+		logger.logd(directories.GetAt(pos));
 	}
 
 	if (pd) pd->SetTitle("Searching folders for audio files");
@@ -1183,7 +1183,7 @@ MusicLib::scanDirectories(const CStringArray & directories,
 			scanDirectory(pd, mp3Files, excludes, directories.GetAt(pos), 
 				scanNew, bAdd, lastScan);
 		} else {
-			logger.log("excluded "+dir);
+			logger.logd("excluded "+dir);
 		}
         if (pd && pd->m_Abort) {
             error_results += "Aborted by user.";
@@ -1320,7 +1320,7 @@ MusicLib::scanDirectory(ProgressDlg * pd, CStringArray &mp3Files,
 					   const CStringArray & excludes,
 					   const CString & directory, BOOL scanNew, BOOL bAdd,
 					   CFileStatus &lastScan) {
-	AutoLog al("mdb::scanDirectory");
+	//AutoLog al("mdb::scanDirectory");
 
     CString glob(directory);
 	if (glob[glob.GetLength()-1] == '\\') {
@@ -1363,7 +1363,7 @@ MusicLib::scanDirectory(ProgressDlg * pd, CStringArray &mp3Files,
 					scanDirectory(pd, mp3Files, excludes, newDir, scanNew, 
 						bAdd,lastScan);
 				} else {
-					logger.log("excluded "+newDir);
+					logger.logd("excluded "+newDir);
 				}
             } else {
 				fname = finder.GetFilePath();
@@ -1381,7 +1381,7 @@ MusicLib::scanDirectory(ProgressDlg * pd, CStringArray &mp3Files,
 				String::insertSort(mp3Files, fname);
 			}
 		} else {
-			logger.log("excluded "+fname);
+			logger.logd("excluded "+fname);
 		}
 				
 				
@@ -1397,7 +1397,7 @@ MusicLib::scanDirectory(ProgressDlg * pd, CStringArray &mp3Files,
 
 Song
 MusicLib::createSongFromFile(const CString & mp3file) {
-	AutoLog al("mdb::createSongFromFile");
+	//AutoLog al("mdb::createSongFromFile");
 	CString er;
 	int t1, t2, tf;
 	t1 = t2 = tf = 0;
@@ -1408,7 +1408,7 @@ MusicLib::createSongFromFile(const CString & mp3file,
 	CString & error_results, int & tlen_method_1_count,
 	int & tlen_method_2_count, int & tlen_methods_failed_count)
 {
-	AutoLog al("mdb::createSongFromFile");
+	logger.logd(CS("mdb::createSongFromFile:")+mp3file);
 	AutoBuf buf(1000);
 	CString tlen;
 	Song song = new CSong;
@@ -1437,9 +1437,10 @@ MusicLib::NormalizeTagField(CString & tag) {
 
 CString
 MusicLib::writeSongToFile(Song song) {
-	AutoLog al("mdb::writeSongToFile");
+	//AutoLog al("mdb::writeSongToFile");
 	CString result;
 	CString file = song->getId3(CS("FILE"));
+	logger.logd("writeSongToFile:"+file);
 	if (!FileUtil::IsReadable(file)) {
 		result = file;
 		result += " is unreadable";
@@ -1833,7 +1834,7 @@ MusicLib::garbageCollect(ProgressDlg * dialog, BOOL test) {
 
 	SearchClear();
 	if (m_SongLib.m_garbagecollector < MB_GARBAGE_INTERVAL && !test) {
-		logger.log("garbageCollect not done");
+		logger.logd("garbageCollect not done");
 		return 0;
 	}
 	logger.log("garbageCollect being done");
@@ -1976,7 +1977,7 @@ MusicLib::iSearch(const CString keyword, MSongLib & db, MSongLib & results) {
 
 Song
 MusicLib::createSongFromMBTag(MBTag & mbtag) {
-	AutoLog al("mdb::createSongFromMBTag");
+	//AutoLog al("mdb::createSongFromMBTag");
 
 	Song song = new CSong;
 	CString genre,artist,album,title;
@@ -2286,7 +2287,7 @@ BOOL
 MusicLib::preDeleteSong(Song & oldSong, CStringArray & deletes) {
 	AutoLog al("mdb::preDeleteSong");
 	CWaitCursor cw;
-	logger.log("preDeleteSong");
+
 	SearchClear();
     CString oldGenre, oldArtist, oldAlbum, oldTitle, oldYear, oldTrack;
 	CString dispGenre, dispArtist, dispAlbum, dispTitle, dispYear, dispTrack;
@@ -2301,7 +2302,7 @@ MusicLib::preDeleteSong(Song & oldSong, CStringArray & deletes) {
 	searchForMp3s(songs, oldSong);
 
 	int count = songs.size();
-	logger.log("preDeleteSong: songs = " + numToString(count) );
+	logger.logd("preDeleteSong: songs = " + numToString(count) );
 
 	deletes.RemoveAll();
 
@@ -2339,10 +2340,10 @@ MusicLib::preDeleteSong(Song & oldSong, CStringArray & deletes) {
 	msg += "(" + NTS(songs.size()) + " files) from the library?\r\n";
 	msg += "They will not be removed from disk.\r\n\r\n";
 
-	logger.log(msg);
+	logger.logd(msg);
 	int r = MBMessageBox("Confirmation", msg, FALSE, TRUE);
 	if (r == 0) {
-		logger.log("Delete from Library cancelled");
+		logger.logd("Delete from Library cancelled");
 		return FALSE;
 	}
 	cw.Restore();
@@ -2381,7 +2382,7 @@ MusicLib::DeleteDb() {
 BOOL
 MusicLib::preModifyID3(Song & oldSong, Song & newSong) {
 	AutoLog al("mdb::preModifyID3");
-	logger.log("modifyID3");
+	
 	SearchClear();
     CString oldGenre, oldArtist, oldAlbum, oldTitle, oldYear, oldTrack;
     CString newGenre, newArtist, newAlbum, newTitle, newYear, newTrack;
@@ -2409,7 +2410,7 @@ MusicLib::preModifyID3(Song & oldSong, Song & newSong) {
 //	}
 
 	int count = songs.size();
-	logger.log("modifyID3: songs to modify = " + numToString(count) );
+	logger.logd("modifyID3: songs to modify = " + numToString(count) );
 
 	CString msg = "The following files will be modified.\r\nClick OK to continue or Cancel to abort.\r\n\r\nChange:\r\n";
 	AutoBuf buf(1000);
@@ -2469,8 +2470,7 @@ MusicLib::preModifyID3(Song & oldSong, Song & newSong) {
     }
 	if (!writeable) {
 		unwmsg = "The following file(s) are unwriteable.\r\nEdit not performed.\r\n\r\n" + unwmsg;
-		MBMessageBox("Can't perform edit",unwmsg);
-		logger.log("modifyID3: Can't perform edit " + unwmsg);
+		MBMessageBox("Can't perform edit",unwmsg,TRUE);
 		return FALSE;
 	}
 	if (multiVals.GetLength()) {
@@ -2478,7 +2478,7 @@ MusicLib::preModifyID3(Song & oldSong, Song & newSong) {
 		mmsg += multiVals;
 		int r = MBMessageBox("Advisory",mmsg,TRUE,TRUE);
 		if (0 == r) {
-			logger.log("Edit cancelled due to "+mmsg);
+			logger.logd("Edit cancelled due to "+mmsg);
 			return FALSE;
 		}
 	}
@@ -2499,8 +2499,7 @@ MusicLib::preModifyID3(Song & oldSong, Song & newSong) {
 		}
 	}
 
-	logger.log(msg);
-	int r = MBMessageBox("Confirmation", msg, FALSE, TRUE);
+	int r = MBMessageBox("Confirmation", msg, TRUE, TRUE);
 	if (r == 0) {
 		logger.log("Edit cancelled");
 		//MBMessageBox("Notice","Edit not performed");
@@ -4545,7 +4544,7 @@ MSongLib::removeSong(Song & song2remove) {
 		}
 	}
 	DUMPRECORDS("6");
-	m_SongLib.m_garbagecollector++;
+	m_garbagecollector++;
 
 	m_files.remove(filename);
 	--m_songcount;
@@ -5103,7 +5102,7 @@ MSongLib::setSongVal(const CString & key, const CString & value,
 }
 CString 
 MusicLib::getComments(double & rggain, const CString & file) {
-	AutoLog al("mdb::getComments");
+	//AutoLog al("mdb::getComments");
 
 	CString comment ;
 

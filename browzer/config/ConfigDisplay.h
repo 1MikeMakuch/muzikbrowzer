@@ -203,7 +203,7 @@ private:
 	
 public:
     LPLOGFONT getTitlesFont() { 
-		logger.logd("configgetTitlesFont "+MBUtil::LogFont2FontStr(m_lplfTitles));
+		//logger.logd("configgetTitlesFont "+MBUtil::LogFont2FontStr(m_lplfTitles));
 		return m_lplfTitles; 
 	}
 	LPLOGFONT getStatusFont() { return m_lplfPanel; }

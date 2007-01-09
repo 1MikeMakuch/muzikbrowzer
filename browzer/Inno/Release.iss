@@ -12,7 +12,7 @@ Type: files; Name: "{commonprograms}\Muzikbrowzer.lnk";
 AppMutex=MuzikbrowzerAppMutex,Global\MuzikbrowzerAppMutex
 ;AppMutex=MuzikbrowzerAppMutex,Global\MuzikbrowzerAppMutex,MuzikbrowzerBitMapCutterAppMutex,Global\MuzikbrowzerBitMapCutterAppMutex
 AppName=Muzikbrowzer
-AppVerName=Muzikbrowzer 2.0.2 (built 2007-01-08 17:29:35)
+AppVerName=Muzikbrowzer 2.0.2 (built 2007-01-08 17:47:21)
 AppCopyright=Copyright (C) 2001-Present Pecan Ventures, LLC
 DefaultDirName={pf}\Muzikbrowzer
 DefaultGroupName=Muzikbrowzer
@@ -27,7 +27,7 @@ WizardSmallImageFile=../res/MBWizardSmallImageFile.bmp
 ; *** "Welcome" wizard page
 [Messages]
 WelcomeLabel1=Welcome to the [name] Setup Wizard
-WelcomeLabel2=This will install [name/ver] on your computer.%n%nIt is recommended that you close all other applications before continuing.%n%nIf you are installing Muzikbrowzer over an existing version it is not necessary to first uninstall your existing version, simply proceed with this installation. You must first close any running instances of Muzikbrowzer before proceeding.
+WelcomeLabel2=This will install [name/ver] on your computer.%n%nMuzikbrowzer requires Windows Media Player 9 or later.%n%nIt is recommended that you close all other applications before continuing.%n%nIf you are installing Muzikbrowzer over an existing version it is not necessary to first uninstall your existing version, simply proceed with this installation. You must first close any running instances of Muzikbrowzer before proceeding.
 
 [Files]
 Source: "..\Release\Muzikbrowzer.exe"; DestDir: "{app}"; CopyMode: alwaysoverwrite

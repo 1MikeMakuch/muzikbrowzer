@@ -558,7 +558,7 @@ BaseC::DecToSixtyTwoDigit(const char digit) {
 	if (digit < 0 || digit > 61) {
 		CString msg;
 		msg << "DecDigitToSixtyTwo error:" << digit;
-		logger.log(msg);
+		logger.logd(msg);
 		return '*';
 	}
 	return tableDecToSixtyTwo[digit];
@@ -581,14 +581,14 @@ BaseC::SixtyTwoDigitToDec(const char digit) {
 	if (digit < 0 || digit > 122) {
 		CString msg;
 		msg << "Unexpected digit in SixtyTwoDigitToDec:" << digit;
-		logger.log(msg);
+		logger.logd(msg);
 		return -1;
 	}
 	dec = tableSixtyTwoDigitToDec[digit];
 	if (!(0 <= dec && dec <= 61)) {
 		CString msg;
 		msg << "Unexpected digit in SixtyTwoDigitToDec:" << digit;
-		logger.log(msg);
+		logger.logd(msg);
 		return -1;
 	}
 	return dec;
@@ -612,14 +612,14 @@ BaseC::HexDigitToDec(const char ch) {
 	if (ch < 0 || ch > 102) {
 		CString msg;
 		msg << "Unexpected digit in HexDigitToDec:" << ch;
-		logger.log(msg);
+		logger.logd(msg);
 		return -1;
 	}
 	dec = tableHexToDec[ch];
 	if (!(0 <= dec && dec <= 15)) {
 		CString msg;
 		msg << "Unexpected digit in HexDigitToDec:" << ch;
-		logger.log(msg);
+		logger.logd(msg);
 		return -1;
 	}
 	return dec;

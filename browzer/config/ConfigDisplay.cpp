@@ -921,7 +921,7 @@ BOOL CConfigDisplay::verifySkin(CString skin, BOOL stopOnError) {
 #ifdef _DEBUGBC
 	return TRUE;
 #endif
-	AutoLog alog("CCD::verifySkin");
+	//AutoLog alog("CCD::verifySkin");
 	CStringList bmps;
 	bmps.AddTail(MB_SKIN_DEF);
 	bmps.AddTail(MB_SKIN_ALBUMART);

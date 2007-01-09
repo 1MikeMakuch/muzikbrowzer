@@ -396,7 +396,7 @@ FileUtil::IsInSubDir(const CString & candParent, const CString & filePath) {
 
 void
 FileUtil::SortUniqDelSubDirs(CStringArray & list) {
-	AutoLog al("FileUtil::SortUniqDelSubDirs");
+	//AutoLog al("FileUtil::SortUniqDelSubDirs");
 	String::Uniq(list);
 	MyHash hash;
 	String::copyCStringArray2MyHash(hash,list);
