@@ -114,6 +114,7 @@ BOOL CFileAndFolder::OnInitDialog()
 	ShowSizeGrip(TRUE);
 	m_Msg.SetWindowText(m_msg);
 	SetWindowText(m_title);
+	m_sSelections.RemoveAll();
 	
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
@@ -239,6 +240,7 @@ void CFileAndFolder::OnOK()
 }
 void CFileAndFolder::GetPaths(CStringList & list) {
 	POSITION pos;
+	list.RemoveAll();
 	for(pos = m_sSelections.GetHeadPosition() ; pos != NULL ;) {
 		list.AddTail(m_sSelections.GetNext(pos));
 	}

@@ -12,7 +12,7 @@ Type: files; Name: "{commonprograms}\Muzikbrowzer.lnk";
 AppMutex=MuzikbrowzerAppMutex,Global\MuzikbrowzerAppMutex
 ;AppMutex=MuzikbrowzerAppMutex,Global\MuzikbrowzerAppMutex,MuzikbrowzerBitMapCutterAppMutex,Global\MuzikbrowzerBitMapCutterAppMutex
 AppName=Muzikbrowzer
-AppVerName=Muzikbrowzer 2.0.2 (built 2007-01-08 17:47:21)
+AppVerName=Muzikbrowzer 2.0.2 (built 2007-01-09 01:13:31)
 AppCopyright=Copyright (C) 2001-Present Pecan Ventures, LLC
 DefaultDirName={pf}\Muzikbrowzer
 DefaultGroupName=Muzikbrowzer
@@ -29,6 +29,18 @@ WizardSmallImageFile=../res/MBWizardSmallImageFile.bmp
 WelcomeLabel1=Welcome to the [name] Setup Wizard
 WelcomeLabel2=This will install [name/ver] on your computer.%n%nMuzikbrowzer requires Windows Media Player 9 or later.%n%nIt is recommended that you close all other applications before continuing.%n%nIf you are installing Muzikbrowzer over an existing version it is not necessary to first uninstall your existing version, simply proceed with this installation. You must first close any running instances of Muzikbrowzer before proceeding.
 
+[UninstallDelete]
+Type: files; Name: "{app}\MuzikbrowzerCachedDrives"
+Type: files; Name: "{commonappdata}\Muzikbrowzer\Muzikbrowzer.log"
+Type: files; Name: "{commonappdata}\Muzikbrowzer\Muzikbrowzer.mb"
+Type: files; Name: "{commonappdata}\Muzikbrowzer\Muzikbrowzer.mb.txt"
+Type: files; Name: "{commonappdata}\Muzikbrowzer\Muzikbrowzer.mbdirs"
+Type: files; Name: "{commonappdata}\Muzikbrowzer\Muzikbrowzer.mbexs"
+Type: files; Name: "{commonappdata}\Muzikbrowzer\Muzikbrowzer.mbfls"
+Type: files; Name: "{commonappdata}\Muzikbrowzer\Muzikbrowzer.mblastsearch"
+Type: files; Name: "{commonappdata}\Muzikbrowzer\Muzikbrowzer.mbtgs"
+Type: files; Name: "{commonappdata}\Muzikbrowzer\skins"
+
 [Files]
 Source: "..\Release\Muzikbrowzer.exe"; DestDir: "{app}"; CopyMode: alwaysoverwrite
 Source: "..\..\MBTag\tagger\Release\mbtag.exe"; DestDir: "{app}"; CopyMode: alwaysoverwrite
@@ -36,8 +48,8 @@ Source: "..\..\MBTag\tagger\Release\mbtag.exe"; DestDir: "{app}"; CopyMode: alwa
 
 Source: "..\Help\Muzikbrowzer.chm"; DestDir: "{app}"; CopyMode: alwaysoverwrite
 
-Source: "..\Skins\*.bmp"; DestDir: "{app}/skins"; CopyMode: alwaysoverwrite; Flags: recursesubdirs 
-Source: "..\Skins\*.mbsd"; DestDir: "{app}/skins"; CopyMode: alwaysoverwrite; Flags: recursesubdirs 
+Source: "..\Skins\*.bmp"; DestDir: "{commonappdata}\Muzikbrowzer\skins"; CopyMode: alwaysoverwrite; Flags: recursesubdirs 
+Source: "..\Skins\*.mbsd"; DestDir: "{commonappdata}\Muzikbrowzer\skins"; CopyMode: alwaysoverwrite; Flags: recursesubdirs 
 
 
 ;Source: "..\..\ButtonSkinner\Release\BitmapCutter.exe"; DestDir: "{app}"; CopyMode: alwaysoverwrite
@@ -53,11 +65,11 @@ Name: "{userdesktop}\Muzikbrowzer"; Filename: "{app}\Muzikbrowzer.exe"; WorkingD
 
 [Registry]
 Root: HKLM; Subkey: "Software\Muzikbrowzer"; Flags: createvalueifdoesntexist uninsdeletekey
-Root: HKLM; Subkey: "Software\Muzikbrowzer"; ValueType: string; ValueName: "DbLocation"; ValueData: "{app}"  ; Flags: createvalueifdoesntexist uninsdeletekey
+Root: HKLM; Subkey: "Software\Muzikbrowzer"; ValueType: string; ValueName: "DbLocation"; ValueData: "{commonappdata}\Muzikbrowzer"  ; Flags: createvalueifdoesntexist uninsdeletekey
 Root: HKLM; Subkey: "Software\Muzikbrowzer"; ValueType: string; ValueName: "SkinName"; ValueData: "MBClassic"  ; Flags: createvalueifdoesntexist uninsdeletekey
 Root: HKLM; Subkey: "Software\Muzikbrowzer"; ValueType: dword; ValueName: "NumDirs"; ValueData: "1"  ; Flags: createvalueifdoesntexist uninsdeletekey
-Root: HKLM; Subkey: "Software\Muzikbrowzer"; ValueType: string; ValueName: "Dir_00"; ValueData: "{userdocs}\My Music"; Flags: createvalueifdoesntexist uninsdeletekey
-Root: HKLM; Subkey: "Software\Muzikbrowzer"; ValueType: string; ValueName: "ExpHtmlTmpl"; ValueData: "{app}\MbHtmlTemplate.txt" ; Flags: createvalueifdoesntexist uninsdeletekey
+Root: HKLM; Subkey: "Software\Muzikbrowzer"; ValueType: string; ValueName: "Dir_00"; ValueData: "{commondocs}\My Music"; Flags: createvalueifdoesntexist uninsdeletekey
+;Root: HKLM; Subkey: "Software\Muzikbrowzer"; ValueType: string; ValueName: "ExpHtmlTmpl"; ValueData: "{app}\MbHtmlTemplate.txt" ; Flags: createvalueifdoesntexist uninsdeletekey
 
 ; Keys to delete
 Root: HKLM; Subkey: "Software\Muzikbrowzer\PreviousValues"; ValueType: none; Flags: deletekey dontcreatekey
