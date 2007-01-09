@@ -257,7 +257,7 @@ BOOL CConfigIrman::EnableDisableDialog()
 			//msg = "undefined";
 			msg = "";
 		} else 
-			msg = "Learned";
+			msg = "learned";
 
 		button_status_w->SetWindowText(msg);
 	}
