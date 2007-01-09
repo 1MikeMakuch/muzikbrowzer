@@ -44,7 +44,7 @@ void Control:: dump(CString txt) {
 	AutoBuf buf(1000);
 	sprintf(buf.p,"%s %15s r=%d c=%d w=%04d h=%04d\r\n",
 		txt, m_desc, row, col, width, height);
-//	OutputDebugString(buf.p);
+
 }
 Controls::Controls() : m_cwnd(NULL), numRows(0), m_NumControls(0) 
 {

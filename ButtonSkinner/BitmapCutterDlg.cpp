@@ -694,7 +694,7 @@ void CBitmapCutterDlg::drawButton(int buttoni, CDC * dc, CRect wrect, CRect butt
 				CString val;
 				BOOL r = intersection.IntersectRect(cand, jrect);
 				if (r != 0 ) {
-					OutputDebugString(val + " red\r\n");
+
 					penUL = &penRed;
 					penBR = &penRed;
 				}

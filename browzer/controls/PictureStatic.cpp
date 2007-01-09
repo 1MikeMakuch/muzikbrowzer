@@ -37,7 +37,7 @@ END_MESSAGE_MAP()
 
 void PictureStatic::OnPaint() 
 {
-//	OutputDebugString("CPictureStatic::OnPaint\r\n");
+
 
 	CPaintDC cdc(this);
 //    CDC * cdc = GetDC();

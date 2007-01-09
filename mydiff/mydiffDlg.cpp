@@ -387,12 +387,12 @@ LRESULT CMydiffDlg::OnFinished(WPARAM wParam, LPARAM)
 {
 	m_Running = FALSE;
 	CString msg;
-	OutputDebugString("OnFinished\r\n");
+
 	if(wParam != 0)
 	{ /* has error */
 		msg = cvError((DWORD)wParam);
 		m_ComOutput.AddTail(msg);
-		OutputDebugString(msg);
+
 	} /* has error */
 
 	
@@ -781,7 +781,7 @@ void CMydiffDlg::mysystem(const CString & command, UINT msg2post) {
 	tmp += cwd;
 	tmp += "; ";
 	tmp += command;
-	OutputDebugString(tmp + "\r\n");
+
 	showStatus(command);
 
 

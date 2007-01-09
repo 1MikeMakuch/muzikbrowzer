@@ -73,21 +73,21 @@ void CConfigFiles::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CConfigFiles, CPropertyPage)
 	//{{AFX_MSG_MAP(CConfigFiles)
-	ON_BN_CLICKED(IDC_DIRADD, OnDiradd)
-	ON_BN_CLICKED(IDC_DIRADD2, OnDiradd2)
-	ON_LBN_SELCHANGE(IDC_DIRLIST, OnSelchangeDirlist)
-	ON_LBN_SELCHANGE(IDC_DIRLIST2, OnSelchangeDirlist2)
-	ON_BN_CLICKED(IDC_DIRREMOVE, OnDirremove)
-	ON_BN_CLICKED(IDC_DIRREMOVE2, OnDirremove2)
-	ON_BN_CLICKED(IDC_LOCATION_BUTTON, OnLocationButton)
-	ON_BN_CLICKED(IDC_ALBUMSORT_DATE, OnAlbumsortDate)
-	ON_BN_CLICKED(IDC_ALBUMSORT_ALPHA, OnAlbumsortAlpha)
-	ON_BN_CLICKED(IDC_RUNATSTARTUP, OnRunatstartup)
-	ON_BN_CLICKED(IDC_HIDE_GENRE, OnHideGenre)
-	ON_BN_CLICKED(IDC_DIRCLEAR, OnDirclear)
-	ON_BN_CLICKED(IDC_EXCLUDECLEAR, OnExcludeclear)
-	ON_BN_CLICKED(IDC_DEBUG_LOG, OnDebugLog)
-	ON_BN_CLICKED(IDC_REPLAYGAIN, OnReplaygain)
+	ON_BN_CLICKED(IDC_DIRADD,			OnDiradd)
+	ON_BN_CLICKED(IDC_DIRADD2,			OnDiradd2)
+	ON_LBN_SELCHANGE(IDC_DIRLIST,		OnSelchangeDirlist)
+	ON_LBN_SELCHANGE(IDC_DIRLIST2,		OnSelchangeDirlist2)
+	ON_BN_CLICKED(IDC_DIRREMOVE,		OnDirremove)
+	ON_BN_CLICKED(IDC_DIRREMOVE2,		OnDirremove2)
+	ON_BN_CLICKED(IDC_LOCATION_BUTTON,	OnLocationButton)
+	ON_BN_CLICKED(IDC_ALBUMSORT_DATE,	OnAlbumsortDate)
+	ON_BN_CLICKED(IDC_ALBUMSORT_ALPHA,	OnAlbumsortAlpha)
+	ON_BN_CLICKED(IDC_RUNATSTARTUP,		OnRunatstartup)
+	ON_BN_CLICKED(IDC_HIDE_GENRE,		OnHideGenre)
+	ON_BN_CLICKED(IDC_DIRCLEAR,			OnDirclear)
+	ON_BN_CLICKED(IDC_EXCLUDECLEAR,		OnExcludeclear)
+	ON_BN_CLICKED(IDC_DEBUG_LOG,		OnDebugLog)
+	ON_BN_CLICKED(IDC_REPLAYGAIN,		OnReplaygain)
 	ON_BN_CLICKED(IDC_DISPLAY_COMMENTS, OnDisplayComments)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
@@ -271,6 +271,9 @@ void CConfigFiles::list2box(const CStringArray & list, CHListBox & box) {
 }
 void CConfigFiles::OnLocationButton() 
 {
+	RegistryKey reg( HKEY_LOCAL_MACHINE, RegKey );
+	CString tmp = reg.ReadCString("SkinsDir","");
+	BOOL skinElseWhere = (tmp.GetLength() > 1);
     // open a file
 	CString dflt;
 	m_MdbLocation.GetWindowText(dflt);
@@ -280,28 +283,38 @@ void CConfigFiles::OnLocationButton()
 	dialog.setMsg("... where Muzikbrowzer's files, playlists, skins reside");
 
 	int ret;
+	BOOL goodpath = FALSE;
+	CStringList paths ;
+	CString path;
 	ret = dialog.DoModal();
-	if (ret == IDOK) {
-        // a file was selected
-		CStringList paths ;
+	while (IDOK == ret && !goodpath) {
 		dialog.GetPaths(paths );
         POSITION pos;
-		for(pos = paths.GetHeadPosition(); pos != NULL;) {
-			CString path = paths.GetNext(pos);
-			if (path.GetLength()) {
-				m_MdbLocation.SetWindowText(path);
-				UpdateData(FALSE);
-
-				(*m_playercallbacks->setDbLocation)(path);
-				m_path = path;
-				SetModified(TRUE);
-				m_LocDirModified = TRUE;
-//				return;
+		pos = paths.GetHeadPosition();
+		path = paths.GetNext(pos);
+		if (path.GetLength()) {
+			if (skinElseWhere) {
+				goodpath = TRUE;
+			} else {
+				tmp = path + "\\skins\\MBClassic\\SkinDef.mbsd";
+				if (FileUtil::IsReadable(tmp)) {
+					goodpath = TRUE;
+				} else {
+					dialog.setMsg("You must select a folder with Muzikbrowzer skins.");
+					ret = dialog.DoModal();
+				}
 			}
 		}
+	}	
+	if (goodpath) {
+		m_MdbLocation.SetWindowText(path);
+		(*m_playercallbacks->setDbLocation)(path);
+		m_path = path;
+		SetModified(TRUE);
+		m_LocDirModified = TRUE;
 		ReadFolders();
 		UpdateData(FALSE);
-	}	
+	}
 }
 
 

@@ -178,7 +178,7 @@ DWORD CControlSK::SetBitmap(LPCTSTR lpszFileName)
 
 BOOL CControlSK::OnEraseBkgnd(CRect & rect, CDC* pDC) 
 {
-//	CString msg = "CControlSK::OnEraseBkgnd\r\n";OutputDebugString(msg);
+
     BOOL bRetValue = TRUE;;//= CDialog::OnEraseBkgnd(pDC);
     if (!m_hBitmap)
         return bRetValue;

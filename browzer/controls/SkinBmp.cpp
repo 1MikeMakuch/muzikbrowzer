@@ -79,7 +79,7 @@ void SkinBmp::PaintBk(CDC* pDC)
 	pDC->BitBlt(0, 0, m_ClientRect.Width(), m_ClientRect.Height(), &m_dcBk, 0, 0, SRCCOPY);
 	m_pbmpOldBk = m_dcBk.SelectObject(m_pbmpOldBk);
 //	if (m_desc == "playlist"){
-//		OutputDebugString("Pbk " + m_desc + "\r\n");
+
 //		FileUtil::BmpLog((HBITMAP)m_bmpBk, "playlistBk");
 //	}
 
@@ -109,7 +109,7 @@ void SkinBmp::DrawTheBitmap(CDC* pDC)
 	::DeleteDC(hdcTmp);
 
 //	if (m_desc == "playlist"){
-//		OutputDebugString("dtb " + m_desc + "\r\n");
+
 //		FileUtil::BmpLog((HBITMAP)m_Bitmaps.hBitmap, "playlistbmp");
 //	}
 

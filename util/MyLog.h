@@ -65,11 +65,4 @@ extern MyLog logger;
 extern int AutoLogTabCounter;
 #endif
 
-#define ODS(x) {\
-	CString msg(x);\
-	msg += "\r\n";\
-	OutputDebugString(x);
-
-
-
 #endif

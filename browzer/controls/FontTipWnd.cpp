@@ -161,7 +161,7 @@ void CTipWnd::ShowTips(CPoint pt,const CString& str)
 
 		pDC->SelectObject(pFont);
 		ReleaseDC(pDC);
-//		OutputDebugString("ShowTips\r\n");
+
 
 		SetWindowPos(0,pt.x,pt.y,sz.cx,sz.cy,SWP_SHOWWINDOW|SWP_NOACTIVATE);
 		RedrawWindow(); // Force immediate redraw
@@ -172,7 +172,7 @@ void CTipWnd::ShowTips(CPoint pt,const CString& str)
 
 void CTipWnd::OnPaint() 
 {
-//	OutputDebugString("CTipWnd::OnPaint\r\n");
+
 	CPaintDC dc(this); // device context for painting
 	
 	CFont * oldfont = dc.SelectObject(&m_font);

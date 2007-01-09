@@ -221,7 +221,7 @@ DWORD CDialogSK::SetBitmap(HBITMAP hBitmap, CRect & rect, LayOutStyle los
 {
 //	CString msg("CDialogSk w,h=");
 //	msg += numToString(rect.Width()) + "," + numToString(rect.Height()) + "\r\n";
-//	OutputDebugString(msg);
+
     int nRetValue;
     BITMAP  csBitmapSize;
 	m_UseSkin = TRUE;
@@ -261,7 +261,7 @@ DWORD CDialogSK::SetBitmap(HBITMAP hBitmap, CRect & rect, LayOutStyle los
 
 void CDialogSK::make(CDC * wDC) {
 //	CString msg = "make bg\r\n";
-//	OutputDebugString(msg);
+
 	int i;
 	BitmapToCRect * bmcr;
 

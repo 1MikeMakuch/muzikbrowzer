@@ -1252,7 +1252,7 @@ CPlayerDlg::resetControls() {
 	GetClientRect(m_BtnControls.dialogrect);
 //	CString msg = "dlg w,h=" + numToString(m_BtnControls.dialogrect.Width())
 //		+ " " + numToString(m_BtnControls.dialogrect.Height()) + "\r\n";
-//	OutputDebugString(msg);
+
 
 	int ControlBoxWidth = m_reg.Read("ControlBoxWidth",0);
 	int ControlBoxHeight = m_reg.Read("ControlBoxHeight",0);
@@ -2227,7 +2227,7 @@ CPlayerDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) {
 			case SB_THUMBPOSITION: 
 			case SB_THUMBTRACK:
 				adjustVolume(nPos);
-//				OutputDebugString("vol nPos " + numToString(nPos) + "\r\n");
+
 				break;
 		}
 		CDialogClassImpl::OnVScroll(nSBCode, nPos, pScrollBar);
@@ -3048,13 +3048,13 @@ CPlayerDlg::prevDlgCtrl() {
 void
 PostMyIdleMessage() {
     // Post it once a second
-//	OutputDebugString("PostMyIdleMessage");
+
     CTime t = CTime::GetCurrentTime();
     static int last = t.GetSecond();
     if (t.GetSecond() != last) {
         last = t.GetSecond();
         HWND hwnd = AfxGetMainWnd()->m_hWnd;
-//		OutputDebugString("PostMessage PostMyIdleMessage");
+
 //	    ::PostMessage(hwnd, MB_POST_MYIDLE_MESSAGE, (WPARAM)0, (LPARAM)0);
     }
 }
