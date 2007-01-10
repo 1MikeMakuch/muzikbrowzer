@@ -1522,6 +1522,7 @@ MusicLib::preExport(ExportDlg * exp) {
 	CString HtmlTmplAlbumTail ;
 	CString HtmlTmplSongs;
 	CString HtmlTmplTail ;
+	CString ExtraKeys;
 
 	if (!FileUtil::DirIsWriteable(exp->m_Folder)) {
 		if (!FileUtil::mkdirp(exp->m_Folder)) {
@@ -1563,11 +1564,26 @@ MusicLib::preExport(ExportDlg * exp) {
 		song->setId3("TCON", "Genre");
 		song->setId3("TPE1", "Artist");
 		song->setId3("TALB", "Album");
-		song->setId3("TIT2", "Song");
+		song->setId3("TIT2", "Title");
 		song->setId3("TRCK", "Track");
-		song->setId3("FILE", "File");
 		song->setId3("TLEN", "Length");
 		song->setId3("TYER", "Year");
+		song->setId3("FILE", "File");
+
+		if (exp->m_ExtraKeys.GetLength()) {
+			CString keys = exp->m_ExtraKeys;
+			keys = String::stripws(keys);
+			CString file = song->getId3("FILE");
+			CString key,val;
+			int n = String::delCount(keys,",");
+			for(int i = 1; i <= n; i++) {
+				key = String::field(keys,",",i);
+				if (key.GetLength()) {
+					song->setId3(key,key);
+				}
+			}
+		}
+
 		exportCsv(exp, &ExpCsv, song);
 	}
 	CSortedArray<CString, CString&> genreCSList;
@@ -1767,6 +1783,25 @@ MusicLib::exportCsv(ExportDlg * exp, MyLog * log, Song song) {
 	}
 	if (exp->m_Mp3File) {
 		entry = expQE(entry, song->getId3("FILE"));
+	}
+	if (exp->m_ExtraKeys.GetLength()) {
+		CString keys = exp->m_ExtraKeys;
+		keys = String::stripws(keys);
+		CString file = song->getId3("FILE");
+		CString key,val;
+		int n = String::delCount(keys,",");
+		for(int i = 1; i <= n; i++) {
+			key = String::field(keys,",",i);
+			if ("File" == file) { // header?
+				val = key;
+			} else {
+				MBTag tag;
+				tag.SetReadAllTags(TRUE);
+				tag.read(file,TRUE);
+				val = tag.getVal(key);
+			}
+			entry = expQE(entry, val);
+		}
 	}
 	log->m_NoODS = TRUE;
 	log->log(entry);

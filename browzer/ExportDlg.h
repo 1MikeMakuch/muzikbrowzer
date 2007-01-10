@@ -45,6 +45,7 @@ public:
 	CString m_Folder;
 	CString m_File;
 	CString m_HtmlTemplate;
+	CString m_ExtraKeys;
 	BOOL m_Again;
 	BOOL m_Doit;
 

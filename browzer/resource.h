@@ -1,8 +1,8 @@
 //{{NO_DEPENDENCIES}}
-// Microsoft Visual C++ generated include file.
+// Microsoft Developer Studio generated include file.
 // Used by muzikbrowzer.rc
 //
-#define IDM_ABOUTBOX                   0x10
+#define IDM_ABOUTBOX                    0x10
 #define IDD_ENTER_URL_DIALOG            17
 #define IDI_XAUDIO_ICON                 18
 #define IDD_CONFIG_DIALOG               19
@@ -467,6 +467,7 @@
 #define IDC_EXPORT_FILE                 577
 #define IDC_EXPORT_TMPL                 578
 #define IDC_IRMAN_SETUP                 579
+#define IDC_EXPORT_EXTRA_KEYS           579
 #define IDC_IR_READ_TEST_LABEL          580
 #define IDC_ABOUT_COPYRIGHT             581
 #define IDC_PROGRESS_ABORT              582
@@ -541,7 +542,7 @@
 #define ID_DELETE_FROM_LIBRARY          32862
 
 // Next default values for new objects
-//
+// 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        592

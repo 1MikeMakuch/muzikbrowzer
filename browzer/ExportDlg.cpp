@@ -8,6 +8,7 @@
 #include "FileUtils.h"
 #include "MBMessageBox.h"
 #include "MyString.h"
+#include "FileAndFolder.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -76,6 +77,7 @@ void ExportDlg::OnOK()
 	((CEdit*)GetDlgItem(IDC_EXPORT_DIR))->GetWindowText(m_Folder);
 	((CEdit*)GetDlgItem(IDC_EXPORT_FILE))->GetWindowText(m_File);
 	((CEdit*)GetDlgItem(IDC_EXPORT_TMPL))->GetWindowText(m_HtmlTemplate);
+	((CEdit*)GetDlgItem(IDC_EXPORT_EXTRA_KEYS))->GetWindowText(m_ExtraKeys);
 
 	if (!String::endsWith(m_Folder,"\\"))
 		m_Folder += "\\";
@@ -124,6 +126,7 @@ void ExportDlg::OnOK()
 	reg.Write("ExpFile", m_File);
 	reg.Write("ExpBools", bools);
 	reg.Write("ExpHtmlTmpl", m_HtmlTemplate);
+	reg.Write("ExpExtraKeys", m_ExtraKeys);
 
 	
 	CDialog::OnOK();
@@ -137,6 +140,7 @@ BOOL ExportDlg::OnInitDialog()
 	folder = reg.ReadCString("ExpDir","");
 	file = reg.ReadCString("ExpFile","");
 	htmltemplate = reg.ReadCString("ExpHtmlTmpl","");
+	m_ExtraKeys = reg.ReadCString("ExpExtraKeys","");
 	if (!folder.GetLength()) {
 		char buf[UNLEN];
 		DWORD len = UNLEN;
@@ -182,6 +186,7 @@ BOOL ExportDlg::OnInitDialog()
 	((CEdit*)GetDlgItem(IDC_EXPORT_DIR))->SetWindowText(folder);
 	((CEdit*)GetDlgItem(IDC_EXPORT_FILE))->SetWindowText(file);
 	((CEdit*)GetDlgItem(IDC_EXPORT_TMPL))->SetWindowText(htmltemplate);
+	((CEdit*)GetDlgItem(IDC_EXPORT_EXTRA_KEYS))->SetWindowText(m_ExtraKeys);
 
 	m_Again = FALSE;	
 	EnableDisable();
@@ -233,6 +238,17 @@ void ExportDlg::OnChange()
 
 void ExportDlg::OnExportOuputBrowse() 
 {
-	// TODO: Add your control notification handler code here
+	CFileAndFolder dialog(this, m_Folder);
+	dialog.SetShowFiles(FALSE);
+	dialog.setTitle("Set Export folder");
+
+	int ret;
+	ret = dialog.DoModal();
+	CStringList paths;
+	dialog.GetPaths(paths );
+    POSITION pos;
+	pos = paths.GetHeadPosition();
+	m_Folder = paths.GetNext(pos);
+	((CEdit*)GetDlgItem(IDC_EXPORT_DIR))->SetWindowText(m_Folder);
 	
 }
