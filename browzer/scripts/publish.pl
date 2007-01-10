@@ -77,6 +77,7 @@ mysystem("(cd /cygdrive/c/mkm/src/muzik ; /cygdrive/c/mkm/scripts/cvs2cl.pl --su
 #mysystem("/usr/sbin/ssmtp $to < /tmp/mbpublish.txt");
 
 mysystem("/usr/bin/scp /tmp/mbpublish.txt2 pecan:/var/www/virtuals/mbdev/httpdocs/ChangeLog.txt");
+mysystem("/usr/bin/scp /tmp/mbpublish.txt2 pecan:/var/www/virtuals/muzikbrowzer/httpdocs/ChangeLog.txt");
 mysystem("/usr/bin/scp ../Help/Html/*htm pecan:/var/www/virtuals/muzikbrowzer/httpdocs/content/Help");
 mysystem("/usr/bin/scp ../Help/Html/*gif pecan:/var/www/virtuals/muzikbrowzer/httpdocs/content/Help");
 mysystem("/usr/bin/scp ../Help/Html/*jpg pecan:/var/www/virtuals/muzikbrowzer/httpdocs/content/Help");

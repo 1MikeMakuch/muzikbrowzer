@@ -201,12 +201,12 @@ void ModifyIDThree::OnOK()
     m_Year.GetWindowText(year);
     m_Track.GetWindowText(track);
 	
-	String::trimLR(oldGenre," \"");
-	String::trimLR(oldArtist," \"");
-	String::trimLR(oldAlbum," \"");
-	String::trimLR(oldTitle," \"");
-	String::trimLR(oldYear," \"");
-	String::trimLR(oldTrack," \"");
+//	String::trimLR(oldGenre," \"");
+//	String::trimLR(oldArtist," \"");
+//	String::trimLR(oldAlbum," \"");
+//	String::trimLR(oldTitle," \"");
+//	String::trimLR(oldYear," \"");
+//	String::trimLR(oldTrack," \"");
 	
 	String::trimLR(genre);
 	String::trimLR(artist);

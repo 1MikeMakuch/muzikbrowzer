@@ -861,7 +861,7 @@ MusicLib::getSongs(const CString & genrename,
 				  const CString & albumname,
 				  CExtendedListBox & box) {
 	//AutoLog al("mdb::getSongs");
-//	MBAutoTimer t("MusicLib::getSongs");
+
 	MList songList = m_SongLib.songList(genrename, artistname, albumname);
 	MList::Iterator songIter(songList);
     CObArray namenums;

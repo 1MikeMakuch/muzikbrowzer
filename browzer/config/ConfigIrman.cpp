@@ -387,6 +387,7 @@ void CConfigIrman::OnIrinitialize()
     m_IRComPortStatus = "Uninitialized";
 
 	RemoteReceiver * rrcvr = RemoteReceiver::reset(this, MB_SERIAL_MESSAGE);
+	int type = rrcvr->GetType();
 
 	m_irrecording = FALSE;
 	m_irtesting = FALSE;
@@ -398,7 +399,10 @@ void CConfigIrman::OnIrinitialize()
 	button->SetCheck(0);
 
 	if (NULL == rrcvr) {
-		MBMessageBox("Remote Receiver Error","unable to initialize Remote Receiver.\r\nCheck muzikbrowzer.log for details.",TRUE,FALSE);
+		CString msg = "unable to initialize Remote Receiver.\r\nCheck muzikbrowzer.log for details.";
+		if (RemoteReceiver::MB_IR_TIRA == type)
+			msg += "\r\nTira not supported yet.";
+		MBMessageBox("Remote Receiver Error",msg,TRUE,FALSE);
 		return;
 	}
 	m_NeedInit = FALSE;

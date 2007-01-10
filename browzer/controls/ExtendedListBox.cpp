@@ -523,7 +523,7 @@ void CExtendedListBox::DrawScrollArrows()
 
 void CExtendedListBox::DrawScrollButton(BOOL calc, CPoint p)
 {
-//	MBAutoTimer("ELB::DrawScrollButton");
+
 	// Draw the elevator button
 
     if (m_HaveScroll == FALSE) return;

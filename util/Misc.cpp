@@ -675,7 +675,7 @@ MBUtil::MemDump(const char *p, const UINT length) {
 	}
 	logger.logd(buf.p);
 }
-#ifdef _DEBUG
+#ifdef AintUsinIt_DEBUG
 static MBAutoTimerI MBAUTOTIMER;
 
 MBAutoTimer::MBAutoTimer(const CString & id):m_id(id) {

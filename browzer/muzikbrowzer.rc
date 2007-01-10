@@ -82,14 +82,14 @@ BEGIN
     DEFPUSHBUTTON   "OK",IDOK,115,155,32,14,WS_GROUP
     CTEXT           "",IDC_HYPERLINK,75,41,125,8
     GROUPBOX        "Credits",IDC_STATIC,5,50,255,100
-    LTEXT           "Id3lib - www.id3lib.org",IDC_STATIC,40,60,115,8
-    LTEXT           "Inno installer Copyright (C) 1997-2002 Jordan Russell. All rights reserved. www.jrsoftware.org",
-                    IDC_STATIC,40,75,180,19
+    LTEXT           "Id3lib - www.id3lib.org\r\n\r\nlibFlac flac.sourceforge.net\r\n\r\nOgg Vorbis www.xiph.org",
+                    IDC_STATIC,40,60,115,43
+    LTEXT           "Inno installer www.jrsoftware.org",IDC_STATIC,40,110,
+                    180,12
     EDITTEXT        IDC_PRODVERSION,48,5,170,16,ES_CENTER | ES_MULTILINE | 
                     ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER
-    LTEXT           "Microsoft Windows Media Player. Muzikbrowzer uses Windows Media Player to decode and play audio files.",
-                    IDC_STATIC,40,100,180,21
-    LTEXT           "Ogg Vorbis www.xiph.org",IDC_STATIC,40,135,180,8
+    LTEXT           "Microsoft Windows Media Player.",IDC_STATIC,40,128,180,
+                    12
     PUSHBUTTON      "",IDC_EASTEREGG,225,157,30,13
 END
 
