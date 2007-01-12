@@ -42,7 +42,8 @@ RSC=rc.exe
 # PROP Intermediate_Dir "Release"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
-# ADD CPP /nologo /MT /W3 /GX /Zi /O2 /I "..\3rdparty\WMFSDK9\include" /I "..\3rdparty\ogg\vorbis-tools-1.0\include" /I "..\3rdparty\ogg\vorbis-tools-1.0\vorbiscomment" /I "../3rdparty/ogg/libogg-1.0/include" /I "../3rdparty/ogg/libvorbis-1.0/include" /I "../id3/id3libutils" /I "..\3rdparty/id3lib-3.8.3\include" /I "..\3rdparty\flac-1.1.3\include" /I "..\3rdparty\flac-1.1.3\src\metaflac" /I "..\WmaEdit" /I "..\util" /I "..\\" /I "../" /I "../util" /D ID3LIB_LINKOPTION=1 /D "FLAC__NO_DLL" /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /FR /YX /FD /c
+# ADD CPP /nologo /MT /W3 /GX /Zi /O2 /I "..\3rdparty\WMFSDK9\include" /I "..\3rdparty\ogg\vorbis-tools-1.0\include" /I "..\3rdparty\ogg\vorbis-tools-1.0\vorbiscomment" /I "../3rdparty/ogg/libogg-1.0/include" /I "../3rdparty/ogg/libvorbis-1.0/include" /I "../id3/id3libutils" /I "..\3rdparty/id3lib-3.8.3\include" /I "..\3rdparty\flac-1.1.3\include" /I "..\3rdparty\flac-1.1.3\src\metaflac" /I "..\WmaEdit" /I "..\util" /I "..\\" /I "../" /I "../util" /D ID3LIB_LINKOPTION=1 /D "FLAC__NO_DLL" /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /FR /FD /c
+# SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe
