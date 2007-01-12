@@ -1,0 +1,695 @@
+2003-02-26 00:50  mkm
+
+	add replace back
+
+2003-02-20 02:49  mkm
+
+	Remember selections through tag mods
+
+2003-02-19 21:06  mkm
+
+	Handle multiple songs with same title - both in id3edit and
+	dblclick
+
+2003-02-19 18:19  mkm
+
+	New icon Logo - matches splash
+
+2003-02-19 16:12  mkm
+
+	PicCache
+
+2003-02-18 23:09  mkm
+
+	Splash screen files
+
+2003-02-18 22:53  mkm
+
+	Scan for new files
+
+2003-02-16 22:20  mkm
+
+	Volume slider works as you slid it.
+
+2003-02-16 01:14  mkm
+
+	Only wakeup if known signal
+
+2003-02-16 01:08  mkm
+
+	Fix playlists on id3edit, new logo's etc.
+
+2003-02-11 12:24  mkm
+
+	bug fixes: put FILE back on id3display, #218 edit id3 tag in albums
+	not picking up year from 1st song, 221 get rid of couldn't
+	calculate tlen, 217 eliminate id3 display More says not a valid
+	mp3, uniqueify SetTimer id's, attempt to address gdi leaks,
+	eliminate OutputDebugStrings
+
+2003-02-06 17:16  mkm
+
+	Display album art. New resizeControl's routine
+
+2003-01-23 21:36  mkm
+
+	Prevent resizing too small
+
+2003-01-23 16:54  mkm
+
+	Beginnings of album art support
+
+2003-01-12 18:27  mkm
+
+	Log DS filters once per song play
+
+2003-01-10 13:54  mkm
+
+	update release to 1.2.2, upgrade to id3lib-3.8.2, create Publish
+
+2003-01-08 00:15  mkm
+
+	Removed Request Password Button
+
+2003-01-07 21:41  mkm
+
+	Clear lastthingqueued up flag when ever a selection changes.
+
+2003-01-07 21:09  mkm
+
+	60 day trial, can't add same thing twice, put more info in
+	pwrequest email: exp date and mbversion
+
+2003-01-06 12:11  mkm
+
+	testing
+
+2003-01-05 21:49  mkm
+
+	testing
+
+2003-01-05 02:17  mkm
+
+	testing
+
+2003-01-04 23:31  mkm
+
+	testing
+
+2003-01-04 15:53  mkm
+
+	testing cvs
+
+2003-01-03 20:46  mkm
+
+	tag editing bugs which resulted from ogg support, fixed.
+
+2003-01-03 14:01  mkm
+
+	trash it
+
+2003-01-02 19:45  mkm
+
+	ogg support, update id3v1/2 tag according to what's already there
+
+2002-12-29 21:17  mkm
+
+	fix for id3 tlen reading, added title line to main dlg, fix config
+	help
+
+2002-12-02 11:27  mkm
+
+	New icon
+
+2002-12-02 10:39  mkm
+
+	db version check, update version # to 1.1
+
+2002-11-26 14:15  mkm
+
+	TLEN handling. Try 2 methods for calculating duration at scan time.
+	 If that fails then note duration 1st time song is played and
+	update the library.
+
+		Eliminate ID3StatusDisplay dialog, use InitDlg, made it
+	more general.
+
+		GarbageCollection now performed at an interval, rather than
+	everytime a change is made. Called at startup.
+
+2002-11-18 14:29  mkm
+
+	Put new logo on main dialog
+
+2002-10-31 10:28  mkm
+
+	rearrange password stuff
+
+2002-10-31 10:23  mkm
+
+	ifdef _DEBUG stuff
+
+2002-10-31 10:20  mkm
+
+	ifdef _DEBUG stuff
+
+2002-10-29 01:08  mkm
+
+	add purify config for new md5 lib
+
+2002-10-28 23:26  mkm
+
+	About/Verson copyable, fix unknown blank id3 fields, md5 password
+	and validate it for trial mode, add the .exe for historical
+	purposes. This is the last checkin before tagging for the beta
+
+2002-10-26 02:53  mkm
+
+	genreate host id
+
+2002-10-25 15:13  mkm
+
+	Back to ShellExecute for Help. api keeps crashing in BoundsChecker
+
+2002-10-25 08:37  mkm
+
+	Fix help, fix configirman status, mods to Inno install scripts
+
+2002-10-24 17:06  mkm
+
+	ConfigPassword dlg, plug some resource leaks
+
+2002-10-24 00:15  mkm
+
+	Fix up log location
+
+2002-10-24 00:14  mkm
+
+	Create DbLocation in Registry
+
+2002-10-23 23:31  mkm
+
+	Fix menu help. Changed name of config tab
+
+2002-10-23 23:30  mkm
+
+	Plugged potential leak
+
+2002-10-23 23:29  mkm
+
+	Changed name of playlist file
+
+2002-10-23 11:43  mkm
+
+	Insure errors
+
+2002-10-22 17:45  mkm
+
+	Trial Mode & plugged some leaks
+
+2002-10-22 00:06  mkm
+
+	Rotate status msgs
+
+2002-10-21 16:53  mkm
+
+	Fix VirtualControl for MessageBox etc.
+
+2002-10-21 12:59  mkm
+
+	New MusicLib. Remember Volume setting. Logaritmic volume. Log
+	registry i/o.
+
+2002-10-15 22:59  mkm
+
+	More project fixin up
+
+2002-10-15 22:05  mkm
+
+	Add Debug/Release setup files, get rid of .plg
+
+2002-10-15 22:04  mkm
+
+	fix up configs, Release, Insure, Debug
+
+2002-10-15 22:00  mkm
+
+	make insure happy
+
+2002-10-15 02:01  mkm
+
+	get CPlayerDlg out of some modules, single irman instance
+
+2002-10-15 01:48  mkm
+
+	dont need in cvs
+
+2002-10-15 01:46  mkm
+
+	don't need it in cvs
+
+2002-10-15 00:44  mkm
+
+	cleanup prj files
+
+2002-10-15 00:09  mkm
+
+	fix location of id3lib
+
+2002-10-13 21:09  mkm
+
+	Validate memdb
+
+2002-10-13 18:03  mkm
+
+	Volume, fast forward, reverse, remote help
+
+2002-10-10 17:58  mkm
+
+	Adjustable panel fonts. Added position indicator and volume
+	ctrl/indicator
+
+2002-10-09 10:14  mkm
+
+	Test results only on failure, but logging 'em. And added additional
+	font settings for panel vs. titles
+
+2002-10-09 05:39  mkm
+
+	Added blurb about Volume buttons not working very well, if at all.
+
+2002-10-09 03:08  mkm
+
+	branding
+
+2002-10-09 03:04  mkm
+
+	More branding
+
+2002-10-09 02:33  mkm
+
+	Renaming for branding
+
+2002-10-09 02:29  mkm
+
+	Re-enable
+
+2002-10-09 02:25  mkm
+
+	Renaming for branding
+
+2002-10-09 02:21  mkm
+
+	Renaming for branding
+
+2002-10-09 02:01  mkm
+
+	No more ReqDlls
+
+2002-10-09 01:21  mkm
+
+	copy of an irman.cpp works with SerialMFC except for dups
+
+2002-10-09 00:52  mkm
+
+	Use SerialMFC for I/O. Mod to look for # of ir pulses instead of
+	interKeyDelay
+
+2002-10-06 19:49  mkm
+
+	lint
+
+2002-10-04 20:20  mkm
+
+	Finished up rearranging into seperate dirs and static libs and
+	projects
+
+2002-10-04 16:31  mkm
+
+	rearrange stuff
+
+2002-10-02 21:27  mkm
+
+	Handle seekbar, adjust menu button and applabel
+
+2002-10-02 21:23  mkm
+
+	Add mp3 info to display
+
+2002-09-28 23:58  mkm
+
+	Better Scan msgs, handle TLEN/mp3 duration, calc Duration
+
+2002-09-26 22:36  mkm
+
+	get rid of outputdebugs
+
+2002-09-26 22:35  mkm
+
+	remove ifdefs
+
+2002-09-26 22:33  mkm
+
+	Get rid of outputdebug msgs
+
+2002-09-25 10:46  mkm
+
+	tyding up
+
+2002-09-25 10:44  mkm
+
+	default irman port to disabled
+
+2002-09-12 01:19  mkm
+
+	Added TestHarness
+
+2002-09-10 16:57  mkm
+
+	Handle DirectShow messages, namely when it's done playing a file
+
+2002-09-07 16:11  mkm
+
+	initial implementation of DirectShow
+
+2002-09-06 14:32  mkm
+
+	add logo stuff
+
+2002-09-06 14:14  mkm
+
+	Isolate xaudio stuff
+
+2002-09-05 13:37  mkm
+
+	Isolate xaudio stuff
+
+2002-09-05 10:24  mkm
+
+	New icon - the one Paul made.
+
+2002-08-28 18:21  mkm
+
+	adding images
+
+2002-08-28 14:02  mkm
+
+	exportLibrary and logo icon
+
+2002-06-18 00:09  mkm
+
+	added
+
+2002-06-18 00:08  mkm
+
+	[no log message]
+
+2002-05-29 01:02  mkm
+
+	Fix compiler warning
+
+2002-05-16 15:41  mkm
+
+	Wrapper for id3lib to encapsulate mem mngmt
+
+2002-05-15 21:08  mkm
+
+	Bug fixes from Insure
+
+2002-04-21 22:29  mkm
+
+	added
+
+2002-04-21 22:22  mkm
+
+	Version in About.  Don't display errorbox for missing db.
+
+2002-04-21 22:21  mkm
+
+	Tweaked
+
+2002-04-21 22:19  mkm
+
+	Versioner
+
+2002-04-21 22:18  mkm
+
+	Add the versioner
+
+2002-04-21 22:05  mkm
+
+	Add Inno
+
+2002-04-18 18:56  mkm
+
+	Added version
+
+2002-04-17 23:25  mkm
+
+	Default colors to white on black.  Added renamed proj files.
+	SavePlaylist with remote control.
+
+2002-04-17 23:24  mkm
+
+	Default colors to white on black.  SavePlaylist with remote
+	control.  Added renamed proj files.
+
+2002-04-17 22:13  mkm
+
+	Help!
+
+2002-04-15 03:24  mkm
+
+	Renamed project to MuzikBrowzer
+
+2002-04-14 17:52  mkm
+
+	Proj changes
+
+2002-04-14 17:41  mkm
+
+	Added
+
+2002-04-14 17:36  mkm
+
+	Proj setting changes.
+
+2002-04-14 17:28  mkm
+
+	URL in About Dialog Handle duplicate titles in an album.
+
+2002-04-10 00:25  mkm
+
+	More tweaking.
+
+2002-04-10 00:22  mkm
+
+	Tweaked project settings for getting everything into cvs.
+
+2002-04-09 23:07  mkm
+
+	Added custom slider.
+
+2002-04-09 22:50  mkm
+
+	Fix to remembering selections.
+
+2002-04-09 01:41  mkm
+
+	Run at startup option.	Remember genre/artist etc selections.
+	Don't remember minimized window app state.
+
+2002-04-08 22:01  mkm
+
+	[no log message]
+
+2002-04-08 17:18  mkm
+
+	Derived CColorStatic from CStatic to properly paint them.
+
+2002-04-04 00:40  mkm
+
+	Display library counts
+
+2002-03-29 02:08  mkm
+
+	Don't use colors/user scrollbars for loadplaylist.  Disable Delete
+	key when songs is focused in loadplaylist.
+
+2002-03-29 01:26  mkm
+
+	Friendly message if no sound card present.
+
+2002-03-28 19:27  mkm
+
+	Add files. Remove 1.
+
+2002-03-28 19:23  mkm
+
+	Add files
+
+2002-03-28 19:19  mkm
+
+	Add resources
+
+2002-03-28 19:17  mkm
+
+	Home grown scrollbars
+
+2002-03-26 01:34  mkm
+
+	Home grown scroll bars.
+
+2002-03-22 00:39  mkm
+
+	Set default font to Arial.  Plug some memory leaks.
+
+2002-03-21 16:15  mkm
+
+	Bug fix: if no logfont stored in registry it was crashing.
+
+2002-03-21 15:21  mkm
+
+	Redraw slider after leaving config
+
+2002-03-21 00:54  mkm
+
+	Font and color selection in config options
+
+2002-03-19 02:39  mkm
+
+	Initial tabbed dialog for config.  Other miscellaneous minor mods.
+
+2002-03-17 00:36  mkm
+
+	Add randomizeplaylist
+
+2002-03-16 12:25  mkm
+
+	COnfigSettings was blowing away font read from registry on startup.
+	 Left/Right reorders playlist.	Stop button really works now.
+	Attempt to fix playlist management on Delete and reorder.  Remote
+	control next/previous implemented.
+
+2002-03-15 12:39  mkm
+
+	Playlist editing, left/right arrows move selection up/down. Delete.
+	 Make backup copy of playlist when saving.
+
+2002-03-15 01:26  mkm
+
+	Add timed PlayingLabel mngmt.  Add 1st part of saved playlist
+	management (LoadPlaylist)
+
+2002-03-11 23:39  mkm
+
+	Do both forms of Wakeup
+
+2002-03-06 23:28  mkm
+
+	Actually delete playlist OnDelete.  Genres Label getting chopped of
+	by genre control.
+
+2002-03-05 00:28  mkm
+
+	Widen genre, fix up config.
+
+2002-03-03 22:27  mkm
+
+	Added user selectable fonts.
+
+2002-03-01 02:55  mkm
+
+	Added None to comport settings.  MBMessageBox general purpose
+	message dlg.  Single macro for MuzikBrowzer.  Error dlg for bad
+	entries in saved playlist.  Correctly sort playlist.  Monkeyed with
+	editID3 - try to save track/year better.  Generalize logger, put in
+	correct dir.  Added more to MyString.cpp.  Remember window position
+	and startup that way next time.  Screensaver kill for NT & XP.
+
+2002-02-16 17:44  mkm
+
+	another screen saver try
+
+2002-02-08 01:53  mkm
+
+	Attempt to kill screen saver on NT & XP
+
+2001-12-07 10:25  mkm
+
+	Fix status display when no irman present
+
+2001-12-05 22:38  mkm
+
+	Prevent more than one menu.
+
+2001-12-05 22:13  mkm
+
+	Config mp3Extensions, config cancel button, About button
+
+2001-12-05 02:19  mkm
+
+	Remote Exit doesn't close app.
+
+2001-12-05 02:10  mkm
+
+	More help
+
+2001-12-05 01:51  mkm
+
+	More help
+
+2001-12-05 01:46  mkm
+
+	Added help.txt
+
+2001-11-30 15:26  mkm
+
+	Added missing file
+
+2001-11-30 00:23  mkm
+
+	Reload db after modifying config db location.
+
+2001-11-29 22:47  mkm
+
+	scan in it's own thread, abort on dialog
+
+2001-11-26 23:27  mkm
+
+	ModifyIDThree gets genre list from mdb. This does not yet finish
+	the issue since ModifyIDThree needs the union of genres from
+	Genres.cpp and memdb.
+
+2001-11-26 23:26  mkm
+
+	Get rid of custom genres in Genres.cpp
+
+2001-11-26 22:49  mkm
+
+	Fix bug left from removing ACE. rgdb wasn't reversed.
+
+2001-11-26 22:42  mkm
+
+	Improved shuffle.
+
+2001-11-21 00:36  mkm
+
+	Add WakeUp() to wakeup screen saver on IR events.
+
+2001-11-21 00:36  mkm
+
+	Eliminate ContinueModal, add irreader thread. Fixes hang problem.
+
+2001-11-20 23:11  mkm
+
+	Get rid of ACE
+
+2001-11-19 22:46  mkm
+
+	Initial import
+
+2001-11-19 22:46  mkm
+
+	Initial revision
+

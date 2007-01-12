@@ -1,6 +1,6 @@
 #ifndef _MUZIKBROWZER__VERSION__H__
 #define _MUZIKBROWZER__VERSION__H__
-static const char MUZIKBROWZER_VERSION[] = "2.0.2 2007-01-10 18:52:10";
+static const char MUZIKBROWZER_VERSION[] = "2.0.2 2007-01-11 22:46:09";
 
 #include "MyString.h"
 #include "MBConfig.h"
