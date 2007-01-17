@@ -9,6 +9,14 @@
 #include <afxdlgs.h>
 #include <afxcmn.h>
 
+#define MB_TRIAL_DAYS 61
+
+#ifdef _DEBUG
+	#define MB_USING_TRIAL_MODE
+#else
+	#undef MB_USING_TRIAL_MODE
+#endif
+
 #if _MSC_VER > 1000
 #pragma once
 #endif // _MSC_VER > 1000

@@ -40,6 +40,15 @@ Type: files; Name: "{commonappdata}\Muzikbrowzer\Muzikbrowzer.mbfls"
 Type: files; Name: "{commonappdata}\Muzikbrowzer\Muzikbrowzer.mblastsearch"
 Type: files; Name: "{commonappdata}\Muzikbrowzer\Muzikbrowzer.mbtgs"
 Type: files; Name: "{commonappdata}\Muzikbrowzer\skins"
+Type: files; Name: "{app}\Muzikbrowzer\Muzikbrowzer.log"
+Type: files; Name: "{app}\Muzikbrowzer\Muzikbrowzer.mb"
+Type: files; Name: "{app}\Muzikbrowzer\Muzikbrowzer.mb.txt"
+Type: files; Name: "{app}\Muzikbrowzer\Muzikbrowzer.mbdirs"
+Type: files; Name: "{app}\Muzikbrowzer\Muzikbrowzer.mbexs"
+Type: files; Name: "{app}\Muzikbrowzer\Muzikbrowzer.mbfls"
+Type: files; Name: "{app}\Muzikbrowzer\Muzikbrowzer.mblastsearch"
+Type: files; Name: "{app}\Muzikbrowzer\Muzikbrowzer.mbtgs"
+Type: files; Name: "{app}\Muzikbrowzer\skins"
 
 [Files]
 Source: "..\Release\Muzikbrowzer.exe"; DestDir: "{app}"; CopyMode: alwaysoverwrite
