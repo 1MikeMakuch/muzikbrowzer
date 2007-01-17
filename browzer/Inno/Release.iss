@@ -12,7 +12,7 @@ Type: files; Name: "{commonprograms}\Muzikbrowzer.lnk";
 AppMutex=MuzikbrowzerAppMutex,Global\MuzikbrowzerAppMutex
 ;AppMutex=MuzikbrowzerAppMutex,Global\MuzikbrowzerAppMutex,MuzikbrowzerBitMapCutterAppMutex,Global\MuzikbrowzerBitMapCutterAppMutex
 AppName=Muzikbrowzer
-AppVerName=Muzikbrowzer 2.0.2 (built 2007-01-11 22:46:09)
+AppVerName=Muzikbrowzer 2.0.2 (built 2007-01-16 22:50:18)
 AppCopyright=Copyright (C) 2001-Present Pecan Ventures, LLC
 DefaultDirName={pf}\Muzikbrowzer
 DefaultGroupName=Muzikbrowzer
@@ -65,11 +65,12 @@ Name: "{userdesktop}\Muzikbrowzer"; Filename: "{app}\Muzikbrowzer.exe"; WorkingD
 
 [Registry]
 Root: HKLM; Subkey: "Software\Muzikbrowzer"; Flags: createvalueifdoesntexist uninsdeletekey
-Root: HKLM; Subkey: "Software\Muzikbrowzer"; ValueType: string; ValueName: "DbLocation"; ValueData: "{commonappdata}\Muzikbrowzer"  ; Flags: createvalueifdoesntexist uninsdeletekey
-Root: HKLM; Subkey: "Software\Muzikbrowzer"; ValueType: string; ValueName: "SkinName"; ValueData: "MBClassic"  ; Flags: createvalueifdoesntexist uninsdeletekey
-Root: HKLM; Subkey: "Software\Muzikbrowzer"; ValueType: dword; ValueName: "NumDirs"; ValueData: "1"  ; Flags: createvalueifdoesntexist uninsdeletekey
-Root: HKLM; Subkey: "Software\Muzikbrowzer"; ValueType: string; ValueName: "Dir_00"; ValueData: "{commondocs}\My Music"; Flags: createvalueifdoesntexist uninsdeletekey
-;Root: HKLM; Subkey: "Software\Muzikbrowzer"; ValueType: string; ValueName: "ExpHtmlTmpl"; ValueData: "{app}\MbHtmlTemplate.txt" ; Flags: createvalueifdoesntexist uninsdeletekey
+;Root: HKLM; Subkey: "Software\Muzikbrowzer"; ValueType: string; ValueName: "DbLocation"; ValueData: "{commonappdata}\Muzikbrowzer"  ; Flags: createvalueifdoesntexist uninsdeletevalue
+Root: HKLM; Subkey: "Software\Muzikbrowzer"; ValueType: string; ValueName: "DbLocation"; ValueData: "{commonappdata}\Muzikbrowzer"  ; Flags: uninsdeletevalue
+Root: HKLM; Subkey: "Software\Muzikbrowzer"; ValueType: string; ValueName: "SkinName"; ValueData: "MBClassic"  ; Flags: createvalueifdoesntexist uninsdeletevalue
+Root: HKLM; Subkey: "Software\Muzikbrowzer"; ValueType: dword; ValueName: "NumDirs"; ValueData: "1"  ; Flags: createvalueifdoesntexist uninsdeletevalue
+Root: HKLM; Subkey: "Software\Muzikbrowzer"; ValueType: string; ValueName: "Dir_00"; ValueData: "{commondocs}\My Music"; Flags: createvalueifdoesntexist uninsdeletevalue
+;Root: HKLM; Subkey: "Software\Muzikbrowzer"; ValueType: string; ValueName: "ExpHtmlTmpl"; ValueData: "{app}\MbHtmlTemplate.txt" ; Flags: createvalueifdoesntexist uninsdeletevalue
 
 ; Keys to delete
 Root: HKLM; Subkey: "Software\Muzikbrowzer\PreviousValues"; ValueType: none; Flags: deletekey dontcreatekey
@@ -90,6 +91,4 @@ Root: HKLM; Subkey: "Software\Muzikbrowzer"; ValueType: none; ValueName: "Mp3Ext
 Root: HKLM; Subkey: "Software\Muzikbrowzer"; ValueType: none; ValueName: "Mp3Extension_05"; Flags: deletevalue dontcreatekey
 Root: HKLM; Subkey: "Software\Muzikbrowzer"; ValueType: none; ValueName: "FontPanel"; Flags: deletevalue dontcreatekey
 Root: HKLM; Subkey: "Software\Muzikbrowzer"; ValueType: none; ValueName: "FontTitles"; Flags: deletevalue dontcreatekey
-
-
 

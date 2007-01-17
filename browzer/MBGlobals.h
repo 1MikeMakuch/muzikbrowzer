@@ -91,7 +91,7 @@
 #define MB_VOLUME_TIMER_ID		7
 #define MB_TICKER_TIMER_ID		8
 
-#define MB_TRIAL_DAYS 60
+#define MB_TRIAL_DAYS 61
 
 #undef MB_USING_TRIAL_MODE
 //#define MB_USING_TRIAL_MODE
