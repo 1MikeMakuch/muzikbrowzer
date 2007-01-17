@@ -123,6 +123,8 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 	int HandleIRMessage(int key);
+	void getDescs();
+	void clearDescs();
 
 private:
 	BOOL m_irrecording;

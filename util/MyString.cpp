@@ -381,6 +381,116 @@ String::equalUpToMin(const CString & string1, const CString & string2,
 		return !strncmp(string1,string2,min);
 
 }
+CString
+String::ascii2Hex(const CString & ascii) {
+	AutoBuf buf((ascii.GetLength() * 2) +1);
+	char * p = buf.p;
+	for(int i = 0 ; i < ascii.GetLength(); i++) {
+		sprintf(p,"%02x",ascii[i]);
+		p += 2;
+	}
+	CString ret(buf.p);
+	return ret;
+}
+CString
+String::hex2Ascii(const CString & hex) {
+	CString ascii;
+	AutoBuf buf(3);
+
+	char ch;
+	for(int i = 0 ; i < hex.GetLength(); i += 2) {
+		sscanf(hex.Mid(i,2), "%02x", &ch);
+		ascii += ch;
+	}
+	return ascii;
+}
+TEST(String,ascii2Hex)
+{
+	CString ascii("abc123");
+	CString hex;
+	hex = String::ascii2Hex(ascii);
+	CString ascii2 = String::hex2Ascii(hex);
+	CHECK(ascii == ascii2);
+}
+BOOL 
+String::ContainsValidDomainNameChars(const CString & string) {
+	for(int i = 0 ; i < string.GetLength(); i++) {
+		char ch = string[i];
+		if (!(
+			('0' <= ch && ch <= '9')
+			|| ('A' <= ch && ch <= 'Z')
+			|| ('a' <= ch && ch <= 'z')
+			|| ('-' == ch)
+			|| ('.' == ch)
+			))
+			return FALSE;
+	}
+	return TRUE;
+}
+BOOL 
+String::ContainsValidEmailAddrChars(const CString & string) {
+	for(int i = 0 ; i < string.GetLength(); i++) {
+		char ch = string[i];
+		if (!(
+			('0' <= ch && ch <= '9')
+			|| ('A' <= ch && ch <= 'Z')
+			|| ('a' <= ch && ch <= 'z')
+			|| ('-' == ch)
+			|| ('.' == ch)
+			|| ('_' == ch)
+			|| ('%' == ch)
+			|| ('@' == ch)
+			))
+			return FALSE;
+	}
+	return TRUE;
+}
+BOOL 
+String::IsRoughlyValidEmailAddr(const CString & string) {
+	if (!String::ContainsValidEmailAddrChars(string))
+		return FALSE;
+	
+	if (String::delCount(string,"@") != 2)
+		return FALSE;
+
+	CString addr,domain;
+	addr = String::extract(string,"","@");
+	domain = String::extract(string,"@","");
+	if (addr.GetLength() < 1 || domain.GetLength() < 1)
+		return FALSE;
+	
+	if (!String::ContainsValidDomainNameChars(domain))
+		return FALSE;
+
+	return TRUE;
+}
+TEST(String, ContainsValidDomainAndEmailNameChars) 
+{
+	CString s("abc123-.");
+	CHECK(String::ContainsValidDomainNameChars(s) == TRUE);
+	s = "abc'123";
+	CHECK(String::ContainsValidDomainNameChars(s) == FALSE);
+	s = "abc\"123";
+	CHECK(String::ContainsValidDomainNameChars(s) == FALSE);
+	s = "abc/123";
+	CHECK(String::ContainsValidDomainNameChars(s) == FALSE);
+	
+	s = "abc123._%-@";
+	CHECK(String::ContainsValidEmailAddrChars(s) == TRUE);
+	s = "abc\"123";
+	CHECK(String::ContainsValidEmailAddrChars(s) == FALSE);
+	s = "abc/123";
+	CHECK(String::ContainsValidEmailAddrChars(s) == FALSE);
+
+	s = "abc@abc.com";
+	CHECK(String::IsRoughlyValidEmailAddr(s) == TRUE);
+	s = "a0._%-@abc.com";
+	CHECK(String::IsRoughlyValidEmailAddr(s) == TRUE);
+	s = "a0._%-@abc_.com";
+	CHECK(String::IsRoughlyValidEmailAddr(s) == FALSE);
+	s = "a0._%-+@abc.com";
+	CHECK(String::IsRoughlyValidEmailAddr(s) == FALSE);
+}
 TEST(StringTrimLR, stringtrimlr)
 {
 	CString x(" x x ");

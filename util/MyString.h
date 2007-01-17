@@ -114,6 +114,12 @@ class String {
 	static void CStringList2CStringArray(CStringArray & array, const CStringList & list);
 	static void copyCStringArray2MyHash(MyHash & tmplist,const CStringArray & list);
 	static CString numspaces(const int num);
+
+	static CString ascii2Hex(const CString & ascii);
+	static CString hex2Ascii(const CString & hex);
+	static BOOL ContainsValidDomainNameChars(const CString & string);
+	static BOOL ContainsValidEmailAddrChars(const CString & string);
+	static BOOL IsRoughlyValidEmailAddr(const CString & addr);
 };
 
 class AutoBuf {

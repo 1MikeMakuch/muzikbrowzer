@@ -28,8 +28,6 @@ About::About(CRect rect, CWnd* pParent /*=NULL*/)
 	//{{AFX_DATA_INIT(About)
 		// NOTE: the ClassWizard will add member initialization here
 	//}}AFX_DATA_INIT
-	MyUtil::seed();
-
 
 }
 

@@ -12,6 +12,8 @@
 #include "SMTP.h"
 #include "mbpw.h"
 #include "../muzikbrowzerVersion.h"
+#include "MBMessageBox.h"
+#include "URLEncode.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -57,6 +59,7 @@ void CConfigPassword::DoDataExchange(CDataExchange* pDX)
 {
 	CPropertyPage::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CConfigPassword)
+	DDX_Control(pDX, IDC_PURCHASE_BUTTON, m_PurchaseButton);
 	DDX_Control(pDX, IDC_VALIDATE_PW, m_ValidatePw);
 //	DDX_Control(pDX, IDC_SENDINFO, m_RequestPw);
 	DDX_Text(pDX, IDC_CP_HOSTID, m_HostId);
@@ -79,7 +82,8 @@ void CConfigPassword::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CConfigPassword, CPropertyPage)
 	//{{AFX_MSG_MAP(CConfigPassword)
 	ON_BN_CLICKED(IDC_SENDINFO, OnSendinfo)
-	ON_BN_CLICKED(IDC_VALIDATE_PW, OnValidatePw)
+	ON_BN_CLICKED(IDC_VALIDATE_PW, OnValidate)
+	ON_BN_CLICKED(IDC_PURCHASE_BUTTON, OnPurchaseButton)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -375,7 +379,17 @@ CConfigPassword::trialLeft() {
 	t = t / 86400;
 	return t;
 }
+void
+CConfigPassword::EnableDisable() {
+	if (!IsWindow(m_hWnd))
+		return;
+	if (m_TrialMode)
+		GetDlgItem(IDC_PURCHASE_BUTTON)->EnableWindow(TRUE);
+	else
+		GetDlgItem(IDC_PURCHASE_BUTTON)->EnableWindow(FALSE);
+}
 void CConfigPassword::validate() {
+
 	m_TrialMode = 0;
 //	return;
 	CString genpw;
@@ -383,29 +397,36 @@ void CConfigPassword::validate() {
 	m_Password = String::stripws(m_Password);
 	if (m_Password == genpw) {
 		m_TrialMode = 0;
-		m_Notice = "Valid license key. Trial Mode removed.";
+		m_Notice = "Valid license key.";
 		m_TrialLabel = "No Expiration";
 		m_TrialExpiration = "";
 	} else {
 		if (CTime::GetCurrentTime() < m_ExpDate) {
 			m_TrialMode = 1;
-m_Notice = "To purhcase Muzikbrowzer and remove Trial Mode go to www.muzikbrowzer.com ";
-m_Notice += "and click on Purchase. If you've already purchased Muzikbrowzer you ";
-m_Notice += "should have received your license key, enter it along with your name and ";
-m_Notice += "email address above. \r\n\r\n";
-      
-m_Notice += "If you've already purchased Muzikbrowzer and you need a new license key";
-m_Notice += " go to www.muzikbrowzer.com and contact Support.";
+			m_Notice = "Trial\r\n\r\n";
+			m_Notice += "To purchase a Muzikbrowzer license fill in ";
+			m_Notice += "First/Last name and Email address then click ";
+			m_Notice += "on Purchase. Your browser will open to the ";
+			m_Notice += "purchase page at www.muzikbrowzer.com.";
 
+//			if ("" == m_Firstname
+//				|| "" == m_Lastname
+//				|| "" == m_Email
+//				|| "" == m_Password) {
+//				m_Notice = "Trial Mode";
+//			}
+			if ("" != m_Password) {
+				m_Notice = "Invalid license key";
+			}
 		} else {
 			m_TrialMode = 2;
-			m_Notice = "Your Trial period has expired. You may purchase a Muzikbrowzer ";
-			m_Notice += "license at www.muzikbrowzer.com";
+			m_Notice = "Your Trial period has expired.";
 			m_TrialExpiration = "";
 			m_TrialLabel = "Expired";
 		}
 		
 	}
+	EnableDisable();
 	SetModified(TRUE);
 }
 
@@ -435,15 +456,27 @@ CConfigPassword::createPassword() {
 	return md5;
 }
 
-
+void CConfigPassword::OnValidate() {
+	UpdateData();
+	if ("" == m_HostId
+		|| "" == m_Firstname
+		|| "" == m_Lastname
+		|| "" == m_Email
+		|| "" == m_Password) {
+		MBMessageBox("Advisory","Please fill in the form.",FALSE);
+		return;
+	}
+	OnValidatePw();
+}
 void CConfigPassword::OnValidatePw() 
 {
 	UpdateData();
+
 	validate();
 	if (m_TrialMode) {
 //		m_RequestPw.EnableWindow(TRUE);
 		m_ValidatePw.EnableWindow(TRUE);
-		m_Notice = "Invalid license key: " + m_Notice;
+		//m_Notice = "Invalid license key: " + m_Notice;
 	} else {
 //		m_RequestPw.EnableWindow(FALSE);
 	}
@@ -478,4 +511,55 @@ void
 CConfigPassword::getSettings(MyHash & settings) {
 	settings.setVal("Mode",NTS(m_TrialMode));
 	settings.setVal("License",license());
+}
+
+
+void CConfigPassword::OnPurchaseButton() 
+{
+	UpdateData();
+	if ("" == m_HostId
+		|| "" == m_Firstname
+		|| "" == m_Lastname
+		|| "" == m_Email) {
+		MBMessageBox("Error", "Please fill in First name, Last name and Email.",FALSE);
+		return;
+	}
+	CString ermsg;
+	if (!String::ContainsValidDomainNameChars(m_HostId))
+		ermsg += "Host ID contains invalid characters\r\n";
+	if (!String::ContainsValidDomainNameChars(m_Firstname))
+		ermsg += "First name contains invalid characters\r\n";
+	if (!String::ContainsValidDomainNameChars(m_Lastname))
+		ermsg += "Last name contains invalid characters\r\n";
+	if (!String::IsRoughlyValidEmailAddr(m_Email))
+		ermsg += "Invalid email address\r\n";
+
+	if (ermsg.GetLength()) {
+		MBMessageBox("Error", ermsg,FALSE);
+		return;
+	}
+	
+	CString url = MBPURCHASEURL;
+#ifdef _DEBUG
+	url = "http://muzikbrowzer.makuch.org/payments/purchase.php";
+#endif
+	CURLEncode cu;
+	CString data = "hostid=" + cu.URLEncode(m_HostId);
+	data += "&fname=" + cu.URLEncode(m_Firstname);
+	data += "&lname=" + cu.URLEncode(m_Lastname);
+	data += "&email=" + cu.URLEncode(m_Email);
+	url += "?mbp=" + String::ascii2Hex(data);
+
+#ifdef asdf
+	CString msg = "In order to generate your license key the following\r\ninformation will be transmitted to www.muzikbrowzer.com.\r\n\r\n";
+	msg += "Host ID    \t"+m_HostId + "\r\n";
+	msg += "First name \t"+m_Firstname + "\r\n";
+	msg += "Last name  \t"+m_Lastname + "\r\n";
+	msg += "Email      \t"+m_Email + "\r\n\r\n";
+	msg += "Proceed?";
+	if (!MBMessageBox("Advisory",msg,FALSE,TRUE,60))
+		return;
+#endif
+
+	MyHttp::gotoUrl(url,SW_SHOW);
 }

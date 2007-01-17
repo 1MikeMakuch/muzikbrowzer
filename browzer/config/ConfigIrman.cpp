@@ -195,25 +195,7 @@ BOOL CConfigIrman::OnInitDialog()
 
 	OnIrinitialize();
 
-	RemoteReceiver * rrcvr = RemoteReceiver::rrcvr();
-	if (rrcvr) {
-		CString tmp;
-		tmp = rrcvr->comPort();
-		if (tmp.GetLength()) m_ComPort = tmp;
-		m_delay = rrcvr->Delay();
-    
-		CWnd * button;
-		int button_idx;
-		CString desc;
-		AutoBuf buf(30);
-		for (button_idx = 0 ; button_idx < rrcvr->numOfKeys() ; button_idx++) {
-			button = GetDlgItem(IDC_IRRECORD_DESC_FIRST + button_idx);
-			buf.p[0] = 0;
-			rrcvr->getRemoteDesc(button_idx, buf.p);
-			if (strlen(buf.p))
-				button->SetWindowText(buf.p);
-		}
-	}
+	getDescs();
 
 	CListBox * irtype = (CListBox*)GetDlgItem(IDC_IRTYPE);
 	irtype->AddString("None");
@@ -229,7 +211,47 @@ BOOL CConfigIrman::OnInitDialog()
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
 }
-
+void
+CConfigIrman::getDescs() {
+	RemoteReceiver * rrcvr = RemoteReceiver::rrcvr();
+	if (rrcvr) {
+		CString tmp;
+		tmp = rrcvr->comPort();
+		if (tmp.GetLength()) m_ComPort = tmp;
+		m_delay = rrcvr->Delay();
+    
+		CWnd * button;
+		int button_idx;
+		CString desc,rdesc;
+		for (button_idx = 0 ; button_idx < rrcvr->numOfKeys() ; button_idx++) {
+			button = GetDlgItem(IDC_IRRECORD_DESC_FIRST + button_idx);
+			rrcvr->getDescs(button_idx, desc, rdesc);
+			button->SetWindowText(rdesc);
+		}
+		UpdateData(TRUE);
+	}
+}
+void
+CConfigIrman::clearDescs() {
+	RemoteReceiver * rrcvr = RemoteReceiver::rrcvr();
+	if (rrcvr) {
+		CString tmp;
+		tmp = rrcvr->comPort();
+		if (tmp.GetLength()) m_ComPort = tmp;
+		m_delay = rrcvr->Delay();
+    
+		CWnd * button;
+		int button_idx;
+		CString desc,rdesc;
+		for (button_idx = 0 ; button_idx < rrcvr->numOfKeys() ; button_idx++) {
+			button = GetDlgItem(IDC_IRRECORD_DESC_FIRST + button_idx);
+			button->SetWindowText("");
+			button = GetDlgItem(IDC_IRRECORD_STATUS_FIRST + button_idx);
+			button->SetWindowText("");
+		}
+		UpdateData(TRUE);
+	}
+}
 BOOL CConfigIrman::EnableDisableDialog() 
 {
 	CWnd * button, * desc;
@@ -406,11 +428,13 @@ void CConfigIrman::OnIrinitialize()
 		return;
 	}
 	m_NeedInit = FALSE;
+
 	GetDlgItem(IDC_IRTEST_STATUS)->SetWindowText("");
 	m_keycount = 0;
 	UpdateData(FALSE);
 	EnableDisableDialog();
 	SetModified(TRUE);
+	getDescs();
 }
 void CConfigIrman::OnIrnone() 
 {
@@ -658,11 +682,13 @@ void CConfigIrman::OnSelchangeIrtype()
 		RemoteReceiver::SetType(RemoteReceiver::MB_IR_NONE);
 		m_IRComPortStatus = "";
 	}
+
 	UpdateData(FALSE);
 	if (RemoteReceiver::GetType() == RemoteReceiver::MB_IR_NONE) {
 		RemoteReceiver::reset(this,MB_SERIAL_MESSAGE);
 	}
 	EnableDisableDialog();
+	clearDescs();
 	SetModified(TRUE);
 }
 

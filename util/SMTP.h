@@ -63,6 +63,12 @@ protected:
 	CString m_log;
 };
 
+class MyHttp
+{
+public:
+	static BOOL gotoUrl(const CString & url, int showcmd);
+};
+
 /////////////////////////////////////////////////////////////////////
 
 //{{AFX_INSERT_LOCATION}}

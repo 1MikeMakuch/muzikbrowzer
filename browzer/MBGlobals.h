@@ -9,6 +9,7 @@
 #define MBALL " all"
 #define MBUNKNOWN " unknown"
 #define MBURL "www.muzikbrowzer.com"
+#define MBPURCHASEURL "http://www.muzikbrowzer.com/payments/purchase.php"
 
 #define MUZIKBROWZER "Muzikbrowzer"
 #define MBREGKEYIRMAN "Software\\Muzikbrowzer\\Irman"

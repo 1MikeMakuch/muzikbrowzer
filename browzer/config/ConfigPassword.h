@@ -1,10 +1,13 @@
 #if !defined(AFX_CONFIGPASSWORD_H__449E928A_3B06_11D6_8695_002078049F22__INCLUDED_)
 #define AFX_CONFIGPASSWORD_H__449E928A_3B06_11D6_8695_002078049F22__INCLUDED_
 
+#include "stdafx.h"
 #include "Resource.h"
 #include "MyString.h"
+#include "HyperLink.h"
 
 #include <afxdlgs.h>
+#include <afxcmn.h>
 
 #if _MSC_VER > 1000
 #pragma once
@@ -29,6 +32,7 @@ public:
 	//{{AFX_DATA(CConfigPassword)
 	enum { IDD = IDD_CONFIG_PASSWORD };
 	CButton	m_ValidatePw;
+	CButton m_PurchaseButton;
 //	CButton	m_RequestPw;
 	CString	m_HostId;
 	CString	m_Email;
@@ -61,6 +65,8 @@ protected:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnSendinfo();
 	afx_msg void OnValidatePw();
+	afx_msg void OnValidate();
+	afx_msg void OnPurchaseButton();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 private:
@@ -74,6 +80,7 @@ private:
 	void validate();
 	CString createPassword();
 	CString munge(const CString & msg);
+	void EnableDisable();
 
 public:
 	int trialLeft();
