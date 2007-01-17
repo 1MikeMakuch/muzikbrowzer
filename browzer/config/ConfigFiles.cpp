@@ -35,7 +35,8 @@ CConfigFiles::CConfigFiles(CWnd *p, PlayerCallbacks * pcb) : CPropertyPage(CConf
 	m_OrigRunAtStartup(FALSE),m_HideGenre(FALSE),
 	m_InitialLogging(TRUE),m_Logging(TRUE),m_ReplayGain(FALSE),
 	m_InitialReplayGain(FALSE),m_DisplayComments(FALSE),
-	m_InitialDisplayComments(FALSE)
+	m_InitialDisplayComments(FALSE),m_ReplayGainMultiplier("2.0"),
+	m_InitialReplayGainMultiplier("2.0")
 
 {
 	//{{AFX_DATA_INIT(CConfigFiles)
@@ -56,6 +57,7 @@ void CConfigFiles::DoDataExchange(CDataExchange* pDX)
 {
 	CPropertyPage::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CConfigFiles)
+	DDX_Control(pDX, IDC_REPLAYGAIN_MULTIPLIER, m_ReplayGainMultiplierCtrl);
 	DDX_Control(pDX, IDC_DISPLAY_COMMENTS, m_DisplayCommentsButton);
 	DDX_Control(pDX, IDC_REPLAYGAIN,	m_ReplayGainButton);
 	DDX_Control(pDX, IDC_DEBUG_LOG,		m_LoggingButton);
@@ -89,6 +91,7 @@ BEGIN_MESSAGE_MAP(CConfigFiles, CPropertyPage)
 	ON_BN_CLICKED(IDC_DEBUG_LOG,		OnDebugLog)
 	ON_BN_CLICKED(IDC_REPLAYGAIN,		OnReplaygain)
 	ON_BN_CLICKED(IDC_DISPLAY_COMMENTS, OnDisplayComments)
+	ON_EN_CHANGE(IDC_REPLAYGAIN_MULTIPLIER, OnChangeReplaygainMultiplier)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -332,6 +335,8 @@ void CConfigFiles::ReadReg() {
 	m_InitialReplayGain = m_ReplayGain;
 	m_DisplayComments = (reg.Read("DisplayComments",0) && 1);
 	m_InitialDisplayComments = m_DisplayComments;
+	m_ReplayGainMultiplier = reg.ReadCString("ReplayGainMultiplier","2.0");
+	m_InitialReplayGainMultiplier = m_ReplayGainMultiplier;
 
     if (Location.GetLength()) {
         m_origMdbLocation = Location;
@@ -498,6 +503,9 @@ void CConfigFiles::StoreReg() {
 	m_DisplayComments = m_DisplayCommentsButton.GetCheck();
 	reg.Write("DisplayComments",m_DisplayComments);
 //	m_InitialDisplayComments = m_DisplayComments;
+
+	m_ReplayGainMultiplierCtrl.GetWindowText(m_ReplayGainMultiplier);
+	reg.Write("ReplayGainMultiplier",m_ReplayGainMultiplier);
 
     if (m_RunAtStartup.GetCheck() == 0) {
         m_RunAtStartupUL = 0;
@@ -666,6 +674,7 @@ BOOL CConfigFiles::OnInitDialog()
 	m_LoggingButton.SetCheck(m_Logging);
 	m_ReplayGainButton.SetCheck(m_ReplayGain);
 	m_DisplayCommentsButton.SetCheck(m_DisplayComments);
+	m_ReplayGainMultiplierCtrl.SetWindowText(m_ReplayGainMultiplier);
 
     UpdateWindow();
 
@@ -771,6 +780,10 @@ void CConfigFiles::OnCancel()
 
 	m_DisplayCommentsButton.SetCheck(m_InitialDisplayComments);
 	m_DisplayComments = m_InitialDisplayComments;
+	
+	m_ReplayGainMultiplier = m_InitialReplayGainMultiplier;
+	m_ReplayGainMultiplierCtrl.SetWindowText(m_ReplayGainMultiplier);
+	
 
 	StoreReg();
 	EnableDisable();
@@ -828,6 +841,10 @@ void CConfigFiles::EnableDisable() {
 		m_Mp3DirRemove.EnableWindow(FALSE);
 		m_Mp3DirClear.EnableWindow(FALSE);
 	}
+	if (ReplayGain())
+		m_ReplayGainMultiplierCtrl.EnableWindow(TRUE);
+	else
+		m_ReplayGainMultiplierCtrl.EnableWindow(FALSE);
 		
 }
 void CConfigFiles::getSettings(MyHash & settings) {
@@ -850,6 +867,7 @@ void CConfigFiles::OnReplaygain()
 	m_ReplayGain = m_ReplayGainButton.GetCheck();
 	UpdateData(FALSE);
 	SetModified(TRUE);
+	EnableDisable();
 }
 
 void CConfigFiles::OnDisplayComments() 
@@ -858,4 +876,14 @@ void CConfigFiles::OnDisplayComments()
 	UpdateData(FALSE);
 	SetModified(TRUE);
 	
+}
+double CConfigFiles::ReplayGainMultiplier() {
+	double rgm = atof(m_ReplayGainMultiplier);
+	return rgm;
+}
+
+void CConfigFiles::OnChangeReplaygainMultiplier() 
+{
+	UpdateData(FALSE);
+	SetModified(TRUE);	
 }

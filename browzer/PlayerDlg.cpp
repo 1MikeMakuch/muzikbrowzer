@@ -5047,7 +5047,7 @@ void
 CPlayerDlg::VolumeGainAdjust(const double rg) {
 	if (!m_Config.ReplayGain())
 		return;
-	int newVol = m_VolumeGainBase + ((double)2 * rg);
+	int newVol = m_VolumeGainBase + (m_Config.ReplayGainMultiplier() * rg);
 	logger.logd("VGA "+NTS(m_VolumeGainBase)+" + (2*"+NTS(rg)+") = "+NTS(newVol));
 	adjustVolume(newVol);
 }

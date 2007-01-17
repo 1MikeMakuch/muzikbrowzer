@@ -401,3 +401,7 @@ BOOL
 MBConfig::DisplayComments() {
 	return m_Files->DisplayComments();
 }
+double
+MBConfig::ReplayGainMultiplier() {
+	return m_Files->ReplayGainMultiplier();
+}

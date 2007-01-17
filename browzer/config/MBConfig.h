@@ -147,6 +147,7 @@ public:
 	int logging();
 	BOOL ReplayGain();
 	BOOL DisplayComments();
+	double ReplayGainMultiplier();
 };
 
 /////////////////////////////////////////////////////////////////////////////

@@ -28,6 +28,7 @@ public:
 // Dialog Data
 	//{{AFX_DATA(CConfigFiles)
 	enum { IDD = IDD_CONFIG_FILES };
+	CEdit		m_ReplayGainMultiplierCtrl;
 	CButton		m_DisplayCommentsButton;
 	CButton		m_ReplayGainButton;
 	CButton		m_LoggingButton;
@@ -74,6 +75,7 @@ protected:
 	afx_msg void OnDebugLog();
 	afx_msg void OnReplaygain();
 	afx_msg void OnDisplayComments();
+	afx_msg void OnChangeReplaygainMultiplier();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 private:
@@ -103,6 +105,8 @@ private:
 	int  m_InitialLogging;
 	BOOL m_DisplayComments;
 	BOOL m_InitialDisplayComments;
+	CString m_ReplayGainMultiplier;
+	CString m_InitialReplayGainMultiplier;
 
     void StoreReg();
 	void WriteFolders();
@@ -128,6 +132,7 @@ public:
 	int logging() { return m_Logging; }
 	BOOL ReplayGain() { return m_ReplayGain; }
 	BOOL DisplayComments() { return m_DisplayComments;}
+	double ReplayGainMultiplier();
 
 };
 
