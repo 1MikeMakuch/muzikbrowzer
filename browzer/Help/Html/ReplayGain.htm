@@ -1,0 +1,147 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <meta name="generator" content="MAKEHHP Ver. 1.0">
+    <meta name="description" content="MAKEHHP Helpfile Compiler Generated HTML File">
+    <meta name="author" content="Muzikbrowzer">
+    <meta name="publisher" content="Muzikbrowzer">
+    <meta name="copyright" content="Muzikbrowzer ">
+    <meta name="date" content="2001-06-01T00:00:10+00:00">
+    <meta name="robots" content="NONE">
+    <title>Muzikbrowzer ReplayGain Volume Leveling</title>
+    <link type="text/css" rel="stylesheet" href="helpstyles.css">
+  </head>
+
+    <body class="htmlbody">
+		<table class="main"  border="0" cellpadding="0" cellspacing="0">
+		<tr>
+			<td>
+				<h1>Muzikbrowzer ReplayGain Volume Leveling</h1>
+				<p class="text">
+
+ReplayGain is a proposed standard for volume leveling. Numerous applications have
+begun adopting it.  ReplayGain works by analyzing each audio file and creating a 
+ReplayGain adjustment factor for it. That factor is then written into a metadata
+tag in the file. The audio portion of the file is unaltered.
+
+<p class=text>
+
+Muzikbrowzer provides a degree of support for ReplayGain Volume Leveling. In order
+to use volume leveling in Muzikbrowzer you must use
+another software application to analyse your audio files and create ReplayGain tags in 
+your files.  Once you have done this you may enable ReplayGain Volume Leveling in Muzikbrowzer's
+Menu/Settings/General tab and Muzikbrowzer will read the ReplayGain tag value from your audio
+files and adjust the volume accordingly as each song is played.
+<p class=text>
+
+There are numerous software applications that perform ReplayGain analysis,
+but this
+ functionality is not completely standardized. I.e. the various
+software applications
+ use different tagging schemes and even different analysis algorithyms. In this first
+effort to support ReplayGain Muzikbrowzer
+ supports a single ReplayGain
+tagging scheme. As this technology matures and upon users requests additonal
+support will be included in Muzikbrowzer. Let us know.
+
+<p class=text>
+Muzikbrowzer looks for the following ReplayGain tags based upon audio file type, along
+with known thirdparty software that generates the correct tag:
+
+<p class=text>
+<center>
+<table border=0 cellspacing=10>
+<tr><td>File type	</td><td>Tag name</td>				<td>3rdparty s/w</td></tr>
+<tr><td>.mp3		</td><td>RVA2</td>					<td>MediaMonkey</td></tr>
+<tr><td>.ogg		</td><td>REPLAYGAIN_TRACK_GAIN</td>	<td>MediaMonkey</td></tr>
+<tr><td>.flac		</td><td>REPLAYGAIN_TRACK_GAIN</td>	<td>MediaMonkey</td></tr>
+<tr><td>.wma		</td><td>REPLAYGAIN_TRACK_GAIN</td>	<td>Foobar2000</td></tr>
+</table>
+</center>
+<p class=text>
+For some reason MediaMonkey isn't writing the REPLAYGAIN tags .wma files.
+MediaMonkey documents that they use Microsoft Access for their database
+and therefore it should be possible to roll out a script to read those tags from their db 
+and to write the tags directly into .wma files.
+
+<p class=text>
+<i>
+Foobar2000 also creates REPLAYGAIN_TRACK_GAIN tags in .ogg, .flac and .wma files.
+However for mp3 id3v2 tags, foobar2000 only writes version id3v2.4
+tags. Muzikbrowzer can read foobar2000's REPLAYGAIN tags in ogg,flac and wma files
+but not from foobar2000's mp3 files.  See the chapter on Tags for further information.
+
+</i>
+
+<h3>Using ReplayGain Volume Leveling</h3>
+<p class=text>
+
+Once you have added ReplayGain tags to your files and enabled ReplayGain Volume Leveling in Muzikbrowzer/Menu/Settings/General Muzikbrowzer will adjust the volume as each song begins playing.
+
+<p class=text>
+
+When you enable ReplayGain in Muzikbrowzer the volume is set to
+75%. That's Muzikbrowzers volume control, not the Windows control. 
+This is used as the base volume level which is used for calculating the adjusted volume
+as each song begins playing.
+
+It is recommened that you leave the volume set at or near 75%. The reason
+for this is to allow Muzikbrowzer to adjust the volume up or down as
+each song is played.  As each song is played you will notice that the
+volume control actually moves up or down appropriately. This is Muzikbrowzers
+response to the ReplayGain values read from the audio file as it begins playing.
+
+
+<p class=text> 
+
+To arrive at the adjusted volume level this formula is used:
+<p>
+volume = BaseVolumeLevel + (Multiplier x ReplayGainValue)
+
+<p> 
+
+Where ReplayGainValue is the value read from the ReplayGain tag and
+BaseVolumeLevel is as discussed above. Volume ranges from 0% to 100%
+(not db's) and the RGV's are supposed to range between -51db and +51db
+according to the Replay Gain spec, but RGV's are normally between -20db
+and +20db.
+
+<p class=text>
+Multipler is the value set in Settings / Replay Gain Multiplier.
+<p class=text>
+
+You may adjust the volume yourself but in doing so you are resetting
+the base volume level for subsequent ReplayGain volume leveling. For
+example if you manually adjust the volume level to 100%  then there is
+no room to adjust up for quieter songs.
+
+<p class=text>
+
+In Muzikbrowzer you can view the individual ReplayGain values in your files by right clicking
+on a song then Edit Tag then Display Tag Data.
+
+<p class=text>
+<h3>Why do we need this volume leveling business anyway?</h3>
+<p class=text>
+
+For this we have our illustrious recording industry to thank. Just do an internet search
+for "Loudness Wars" and/or "ReplayGain".
+
+				</p>
+				<table class="rcm" width="100%" border="0" cellpadding="0" cellspacing="5">
+					<tr valign="middle">
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+		</table>
+		 <P align=center><FONT size=1>Copyright Pecan Ventures LLC - All rights reserved.
+		              </FONT></P>
+    </body>
+</html>
+
+
+
+
+

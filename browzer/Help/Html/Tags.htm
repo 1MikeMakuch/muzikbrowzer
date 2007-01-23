@@ -1,0 +1,125 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <meta name="generator" content="MAKEHHP Ver. 1.0">
+    <meta name="description" content="MAKEHHP Helpfile Compiler Generated HTML File">
+    <meta name="author" content="Muzikbrowzer">
+    <meta name="publisher" content="Muzikbrowzer">
+    <meta name="copyright" content="Muzikbrowzer ">
+    <meta name="date" content="2001-06-01T00:00:10+00:00">
+    <meta name="robots" content="NONE">
+    <title>Muzikbrowzer Tags</title>
+    <link type="text/css" rel="stylesheet" href="helpstyles.css">
+  </head>
+
+    <body class="htmlbody">
+		<table class="main"  border="0" cellpadding="0" cellspacing="0">
+		<tr>
+			<td>
+				<h1>Muzikbrowzer and Audio File Tags</h1>
+				<p class="text">
+
+Muzikbrowzer supports reading and writing of the following tags
+<table border=0 cellspacing = 8>
+
+<tr><td>File Type	</td><td>Tag Type</td>				<td>i/o</td></tr>
+<tr><td>.mp3		</td><td>ID3v1</td>					<td>read/write</td></tr>
+<tr><td>.mp3		</td><td>ID3v2.3</td>				<td>read/write</td></tr>
+<tr><td>.mp3		</td><td>ID3v2.4</td>				<td>read, writes ID3v2.3 if edited</td></tr>
+<tr><td>.ogg		</td><td>VorbisComment</td>			<td>read/write</td></tr>
+<tr><td>.flac		</td><td>VorbisComment</td>			<td>read/write</td></tr>
+<tr><td>.wma		</td><td>Windows Media Format</td>	<td>read/write</td></tr>
+</table>
+
+<p class=text>
+
+The only time Muzikbrowzer will write to your audio files is if and when
+you perform tag editing with Muzikbrowzer Otherwise it only reads tags
+for the purpose of building it's database. If you perform tag editing on
+your files with software other than Muzikbrowzer, you'll have to rebuild
+the Muzikbrowzer database: Menu/MusicLibrary/Rebuild.
+
+<p class=text>
+
+<h3>ID3 tags</h3>
+<p class=text>
+
+Reading ID3 tags: Muzikbrowzer first reads the ID3v1 tag, then the ID3v2 tag. If both exist
+then the v2 values override v1 values in Muzikbrowzers Library view.
+<p class=text>
+
+Writing ID3 tags: If you use Muzikbrowzer to edit your tags it will
+write to both the v1 and v2 tag in each file.
+
+<p class=text>
+<h3>ID3v1, ID3v2.3 and ID3v2.4</h3>
+
+Muzikbrowzer provides full support for ID3v1 and ID3v2.3 tags. 
+Muzikbrowzer does <b>not</b> support ID3v2.4 tags.
+
+If you perform tag editing with
+Muzikbrowzer on ID3v2.4 tags the v2.4 information will be lost.
+Muzikbrowzer will create a ID3v2.3 tag in it's place.
+
+If you are performing tag editing with Muzikbrowzer it attempts to check for
+ID3v2.4 tags and present you with a confirmation dialog before converting
+to ID3v2.3.  This may or may not be important to you.
+
+<p class=text>
+
+
+
+<h3>Ogg Vorbis, Flac</h3>
+<p class=text>
+Reading:  Muzikbrowzer reads GENRE, ARTIST, ALBUM, TITLE, TRACKNUMBER and DATE. If there are
+more than one tag field only the last one found is used. For example if a tag contains 2 GENRE's only the last one read will be used.
+<p class=text>
+Writing: Muzikbrowzer supports one tag field per file. So if you have more than one GENRE in a single file and you use Muzikbrowzer to edit the tag in that file, it will be replaced with a single GENRE field in that file.
+
+
+<h3>Windows Media Format tag (.wma)</h3>
+<p class=text>
+Reading: Reads WM/Genre, WM/AlbumArtist, WM/AlbumTitle, Title, WM/TrackNumber, WM/Year.
+<p class=text>
+Writing: Same.
+<p class=text>
+
+<h3>Multiple fields of same type</h3>
+Muzikbrowzer will only modify the Genre, Artist, Album, Title, Track,
+Year tag fields. Any other tag fields
+present in your tags will remain unaltered (except for the ID3v2.4 issue
+discussed above). Note that if there are multiple tag fields of the same
+type in a single tag, and you edit that file with Muzikbrowzer it will
+replace those multiple fields with a single field. For example if your
+tag has more than one Genre field and you edit it with Muzikbrowzer it
+will be replaced with a single Genre field. This applies to all file types.
+<p class=text>
+
+<h3>Backup</h3>
+
+Before performing tag editing with any software you should ensure that your
+data is backed up. When experimenting with new software you should
+first work on copies of a sample of your files. If you use several
+different applications to play and manage your files you should make
+sure "everything still works" before applying an operation  to your whole
+collection.
+
+
+				</p>
+				<table class="rcm" width="100%" border="0" cellpadding="0" cellspacing="5">
+					<tr valign="middle">
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+		</table>
+		 <P align=center><FONT size=1>Copyright Pecan Ventures LLC - All rights reserved.
+		              </FONT></P>
+    </body>
+</html>
+
+
+
+
+
