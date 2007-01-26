@@ -275,7 +275,8 @@ BOOL CConfigIrman::EnableDisableDialog()
 		if (rrcvr) {
 			msg = rrcvr->code(button_idx);
 		}
-		if (!msg.GetLength() || msg == "000000000000") {
+
+		if (!msg.GetLength() || String::allSameChar(msg,'0')) {
 			//msg = "undefined";
 			msg = "";
 		} else 
@@ -595,7 +596,8 @@ void CConfigIrman::OnOK()
 		}
 		rrcvr->SaveKeys();
 	}
-	m_irtesting = FALSE;
+	// Don't do this, if hit apply then no longer testing - annoying
+	//m_irtesting = FALSE;
 	SetModified(FALSE);
 	CPropertyPage::OnOK();
 }

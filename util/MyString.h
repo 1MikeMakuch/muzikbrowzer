@@ -120,6 +120,7 @@ class String {
 	static BOOL ContainsValidDomainNameChars(const CString & string);
 	static BOOL ContainsValidEmailAddrChars(const CString & string);
 	static BOOL IsRoughlyValidEmailAddr(const CString & addr);
+	static BOOL allSameChar(const CString & string, const char ch);
 };
 
 class AutoBuf {

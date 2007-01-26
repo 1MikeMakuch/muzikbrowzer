@@ -1379,7 +1379,18 @@ String::numspaces(const int num) {
 	tabhash.setVal(NTS(num),spaces);
 	return spaces;
 }
-
+BOOL
+String::allSameChar(const CString & string, const char ch) {
+	int i;
+	BOOL ret = TRUE;
+	for(i = 0 ; i < string.GetLength() ; i++) {
+		if (string[i] != ch) {
+			ret = FALSE;
+			i = string.GetLength() + 1;
+		}
+	}
+	return ret;
+}
 
 
 

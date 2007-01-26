@@ -91,12 +91,27 @@ MBConfig::ReadWindowPos() {
 
     x1 = reg.Read("SettingsDlgX", 0);
     y1 = reg.Read("SettingsDlgY", 0);
+
+	int width = GetSystemMetrics(SM_CXVIRTUALSCREEN);
+	int height = GetSystemMetrics(SM_CYVIRTUALSCREEN);
+	
+	CRect rect;
+	GetWindowRect(rect);
     
 	if (x1 && y1) {
-		CRect dialog;
-		GetWindowRect(dialog);
-		MoveWindow(x1,y1,dialog.Width(),dialog.Height(),TRUE);
+		MoveWindow(x1,y1,rect.Width(),rect.Height(),TRUE);
+		GetWindowRect(rect);
 	}
+
+	if (rect.BottomRight().x > width || rect.BottomRight().y > height
+		|| rect.TopLeft().x < 0 || rect.TopLeft().y < 0) {
+		width = GetSystemMetrics(SM_CXFULLSCREEN);
+		height = GetSystemMetrics(SM_CYFULLSCREEN);
+		x1 = (width / 2) - 320;
+		y1 = (height / 2) - 240;
+		MoveWindow(x1,y1,rect.Width(),rect.Height(),TRUE);
+	}
+
 }
 void
 MBConfig::SaveWindowPos() {
