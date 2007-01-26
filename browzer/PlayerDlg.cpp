@@ -3193,8 +3193,21 @@ CPlayerDlg::ReadWindowPos(int & max, CRect & rect) {
     CPoint br(x2,y2);
     rect.TopLeft() = tl;
     rect.BottomRight() = br;
-//	MoveWindow(100,100,800,600,TRUE);
-//	GetClientRect(rect);
+
+	int width = GetSystemMetrics(SM_CXVIRTUALSCREEN);
+	int height = GetSystemMetrics(SM_CYVIRTUALSCREEN);
+
+	if (rect.BottomRight().x > width || rect.BottomRight().y > height
+		|| rect.TopLeft().x < 0 || rect.TopLeft().y < 0) {
+		width = GetSystemMetrics(SM_CXFULLSCREEN);
+		height = GetSystemMetrics(SM_CYFULLSCREEN);
+		tl.x = (width / 2) - 320;
+		tl.y = (height / 2) - 240;
+		br.x = tl.x + 640;
+		br.y = tl.y + 480;
+		rect.TopLeft() = tl;
+		rect.BottomRight() = br;
+	}
 
 }
 void

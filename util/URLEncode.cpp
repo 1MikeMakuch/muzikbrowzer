@@ -161,7 +161,7 @@ CString CURLEncode::URLEncode(const CString & pcsEncode)
 		if(!isUnsafe(ch))
 		{
 			// Safe Character				
-			csEncoded += CString(ch);
+			csEncoded += ch;
 		}
 		else
 		{
