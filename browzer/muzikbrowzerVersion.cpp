@@ -54,7 +54,7 @@ MBVersion::publicVersion() {
 
 	unsigned int version=0;
 
-	CString val = m_pairs.getVal("license");
+	CString val = m_pairs.getVal("version");
 	if (val.GetLength())
 		version = s2i(val);
 
