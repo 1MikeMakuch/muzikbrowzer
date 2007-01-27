@@ -219,6 +219,7 @@ CConfigIrman::getDescs() {
 		tmp = rrcvr->comPort();
 		if (tmp.GetLength()) m_ComPort = tmp;
 		m_delay = rrcvr->Delay();
+		UpdateData(FALSE);
     
 		CWnd * button;
 		int button_idx;

@@ -2892,7 +2892,7 @@ CPlayerDlg::OnPlayloop(WPARAM wParam, LPARAM lParam) {
 }
 afx_msg LRESULT
 CPlayerDlg::OnSerialMsg (WPARAM wParam, LPARAM lParam) {
-	AutoLog al("OnSerialMsg ");
+//	AutoLog al("OnSerialMsg ");
 
 	int key = 0;
 	BOOL more = TRUE;
@@ -2905,7 +2905,7 @@ CPlayerDlg::OnSerialMsg (WPARAM wParam, LPARAM lParam) {
 }
 int
 CPlayerDlg::HandleIRMessage(int key) {
-	AutoLog al("HandleIRMessage");
+//	AutoLog al("HandleIRMessage");
 	m_HandlingIRMessage = TRUE;
 	int wakeitup = 1;
     switch (key) {

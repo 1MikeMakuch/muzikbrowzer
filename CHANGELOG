@@ -1,3 +1,19 @@
+2007-01-26 23:24  mkm
+
+	Set version to 2.0.3
+
+2007-01-26 23:24  mkm
+
+	Fixed bug in version check, failed to correctly determine if new
+	version available at startup.
+
+2007-01-26 23:13  mkm
+
+	Display Volume% setting when adjusted with remote and at start of
+	song play when ReplayGain is enabled. Settings Dlg AlbumSort
+	Date/Alpha radio buttons were broken. Reordered resource ids for
+	simpler sorting maintenance. Bump version to 2.0.3.
+
 2007-01-26 10:43  mkm
 
 	Check window pos of Settings Dlg too, like main dlg, for if now on
