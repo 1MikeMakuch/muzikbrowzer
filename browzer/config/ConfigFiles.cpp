@@ -661,11 +661,11 @@ BOOL CConfigFiles::OnInitDialog()
     }
 
 	if (m_AlbumSortAlpha) {
-		CheckRadioButton(IDC_ALBUMSORT_DATE,IDC_ALBUMSORT_ALPHA,
+		CheckRadioButton(IDC_ALBUMSORT_ALPHA,IDC_ALBUMSORT_DATE,
 			IDC_ALBUMSORT_ALPHA);
 		m_InitialAlbumSortAlpha = TRUE;
 	} else {
-		CheckRadioButton(IDC_ALBUMSORT_DATE,IDC_ALBUMSORT_ALPHA,
+		CheckRadioButton(IDC_ALBUMSORT_ALPHA,IDC_ALBUMSORT_DATE,
 			IDC_ALBUMSORT_DATE);
 		m_InitialAlbumSortAlpha = FALSE;
 	}
@@ -692,7 +692,7 @@ void CConfigFiles::OnAlbumsortDate()
 {
 	m_AlbumSortAlpha = FALSE;
 	m_AlbumSortDate = TRUE;
-	CheckRadioButton(IDC_ALBUMSORT_DATE,IDC_ALBUMSORT_ALPHA,IDC_ALBUMSORT_DATE);
+	CheckRadioButton(IDC_ALBUMSORT_ALPHA,IDC_ALBUMSORT_DATE,IDC_ALBUMSORT_DATE);
 	UpdateData(FALSE);
 	SetModified(TRUE);
 }
@@ -701,7 +701,7 @@ void CConfigFiles::OnAlbumsortAlpha()
 {
 	m_AlbumSortAlpha = TRUE;
 	m_AlbumSortDate = FALSE;
-	CheckRadioButton(IDC_ALBUMSORT_DATE,IDC_ALBUMSORT_ALPHA,IDC_ALBUMSORT_ALPHA);
+	CheckRadioButton(IDC_ALBUMSORT_ALPHA,IDC_ALBUMSORT_DATE,IDC_ALBUMSORT_ALPHA);
 	UpdateData(FALSE);
 	SetModified(TRUE);
 	
@@ -752,12 +752,12 @@ void CConfigFiles::OnCancel()
 	ReadFolders();
 
 	if (m_InitialAlbumSortAlpha) {
-		CheckRadioButton(IDC_ALBUMSORT_DATE,IDC_ALBUMSORT_ALPHA,
+		CheckRadioButton(IDC_ALBUMSORT_ALPHA,IDC_ALBUMSORT_DATE,
 			IDC_ALBUMSORT_ALPHA);
 		m_AlbumSortDate = FALSE;
 		m_AlbumSortAlpha = TRUE;
 	} else {
-		CheckRadioButton(IDC_ALBUMSORT_DATE,IDC_ALBUMSORT_ALPHA,
+		CheckRadioButton(IDC_ALBUMSORT_ALPHA,IDC_ALBUMSORT_DATE,
 			IDC_ALBUMSORT_DATE);
 		m_AlbumSortDate = TRUE;
 		m_AlbumSortAlpha = FALSE;

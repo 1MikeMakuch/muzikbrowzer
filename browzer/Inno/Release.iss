@@ -12,14 +12,14 @@ Type: files; Name: "{commonprograms}\Muzikbrowzer.lnk";
 AppMutex=MuzikbrowzerAppMutex,Global\MuzikbrowzerAppMutex
 ;AppMutex=MuzikbrowzerAppMutex,Global\MuzikbrowzerAppMutex,MuzikbrowzerBitMapCutterAppMutex,Global\MuzikbrowzerBitMapCutterAppMutex
 AppName=Muzikbrowzer
-AppVerName=Muzikbrowzer 2.0.2 (built 2007-01-16 22:50:18)
+AppVerName=Muzikbrowzer 2.0.3 (built 2007-01-26 23:13:58)
 AppCopyright=Copyright (C) 2001-Present Pecan Ventures, LLC
 DefaultDirName={pf}\Muzikbrowzer
 DefaultGroupName=Muzikbrowzer
 DisableProgramGroupPage=yes
 UninstallDisplayIcon={app}\Muzikbrowzer.exe
 MinVersion=4.1.1998,4
-OutputBaseFilename=Muzikbrowzer_setup_2_0_2
+OutputBaseFilename=Muzikbrowzer_setup_2_0_3
 LicenseFile=mb_license.txt
 WizardImageFile=../res/MBWizardImageFile.bmp
 WizardSmallImageFile=../res/MBWizardSmallImageFile.bmp
@@ -51,19 +51,19 @@ Type: files; Name: "{app}\Muzikbrowzer\Muzikbrowzer.mbtgs"
 Type: files; Name: "{app}\Muzikbrowzer\skins"
 
 [Files]
-Source: "..\Release\Muzikbrowzer.exe"; DestDir: "{app}"; CopyMode: alwaysoverwrite
-Source: "..\..\MBTag\tagger\Release\mbtag.exe"; DestDir: "{app}"; CopyMode: alwaysoverwrite
-;Source: "..\res\Muzikbrowzer.wav"; DestDir: "{app}"; CopyMode: alwaysoverwrite
+Source: "..\Release\Muzikbrowzer.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\MBTag\tagger\Release\mbtag.exe"; DestDir: "{app}"; Flags: ignoreversion
+;Source: "..\res\Muzikbrowzer.wav"; DestDir: "{app}"; Flags: ignoreversion
 
-Source: "..\Help\Muzikbrowzer.chm"; DestDir: "{app}"; CopyMode: alwaysoverwrite
+Source: "..\Help\Muzikbrowzer.chm"; DestDir: "{app}"; Flags: ignoreversion
 
-Source: "..\Skins\*.bmp"; DestDir: "{commonappdata}\Muzikbrowzer\skins"; CopyMode: alwaysoverwrite; Flags: recursesubdirs 
-Source: "..\Skins\*.mbsd"; DestDir: "{commonappdata}\Muzikbrowzer\skins"; CopyMode: alwaysoverwrite; Flags: recursesubdirs 
+Source: "..\Skins\*.bmp"; DestDir: "{commonappdata}\Muzikbrowzer\skins"; Flags: recursesubdirs ignoreversion
+Source: "..\Skins\*.mbsd"; DestDir: "{commonappdata}\Muzikbrowzer\skins"; Flags: recursesubdirs ignoreversion
 
 
-;Source: "..\..\ButtonSkinner\Release\BitmapCutter.exe"; DestDir: "{app}"; CopyMode: alwaysoverwrite
+;Source: "..\..\ButtonSkinner\Release\BitmapCutter.exe"; DestDir: "{app}"; Flags: ignoreversion
 
-;Source: "..\Help\KeyHH.exe"; DestDir: "{app}"; CopyMode: alwaysoverwrite
+;Source: "..\Help\KeyHH.exe"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
 Name: "{commonprograms}\Muzikbrowzer\Muzikbrowzer"; Filename: "{app}\Muzikbrowzer.exe"; WorkingDir: "{app}"
@@ -74,8 +74,7 @@ Name: "{userdesktop}\Muzikbrowzer"; Filename: "{app}\Muzikbrowzer.exe"; WorkingD
 
 [Registry]
 Root: HKLM; Subkey: "Software\Muzikbrowzer"; Flags: createvalueifdoesntexist uninsdeletekey
-;Root: HKLM; Subkey: "Software\Muzikbrowzer"; ValueType: string; ValueName: "DbLocation"; ValueData: "{commonappdata}\Muzikbrowzer"  ; Flags: createvalueifdoesntexist uninsdeletevalue
-Root: HKLM; Subkey: "Software\Muzikbrowzer"; ValueType: string; ValueName: "DbLocation"; ValueData: "{commonappdata}\Muzikbrowzer"  ; Flags: uninsdeletevalue
+Root: HKLM; Subkey: "Software\Muzikbrowzer"; ValueType: string; ValueName: "DbLocation"; ValueData: "{commonappdata}\Muzikbrowzer"  ; Flags: createvalueifdoesntexist uninsdeletevalue
 Root: HKLM; Subkey: "Software\Muzikbrowzer"; ValueType: string; ValueName: "SkinName"; ValueData: "MBClassic"  ; Flags: createvalueifdoesntexist uninsdeletevalue
 Root: HKLM; Subkey: "Software\Muzikbrowzer"; ValueType: dword; ValueName: "NumDirs"; ValueData: "1"  ; Flags: createvalueifdoesntexist uninsdeletevalue
 Root: HKLM; Subkey: "Software\Muzikbrowzer"; ValueType: string; ValueName: "Dir_00"; ValueData: "{commondocs}\My Music"; Flags: createvalueifdoesntexist uninsdeletevalue

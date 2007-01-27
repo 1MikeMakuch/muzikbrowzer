@@ -17,10 +17,10 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-#define IDC_IRRECORD_FIRST IDC_IRUP
-#define IDC_IRRECORD_LAST IDC_IRSAVE
-#define IDC_IRRECORD_STATUS_FIRST IDC_IRUP_STATUS
-#define IDC_IRRECORD_DESC_FIRST IDC_IRUP_DESC
+#define IDC_IRRECORD_FIRST IDC_IR_B_00_UP
+#define IDC_IRRECORD_LAST IDC_IR_B_25_SAVE
+#define IDC_IRRECORD_STATUS_FIRST IDC_IR_S_00_UP_STATUS
+#define IDC_IRRECORD_DESC_FIRST IDC_IR_D_00_UP_DESC
 
 static int irkey;
 
@@ -35,7 +35,7 @@ CConfigIrman::CConfigIrman(CWnd * p) :
 	m_keycount(0)
 {
     //{{AFX_DATA_INIT(CConfigIrman)
-	m_IRComPortStatus = _T("");
+//	m_IRComPortStatus = _T("");
 	m_IRDeleteDesc = _T("");
 	m_IRDeleteStatus = _T("");
 	m_IRDownDesc = _T("");
@@ -101,61 +101,61 @@ void CConfigIrman::DoDataExchange(CDataExchange* pDX)
 {
 	CPropertyPage::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CConfigIrman)
-	DDX_Text(pDX, IDC_IRCOMPORT_STATUS, m_IRComPortStatus);
-	DDX_Text(pDX, IDC_IRDELETE_DESC, m_IRDeleteDesc);
-	DDX_Text(pDX, IDC_IRDELETE_STATUS, m_IRDeleteStatus);
-	DDX_Text(pDX, IDC_IRDOWN_DESC, m_IRDownDesc);
-	DDX_Text(pDX, IDC_IRDOWN_STATUS, m_IRDownStatus);
-	DDX_Text(pDX, IDC_IREXIT_DESC, m_IRExitDesc);
-	DDX_Text(pDX, IDC_IREXIT_STATUS, m_IRExitStatus);
-	DDX_Text(pDX, IDC_IRLEFT_DESC, m_IRLeftDesc);
-	DDX_Text(pDX, IDC_IRLEFT_STATUS, m_IRLeftStatus);
-	DDX_Text(pDX, IDC_IRMENU_DESC, m_IRMenuDesc);
-	DDX_Text(pDX, IDC_IRMENU_STATUS, m_IRMenuStatus);
-	DDX_Text(pDX, IDC_IRNEXT_DESC, m_IRNextDesc);
-	DDX_Text(pDX, IDC_IRNEXT_STATUS, m_IRNextStatus);
-	DDX_Text(pDX, IDC_IRPAGEDOWN_DESC, m_IRPageDownDesc);
-	DDX_Text(pDX, IDC_IRPAGEDOWN_STATUS, m_IRPageDownStatus);
-	DDX_Text(pDX, IDC_IRPAGEUP_DESC, m_IRPageUpDesc);
-	DDX_Text(pDX, IDC_IRPAGEUP_STATUS, m_IRPageUpStatus);
-	DDX_Text(pDX, IDC_IRPAUSE_DESC, m_IRPauseDesc);
-	DDX_Text(pDX, IDC_IRPAUSE_STATUS, m_IRPauseStatus);
-	DDX_Text(pDX, IDC_IRPLAY_DESC, m_IRPlayDesc);
-	DDX_Text(pDX, IDC_IRPLAY_STATUS, m_IRPlayStatus);
-	DDX_Text(pDX, IDC_IRPREVIOUS_DESC, m_IRPreviousDesc);
-	DDX_Text(pDX, IDC_IRPREVIOUS_STATUS, m_IRPreviousStatus);
-	DDX_Text(pDX, IDC_IRRIGHT_DESC, m_IRRightDesc);
-	DDX_Text(pDX, IDC_IRRIGHT_STATUS, m_IRRightStatus);
-	DDX_Text(pDX, IDC_IRSELECT_DESC, m_IRSelectDesc);
-	DDX_Text(pDX, IDC_IRSELECT_STATUS, m_IRSelectStatus);
-	DDX_Text(pDX, IDC_IRSTOP_DESC, m_IRStopDesc);
-	DDX_Text(pDX, IDC_IRSTOP_STATUS, m_IRStopStatus);
-	DDX_Text(pDX, IDC_IRUP_DESC, m_IRUpDesc);
-	DDX_Text(pDX, IDC_IRUP_STATUS, m_IRUpStatus);
-	DDX_Text(pDX, IDC_IRVOLDOWN_DESC, m_IRVolDownDesc);
-	DDX_Text(pDX, IDC_IRVOLUP_DESC, m_IRVolUpDesc);
-	DDX_Text(pDX, IDC_IRVOLUP_STATUS, m_IRVolUpStatus);
-	DDX_Text(pDX, IDC_IRVOLDOWN_STATUS, m_IRVolDownStatus);
-	DDX_Text(pDX, IDC_IRDELAY, m_delay);
+    DDX_Text(pDX, IDC_IR_D_00_UP_DESC, m_IRUpDesc);
+    DDX_Text(pDX, IDC_IR_D_01_DOWN_DESC, m_IRDownDesc);
+    DDX_Text(pDX, IDC_IR_D_02_LEFT_DESC, m_IRLeftDesc);
+    DDX_Text(pDX, IDC_IR_D_03_RIGHT_DESC, m_IRRightDesc);
+    DDX_Text(pDX, IDC_IR_D_04_SELECT_DESC, m_IRSelectDesc);
+    DDX_Text(pDX, IDC_IR_D_05_MENU_DESC, m_IRMenuDesc);
+    DDX_Text(pDX, IDC_IR_D_06_EXIT_DESC, m_IRExitDesc);
+    DDX_Text(pDX, IDC_IR_D_07_DELETE_DESC, m_IRDeleteDesc);
+    DDX_Text(pDX, IDC_IR_D_08_VOLUP_DESC, m_IRVolUpDesc);
+    DDX_Text(pDX, IDC_IR_D_09_VOLDOWN_DESC, m_IRVolDownDesc);
+    DDX_Text(pDX, IDC_IR_D_10_PAGEUP_DESC, m_IRPageUpDesc);
+    DDX_Text(pDX, IDC_IR_D_11_PAGEDOWN_DESC, m_IRPageDownDesc);
+    DDX_Text(pDX, IDC_IR_D_12_PLAY_DESC, m_IRPlayDesc);
+    DDX_Text(pDX, IDC_IR_D_13_PAUSE_DESC, m_IRPauseDesc);
+    DDX_Text(pDX, IDC_IR_D_14_STOP_DESC, m_IRStopDesc);
+    DDX_Text(pDX, IDC_IR_D_15_NEXT_DESC, m_IRNextDesc);
+    DDX_Text(pDX, IDC_IR_D_16_PREVIOUS_DESC, m_IRPreviousDesc);
+    DDX_Text(pDX, IDC_IR_D_17_FASTFORWARD_DESC, m_IRFastForwardDesc);
+    DDX_Text(pDX, IDC_IR_D_18_REVERSE_DESC, m_IRReverseDesc);
+    DDX_Text(pDX, IDC_IR_D_19_ALPHAUP_DESC, m_IRAlphaUpDesc);
+    DDX_Text(pDX, IDC_IR_D_20_ALPHADOWN_DESC, m_IRAlphaDownDesc);
+    DDX_Text(pDX, IDC_IR_D_21_RANDOM_DESC, m_IRRandomDesc);
+    DDX_Text(pDX, IDC_IR_D_22_SHUFFLE_DESC, m_IRShuffleDesc);
+    DDX_Text(pDX, IDC_IR_D_23_CLEAR_DESC, m_IRClearDesc);
+    DDX_Text(pDX, IDC_IR_D_24_LOAD_DESC, m_IRLoadDesc);
+    DDX_Text(pDX, IDC_IR_D_25_SAVE_DESC, m_IRSaveDesc);
+    DDX_Text(pDX, IDC_IR_S_00_UP_STATUS, m_IRUpStatus);
+    DDX_Text(pDX, IDC_IR_S_01_DOWN_STATUS, m_IRDownStatus);
+    DDX_Text(pDX, IDC_IR_S_02_LEFT_STATUS, m_IRLeftStatus);
+    DDX_Text(pDX, IDC_IR_S_03_RIGHT_STATUS, m_IRRightStatus);
+    DDX_Text(pDX, IDC_IR_S_04_SELECT_STATUS, m_IRSelectStatus);
+    DDX_Text(pDX, IDC_IR_S_05_MENU_STATUS, m_IRMenuStatus);
+    DDX_Text(pDX, IDC_IR_S_06_EXIT_STATUS, m_IRExitStatus);
+    DDX_Text(pDX, IDC_IR_S_07_DELETE_STATUS, m_IRDeleteStatus);
+    DDX_Text(pDX, IDC_IR_S_08_VOLUP_STATUS, m_IRVolUpStatus);
+    DDX_Text(pDX, IDC_IR_S_09_VOLDOWN_STATUS, m_IRVolDownStatus);
+    DDX_Text(pDX, IDC_IR_S_10_PAGEUP_STATUS, m_IRPageUpStatus);
+    DDX_Text(pDX, IDC_IR_S_11_PAGEDOWN_STATUS, m_IRPageDownStatus);
+    DDX_Text(pDX, IDC_IR_S_12_PLAY_STATUS, m_IRPlayStatus);
+    DDX_Text(pDX, IDC_IR_S_13_PAUSE_STATUS, m_IRPauseStatus);
+    DDX_Text(pDX, IDC_IR_S_14_STOP_STATUS, m_IRStopStatus);
+    DDX_Text(pDX, IDC_IR_S_15_NEXT_STATUS, m_IRNextStatus);
+    DDX_Text(pDX, IDC_IR_S_16_PREVIOUS_STATUS, m_IRPreviousStatus);
+    DDX_Text(pDX, IDC_IR_S_17_FASTFORWARD_STATUS, m_IRFastForwardStatus);
+    DDX_Text(pDX, IDC_IR_S_18_REVERSE_STATUS, m_IRReverseStatus);
+    DDX_Text(pDX, IDC_IR_S_19_ALPHAUP_STATUS, m_IRAlphaUpStatus);
+    DDX_Text(pDX, IDC_IR_S_20_ALPHADOWN_STATUS, m_IRAlphaDownStatus);
+    DDX_Text(pDX, IDC_IR_S_21_RANDOM_STATUS, m_IRRandomStatus);
+    DDX_Text(pDX, IDC_IR_S_22_SHUFFLE_STATUS, m_IRShuffleStatus);
+    DDX_Text(pDX, IDC_IR_S_23_CLEAR_STATUS, m_IRClearStatus);
+    DDX_Text(pDX, IDC_IR_S_24_LOAD_STATUS, m_IRLoadStatus);
+    DDX_Text(pDX, IDC_IR_S_25_SAVE_STATUS, m_IRSaveStatus);
 	DDV_MinMaxInt(pDX, m_delay, 0, 9999);
-	DDX_Text(pDX, IDC_IRREVERSE_DESC, m_IRReverseDesc);
-	DDX_Text(pDX, IDC_IRREVERSE_STATUS, m_IRReverseStatus);
-	DDX_Text(pDX, IDC_IRFASTFORWARD_DESC, m_IRFastForwardDesc);
-	DDX_Text(pDX, IDC_IRFASTFORWARD_STATUS, m_IRFastForwardStatus);
-	DDX_Text(pDX, IDC_IRALPHADOWN_DESC, m_IRAlphaDownDesc);
-	DDX_Text(pDX, IDC_IRALPHADOWN_STATUS, m_IRAlphaDownStatus);
-	DDX_Text(pDX, IDC_IRALPHAUP_DESC, m_IRAlphaUpDesc);
-	DDX_Text(pDX, IDC_IRALPHAUP_STATUS, m_IRAlphaUpStatus);
-	DDX_Text(pDX, IDC_IRRANDOM_DESC, m_IRRandomDesc);
-	DDX_Text(pDX, IDC_IRRANDOM_STATUS, m_IRRandomStatus);
-	DDX_Text(pDX, IDC_IRSAVE_DESC, m_IRSaveDesc);
-	DDX_Text(pDX, IDC_IRSAVE_STATUS, m_IRSaveStatus);
-	DDX_Text(pDX, IDC_IRSHUFFLE_DESC, m_IRShuffleDesc);
-	DDX_Text(pDX, IDC_IRSHUFFLE_STATUS, m_IRShuffleStatus);
-	DDX_Text(pDX, IDC_IRLOAD_DESC, m_IRLoadDesc);
-	DDX_Text(pDX, IDC_IRLOAD_STATUS, m_IRLoadStatus);
-	DDX_Text(pDX, IDC_IRCLEAR_DESC, m_IRClearDesc);
-	DDX_Text(pDX, IDC_IRCLEAR_STATUS, m_IRClearStatus);
+	DDX_Text(pDX, IDC_IRDELAY, m_delay);
+	DDX_Control(pDX, IDC_IRCOMPORT_STATUS, m_IRComPortStatus);
 	//}}AFX_DATA_MAP
 }
 
@@ -291,7 +291,7 @@ BOOL CConfigIrman::EnableDisableDialog()
 		button->EnableWindow(TRUE);
 		button = GetDlgItem(IDC_IRTEST);
 		button->EnableWindow(TRUE);
-		m_IRComPortStatus = "Ok";
+		m_IRComPortStatus.SetWindowText("Ok");
 		GetDlgItem(IDC_IRDELAY)->EnableWindow(TRUE);
 		UpdateData(FALSE);
 	} else {
@@ -301,9 +301,9 @@ BOOL CConfigIrman::EnableDisableDialog()
 		GetDlgItem(IDC_IRDELAY)->EnableWindow(FALSE);
 	}
 	if (m_NeedInit)
-		m_IRComPortStatus = "Uninitialized";
+		m_IRComPortStatus.SetWindowText("Uninitialized");
 	if (RemoteReceiver::GetType() == RemoteReceiver::MB_IR_NONE)
-		m_IRComPortStatus = "";
+		m_IRComPortStatus.SetWindowText("");
 
 	button = GetDlgItem(IDC_IRINITIALIZE);
 	
@@ -320,16 +320,16 @@ BOOL CConfigIrman::EnableDisableDialog()
 		if (tmp.GetLength()) m_ComPort =tmp;
 	}
 	
-	CheckRadioButton( IDC_IRNONE, IDC_IRCOM8, IDC_IRNONE );
+	//CheckRadioButton( IDC_IRCOM0NONE, IDC_IRCOM8, IDC_IRCOM0NONE);
     if( _tcslen( m_ComPort ) == 4 && m_ComPort[ 3 ] >= _T('1') &&
 		m_ComPort[ 3 ] <= _T('8') ) {
-        CheckRadioButton( IDC_IRNONE, IDC_IRCOM8, 
+        CheckRadioButton( IDC_IRCOM1, IDC_IRCOM8, 
 			IDC_IRCOM1 + m_ComPort[ 3 ] - _T('1') );
 	}
 
 	if (RemoteReceiver::m_MBIrType == RemoteReceiver::MB_IR_IRMAN) {
 		GetDlgItem(IDC_IRMAN_SETUP)->ShowWindow(SW_NORMAL);
-//		GetDlgItem(IDC_IRNONE)->ShowWindow(SW_NORMAL);
+//		GetDlgItem(IDC_IRCOM0NONE)->ShowWindow(SW_NORMAL);
 		GetDlgItem(IDC_IRCOM1)->ShowWindow(SW_NORMAL);
 		GetDlgItem(IDC_IRCOM2)->ShowWindow(SW_NORMAL);
 		GetDlgItem(IDC_IRCOM3)->ShowWindow(SW_NORMAL);
@@ -342,7 +342,7 @@ BOOL CConfigIrman::EnableDisableDialog()
 //		GetDlgItem(IDC_IRCOMPORT_STATUS)->ShowWindow(SW_NORMAL);
 	} else {
 		GetDlgItem(IDC_IRMAN_SETUP)->ShowWindow(SW_HIDE);
-//		GetDlgItem(IDC_IRNONE)->ShowWindow(SW_HIDE);
+//		GetDlgItem(IDC_IRCOM0NONE)->ShowWindow(SW_HIDE);
 		GetDlgItem(IDC_IRCOM1)->ShowWindow(SW_HIDE);
 		GetDlgItem(IDC_IRCOM2)->ShowWindow(SW_HIDE);
 		GetDlgItem(IDC_IRCOM3)->ShowWindow(SW_HIDE);
@@ -407,7 +407,7 @@ void CConfigIrman::OnIrtest()
 
 void CConfigIrman::OnIrinitialize() 
 {
-    m_IRComPortStatus = "Uninitialized";
+    m_IRComPortStatus.SetWindowText("Uninitialized");
 
 	RemoteReceiver * rrcvr = RemoteReceiver::reset(this, MB_SERIAL_MESSAGE);
 	int type = rrcvr->GetType();
@@ -441,7 +441,7 @@ void CConfigIrman::OnIrnone()
 {
 	RemoteReceiver * rrcvr = RemoteReceiver::rrcvr();	
 	if (rrcvr) rrcvr->Port("");
-	m_IRComPortStatus = "";
+	m_IRComPortStatus.SetWindowText("");
 	UpdateData(FALSE);
 	EnableDisableDialog();	
 	SetModified(TRUE);
@@ -451,7 +451,7 @@ void CConfigIrman::OnIrcom1()
 {
 	RemoteReceiver * rrcvr = RemoteReceiver::rrcvr();	
 	if (rrcvr) rrcvr->Port("COM1");
-	m_IRComPortStatus = "Uninitialized";
+	m_IRComPortStatus.SetWindowText("Uninitialized");
 	UpdateData(FALSE);
 	EnableDisableDialog();
 	SetModified(TRUE);
@@ -460,7 +460,7 @@ void CConfigIrman::OnIrcom2()
 {
 	RemoteReceiver * rrcvr = RemoteReceiver::rrcvr();	
 	if (rrcvr) rrcvr->Port("COM2");
-	m_IRComPortStatus = "Uninitialized";
+	m_IRComPortStatus.SetWindowText("Uninitialized");
 	UpdateData(FALSE);	
 	EnableDisableDialog();
 	SetModified(TRUE);
@@ -470,7 +470,7 @@ void CConfigIrman::OnIrcom3()
 {
 	RemoteReceiver * rrcvr = RemoteReceiver::rrcvr();	
 	if (rrcvr) rrcvr->Port("COM3");
-	m_IRComPortStatus = "Uninitialized";
+	m_IRComPortStatus.SetWindowText("Uninitialized");
 	UpdateData(FALSE);
 	EnableDisableDialog();
 	SetModified(TRUE);
@@ -480,7 +480,7 @@ void CConfigIrman::OnIrcom4()
 {
 	RemoteReceiver * rrcvr = RemoteReceiver::rrcvr();	
 	if (rrcvr) rrcvr->Port("COM4");
-	m_IRComPortStatus = "Uninitialized";
+	m_IRComPortStatus.SetWindowText("Uninitialized");
 	UpdateData(FALSE);	
 	EnableDisableDialog();
 	SetModified(TRUE);
@@ -490,7 +490,7 @@ void CConfigIrman::OnIrcom5()
 {
 	RemoteReceiver * rrcvr = RemoteReceiver::rrcvr();	
 	if (rrcvr) rrcvr->Port("COM5");
-	m_IRComPortStatus = "Uninitialized";
+	m_IRComPortStatus.SetWindowText("Uninitialized");
 	UpdateData(FALSE);	
 	EnableDisableDialog();
 	SetModified(TRUE);
@@ -500,7 +500,7 @@ void CConfigIrman::OnIrcom6()
 {
 	RemoteReceiver * rrcvr = RemoteReceiver::rrcvr();	
 	if (rrcvr) rrcvr->Port("COM6");
-	m_IRComPortStatus = "Uninitialized";
+	m_IRComPortStatus.SetWindowText("Uninitialized");
 	UpdateData(FALSE);	
 	EnableDisableDialog();
 	SetModified(TRUE);
@@ -510,7 +510,7 @@ void CConfigIrman::OnIrcom7()
 {
 	RemoteReceiver * rrcvr = RemoteReceiver::rrcvr();	
 	if (rrcvr) rrcvr->Port("COM7");
-	m_IRComPortStatus = "Uninitialized";
+	m_IRComPortStatus.SetWindowText("Uninitialized");
 	UpdateData(FALSE);	
 	EnableDisableDialog();
 	SetModified(TRUE);
@@ -520,7 +520,7 @@ void CConfigIrman::OnIrcom8()
 {
 	RemoteReceiver * rrcvr = RemoteReceiver::rrcvr();	
 	if (rrcvr) rrcvr->Port("COM8");
-	m_IRComPortStatus = "Uninitialized";
+	m_IRComPortStatus.SetWindowText("Uninitialized");
 	UpdateData(FALSE);	
 	EnableDisableDialog();
 	SetModified(TRUE);
@@ -660,7 +660,7 @@ void CConfigIrman::OnSetfocusIrdelay()
 void CConfigIrman::OnSelchangeIrtype() 
 {
 	m_NeedInit = TRUE;
-	m_IRComPortStatus = "";
+	m_IRComPortStatus.SetWindowText("");
 	CListBox * irtype = (CListBox*)GetDlgItem(IDC_IRTYPE);
 	int sel = irtype->GetCurSel();
 	CString type;
@@ -682,7 +682,7 @@ void CConfigIrman::OnSelchangeIrtype()
 		m_delay = (unsigned long)reg.Read("InterKeyDelay",0);
 	} else { // "None"
 		RemoteReceiver::SetType(RemoteReceiver::MB_IR_NONE);
-		m_IRComPortStatus = "";
+		m_IRComPortStatus.SetWindowText("");
 	}
 
 	UpdateData(FALSE);

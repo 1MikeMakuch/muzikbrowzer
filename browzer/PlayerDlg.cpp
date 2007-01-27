@@ -5036,19 +5036,12 @@ CPlayerDlg::OnVolume(WPARAM wParam, LPARAM lParam) {
 	//AutoLog al("OnVolume(W,P)");
 	adjustVolume();
 	m_VolumeGainBase = m_VolumeSlider.GetPos();
-	PlayerStatusTempSet(NTS(m_VolumeGainBase)+"%");
+	PlayerStatusTempSet("Volume:"+NTS(m_VolumeGainBase)+"%");
 	return 0;
 }
 void 
 CPlayerDlg::adjustVolume() {
-	//AutoLog al("adjustVolume()");
-	if (m_Player->SetVolume(m_VolumeSlider.GetPos())) {
-		//logger.ods("Volume:"+NTS(m_VolumeSlider.GetPos()));
-//		updateVolumeLabel();
-	} else {
-//		logger.log("Unable to set volume");
-//		PlayerStatusTempSet("Unable to set volume");
-	}
+	m_Player->SetVolume(m_VolumeSlider.GetPos());
 }
 // From;
 // http://replaygain.hydrogenaudio.org/rg_data_format.html
@@ -5063,6 +5056,7 @@ CPlayerDlg::VolumeGainAdjust(const double rg) {
 	int newVol = m_VolumeGainBase + (m_Config.ReplayGainMultiplier() * rg);
 	logger.logd("VGA "+NTS(m_VolumeGainBase)+" + (2*"+NTS(rg)+") = "+NTS(newVol));
 	adjustVolume(newVol);
+	PlayerStatusTempSet("Volume:"+NTS(newVol)+"%");
 }
 void 
 CPlayerDlg::adjustVolume(int level) {
@@ -5074,11 +5068,13 @@ void
 CPlayerDlg::OnVolUp() {
 	//AutoLog al("OnVolUp");
 	adjustVolume(m_VolumeSlider.GetPos() + 1);
+	PlayerStatusTempSet("Volume:"+NTS(m_VolumeSlider.GetPos())+"%");
 }
 void 
 CPlayerDlg::OnVolDown() {
 	//AutoLog al("OnVolDown");
 	adjustVolume(m_VolumeSlider.GetPos() - 1);
+	PlayerStatusTempSet("Volume:"+NTS(m_VolumeSlider.GetPos())+"%");
 }
 
 void 

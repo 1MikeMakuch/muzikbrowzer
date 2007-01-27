@@ -1,3 +1,26 @@
+2007-01-26 10:43  mkm
+
+	Check window pos of Settings Dlg too, like main dlg, for if now on
+	smaller desktop. Also fixed bug where Settings/Remote was
+	displaying learned on button status when wasn't true. Also keep
+	testing mode after clicking Apply button.
+
+2007-01-26 10:14  mkm
+
+	Check size/position of MB window on startup, if out of visible
+	display area center on primary monitor. Fixes bug where if changed
+	sys to smaller desktop or fewer monitors MB placed itself on screen
+	off visible display - couldn't grab it to move it into visible
+	area.
+
+2007-01-23 15:47  mkm
+
+	Added missing doc files.
+
+2007-01-17 13:41  mkm
+
+	Delete additional db files on uninstall.
+
 2007-01-16 22:51  mkm
 
 	Bug fixed, when upgrading wasn't overwriting DbLocation with new

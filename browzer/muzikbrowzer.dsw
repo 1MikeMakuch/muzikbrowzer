@@ -228,18 +228,6 @@ Package=<4>
 
 ###############################################################################
 
-Project: "bitmaptest"=..\..\bitmaptest\bitmaptest.dsp - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
 Project: "config"=.\config\config.dsp - Package Owner=<4>
 
 Package=<5>
@@ -541,9 +529,6 @@ Package=<4>
     End Project Dependency
     Begin Project Dependency
     Project_Dep_Name utf8_static
-    End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name bitmaptest
     End Project Dependency
     Begin Project Dependency
     Project_Dep_Name getopt_static

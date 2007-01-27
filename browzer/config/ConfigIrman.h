@@ -27,7 +27,7 @@ public:
 // Dialog Data
 	//{{AFX_DATA(CConfigIrman)
 	enum { IDD = IDD_CONFIG_IRMAN };
-	CString	m_IRComPortStatus;
+	CStatic m_IRComPortStatus;
 	CString	m_IRDeleteDesc;
 	CString	m_IRDeleteStatus;
 	CString	m_IRDownDesc;

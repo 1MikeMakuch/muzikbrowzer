@@ -41,6 +41,8 @@ $exedst2 = "pecan.makuch.org:/var/www/virtuals/muzikbrowzer/httpdocs/dl/".$exe.$
 #close(F);
 
 mysystem("/usr/bin/scp $exesrc $exedst");
+$exedst  = "pecan.makuch.org:/var/www/virtuals/muzikbrowzer/httpdocs/dl/pad/MuzikbrowzerSetup.exe";
+mysystem("/usr/bin/scp $exesrc $exedst");
 
 open(F,">current_rev");
 print F $major . '.' . $minor . '.' . $patch;
