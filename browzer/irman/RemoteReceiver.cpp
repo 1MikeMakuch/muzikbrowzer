@@ -17,6 +17,7 @@
 
 #include "irman.h"
 #include "UsbUirt.h"
+#include "Tira.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -32,7 +33,7 @@ RemoteReceiver * RemoteReceiver::m_RemoteReceiver = NULL;
 RemoteReceiver::m_MBIrTypeT RemoteReceiver::m_MBIrType 
 											= RemoteReceiver::MB_IR_NONE;
 
-
+#ifdef asdf
 class Tira : public RemoteReceiver
 {
 public:
@@ -51,6 +52,7 @@ public:
 		return TRUE;
 	}
 };
+#endif
 RemoteReceiver *
 RemoteReceiver::rrcvr() { 
 	if (RemoteReceiver::m_RemoteReceiver == NULL) {

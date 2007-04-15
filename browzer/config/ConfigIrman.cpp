@@ -156,6 +156,7 @@ void CConfigIrman::DoDataExchange(CDataExchange* pDX)
 	DDV_MinMaxInt(pDX, m_delay, 0, 9999);
 	DDX_Text(pDX, IDC_IRDELAY, m_delay);
 	DDX_Control(pDX, IDC_IRCOMPORT_STATUS, m_IRComPortStatus);
+	DDX_Text(pDX, IDC_TIRA_PORT, m_TiraPort);
 	//}}AFX_DATA_MAP
 }
 
@@ -201,7 +202,7 @@ BOOL CConfigIrman::OnInitDialog()
 	irtype->AddString("None");
 	irtype->AddString("Irman");
 	irtype->AddString("USB-UIRT");
-	irtype->AddString("Tira");
+//	irtype->AddString("Tira");
 	irtype->SetCurSel(RemoteReceiver::m_MBIrType);
 
 
@@ -218,6 +219,10 @@ CConfigIrman::getDescs() {
 		CString tmp;
 		tmp = rrcvr->comPort();
 		if (tmp.GetLength()) m_ComPort = tmp;
+		if (RemoteReceiver::m_MBIrType == RemoteReceiver::MB_IR_TIRA) {
+			tmp = String::replace(tmp,"","COM");
+			m_TiraPort = tmp;
+		}
 		m_delay = rrcvr->Delay();
 		UpdateData(FALSE);
     
@@ -329,7 +334,7 @@ BOOL CConfigIrman::EnableDisableDialog()
 	}
 
 	if (RemoteReceiver::m_MBIrType == RemoteReceiver::MB_IR_IRMAN) {
-		GetDlgItem(IDC_IRMAN_SETUP)->ShowWindow(SW_NORMAL);
+//		GetDlgItem(IDC_IRMAN_SETUP)->ShowWindow(SW_NORMAL);
 //		GetDlgItem(IDC_IRCOM0NONE)->ShowWindow(SW_NORMAL);
 		GetDlgItem(IDC_IRCOM1)->ShowWindow(SW_NORMAL);
 		GetDlgItem(IDC_IRCOM2)->ShowWindow(SW_NORMAL);
@@ -342,7 +347,7 @@ BOOL CConfigIrman::EnableDisableDialog()
 //		GetDlgItem(IDC_IRINITIALIZE)->ShowWindow(SW_NORMAL);
 //		GetDlgItem(IDC_IRCOMPORT_STATUS)->ShowWindow(SW_NORMAL);
 	} else {
-		GetDlgItem(IDC_IRMAN_SETUP)->ShowWindow(SW_HIDE);
+//		GetDlgItem(IDC_IRMAN_SETUP)->ShowWindow(SW_HIDE);
 //		GetDlgItem(IDC_IRCOM0NONE)->ShowWindow(SW_HIDE);
 		GetDlgItem(IDC_IRCOM1)->ShowWindow(SW_HIDE);
 		GetDlgItem(IDC_IRCOM2)->ShowWindow(SW_HIDE);
@@ -355,6 +360,17 @@ BOOL CConfigIrman::EnableDisableDialog()
 //		GetDlgItem(IDC_IRINITIALIZE)->ShowWindow(SW_HIDE);
 //		GetDlgItem(IDC_IRCOMPORT_STATUS)->ShowWindow(SW_HIDE);
 
+	}
+	if (RemoteReceiver::m_MBIrType == RemoteReceiver::MB_IR_TIRA) {
+		GetDlgItem(IDC_TIRA_PORT)->ShowWindow(SW_NORMAL);
+	} else {
+		GetDlgItem(IDC_TIRA_PORT)->ShowWindow(SW_HIDE);
+	}
+	if (RemoteReceiver::m_MBIrType == RemoteReceiver::MB_IR_TIRA
+		|| RemoteReceiver::m_MBIrType == RemoteReceiver::MB_IR_IRMAN) {
+		GetDlgItem(IDC_IRMAN_SETUP)->ShowWindow(SW_NORMAL);
+	} else {
+		GetDlgItem(IDC_IRMAN_SETUP)->ShowWindow(SW_HIDE);
 	}
 	if (m_irtesting) {
 		GetDlgItem(IDC_IR_READ_TEST_LABEL)->ShowWindow(SW_NORMAL);
@@ -409,9 +425,20 @@ void CConfigIrman::OnIrtest()
 void CConfigIrman::OnIrinitialize() 
 {
     m_IRComPortStatus.SetWindowText("Uninitialized");
+//	RemoteReceiver * rrcvr = RemoteReceiver::rrcvr();	
+//	if (RemoteReceiver::m_MBIrType == RemoteReceiver::MB_IR_TIRA) {
+//		UpdateData(TRUE);
+//		if (m_TiraPort.GetLength() == 0) {
+//			MBMessageBox("Advisory","COM Port not set");
+//			return;
+//		}
+//		rrcvr->Port("COM" + m_TiraPort);
+//	}
 
 	RemoteReceiver * rrcvr = RemoteReceiver::reset(this, MB_SERIAL_MESSAGE);
 	int type = rrcvr->GetType();
+
+
 
 	m_irrecording = FALSE;
 	m_irtesting = FALSE;
@@ -424,8 +451,8 @@ void CConfigIrman::OnIrinitialize()
 
 	if (NULL == rrcvr) {
 		CString msg = "unable to initialize Remote Receiver.\r\nCheck muzikbrowzer.log for details.";
-		if (RemoteReceiver::MB_IR_TIRA == type)
-			msg += "\r\nTira not supported yet.";
+//		if (RemoteReceiver::MB_IR_TIRA == type)
+//			msg += "\r\nTira not supported yet.";
 		MBMessageBox("Remote Receiver Error",msg,TRUE,FALSE);
 		return;
 	}

@@ -120,6 +120,7 @@ protected:
     RemoteReceiver & operator = ( const RemoteReceiver & );
 
 	CString m_sComPort;
+	int m_iComPort;
 	CWnd * m_wndMsgHndlr;
     // Key code to which to set next read key
     volatile int m_setKey;

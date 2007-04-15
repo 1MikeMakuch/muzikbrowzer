@@ -926,7 +926,7 @@ String::insertSort(CStringList &list, const CString &string) {
         CString lstring = list.GetAt(pos);
 
         // If string > lstring ...
-        if (string.CompareNoCase(lstring) == -1) {
+        if (string.CompareNoCase(lstring) < 0) {
             list.InsertBefore(pos, string);
             inserted = true;
             break;

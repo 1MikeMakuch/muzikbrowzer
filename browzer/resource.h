@@ -1,5 +1,5 @@
 //{{NO_DEPENDENCIES}}
-// Microsoft Visual C++ generated include file.
+// Microsoft Developer Studio generated include file.
 // Used by muzikbrowzer.rc
 //
 #define IDB_BITMAP1                     16
@@ -482,6 +482,7 @@
 #define IDC_VOLUME_SLIDER               527
 #define IDC_WMP                         528
 #define IDC_XAUDIO_STATUS               529
+#define IDC_TIRA_PORT                   530
 #define ID__CLEAR                       32771
 #define ID__CONFIG                      32772
 #define ID__EXIT                        32773
@@ -544,12 +545,12 @@
 #define ID_XXX                          32830
 
 // Next default values for new objects
-//
+// 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        96
 #define _APS_NEXT_COMMAND_VALUE         32831
-#define _APS_NEXT_CONTROL_VALUE         530
+#define _APS_NEXT_CONTROL_VALUE         531
 #define _APS_NEXT_SYMED_VALUE           630
 #endif
 #endif

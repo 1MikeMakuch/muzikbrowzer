@@ -127,6 +127,10 @@ SOURCE=.\StdAfx.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\Tira.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\UsbUirt.cpp
 # End Source File
 # End Group
@@ -148,6 +152,10 @@ SOURCE=.\RemoteReceiver.h
 # Begin Source File
 
 SOURCE=.\StdAfx.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\Tira.h
 # End Source File
 # Begin Source File
 

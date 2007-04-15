@@ -15,6 +15,8 @@ The "c:\Program Files\Microsoft SDK\include" has to be included
 before the stock VC98 includes.  In VC it's Tools/Options/Directories.
 Same for the Lib.  Just in case you're rusty :-)
 
+Also add 3rdparty/nasm to the dirs for EXEs. (for flac)
+
 To build open the MSVC6 workspace muzik/browzer/muzikbrowzer.dsw
 
 Set active project to 'muzikbrowzer'

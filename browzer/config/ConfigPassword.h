@@ -11,11 +11,11 @@
 
 #define MB_TRIAL_DAYS 61
 
-#ifdef _DEBUG
+//#ifdef _DEBUG
 	#define MB_USING_TRIAL_MODE
-#else
-	#undef MB_USING_TRIAL_MODE
-#endif
+//#else
+//	#undef MB_USING_TRIAL_MODE
+//#endif
 
 #if _MSC_VER > 1000
 #pragma once

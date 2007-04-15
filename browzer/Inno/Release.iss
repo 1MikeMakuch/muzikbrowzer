@@ -12,14 +12,14 @@ Type: files; Name: "{commonprograms}\Muzikbrowzer.lnk";
 AppMutex=MuzikbrowzerAppMutex,Global\MuzikbrowzerAppMutex
 ;AppMutex=MuzikbrowzerAppMutex,Global\MuzikbrowzerAppMutex,MuzikbrowzerBitMapCutterAppMutex,Global\MuzikbrowzerBitMapCutterAppMutex
 AppName=Muzikbrowzer
-AppVerName=Muzikbrowzer 2.0.3 (built 2007-01-26 23:13:58)
+AppVerName=Muzikbrowzer 2.1.0 (built 2007-04-14 22:48:56)
 AppCopyright=Copyright (C) 2001-Present Pecan Ventures, LLC
 DefaultDirName={pf}\Muzikbrowzer
 DefaultGroupName=Muzikbrowzer
 DisableProgramGroupPage=yes
 UninstallDisplayIcon={app}\Muzikbrowzer.exe
 MinVersion=4.1.1998,4
-OutputBaseFilename=Muzikbrowzer_setup_2_0_3
+OutputBaseFilename=Muzikbrowzer_setup_2_1_0
 LicenseFile=mb_license.txt
 WizardImageFile=../res/MBWizardImageFile.bmp
 WizardSmallImageFile=../res/MBWizardSmallImageFile.bmp

@@ -81,6 +81,7 @@ public:
 	CString	m_IRLoadStatus;
 	CString	m_IRClearDesc;
 	CString	m_IRClearStatus;
+	CString m_TiraPort;
 	//}}AFX_DATA
 
 

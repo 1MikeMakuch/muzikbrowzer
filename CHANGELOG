@@ -1,3 +1,8 @@
+2007-01-27 13:30  mkm
+
+	Settings/Remote dlg wasn't displaying key suppress delay until
+	Initialize was clicked.
+
 2007-01-26 23:24  mkm
 
 	Set version to 2.0.3
@@ -1206,16 +1211,16 @@
 	centering.  Changed app version to 2.0.0 Eliminated the word
 	"Theme" from MB's vernacular.
 
-2005-11-03 23:30  mkm
+2005-11-04 00:30  mkm
 
 	Now doing CreateAppMutex to prevent multiple copies from running
 	and from installing when already running.
 
-2005-11-03 21:22  mkm
+2005-11-03 22:22  mkm
 
 	began mods for cvs pserver
 
-2005-11-03 21:17  mkm
+2005-11-03 22:17  mkm
 
 	Two days to fix this one: Previous mod to On{Genre|Artist|etc}Focus
 	to call OnSelchange{Genre|Artist|etc} to properly update albumart
@@ -1227,16 +1232,16 @@
 	modified tag entry to be added to the songlib in memory. Fixed by
 	introducing DBLOCK global.
 
-2005-11-02 23:18  mkm
+2005-11-03 00:18  mkm
 
 	Adjust Volume after returning from Pause
 
-2005-11-02 20:03  mkm
+2005-11-02 21:03  mkm
 
 	Now ignoring APIC img with size 0, go on and look for
 	cover/folder.jpg
 
-2005-11-02 16:44  mkm
+2005-11-02 17:44  mkm
 
 	Added ticker tape scrolling to Status line. Need to add config
 	items for it	to allow it to be adjustable; speed/step.
@@ -1336,36 +1341,36 @@
 
 	test
 
-2005-04-01 23:39  mkm
+2005-04-02 00:39  mkm
 
 	WMA files! Fixes to handling of optional Genres
 
-2005-03-30 23:14  mkm
+2005-03-31 00:14  mkm
 
 	Hopefully fixed text display bug where the text sometimes gets a
 	little garbled up.
 
-2005-03-24 00:28  mkm
+2005-03-24 01:28  mkm
 
 	brought back trial mode, disabled by define in mbglobals.h
 
-2005-03-24 00:27  mkm
+2005-03-24 01:27  mkm
 
 	dont need it here
 
-2005-03-23 00:51  mkm
+2005-03-23 01:51  mkm
 
 	issue 258 fixed. Handle '(18)Rock' in Genres
 
-2005-03-22 23:55  mkm
+2005-03-23 00:55  mkm
 
 	bug fix: id3 tag editing issue# 256: applied mod to too many mp3s
 
-2005-03-17 23:51  mkm
+2005-03-18 00:51  mkm
 
 	added
 
-2005-03-17 23:49  mkm
+2005-03-18 00:49  mkm
 
 	Genres optional, album alpha sort, id3 edit confirmation, backup
 	playlists, transparent logo
@@ -1430,19 +1435,19 @@
 
 	Proper album sort order
 
-2003-03-26 21:46  mkm
+2003-03-26 22:46  mkm
 
 	Added rename to mp3tagger, added FiltUtils.cpp
 
-2003-03-22 22:14  mkm
+2003-03-22 23:14  mkm
 
 	all artists, show DX version in log, return plays song
 
-2003-03-10 10:49  mkm
+2003-03-10 11:49  mkm
 
 	Alpha Up/Down
 
-2003-03-10 08:48  mkm
+2003-03-10 09:48  mkm
 
 	Look for album art in folder.jpg
 
