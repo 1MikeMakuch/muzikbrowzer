@@ -906,6 +906,8 @@ CString getRGB(COLORREF rgb) {
 
 int
 MyUtil::random(int span) {
+	return rand() % span;
+
 	float ratio = rand() / (float)RAND_MAX;
 	return (int)(ratio * span);
 }
@@ -913,7 +915,15 @@ void
 MyUtil::seed() {
 	srand( (unsigned)time( NULL ) );
 }
+TEST(randsrand, MyUtilrand)
+{
 
+	MyUtil::seed();
+	int i;
+	for(i = 0 ; i < 100 ; i++) {
+		logger.ods(NTS(i) + " " + NTS(MyUtil::random(3)));
+	}
+}
 void
 String::insertSort(CStringList &list, const CString &string) {
     POSITION pos = list.GetHeadPosition();

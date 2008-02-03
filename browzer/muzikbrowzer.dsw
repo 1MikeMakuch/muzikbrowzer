@@ -36,6 +36,18 @@ Package=<4>
 
 ###############################################################################
 
+Project: "Fractal"=.\Fractal\Fractal.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
 Project: "GetBlackOut"=..\GetBlackOut\GetBlackOut.dsp - Package Owner=<4>
 
 Package=<5>

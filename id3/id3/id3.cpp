@@ -279,9 +279,7 @@ int updateApic(ID3_Tag & tag, const char * value) {
 // doesnt seem to take care of this, itself (well, i tested that a long
 // time before, maybe it has been altered in between)
 // 
-// I hope this will help you,
-// 
-// Tobias Hoppe
+
 
 // updateFlag = 1;
   

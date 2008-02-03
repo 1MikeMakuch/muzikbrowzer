@@ -6,14 +6,14 @@
 
 [Setup]
 AppName=muzikbrowzer
-AppVerName=Muzikbrowzer 2.1.0
+AppVerName=Muzikbrowzer 2.2.0
 AppCopyright=Copyright (C) 2001-Present Pecan Ventures, LLC
 DefaultDirName={pf}\muzikbrowzer
 DefaultGroupName=muzikbrowzer
 DisableProgramGroupPage=yes
 UninstallDisplayIcon={app}\muzikbrowzer.exe
 MinVersion=4.1.1998,4
-OutputBaseFilename=Muzikbrowzer_setup_2_1_0_D
+OutputBaseFilename=Muzikbrowzer_setup_2_2_0_D
 LicenseFile=mb_license.txt
 
 [Files]

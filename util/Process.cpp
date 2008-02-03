@@ -153,7 +153,7 @@ UINT Process::listener(LPVOID me)
 * Effect: 
 *       Reads input lines from the child process
 ****************************************************************************/
-#define MAX_LINE_LENGTH 1024
+#define MAX_LINE_LENGTH 10240
 
 void Process::listener()
     {

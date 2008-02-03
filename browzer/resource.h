@@ -47,7 +47,7 @@
 #define IDD_EQUALIZER_DIALOG            58
 #define IDD_EXPORT_DLG                  59
 #define IDD_FILEANDFOLDER               60
-#define IDD_FRACTAL_DLG                 61
+//#define IDD_FRACTAL_DLG                 61
 #define IDD_GETBLACKOUT_DIALOG          62
 #define IDD_GETTEXTFIELD                63
 #define IDD_ID3_DISPLAY                 64
@@ -134,7 +134,7 @@
 #define IDC_BUTTON_UL                   179
 #define IDC_BUTTON_UR                   180
 #define IDC_BUTTON_W                    181
-#define IDC_CANCEL                      182
+//#define IDC_CANCEL                      182
 #define IDC_CODEC_LIST                  183
 #define IDC_COLOR_BK_COLHDR             184
 #define IDC_COLOR_BK_CTRLS              185
@@ -227,7 +227,7 @@
 #define IDC_GENRESLABEL                 272
 #define IDC_GETTEXTFIELD                273
 #define IDC_GETTEXTFIELD_DESC           274
-#define IDC_GO                          275
+//#define IDC_GO                          275
 #define IDC_HIDE_GENRE                  276
 #define IDC_HYPERLINK                   277
 #define IDC_ID3_DISPLAY                 278

@@ -12,14 +12,14 @@ Type: files; Name: "{commonprograms}\Muzikbrowzer.lnk";
 AppMutex=MuzikbrowzerAppMutex,Global\MuzikbrowzerAppMutex
 ;AppMutex=MuzikbrowzerAppMutex,Global\MuzikbrowzerAppMutex,MuzikbrowzerBitMapCutterAppMutex,Global\MuzikbrowzerBitMapCutterAppMutex
 AppName=Muzikbrowzer
-AppVerName=Muzikbrowzer 2.1.0 (built 2007-04-14 22:48:56)
+AppVerName=Muzikbrowzer 2.2.0 (built 2008-02-02 21:27:05)
 AppCopyright=Copyright (C) 2001-Present Pecan Ventures, LLC
 DefaultDirName={pf}\Muzikbrowzer
 DefaultGroupName=Muzikbrowzer
 DisableProgramGroupPage=yes
 UninstallDisplayIcon={app}\Muzikbrowzer.exe
 MinVersion=4.1.1998,4
-OutputBaseFilename=Muzikbrowzer_setup_2_1_0
+OutputBaseFilename=Muzikbrowzer_setup_2_2_0
 LicenseFile=mb_license.txt
 WizardImageFile=../res/MBWizardImageFile.bmp
 WizardSmallImageFile=../res/MBWizardSmallImageFile.bmp
@@ -57,8 +57,12 @@ Source: "..\..\MBTag\tagger\Release\mbtag.exe"; DestDir: "{app}"; Flags: ignorev
 
 Source: "..\Help\Muzikbrowzer.chm"; DestDir: "{app}"; Flags: ignoreversion
 
-Source: "..\Skins\*.bmp"; DestDir: "{commonappdata}\Muzikbrowzer\skins"; Flags: recursesubdirs ignoreversion
-Source: "..\Skins\*.mbsd"; DestDir: "{commonappdata}\Muzikbrowzer\skins"; Flags: recursesubdirs ignoreversion
+Source: "..\Skins\MBClassic\*.bmp"; DestDir: "{commonappdata}\Muzikbrowzer\skins\MBClassic"; Flags: recursesubdirs ignoreversion
+Source: "..\Skins\MBClassic\*.mbsd"; DestDir: "{commonappdata}\Muzikbrowzer\skins\MBClassic"; Flags: recursesubdirs ignoreversion
+Source: "..\Skins\WinterFresh\*.bmp"; DestDir: "{commonappdata}\Muzikbrowzer\skins\WinterFresh"; Flags: recursesubdirs ignoreversion
+Source: "..\Skins\WinterFresh\*.mbsd"; DestDir: "{commonappdata}\Muzikbrowzer\skins\WinterFresh"; Flags: recursesubdirs ignoreversion
+Source: "..\Skins\YellowJacket\*.bmp"; DestDir: "{commonappdata}\Muzikbrowzer\skins\YellowJacket"; Flags: recursesubdirs ignoreversion
+Source: "..\Skins\YellowJacket\*.mbsd"; DestDir: "{commonappdata}\Muzikbrowzer\skins\YellowJacket"; Flags: recursesubdirs ignoreversion
 
 
 ;Source: "..\..\ButtonSkinner\Release\BitmapCutter.exe"; DestDir: "{app}"; Flags: ignoreversion

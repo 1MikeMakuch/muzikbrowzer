@@ -12,9 +12,9 @@
 #define MB_TRIAL_DAYS 61
 
 //#ifdef _DEBUG
-	#define MB_USING_TRIAL_MODE
+//	#define MB_USING_TRIAL_MODE
 //#else
-//	#undef MB_USING_TRIAL_MODE
+	#undef MB_USING_TRIAL_MODE
 //#endif
 
 #if _MSC_VER > 1000
