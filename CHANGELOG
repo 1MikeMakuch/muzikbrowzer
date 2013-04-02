@@ -1,40 +1,68 @@
-2008-02-02 21:29  mkm
+2013-04-01 22:48  mkm
+
+	was missing
+
+2013-04-01 22:40  mkm
+
+	Misc mods to define screen macros
+
+2013-04-01 22:39  mkm
+
+	Go back to counting ir codes instead of time delay
+
+2013-04-01 22:38  mkm
+
+	Re-enable screen saver periodically
+
+2013-04-01 22:35  mkm
+
+	Improved sort Album by date, adds month to TYER
+
+2009-04-13 17:59  mkm
+
+	rebuilt
+
+2009-04-13 17:54  mkm
+
+	rebuilt
+
+2008-02-02 22:29  mkm
 
 	Free
 
-2007-04-14 23:36  mkm
+2007-04-15 00:36  mkm
 
 	2.1 final release
 
-2007-01-27 13:30  mkm
+2007-01-27 14:30  mkm
 
 	Settings/Remote dlg wasn't displaying key suppress delay until
 	Initialize was clicked.
 
-2007-01-26 23:24  mkm
+2007-01-27 00:24  mkm
 
 	Set version to 2.0.3
 
-2007-01-26 23:24  mkm
+2007-01-27 00:24  mkm
 
 	Fixed bug in version check, failed to correctly determine if new
 	version available at startup.
 
-2007-01-26 23:13  mkm
+2007-01-27 00:13  mkm
 
 	Display Volume% setting when adjusted with remote and at start of
 	song play when ReplayGain is enabled. Settings Dlg AlbumSort
 	Date/Alpha radio buttons were broken. Reordered resource ids for
 	simpler sorting maintenance. Bump version to 2.0.3.
 
-2007-01-26 10:43  mkm
+2007-01-26 11:43  mkm
 
 	Check window pos of Settings Dlg too, like main dlg, for if now on
 	smaller desktop. Also fixed bug where Settings/Remote was
 	displaying learned on button status when wasn't true. Also keep
 	testing mode after clicking Apply button.
 
-2007-01-26 10:14  mkm
+2007-01-26 11:14  mkm
 
 	Check size/position of MB window on startup, if out of visible
 	display area center on primary monitor. Fixes bug where if changed
@@ -42,298 +70,298 @@
 	off visible display - couldn't grab it to move it into visible
 	area.
 
-2007-01-23 15:47  mkm
+2007-01-23 16:47  mkm
 
 	Added missing doc files.
 
-2007-01-17 13:41  mkm
+2007-01-17 14:41  mkm
 
 	Delete additional db files on uninstall.
 
-2007-01-16 22:51  mkm
+2007-01-16 23:51  mkm
 
 	Bug fixed, when upgrading wasn't overwriting DbLocation with new
 	location, was causing skins dir to not be found.
 
-2007-01-16 21:59  mkm
+2007-01-16 22:59  mkm
 
 	Expose ReplayGain Multiplier on Settings dlg, updated docs.
 
-2007-01-16 21:09  mkm
+2007-01-16 22:09  mkm
 
 	Fixed bug in Settings/Remote dlg, wasn't properly
 	loading/displaying remote control descriptions.  Added Purchase
 	button to License dlg, takes user to website for purchase, carries
 	name & email vals to website.
 
-2007-01-11 22:58  mkm
+2007-01-11 23:58  mkm
 
 	Adjust prj settings for multithreaded.
 
-2007-01-11 22:55  mkm
+2007-01-11 23:55  mkm
 
 	Update to help on ReplayGain
 
-2007-01-10 18:52  mkm
+2007-01-10 19:52  mkm
 
 	Disable trial mode for the beta, forgot to do it last night.
 
-2007-01-10 15:07  mkm
+2007-01-10 16:07  mkm
 
 	Updated publish script to push out ChangeLog
 
-2007-01-10 14:52  mkm
+2007-01-10 15:52  mkm
 
 	In tag editing MB was stripping quotes from the value entered by
 	the user. Not doing it now.
 
-2007-01-09 22:58  mkm
+2007-01-09 23:58  mkm
 
 	Tag Export: allow additional tag keys to be specified/exported.
 
-2007-01-09 16:12  mkm
+2007-01-09 17:12  mkm
 
 	Improved visuals on tag editor dialog.
 
-2007-01-09 14:26  mkm
+2007-01-09 15:26  mkm
 
 	bmp's for setup
 
-2007-01-09 01:42  mkm
+2007-01-09 02:42  mkm
 
 	Publish
 
-2007-01-09 01:39  mkm
+2007-01-09 02:39  mkm
 
 	Settings dlg slightly too wide for 640x display, fixed.
 
-2007-01-09 01:20  mkm
+2007-01-09 02:20  mkm
 
 	Bug in FileFolderDlg
 
-2007-01-08 23:51  mkm
+2007-01-09 00:51  mkm
 
 	Settings: verify dblocation has a skins dir, with
 	MBClassic/SkinDef.mbsd in it.
 
-2007-01-08 23:16  mkm
+2007-01-09 00:16  mkm
 
 	Tuning logging for release.
 
-2007-01-08 17:46  mkm
+2007-01-08 18:46  mkm
 
 	Do GC every 1428 edits, about 1mb worth of g.
 
-2007-01-08 17:21  mkm
+2007-01-08 18:21  mkm
 
 	Search for new music from menu now also looks for files that have
 	been modified, i.e. by other software. Quick way to get MB in sync.
 
-2007-01-08 15:47  mkm
+2007-01-08 16:47  mkm
 
 	If Play button clicked with empty playlist was starting 1 sec
 	position timer. Fixed. Also changed updatePlaylist to clear stop
 	flag.
 
-2007-01-08 15:29  mkm
+2007-01-08 16:29  mkm
 
 	Call resetControls if needed after returning from Settings dlg.
 
-2007-01-08 15:24  mkm
+2007-01-08 16:24  mkm
 
 	DisplayComments configurable Setting.
 
-2007-01-07 23:15  mkm
+2007-01-08 00:15  mkm
 
 	Can't use wmfsdk for id3v2.4 reading, doesn't work.
 
-2007-01-07 17:02  mkm
+2007-01-07 18:02  mkm
 
 	get/setArt for mbtag.
 
-2007-01-07 13:22  mkm
+2007-01-07 14:22  mkm
 
 	getArt for flac. Gets cover art from flac metadata.
 
-2007-01-07 12:14  mkm
+2007-01-07 13:14  mkm
 
 	Tuning debug logging, trim it down.
 
-2007-01-07 11:59  mkm
+2007-01-07 12:59  mkm
 
 	timeToPhoneHome will go every 30 days rather than when the month
 	changes.
 
-2007-01-07 00:13  mkm
+2007-01-07 01:13  mkm
 
 	Read id3v2.4 tags with WMFSDK. Warn user before writing that it
 	will be converted to id3v2.3. Discussed in docs as well.
 
-2007-01-06 19:12  mkm
+2007-01-06 20:12  mkm
 
 	Add help build to dependencies.
 
-2007-01-06 17:56  mkm
+2007-01-06 18:56  mkm
 
 	Optimization for Search and Rebuild, return char*'s instead of
 	Strings.
 
-2007-01-06 13:24  mkm
+2007-01-06 14:24  mkm
 
 	Optimized duration lookup for mp3's and wma's.
 
-2007-01-06 01:57  mkm
+2007-01-06 02:57  mkm
 
 	mbtag completed; set kv pairs, delete tag and delete tag fields.
 	Optimized wma editing. F6 reloads DB.
 
-2007-01-05 13:18  mkm
+2007-01-05 14:18  mkm
 
 	Load playlist errormsg all on one line, added crlf's
 
-2007-01-05 13:15  mkm
+2007-01-05 14:15  mkm
 
 	Issue warning on tag edit if any files about to be edited have
 	multiple tag fields of same name, i.e. multiple Genre or Artist
 	fields - that they'll be replaced with a single field.
 
-2007-01-05 11:30  mkm
+2007-01-05 12:30  mkm
 
 	Fixed problem w.r.t. createSongFromFile during searchForMp3s, now
 	only does createFromDb, caused problem when doing tag edit after a
 	file had been tag edited outside MB.
 
-2007-01-04 23:50  mkm
+2007-01-05 00:50  mkm
 
 	Tag editing mods: Wma: only modify attribs user has rather than all
 	that MB reads.	ogg/flac: Was removing multiple tag fields even for
 	those that MB doesn't read. Fixed, it leaves them alone. Sorts the
 	vorbis comments. Why not?
 
-2007-01-04 19:10  mkm
+2007-01-04 20:10  mkm
 
 	ReplayGain support.
 
-2007-01-02 18:33  mkm
+2007-01-02 19:33  mkm
 
 	Added [gs]etValId3Key apis for MBTag, for mbtag.exe. Tweak proj
 	settings for release and boundschecker builds.
 
-2007-01-02 17:12  mkm
+2007-01-02 18:12  mkm
 
 	Created mbtag.exe cli utility. Also id3v2 fields take precedence
 	over id3v1 fields
 
-2007-01-02 11:51  mkm
+2007-01-02 12:51  mkm
 
 	Moved wma into MBTag handler. Correct TLEN/Duration handling for
 	all types.
 
-2007-01-01 19:42  mkm
+2007-01-01 20:42  mkm
 
 	Moved ogg tag i/o into MBTag handler.
 
-2007-01-01 18:51  mkm
+2007-01-01 19:51  mkm
 
 	Moved mp3 tag i/o into MBTag handler.
 
-2007-01-01 16:55  mkm
+2007-01-01 17:55  mkm
 
 	InsertSort now does a binary search insert
 
-2007-01-01 01:37  mkm
+2007-01-01 02:37  mkm
 
 	Plugged gdi leak in FileAndFolder, must free hIcons returned by
 	SHGetFIleInfo
 
-2006-12-31 14:04  mkm
+2006-12-31 15:04  mkm
 
 	Doing getComments before Play(), was causing a race with the
 	player.
 
-2006-12-30 23:15  mkm
+2006-12-31 00:15  mkm
 
 	Proj settings tweaks to build flac into Release.
 
-2006-12-30 22:22  mkm
+2006-12-30 23:22  mkm
 
 	Added flac support. Created MBTag to migrate all audio file types
 	into.
 
-2006-12-30 22:21  mkm
+2006-12-30 23:21  mkm
 
 	Properly close down thread when done.
 
-2006-12-30 22:17  mkm
+2006-12-30 23:17  mkm
 
 	Critical section around log.write
 
-2006-12-29 14:29  mkm
+2006-12-29 15:29  mkm
 
 	Adding flac support. Got libflac to build in with MB and have it
 	reading tag vals in a TestHarness
 
-2006-12-28 23:18  mkm
+2006-12-29 00:18  mkm
 
 	Tweaks to flac proj files to get 'em to build, just includes and
 	ogg lib location.
 
-2006-12-28 22:52  mkm
+2006-12-28 23:52  mkm
 
 	Adding latest ogg/vorbis libs to repository. This is the pristine
 	checkin of same, including tarballs.
 
-2006-12-28 22:27  mkm
+2006-12-28 23:27  mkm
 
 	Adding flac-1.1.3 to the repository. Adding right after untarring,
 	no changes.
 
-2006-12-28 21:00  mkm
+2006-12-28 22:00  mkm
 
 	Settings/Display was losing skin choice upon Apply button. Now
 	remember screen position of Settings dlg and return to it
 	subsequently.
 
-2006-12-28 20:18  mkm
+2006-12-28 21:18  mkm
 
 	Config was losing font settings, had begun calling config.init
 	after going into Settings this was resetting fonts back to
 	defaults. Fixed by having init reread font settings.
 
-2006-12-28 17:58  mkm
+2006-12-28 18:58  mkm
 
 	AutoLog player and musicdb methods
 
-2006-12-28 17:05  mkm
+2006-12-28 18:05  mkm
 
 	logging level on Settings, enables debug logging if checked
 
-2006-12-28 16:22  mkm
+2006-12-28 17:22  mkm
 
 	Logging tuneup for release, urlencoder for http request, log
 	critical settings at startup and reset.
 
-2006-12-28 01:45  mkm
+2006-12-28 02:45  mkm
 
 	Horz scroll in Settings/General/CListboxes
 
-2006-12-28 00:22  mkm
+2006-12-28 01:22  mkm
 
 	Delete confirmation dlg just shows search criteria and total # of
 	files for confirmation, rather than the list of files.
 	GarbageCollect ctr incremented for each song modified/deleted.
 	Threshold set to 500.  Added CWaitCursor's for delete/modify.
 
-2006-12-27 21:59  mkm
+2006-12-27 22:59  mkm
 
 	Rebuild only option gets logged seperately.
 
-2006-12-27 21:27  mkm
+2006-12-27 22:27  mkm
 
 	Fixed performance of excluded files list, was painfully slow. Now
 	using arrays and a hash table. Does the trick.
 
-2006-12-27 15:10  mkm
+2006-12-27 16:10  mkm
 
 	New feature: Delete songs from library. Del key or right click.
 	Deleted files are added to exclude list, seen in
@@ -341,604 +369,604 @@
 	up dblocation from registry.  Fix to musicdb for empty lists, have
 	a single static empty list.
 
-2006-12-26 01:51  mkm
+2006-12-26 02:51  mkm
 
 	Settings/Folders: sort,unique,eliminate subdirs/files
 
-2006-12-26 00:27  mkm
+2006-12-26 01:27  mkm
 
 	Next/Prev buttons remove Stopped status. Pause/Stop display in Time
 	field
 
-2006-12-25 15:41  mkm
+2006-12-25 16:41  mkm
 
 	Fix to export, append backslash to folder
 
-2006-12-25 15:21  mkm
+2006-12-25 16:21  mkm
 
 	Check for updates only checks once per month to be less annoying
 
-2006-12-25 15:10  mkm
+2006-12-25 16:10  mkm
 
 	Fixed http timeout, wasn't working. Waits only 5 seconds for reply
 
-2006-12-25 13:35  mkm
+2006-12-25 14:35  mkm
 
 	At startup/reset verify skin, if no good try to find a good one,
 	try MBClassic first. Also added Files section to Help.
 
-2006-12-25 02:49  mkm
+2006-12-25 03:49  mkm
 
 	When dblocation was changed wasn't picking up new skins dir, fixed.
 
-2006-12-25 01:55  mkm
+2006-12-25 02:55  mkm
 
 	Verifying skins at startup and reset (F5). No error dlg just error
 	log.
 
-2006-12-25 01:09  mkm
+2006-12-25 02:09  mkm
 
 	RegistryKey DisableLayeredWindows if set will do so. Not a good
 	option. Looks like crap. Last resort in case someone using Anyplace
 	remote pc
 
-2006-12-25 00:49  mkm
+2006-12-25 01:49  mkm
 
 	If no Muzikbrowzer.folders present, look in Registry, write to
 	disk, cleanup Registry
 
-2006-12-24 23:38  mkm
+2006-12-25 00:38  mkm
 
 	RebuildOnly wasn't init'ing mlib
 
-2006-12-24 23:33  mkm
+2006-12-25 00:33  mkm
 
 	ETA was wrong for add and scan for new, fixed.
 
-2006-12-24 23:27  mkm
+2006-12-25 00:27  mkm
 
 	Show elapsed time after scanning for music
 
-2006-12-24 23:05  mkm
+2006-12-25 00:05  mkm
 
 	Check wmp version at startup and advise ver 9 required if not
 	present
 
-2006-12-24 15:42  mkm
+2006-12-24 16:42  mkm
 
 	Check license validity at startup and during pw validate
 
-2006-12-23 22:08  mkm
+2006-12-23 23:08  mkm
 
 	prevent http from excepting if no network present
 
-2006-12-23 18:50  mkm
+2006-12-23 19:50  mkm
 
 	Up case ogg keys
 
-2006-12-23 16:23  mkm
+2006-12-23 17:23  mkm
 
 	cli parameters for rebuild and dir=/path/to/dblocation, reads
 	Muzikbrowzer.folders from there.  Check for update availability at
 	startup, display msg in status line.  Tweak to Inno Wizard pages,
 	initial page msg and icons.
 
-2006-12-22 22:13  mkm
+2006-12-22 23:13  mkm
 
 	Hide Genre is back. See Settings/Genreal, click the Hide Genre
 	button and display of the Genres column is disabled.
 
-2006-12-22 21:21  mkm
+2006-12-22 22:21  mkm
 
 	rebuild mode rebuilds db only then exits. Also added re-readDb
 	check plus additional db validation.
 
-2006-12-22 17:11  mkm
+2006-12-22 18:11  mkm
 
 	random gets 100 songs from selected genre
 
-2006-12-22 15:27  mkm
+2006-12-22 16:27  mkm
 
 	remote help, fixed display using tabstops
 
-2006-12-22 14:39  mkm
+2006-12-22 15:39  mkm
 
 	remote menu, esc was loading music
 
-2006-12-22 14:09  mkm
+2006-12-22 15:09  mkm
 
 	Added hover msgs to search buttons.  Search was counting all,
 	fixed.	Search status uses player status font/settings.  Remove
 	beta warning.
 
-2006-12-21 23:54  mkm
+2006-12-22 00:54  mkm
 
 	export uses ProgressDlg thread. Eliminated use of InitDlg
 
-2006-12-21 22:54  mkm
+2006-12-21 23:54  mkm
 
 	editid3 now using ProgressDlg seperate thread
 
-2006-12-21 00:59  mkm
+2006-12-21 01:59  mkm
 
 	created ProgressDlg self contained worker threader progress dlg.
 	Scan using it.
 
-2006-12-19 21:17  mkm
+2006-12-19 22:17  mkm
 
 	Add file/foder dlg defaults to existing setting
 
-2006-12-18 18:20  mkm
+2006-12-18 19:20  mkm
 
 	Fix AdjustLibWidths, using hard limits. Couple BC leak fixes.
 
-2006-12-18 13:00  mkm
+2006-12-18 14:00  mkm
 
 	properly handle appy/cancel on Config/Files page
 
-2006-12-18 12:39  mkm
+2006-12-18 13:39  mkm
 
 	store config dirs by dblocation
 
-2006-12-18 11:02  mkm
+2006-12-18 12:02  mkm
 
 	Random button new feature add 100 songs to playlist
 
-2006-12-17 23:23  mkm
+2006-12-18 00:23  mkm
 
 	tweak album cover art display.
 
-2006-12-17 21:41  mkm
+2006-12-17 22:41  mkm
 
 	tweak 'all', only show all artists/albums if more than 1
 
-2006-12-17 21:27  mkm
+2006-12-17 22:27  mkm
 
 	tweaking verify
 
-2006-12-17 21:16  mkm
+2006-12-17 22:16  mkm
 
 	bug in export
 
-2006-12-16 22:57  mkm
+2006-12-16 23:57  mkm
 
 	Center current playing song in playlist
 
-2006-12-16 22:29  mkm
+2006-12-16 23:29  mkm
 
 	Fixed prob where couldn't type names in Albums column when alpha
 	sorting.
 
-2006-12-16 22:12  mkm
+2006-12-16 23:12  mkm
 
 	ensure 'all' is at the top of the albums listbox
 
-2006-12-15 22:17  mkm
+2006-12-15 23:17  mkm
 
 	don't reload album art if genre,artist,album are the same
 
-2006-12-15 21:57  mkm
+2006-12-15 22:57  mkm
 
 	scan failed to recognize dirs ending with .mp3 etc.
 
-2006-12-15 21:45  mkm
+2006-12-15 22:45  mkm
 
 	oggs: get multiple comments & descriptions but just the last of
 	other tag fields
 
-2006-12-15 21:35  mkm
+2006-12-15 22:35  mkm
 
 	unhook usbuirt load from TEST harness- takes too long. Also Moved
 	logger to init in PlayerApp so testharness uses it instead of
 	OutputDebugString
 
-2006-12-15 21:21  mkm
+2006-12-15 22:21  mkm
 
 	replace all OutputDebugString with logger.logd to get timestamp on
 	it
 
-2006-12-15 21:12  mkm
+2006-12-15 22:12  mkm
 
 	add 2 missing files
 
-2006-12-15 21:08  mkm
+2006-12-15 22:08  mkm
 
 	fixed wma write, had broken it with special handling of duration
 
-2006-12-15 17:42  mkm
+2006-12-15 18:42  mkm
 
 	edit id3 quote old values so spaces show up
 
-2006-12-15 16:41  mkm
+2006-12-15 17:41  mkm
 
 	tweak to WmaTag setVal - keep longer vals over shorter ones.
 
-2006-12-15 14:35  mkm
+2006-12-15 15:35  mkm
 
 	garbageCollectTest
 
-2006-12-15 00:56  mkm
+2006-12-15 01:56  mkm
 
 	docs and look for albumname.jpg for art
 
-2006-12-15 00:21  mkm
+2006-12-15 01:21  mkm
 
 	Added all artists per genre and all songs per artist.  Tweaks to
 	id3edit dlg, blank values for no change. Don't allow entry of ' ','
 	all' etc.
 
-2006-12-14 19:16  mkm
+2006-12-14 20:16  mkm
 
 	Was appending an extra space
 
-2006-12-14 12:18  mkm
+2006-12-14 13:18  mkm
 
 	Display extra tag info in current playing status line, updated
 	help.
 
-2006-12-14 11:57  mkm
+2006-12-14 12:57  mkm
 
 	Display extra tag info in current playing status line
 
-2006-12-13 18:17  mkm
+2006-12-13 19:17  mkm
 
 	Corrected WmaTag duration calculation. also sorted id3 raw data
 	display
 
-2006-12-13 14:45  mkm
+2006-12-13 15:45  mkm
 
 	Added Alt-keys for alpha up/down. plus plug a few leaks
 
-2006-12-13 14:44  mkm
+2006-12-13 15:44  mkm
 
 	Added Alt-keys for alpha up/down
 
-2006-12-12 19:51  mkm
+2006-12-12 20:51  mkm
 
 	Restructured irman code, made base RemoteReceiver class and addeed
 	support for USB-UIRT. Updated docs.
 
-2006-12-11 18:11  mkm
+2006-12-11 19:11  mkm
 
 	adding these but gonna remove them renamed
 
-2006-12-09 12:12  mkm
+2006-12-09 13:12  mkm
 
 	Export to .csv files.  Open file menu option.
 
-2006-12-07 20:13  mkm
+2006-12-07 21:13  mkm
 
 	DblClicking now posts a msg, fix for wrong music dlbclicked in,
 	fixed a few call sigs, orderd some of the longer message maps
 
-2006-12-07 14:44  mkm
+2006-12-07 15:44  mkm
 
 	Selection of CListBoxs weren't updated when right click, if in same
 	clistbox
 
-2006-12-05 21:49  mkm
+2006-12-05 22:49  mkm
 
 	MessageBox didn't focus the OK button. Fixed.
 
-2006-12-05 21:38  mkm
+2006-12-05 22:38  mkm
 
 	Changed muzikbrowzer to Muzikbrowzer, everywhere.
 
-2006-12-05 16:41  mkm
+2006-12-05 17:41  mkm
 
 	Improved progress dialog during library search/build, tag editing.
 	Corrected estimated time to completion on same.  Displays in
 	font/size set by titles.  Disallow editing of all Artists.
 	Eliminated db verify upon tag edit.
 
-2006-12-01 18:00  mkm
+2006-12-01 19:00  mkm
 
 	update
 
-2006-12-01 17:15  mkm
+2006-12-01 18:15  mkm
 
 	update
 
-2006-12-01 15:51  mkm
+2006-12-01 16:51  mkm
 
 	don't need ButtonSkin.h
 
-2006-12-01 15:43  mkm
+2006-12-01 16:43  mkm
 
 	missing
 
-2006-12-01 15:40  mkm
+2006-12-01 16:40  mkm
 
 	don't need buttonskin.h
 
-2006-11-30 18:01  mkm
+2006-11-30 19:01  mkm
 
 	Disabled edit tag option on context menu in playlist
 
-2006-11-30 16:49  mkm
+2006-11-30 17:49  mkm
 
 	Mouse Wheel support
 
-2006-11-29 20:12  mkm
+2006-11-29 21:12  mkm
 
 	Search/Clear wasn't working right on successive searches/clears.
 	Fixed
 
-2006-11-29 17:32  mkm
+2006-11-29 18:32  mkm
 
 	Additional dlg updates for garbage collecting and id3 updating.
 	Icon tweaking.	Tweak to Extendedlistbox.  MakeDefault for Debug
 	only in Config.
 
-2006-05-23 12:51  mkm
+2006-05-23 13:51  mkm
 
 	Adding rest of approved skins
 
-2006-04-06 19:38  mkm
+2006-04-06 20:38  mkm
 
 	Adding skins for beta
 
-2006-04-05 13:08  mkm
+2006-04-05 14:08  mkm
 
 	Resizing columns was leaving old pixels around. Fixed.
 
-2006-04-05 13:05  mkm
+2006-04-05 14:05  mkm
 
 	Resizing columns was leaving old pixels around. Fixed.
 
-2006-03-08 22:57  mkm
+2006-03-08 23:57  mkm
 
 	Not using trial mode for beta period. Will turn it on for official
 	release
 
-2006-03-08 22:56  mkm
+2006-03-08 23:56  mkm
 
 	Trial days left msg at startup
 
-2006-03-08 22:09  mkm
+2006-03-08 23:09  mkm
 
 	Moved to XP, few changes to get the build back
 
-2006-03-08 12:26  mkm
+2006-03-08 13:26  mkm
 
 	[no log message]
 
-2006-03-05 17:35  mkm
+2006-03-05 18:35  mkm
 
 	Clean up log file. Also no longer switch to skin if doesn't verify
 
-2006-03-05 16:25  mkm
+2006-03-05 17:25  mkm
 
 	Fixing up help for 2.0
 
-2006-03-05 16:05  mkm
+2006-03-05 17:05  mkm
 
 	Mods for 2.0
 
-2006-03-04 15:45  mkm
+2006-03-04 16:45  mkm
 
 	Remote control skips over Search buttons if present
 
-2006-03-04 11:10  mkm
+2006-03-04 12:10  mkm
 
 	Hover tooltips for all buttons on main dialog
 
-2006-03-03 19:46  mkm
+2006-03-03 20:46  mkm
 
 	Buttons were keeping focus after mouse moved off. Was due to change
 	for loadplaylist dlg buttons where we need it for remote control
 	operation.
 
-2006-03-03 18:44  mkm
+2006-03-03 19:44  mkm
 
 	Settings/Display Column Header sample not showing correct text
 	color
 
-2006-03-03 17:56  mkm
+2006-03-03 18:56  mkm
 
 	Validate SkinDef font settings in verifySkin, and don't throw
 	msgbox in ReadReg
 
-2006-03-03 15:30  mkm
+2006-03-03 16:30  mkm
 
 	Eliminate calling resizeControls twice on startup
 
-2006-03-03 15:24  mkm
+2006-03-03 16:24  mkm
 
 	Upgrade to id3lib-3.8.3
 
-2006-03-02 21:46  mkm
+2006-03-02 22:46  mkm
 
 	Log file gets trimmed to 500k when gt 1m
 
-2006-03-02 19:15  mkm
+2006-03-02 20:15  mkm
 
 	Eliminate old unused registry key/values
 
-2006-02-23 14:22  mkm
+2006-02-23 15:22  mkm
 
 	Consistent spelling of Bk-Bg and Tx-Fg
 
-2006-02-23 13:48  mkm
+2006-02-23 14:48  mkm
 
 	Garbage collect interval to 50. Fix progress on modifyid3 dlg
 
-2006-02-23 13:37  mkm
+2006-02-23 14:37  mkm
 
 	Adding id3lib-3.8.3
 
-2006-02-23 13:26  mkm
+2006-02-23 14:26  mkm
 
 	Prevent Settings/Display from hanging (infinit loop) when
 	BackgroundLibrary.bmp is missing
 
-2006-02-23 12:11  mkm
+2006-02-23 13:11  mkm
 
 	Allow editing tags with a playlist\!
 
-2006-02-23 11:58  mkm
+2006-02-23 12:58  mkm
 
 	plug memory leak
 
-2006-02-23 11:56  mkm
+2006-02-23 12:56  mkm
 
 	test
 
-2006-02-22 12:50  mkm
+2006-02-22 13:50  mkm
 
 	Tag edit confirmation dlg - improved looks of it.
 
-2006-02-21 22:20  mkm
+2006-02-21 23:20  mkm
 
 	Trimmed down the message when editing id3 tags, only showing fields
 	that are going to be modified
 
-2006-02-21 21:12  mkm
+2006-02-21 22:12  mkm
 
 	Deleted text from Genres,Artists,etc. labels resource template -
 	should solve the painting problem where rarely was overlaying one
 	text font over another
 
-2006-02-21 18:13  mkm
+2006-02-21 19:13  mkm
 
 	Validating skins. Show error msg dlg, but continue anyway since
 	dont have a compiled in skin to default to
 
-2006-02-18 12:33  mkm
+2006-02-18 13:33  mkm
 
 	Tweak to trial mode msg
 
-2006-02-16 21:16  mkm
+2006-02-16 22:16  mkm
 
 	Enabled Trial Mode
 
-2006-02-16 19:58  mkm
+2006-02-16 20:58  mkm
 
 	Get Black Out
 
-2006-02-16 13:17  mkm
+2006-02-16 14:17  mkm
 
 	Playlist editor ticker the GAAS
 
-2006-02-16 12:47  mkm
+2006-02-16 13:47  mkm
 
 	Playlist editor fixed where playlistnames lost focus
 
-2006-02-16 12:31  mkm
+2006-02-16 13:31  mkm
 
 	More tweaks to MBMessageBox - get max size from MB dlg
 
-2006-02-16 12:07  mkm
+2006-02-16 13:07  mkm
 
 	More tweaks to MBMessageBox, sizing and fonts
 
-2006-02-15 19:27  mkm
+2006-02-15 20:27  mkm
 
 	Estimated time remaining during Scanning
 
-2006-02-15 12:36  mkm
+2006-02-15 13:36  mkm
 
 	Confirmation dlg before Scanning
 
-2006-02-15 12:23  mkm
+2006-02-15 13:23  mkm
 
 	Improvements to MBMessageBox, use Titles font
 
-2006-02-15 12:14  mkm
+2006-02-15 13:14  mkm
 
 	Improvements to MBMessageBox, resizes, auto sizes to nice size
 
-2006-02-14 14:09  mkm
+2006-02-14 15:09  mkm
 
 	Exclude all artists from garbage collection
 
-2006-02-14 12:58  mkm
+2006-02-14 13:58  mkm
 
 	Play muzikbrowzer.wav on startup. Now just need a good wav
 
-2006-02-14 12:37  mkm
+2006-02-14 13:37  mkm
 
 	Add music FileAndFolder dlg improvement - caching drives for
 	quicker usage
 
-2006-02-14 11:59  mkm
+2006-02-14 12:59  mkm
 
 	Add music FileAndFolder dlg improvements. Icons, volume labels,
 	uses dflt folder
 
-2006-02-13 13:15  mkm
+2006-02-13 14:15  mkm
 
 	Added Random,Shuffle,Clear,Load,Save funcs to remote control
 
-2006-02-10 20:51  mkm
+2006-02-10 21:51  mkm
 
 	Keyboard shortcuts for all player functions
 
-2006-02-10 19:29  mkm
+2006-02-10 20:29  mkm
 
 	Remote Control menu tweaks
 
-2006-02-10 15:28  mkm
+2006-02-10 16:28  mkm
 
 	Remote Control menu now skinned.
 
-2006-02-10 13:12  mkm
+2006-02-10 14:12  mkm
 
 	Remote control menu pops up in center of dlg, not screen.
 
-2006-02-09 18:56  mkm
+2006-02-09 19:56  mkm
 
 	Correction on WMP Seek(), fixed progress label width
 
-2006-02-09 13:53  mkm
+2006-02-09 14:53  mkm
 
 	Fixed crash upon exit in Release Buile. Came down to consistent
 	settings in linking, _MBCS and/or Use MFC in static lib and/or
 	debug info. Once I got rid of the crashing I couldn't reproduce it!
 
-2006-02-09 11:32  mkm
+2006-02-09 12:32  mkm
 
 	adding
 
-2006-02-09 11:28  mkm
+2006-02-09 12:28  mkm
 
 	adding
 
-2006-02-09 11:25  mkm
+2006-02-09 12:25  mkm
 
 	adding
 
-2006-02-08 14:48  mkm
+2006-02-08 15:48  mkm
 
 	re-enable display of album art
 
-2006-02-07 22:52  mkm
+2006-02-07 23:52  mkm
 
 	use WMPSDK for duration calc
 
-2006-02-07 18:12  mkm
+2006-02-07 19:12  mkm
 
 	New icon
 
-2006-02-07 18:11  mkm
+2006-02-07 19:11  mkm
 
 	Now using WMP instead of DirectShow.
 
-2005-12-17 12:38  mkm
+2005-12-17 13:38  mkm
 
 	Corrected Playlist duration calculation
 
-2005-12-17 12:27  mkm
+2005-12-17 13:27  mkm
 
 	Couple fixes for remote control, ExtendedListBox.invalidate()
 
-2005-12-17 01:03  mkm
+2005-12-17 02:03  mkm
 
 	Added Size choices of 640x480, 800x600 and 1024x768 to the Menu for
 	dev purposes.  Eliminated the extra paint ExtendedListBoxes were
 	doing. Now just one! Hurray!
 
-2005-12-16 23:04  mkm
+2005-12-17 00:04  mkm
 
 	invalidate LoadPlaylist's ExtendedListBox's to get them to repaint.
 	 During scan convert tag fields consisting only of whitespace to '
@@ -946,78 +974,78 @@
 	update correctly, invalidate now does an InvalidateRgn was
 	necessary for XP.
 
-2005-12-14 23:44  mkm
+2005-12-15 00:44  mkm
 
 	Playlist cursel wasn't being updated when song finishes and goes to
 	next
 
-2005-12-14 23:24  mkm
+2005-12-15 00:24  mkm
 
 	Settings dlg is smaller than 640x480
 
-2005-12-14 22:53  mkm
+2005-12-14 23:53  mkm
 
 	When browsing in all Albums/Songs show artist/genre on status line
 
-2005-12-14 18:49  mkm
+2005-12-14 19:49  mkm
 
 	Genres missing scrollbar on startup
 
-2005-12-14 01:14  mkm
+2005-12-14 02:14  mkm
 
 	Set all proj options to new good known values, disable opts on
 	debug, max on release, Program DB for generate debug info
 
-2005-12-14 00:34  mkm
+2005-12-14 01:34  mkm
 
 	Fixed bug where Release build was crashing after doing a Scan! Prob
 	was call signature to OnMusicScan was incorrect!
 
-2005-12-13 21:04  mkm
+2005-12-13 22:04  mkm
 
 	GDI maintenance. Eliminated all DC members from window objects. Had
 	added a couple more to ExtendedListbox and it caused hundreds of
 	memory/resource leaks. Pulling 'em back out eliminated the errors
 	so I've pulled 'em all.
 
-2005-12-12 22:02  mkm
+2005-12-12 23:02  mkm
 
 	Eliminate flickering when repainting data windows (ExtendedListBox)
 
-2005-12-06 23:24  mkm
+2005-12-07 00:24  mkm
 
 	Set bAdd flag back to False - was invoking Add code instead of Scan
 	code
 
-2005-12-06 23:23  mkm
+2005-12-07 00:23  mkm
 
 	Prevent dups from being added
 
-2005-12-06 23:04  mkm
+2005-12-07 00:04  mkm
 
 	Blank out the status i.e. 20 Genres, 100 Artists etc, when
 	switching between searching and not searching.
 
-2005-12-06 22:40  mkm
+2005-12-06 23:40  mkm
 
 	Issue 377 fixed. Was crashing in modifyId3 if tag was different
 	than expected. Now creating Song objects from memory rather than
 	from the file.
 
-2005-12-06 20:30  mkm
+2005-12-06 21:30  mkm
 
 	Resource leak plugged
 
-2005-12-06 20:06  mkm
+2005-12-06 21:06  mkm
 
 	Improved thread management for Scan thread
 
-2005-12-06 17:27  mkm
+2005-12-06 18:27  mkm
 
 	Convert old TransRedMain triples to ColorTransparentMain
 	ColorTransparentPanel in SkinDef.mbsd
 
-2005-12-06 15:43  mkm
+2005-12-06 16:43  mkm
 
 	New org for Search Dlg. Fixes for transparent ColorStatic when
 	Tickering.  Playlist loader tuning.  Search wasn't doing successive
@@ -1030,55 +1058,55 @@
 	results.  Tightened up dragging of lib columns, limits, tidied the
 	drag band.
 
-2005-12-01 19:12  mkm
+2005-12-01 20:12  mkm
 
 	Write OtherBtn settings
 
-2005-11-29 15:08  mkm
+2005-11-29 16:08  mkm
 
 	Fix for Search, return presses search button.  VirtualControl, zero
 	is public since there's now non-virtual controls on the screen.
 
-2005-11-29 12:57  mkm
+2005-11-29 13:57  mkm
 
 	New color settings for skinned surfaces not covered by a bmp,
 	Playlist Loader and Search Dlg. Issue 397.
 
-2005-11-29 00:25  mkm
+2005-11-29 01:25  mkm
 
 	Significant performance improvement for Search funtion. Wrapped
 	smart pointer around MMemory.
 
-2005-11-28 21:00  mkm
+2005-11-28 22:00  mkm
 
 	Added Search function to main dialog.
 
-2005-11-27 17:05  mkm
+2005-11-27 18:05  mkm
 
 	Add another callback
 
-2005-11-27 17:04  mkm
+2005-11-27 18:04  mkm
 
 	Fixed Delete bug, added del key, callbacks
 
-2005-11-27 15:37  mkm
+2005-11-27 16:37  mkm
 
 	Added Quick Play and Delete to right click menu.
 
-2005-11-27 14:25  mkm
+2005-11-27 15:25  mkm
 
 	Fine tuning graphics on Playlist chooser/editor.  Added Library
 	right click options, QuickPlay and AddToPlaylist.
 
-2005-11-27 14:22  mkm
+2005-11-27 15:22  mkm
 
 	Added Need2Eraase in callbacks
 
-2005-11-27 14:15  mkm
+2005-11-27 15:15  mkm
 
 	Added WordWrap and Transparency
 
-2005-11-26 23:43  mkm
+2005-11-27 00:43  mkm
 
 	Changed "Current" to "Last" w.r.t most recent playlist.  Changed
 	getSongsInPlaylist api to use CStringArray's and added TLEN.  Added
@@ -1089,29 +1117,29 @@
 	MBUtil::SecsToHMS Added tooltips to LoadPlaylist buttons, improved
 	skinning.
 
-2005-11-26 23:17  mkm
+2005-11-27 00:17  mkm
 
 	Adapted to use Windows standard look
 
-2005-11-24 20:41  mkm
+2005-11-24 21:41  mkm
 
 	Skin Reload button is gone. Now just hit F5.
 
-2005-11-23 22:26  mkm
+2005-11-23 23:26  mkm
 
 	Issue 390. Converts playlists upon setdblocation change. Also throw
 	up a advisory dlg upon updating db.
 
-2005-11-23 21:04  mkm
+2005-11-23 22:04  mkm
 
 	ScrollBackground.bmp is now tiled.
 
-2005-11-22 18:07  mkm
+2005-11-22 19:07  mkm
 
 	Improvements to the Color Picker Button in Settings.  Dialogs
 	position themselves right below button pressed.
 
-2005-11-21 21:41  mkm
+2005-11-21 22:41  mkm
 
 	ExtendedListBox uses callbacks since now being used by
 	LoadPlaylist.  Found bug wrt resizing main dialog, wasn't resizing
@@ -1119,74 +1147,74 @@
 	Added 3DShadow to settings dialog.  Alert pop up if choosing a bad
 	skin.
 
-2005-11-21 21:40  mkm
+2005-11-21 22:40  mkm
 
 	Bug in tiling. Moved tiling func to util/
 
-2005-11-21 21:38  mkm
+2005-11-21 22:38  mkm
 
 	Bug in file lexer
 
-2005-11-21 21:37  mkm
+2005-11-21 22:37  mkm
 
 	Default PanelType to BackgroundType
 
-2005-11-18 18:29  mkm
+2005-11-18 19:29  mkm
 
 	Now writing r,g,b into SkinDefCustom.mbsd instead of just a number
 
-2005-11-18 17:56  mkm
+2005-11-18 18:56  mkm
 
 	Validate Font specification in SkinDef*.mbsd file. Display error
 	msg in event of errors.
 
-2005-11-17 23:44  mkm
+2005-11-18 00:44  mkm
 
 	Added 3dShadow effect to ColumnHeaders, DataWindows and Status
 	line.
 
-2005-11-16 19:41  mkm
+2005-11-16 20:41  mkm
 
 	Created playlist editor.  Correct bad scroll button behavior of
 	ExtendedListBox control.
 
-2005-11-14 14:17  mkm
+2005-11-14 15:17  mkm
 
 	Correct handling of maximize/minimize/restore functions. Maximize
 	is disabled for fixed size skins.
 
-2005-11-13 22:32  mkm
+2005-11-13 23:32  mkm
 
 	Now using standard m3u playlists. These can be used in other
 	players. Converting mbp playlists to m3u's on startup and moving
 	into playlists dir.
 
-2005-11-09 23:57  mkm
+2005-11-10 00:57  mkm
 
 	New 3 state skinned button, main dialog logo goes to www site
 
-2005-11-09 21:57  mkm
+2005-11-09 22:57  mkm
 
 	Settings/Display allows restoring skin defaults
 
-2005-11-09 20:02  mkm
+2005-11-09 21:02  mkm
 
 	Display correct AlbumArtDefault.bmp when switching to new skin.
 
-2005-11-09 19:30  mkm
+2005-11-09 20:30  mkm
 
 	Added BackgroundPanelType, changed BackgroundType to
 	BackgroundMainType
 
-2005-11-09 19:15  mkm
+2005-11-09 20:15  mkm
 
 	Fixed bug in Lexer
 
-2005-11-08 18:25  mkm
+2005-11-08 19:25  mkm
 
 	renamed to lexer
 
-2005-11-08 18:25  mkm
+2005-11-08 19:25  mkm
 
 	BitmapCutter writes BorderPanel into SkinDef.mbsd.  TransColors
 	weren't getting read when skin was changed.  Added
@@ -1194,7 +1222,7 @@
 	BackgroundLibrary back. They inherit the same background type as
 	BackgroundMain.bmp.  Created lexer for reading the SkinDef's.
 
-2005-11-06 17:56  mkm
+2005-11-06 18:56  mkm
 
 	BitmapCutter: added; BackgroundType selection, reads
 	SkinDefCustom.mbsd and writes to SkinDef.mbsd.
@@ -1266,86 +1294,86 @@
 	buttons changed from U and D to AltUp/Down. U and D didn't work if
 	there was an entry in the list that started with U or D.
 
-2005-10-26 17:26  mkm
+2005-10-26 18:26  mkm
 
 	Adjustable Library cols, commented out Pictures/Video/Music
 	buttons, eliminated current title line
 
-2005-10-18 14:23  mkm
+2005-10-18 15:23  mkm
 
 	Added but commented out Music,Video,Pictures; fix PositionLabel
 	width; reformat LoadPlaylistDlg display
 
-2005-08-01 21:30  mkm
+2005-08-01 22:30  mkm
 
 	Fixed up transparent color stuff. Now in working state.
 
-2005-07-19 23:58  mkm
+2005-07-20 00:58  mkm
 
 	Added Restore Button when maximized, SkinVerification
 
-2005-07-19 23:06  mkm
+2005-07-20 00:06  mkm
 
 	nonewline
 
-2005-07-19 20:02  mkm
+2005-07-19 21:02  mkm
 
 	Music Add, Music/Skin on menu, removed extensions from ConfigFiles,
 	now hardcoded., seperate font config for status/cur play, changed
 	display to Song by Artist on Album, temp read splash from mb dir
 	for dev purposes.
 
-2005-07-07 00:15  mkm
+2005-07-07 01:15  mkm
 
 	CRect helpers
 
-2005-07-07 00:14  mkm
+2005-07-07 01:14  mkm
 
 	playlist displays song,artist,album, skin options button, rm
 	colorCtrls, remove buttons from menu list
 
-2005-07-06 23:17  mkm
+2005-07-07 00:17  mkm
 
 	Eliminate border color from config
 
-2005-07-06 23:03  mkm
+2005-07-07 00:03  mkm
 
 	WMA fixes, folded themes under skins, Configuration cleanup
 
-2005-06-15 23:39  mkm
+2005-06-16 00:39  mkm
 
 	Properly look for Album Art to display
 
-2005-06-15 22:53  mkm
+2005-06-15 23:53  mkm
 
 	Now works right when changing to new skin
 
-2005-06-15 19:51  mkm
+2005-06-15 20:51  mkm
 
 	missing
 
-2005-06-15 19:48  mkm
+2005-06-15 20:48  mkm
 
 	missing
 
-2005-06-15 19:41  mkm
+2005-06-15 20:41  mkm
 
 	missing
 
-2005-06-15 19:38  mkm
+2005-06-15 20:38  mkm
 
 	missing
 
-2005-06-15 19:32  mkm
+2005-06-15 20:32  mkm
 
 	Adding the cutter
 
-2005-06-15 19:21  mkm
+2005-06-15 20:21  mkm
 
 	Initial checkin of Skin, Easter Egg, PlayerDlg callbacks,
 	Configuration/Apply
 
-2005-06-15 17:59  mkm
+2005-06-15 18:59  mkm
 
 	test
 
@@ -1383,63 +1411,63 @@
 	Genres optional, album alpha sort, id3 edit confirmation, backup
 	playlists, transparent logo
 
-2004-09-30 19:44  mkm
+2004-09-30 20:44  mkm
 
 	remove trial/password, remove gnu license
 
-2004-09-28 00:41  mkm
+2004-09-28 01:41  mkm
 
 	Also look for cover.jpg in album folders for cover art
 
-2004-09-27 18:10  mkm
+2004-09-27 19:10  mkm
 
 	Fixed playlists getting corrupted upon id3 tag mod
 
-2004-09-27 15:58  mkm
+2004-09-27 16:58  mkm
 
 	fix broken icons & few build errs
 
-2004-09-26 22:04  mkm
+2004-09-26 23:04  mkm
 
 	killit
 
-2004-09-26 21:07  mkm
+2004-09-26 22:07  mkm
 
 	test
 
-2004-09-26 15:30  mkm
+2004-09-26 16:30  mkm
 
 	test
 
-2004-09-26 15:26  mkm
+2004-09-26 16:26  mkm
 
 	testing cvswrappers
 
-2004-09-26 14:38  mkm
+2004-09-26 15:38  mkm
 
 	missing
 
-2004-09-26 14:30  mkm
+2004-09-26 15:30  mkm
 
 	missing
 
-2004-09-26 14:26  mkm
+2004-09-26 15:26  mkm
 
 	missing
 
-2004-09-26 14:21  mkm
+2004-09-26 15:21  mkm
 
 	Rebuilt missing files and a few fixes after losing c drive
 
-2003-09-08 15:08  mkm
+2003-09-08 16:08  mkm
 
 	add dirs
 
-2003-09-08 15:07  mkm
+2003-09-08 16:07  mkm
 
 	add filename to playlist file
 
-2003-06-12 22:09  mkm
+2003-06-12 23:09  mkm
 
 	Proper album sort order
 
@@ -1459,40 +1487,40 @@
 
 	Look for album art in folder.jpg
 
-2003-03-06 11:31  mkm
+2003-03-06 12:31  mkm
 
 	Shuffle by album instead of artist
 
-2003-03-03 22:39  mkm
+2003-03-03 23:39  mkm
 
 	Don't need these
 
-2003-03-03 22:38  mkm
+2003-03-03 23:38  mkm
 
 	Update help
 
-2003-03-03 19:20  mkm
+2003-03-03 20:20  mkm
 
 	Eliminate genre->integer map on write, capitalizable genres, lottsa
 	code duplication removed
 
-2003-03-01 23:06  mkm
+2003-03-02 00:06  mkm
 
 	On useredit tag info, check file is writeable
 
-2003-02-28 23:59  mkm
+2003-03-01 00:59  mkm
 
 	normalize user entered genre
 
-2003-02-28 23:44  mkm
+2003-03-01 00:44  mkm
 
 	renamed dir
 
-2003-02-28 23:31  mkm
+2003-03-01 00:30  mkm
 
 	Initial import after re-org
 
-2003-02-28 23:31  mkm
+2003-03-01 00:30  mkm
 
 	Initial revision
 

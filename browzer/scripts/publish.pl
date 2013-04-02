@@ -5,6 +5,7 @@ sub mysystem {
 	print $com."\n";
 	system($com);
 }
+$HOME="/cygdrive/c/cygwin/home/mkm";
 
 $f=$ARGV[0];
 
@@ -73,7 +74,7 @@ print F "http://mbdev.makuch.org\n
 Here is the first 100 lines of the ChangeLog, the rest can be found at the link above.\n\n";
 close(F);
 
-mysystem("(cd /cygdrive/c/mkm/src/muzik ; /cygdrive/c/mkm/scripts/cvs2cl.pl --summary --hide-filenames -f /tmp/mbpublish.txt2 2>&1 >/dev/null)");
+mysystem("(cd $HOME/src/muzik ; $HOME/scripts/cvs2cl.pl --summary --hide-filenames -f /tmp/mbpublish.txt2 2>&1 >/dev/null)");
 
 #mysystem("/usr/bin/head -100 /tmp/mbpublish.txt2 >> /tmp/mbpublish.txt");
 #mysystem("/usr/sbin/ssmtp $to < /tmp/mbpublish.txt");
