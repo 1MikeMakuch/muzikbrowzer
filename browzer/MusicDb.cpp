@@ -797,7 +797,7 @@ public:
 int
 MusicLib::getAlbums(const CString & genrename, const CString & artistname,
 				   CExtendedListBox & box, BOOL AlbumSortAlpha) {
-	//AutoLog al("mdb::getAlbums");
+	AutoLog al("mdb::getAlbums");
 
 	MList albumList = m_SongLib.albumList(genrename, artistname);
 	MList::Iterator albumIter(albumList);
@@ -810,12 +810,19 @@ MusicLib::getAlbums(const CString & genrename, const CString & artistname,
 		if (songIter.more()) {
 			MRecord firstSong = songIter.next();
 			CString year = firstSong.lookupVal("TYER");
-			int iyear = 0;
-			if (year != "" && album.label() != MBALL) {
-				iyear = atoi((LPCTSTR)year);
-			}
+
+			// yyyymm
+			char buf[10]; memset(buf,'0',10);
+			strncpy(buf, (LPCTSTR)year, year.GetLength());
+			buf[year.GetLength()] = '0';
+			buf[6] = '\n';
+			int iyear = atoi((LPCTSTR)buf);
+			if (album.label() == MBALL) iyear = 0;
+
 			NameNum * nn = new NameNum(album.label(), iyear, firstSong.i());
 			namenums.Add(nn);
+
+//			logger.log("iyear " + numToString(iyear) + " " + firstSong.lookupVal("FILE") + " " + album.label());
 		}
 	}
 	if (artistname == MBALL || AlbumSortAlpha) {
