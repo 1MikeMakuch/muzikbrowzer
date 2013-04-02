@@ -109,4 +109,8 @@
 
 #define MB_RANDOM_PICKS 100
 
+//#define BS_TYPEMASK	0xFL
+#define SM_CXVIRTUALSCREEN 78
+#define SM_CYVIRTUALSCREEN 79
+
 #endif
