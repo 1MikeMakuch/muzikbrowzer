@@ -2805,6 +2805,7 @@ BOOL CALLBACK KillScreenSaverFunc (HWND hWnd, LPARAM lParam){
 // PostMessage (GetForegroundWindow(), WM_CLOSE, 0, 0L);
 
 BOOL WakeUp (){
+//	AutoLog("WakeUp");
 	OSVERSIONINFO osvi;
 	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
 	GetVersionEx(&osvi);
@@ -2827,6 +2828,7 @@ BOOL WakeUp (){
 
 //    PostMessage (GetActiveWindow(), WM_KEYDOWN, VK_SHIFT, 0L);
 //    PostMessage (GetActiveWindow(), WM_KEYUP, VK_SHIFT, 0L);
+
 	return true;
 }
 
@@ -5381,6 +5383,7 @@ void CPlayerDlg::OnDeviceSyncErrorWmp(LPUNKNOWN pDevice, LPDISPATCH pMedia)
 void CPlayerDlg::OnStatusChangeWmp() 
 {
 	logger.logd("OnStatusChangeWmp:"+m_Player->GetStatus()+":"+m_Player->file());
+	CheckScreenSaver();
 
 }
 void CPlayerDlg::OnSwitchedToControlWmp() 
@@ -5395,3 +5398,65 @@ void CPlayerDlg::OnEndOfStreamWmp(long Result)
 {
 	logger.logd("OnEndOfStreamWmp:"+m_Player->file());
 }
+
+/*
+BOOL SystemParametersInfo(
+  UINT uiAction, // system parameter to query or set
+  UINT uiParam,  // depends on action to be taken
+  PVOID pvParam, // depends on action to be taken
+  UINT fWinIni   // user profile update flag
+);
+
+SPI_GETSCREENSAVEACTIVE Determines whether screen saving is enabled. The
+pvParam parameter must point to a BOOL variable that receives TRUE if
+screen saving is enabled, or FALSE otherwise.
+
+SPI_GETSCREENSAVERRUNNING Windows NT 5.0 and later, Windows 98: Determines
+whether a screen saver is currently running on the window station of the
+calling process. The pvParam parameter must point to a BOOL variable
+that receives TRUE if a screen saver is currently running, or FALSE
+otherwise. Note that only the interactive window station, "WinSta0",
+can have a screen saver running.
+
+SPI_GETSCREENSAVETIMEOUT Retrieves the screen saver time-out value, in
+seconds. The pvParam parameter must point to an integer variable that
+receives the value.
+
+SPI_SCREENSAVERRUNNING Renamed to SPI_SETSCREENSAVERRUNNING.
+
+SPI_SETSCREENSAVEACTIVE Sets the state of the screen saver. The
+uiParam parameter specifies TRUE to activate screen saving, or FALSE to
+deactivate it.
+
+SPI_SETSCREENSAVERRUNNING Windows 95 and later: Used internally;
+applications should not use this flag.
+
+SPI_SETSCREENSAVETIMEOUT Sets the screen saver time-out value to the value
+of the uiParam parameter. This value is the amount of time, in seconds,
+that the system must be idle before the screen saver activates.
+*/
+void CPlayerDlg::CheckScreenSaver()
+{
+	UINT action = SPI_GETSCREENSAVEACTIVE;
+	UINT param = 0;
+	BOOL var;
+	PVOID pvparam = &var;
+	UINT ini = 0;
+	BOOL r;
+//	r = SystemParametersInfo(action, param, pvparam, ini);
+//	logger.logd("SPI_GETSCREENSAVEACTIVE " + numToString(var));
+
+//	action = SPI_GETSCREENSAVERRUNNING;
+//	r = SystemParametersInfo(action, param, pvparam, ini);
+//	logger.logd("SPI_GETSCREENSAVERRUNNING " + numToString(var));
+
+//	action = SPI_GETSCREENSAVETIMEOUT;
+//	r = SystemParametersInfo(action, param, pvparam, ini);
+//	logger.logd("SPI_GETSCREENSAVETIMEOUT " + numToString(var));
+
+	action = SPI_SETSCREENSAVEACTIVE;
+	r = SystemParametersInfo(action, TRUE, pvparam, ini);
+//	logger.logd("SPI_SETSCREENSAVEACTIVE set to TRUE");
+}
+
+

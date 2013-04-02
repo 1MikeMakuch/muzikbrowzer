@@ -214,6 +214,7 @@ private:
  	void killAlbumArt();
 	void ShowSearchDlg();
 	void UpdateRects();
+	void CheckScreenSaver();
 
     BOOL m_LButtonDown;
     CPoint m_deltaPoint;
