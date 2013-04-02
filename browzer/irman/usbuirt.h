@@ -20,7 +20,8 @@ class UsbUirt : public RemoteReceiver {
 
 		int OK() { return m_OKreceived; };
 
-		void WINAPI IRReceiveCallback (char *IREventStr, void *userData);
+		void WINAPI IRReceiveCallbackx(char *IREventStr, void *userData);
+		void WINAPI IRReceiveCallback(char *IREventStr, void *userData);
     
 	private:
         // Waggle the control lines to power up or down the UsbUirt

@@ -226,8 +226,9 @@ UsbUirt::Close( ) {
 	unLoadDLL();
 	ready(FALSE);
 }
+
 void WINAPI
-UsbUirt::IRReceiveCallback(char *IREventStr, void *userData) {
+UsbUirt::IRReceiveCallbackx(char *IREventStr, void *userData) {
 //	char buf[1000];
 //	sprintf(buf,"UsbUirt Code = %s, UserData = %08x!!!", IREventStr, 
 //		(UINT32)userData);
@@ -259,6 +260,46 @@ UsbUirt::IRReceiveCallback(char *IREventStr, void *userData) {
 //		logger.logd("delay " + numToString(m_interKeyDelay));
 	}
 }
+
+void WINAPI
+UsbUirt::IRReceiveCallback(char *IREventStr, void *userData) {
+	int returnCode = -1;
+	DWORD tick = 0;
+	int code = -1;
+	KeyCode key;
+	static int counter = 0;
+
+	if (IREventStr && strlen(IREventStr) && strlen(IREventStr) <= m_codelength) {
+		//memcpy(key.m_code,IREventStr,m_codelength);
+		strcpy((char*)key.m_code,IREventStr);
+
+		code = lookup(key);
+		counter++;
+		if (code != m_lastcode) counter = 0;
+
+		if ((-1 != code && -1 != m_lastcode 
+			&& m_lastcode != code)
+//			|| (tick - m_lasttick) > m_interKeyDelay) {
+			|| (0 == m_interKeyDelay)
+			|| (counter >= m_interKeyDelay)) {
+			counter = 0;
+			returnCode = code;
+			m_lastcode = code;
+			m_lasttick = tick;
+		}
+		CString msg;
+		if (returnCode != -1) {
+			m_wndMsgHndlr->PostMessage(m_wmsg, returnCode, LPARAM(0));
+			msg += "IR PostMessage ";
+		} else {
+			msg += "IR suppressed ";
+		}
+		msg += "ikd: " + numToString(m_interKeyDelay) + " " + key.m_code;
+		msg += " ctr:" + NTS(counter) ;
+		logger.log(msg);
+	}
+}
+
 
 int
 UsbUirt::HandleSerialMsg(WPARAM wParam, LPARAM lParam, int & returnCode) {
