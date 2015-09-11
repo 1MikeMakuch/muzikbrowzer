@@ -1,3 +1,5 @@
+A unique digital music browser/player, IMHO the only one worth a shit.
+
 http://www.muzikbrowzer.com
 
 Todo: I'd like to port this to something multi platform, either QT or java. Like to find others interested in joining in on the effort.
