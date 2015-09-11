@@ -1,3 +1,5 @@
+http://www.muzikbrowzer.com
+
 To build Muzikbrowzer:
 
 I'm using MSVC6 sp6. 
