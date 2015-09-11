@@ -12,6 +12,7 @@ Let me know if you're interested.
 
 
 
+```
 Build instructions:
 
 To build Muzikbrowzer:
@@ -80,4 +81,5 @@ vorbis*			ogg support
 WmaTagg			wma tag lib
 Wmp				C++ wrapper for WMP control
 zlib			id3lib requirement
+```
 
