@@ -1,5 +1,17 @@
 http://www.muzikbrowzer.com
 
+Todo: I'd like to port this to something multi platform, either QT or java. Like to find others interested in joining in on the effort.
+
+Let me know if you're interested.
+
+1MikeMakuch at gmail.com
+
+2015/09/10
+
+
+
+Build instructions:
+
 To build Muzikbrowzer:
 
 I'm using MSVC6 sp6. 
