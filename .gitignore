@@ -1,0 +1,9 @@
+Debug
+*.obj
+*.sbr
+*.lib
+*.pch
+*.idb
+*.pdb
+*.ncb
+*.plg
