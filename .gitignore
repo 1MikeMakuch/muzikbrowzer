@@ -7,3 +7,10 @@ Debug
 *.pdb
 *.ncb
 *.plg
+.emacs.desktop
+.emacs.desktop.lock
+metaflac.exe
+Release
+MuzikbrowzerCachedDrives
+*.opt
+testdata

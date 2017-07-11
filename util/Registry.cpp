@@ -25,34 +25,44 @@ using namespace std;
 static char THIS_FILE[] = __FILE__;
 #endif
 RegistryKey::RegistryKey():mKeyValPairs(NULL),key(NULL)
-{}
+{
+    mKeyValPairs = new CMapStringToString;
+}
 
 
 void
 RegistryKey::init(HKEY base, const TCHAR* keyName )
 {
+    AutoLog al("RegistryKey::init 0");
 	if( RegCreateKeyEx( base, keyName, 0, _T(""), 0,
                       KEY_QUERY_VALUE | KEY_SET_VALUE,
                       NULL, &key, NULL ) != ERROR_SUCCESS )
 		key = NULL;
 
 	mFileName = "";
-	if (mKeyValPairs)
+	if (mKeyValPairs) {
 		delete mKeyValPairs;
+        mKeyValPairs = new CMapStringToString;
+    }
 }
 void
 RegistryKey::init(CString filename)
 {
-	if (mKeyValPairs)
+    AutoLog al("RegistryKey::init 1");
+	if (mKeyValPairs) {
 		delete mKeyValPairs;
+        mKeyValPairs = new CMapStringToString;
+    }
 	key = NULL;
-	mKeyValPairs = new CMapStringToString;
+
 	mFileName = filename;
 }
 
 RegistryKey::RegistryKey( HKEY base, const TCHAR* keyName, BOOL deleteRight )
 	: mKeyValPairs(NULL),key(NULL), m_keyname(keyName)
 {
+    AutoLog al("RegistryKey::RegistryKey 0");
+    mKeyValPairs = new CMapStringToString;
 	if (FALSE == deleteRight) {
 		if (RegCreateKeyEx( base, keyName, 0, _T(""), 0,
 				KEY_QUERY_VALUE | KEY_SET_VALUE,
@@ -101,7 +111,7 @@ BOOL RegistryKey::Copy(const RegistryKey & src) {
     CString key;
     CString val;
 	CString data;
-	AutoBuf buf(1000);	
+	AutoBuf buf(1000);
 	CStringList slist;
     for( pos = src.mKeyValPairs->GetStartPosition(); pos != NULL; ) {
         src.mKeyValPairs->GetNextAssoc(pos, key, val);
@@ -121,7 +131,7 @@ BOOL RegistryKey::WriteFile()
     CString key;
     CString val;
 	CString data;
-	AutoBuf buf(1000);	
+	AutoBuf buf(1000);
 	CStringList slist;
     for( pos = mKeyValPairs->GetStartPosition(); pos != NULL; ) {
         mKeyValPairs->GetNextAssoc(pos, key, val);
@@ -151,7 +161,7 @@ BOOL RegistryKey::WriteFile()
 
 	CFile cfile;
 	CFileException e;
-	if (cfile.Open(mFileName, 
+	if (cfile.Open(mFileName,
 		CFile::modeCreate
 		//        |CFile::modeNoTruncate
 		|CFile::modeWrite
@@ -170,6 +180,7 @@ BOOL RegistryKey::WriteFile()
 }
 BOOL RegistryKey::ReadFile()
 {
+	AutoLog al("ReadFile 0");
 	if (mFileName == "") return FALSE;
 
 	stack<KVPair> kvstack;
@@ -188,34 +199,38 @@ BOOL RegistryKey::ReadFile()
 ///////////////////////////////////////////////////////////////////////
 // Character strings
 ///////////////////////////////////////////////////////////////////////
+
 void RegistryKey::Read( const TCHAR* value, TCHAR* data,
-					   unsigned long maxSize, const TCHAR* deflt ) const
+                        unsigned long maxSize, const TCHAR* deflt ) const
 {
+	AutoLog al("Read 1");
 
 	if (key != NULL) {
 		DWORD byteSize = maxSize * sizeof( TCHAR );
 		if( !ReadData( value, data, byteSize, REG_SZ ) )
-		_tcsnccpy( data, deflt, maxSize );
+            _tcsnccpy( data, deflt, maxSize );
 		// Ensure null termination
 	} else {
 		CString key(value);
-	    CString val;
+	    CString val("");
+
 		if (mKeyValPairs->Lookup(key, val) == 0) { // not found
 			val = deflt;
 		} else {
 			// just to remain backwards compatible with inhouse versions only
 			// can go prior to release
 #pragma hack
-// COmmented out 3/5/06
-//			if (val.Left(2) == "L " || val.Left(2) == "S ")
-//				val = val.Right(val.GetLength()-2);
+            // COmmented out 3/5/06
+            //			if (val.Left(2) == "L " || val.Left(2) == "S ")
+            //				val = val.Right(val.GetLength()-2);
 		}
 		_tcsnccpy( data, val.GetBuffer(0), maxSize );
-
 	}
 	data[ maxSize - 1 ] = 0;
 }
 CString RegistryKey::ReadCString(const CString & key, const CString & dflt) {
+    AutoLog al("ReadCString 1");
+
 	AutoBuf buf(1000);
 	Read(
 		(const TCHAR*) key,
@@ -298,6 +313,7 @@ TEST(Registry, FileWrite)
 ///////////////////////////////////////////////////////////////////////
 unsigned long RegistryKey::Read( const TCHAR* value, unsigned long deflt ) const
 {
+    AutoLog al("Read 2");
 	unsigned long retVal;
 	unsigned long data;
 	unsigned long size = sizeof( data );
@@ -352,6 +368,7 @@ void RegistryKey::Write( const TCHAR* value, unsigned long data ) const
 void RegistryKey::Read( const TCHAR* value, void* data,
 					   unsigned long desiredSize, const void* deflt ) const
 {
+        AutoLog al("Read 3");
   unsigned long size = desiredSize;
   if( !ReadData( value, data, size, REG_BINARY ) || size != desiredSize )
     CopyMemory( data, deflt, desiredSize );
@@ -370,7 +387,7 @@ void RegistryKey::Write( const TCHAR* value, const void* data,
 ///////////////////////////////////////////////////////////////////////
 // privates
 ///////////////////////////////////////////////////////////////////////
-bool RegistryKey::ReadData( const TCHAR* value, void* data, 
+bool RegistryKey::ReadData( const TCHAR* value, void* data,
 	unsigned long& size, unsigned long desiredType ) const
 
 // Read and write binary data
@@ -378,6 +395,7 @@ bool RegistryKey::ReadData( const TCHAR* value, void* data,
 // you're reading, the type will come back undefined and you'll get the
 // default data instead.
 {
+    AutoLog al("ReadData 0");
   if( key == NULL )
     return false;
 
