@@ -2,6 +2,6 @@
 
 . $HOME/.bashrc
 
-/usr/bin/perl ../scripts/publish.pl ../muzikbrowzerVersion.h
+perl ../scripts/publish.pl ../muzikbrowzerVersion.h
 
 
