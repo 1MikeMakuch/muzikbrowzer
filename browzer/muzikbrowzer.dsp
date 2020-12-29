@@ -734,92 +734,92 @@ SOURCE=.\res\xaudio.ico
 # End Group
 # End Target
 # End Project
-# Section muzikbrowzer : {A12DCF7D-14AB-4C1B-A8CD-63909F06025B}
-# 	2:5:Class:CWMPError
-# 	2:10:HeaderFile:wmperror.h
-# 	2:8:ImplFile:wmperror.cpp
-# End Section
-# Section muzikbrowzer : {4F2DF574-C588-11D3-9ED0-00C04FB6E937}
-# 	2:5:Class:CWMPClosedCaption
-# 	2:10:HeaderFile:wmpclosedcaption.h
-# 	2:8:ImplFile:wmpclosedcaption.cpp
-# End Section
-# Section muzikbrowzer : {D5F0F4F1-130C-11D3-B14E-00C04F79FAA6}
-# 	2:5:Class:CWMPPlaylist
-# 	2:10:HeaderFile:wmpplaylist.h
-# 	2:8:ImplFile:wmpplaylist.cpp
-# End Section
-# Section muzikbrowzer : {EE4C8FE2-34B2-11D3-A3BF-006097C9B344}
-# 	2:5:Class:CWMPCdromCollection
-# 	2:10:HeaderFile:wmpcdromcollection.h
-# 	2:8:ImplFile:wmpcdromcollection.cpp
-# End Section
-# Section muzikbrowzer : {3614C646-3B3B-4DE7-A81E-930E3F2127B3}
-# 	2:5:Class:CWMPErrorItem
-# 	2:10:HeaderFile:wmperroritem.h
-# 	2:8:ImplFile:wmperroritem.cpp
-# End Section
-# Section muzikbrowzer : {94D55E95-3FAC-11D3-B155-00C04F79FAA6}
-# 	2:5:Class:CWMPMedia
-# 	2:10:HeaderFile:wmpmedia.h
-# 	2:8:ImplFile:wmpmedia.cpp
-# End Section
-# Section muzikbrowzer : {EC21B779-EDEF-462D-BBA4-AD9DDE2B29A7}
-# 	2:5:Class:CWMPNetwork
-# 	2:10:HeaderFile:wmpnetwork.h
-# 	2:8:ImplFile:wmpnetwork.cpp
-# End Section
-# Section muzikbrowzer : {4A976298-8C0D-11D3-B389-00C04F68574B}
-# 	2:5:Class:CWMPStringCollection
-# 	2:10:HeaderFile:wmpstringcollection.h
-# 	2:8:ImplFile:wmpstringcollection.cpp
-# End Section
-# Section muzikbrowzer : {8363BC22-B4B4-4B19-989D-1CD765749DD1}
-# 	2:5:Class:CWMPMediaCollection
-# 	2:10:HeaderFile:wmpmediacollection.h
-# 	2:8:ImplFile:wmpmediacollection.cpp
-# End Section
-# Section muzikbrowzer : {10A13217-23A7-439B-B1C0-D847C79B7774}
-# 	2:5:Class:CWMPPlaylistCollection
-# 	2:10:HeaderFile:wmpplaylistcollection.h
-# 	2:8:ImplFile:wmpplaylistcollection.cpp
-# End Section
-# Section muzikbrowzer : {CFAB6E98-8730-11D3-B388-00C04F68574B}
-# 	2:5:Class:CWMPCdrom
-# 	2:10:HeaderFile:wmpcdrom.h
-# 	2:8:ImplFile:wmpcdrom.cpp
-# End Section
-# Section muzikbrowzer : {679409C0-99F7-11D3-9FB7-00105AA620BB}
-# 	2:5:Class:CWMPPlaylistArray
-# 	2:10:HeaderFile:wmpplaylistarray.h
-# 	2:8:ImplFile:wmpplaylistarray.cpp
-# End Section
-# Section muzikbrowzer : {74C09E02-F828-11D2-A74B-00A0C905F36E}
-# 	2:5:Class:CWMPControls
-# 	2:10:HeaderFile:wmpcontrols.h
-# 	2:8:ImplFile:wmpcontrols.cpp
-# End Section
-# Section muzikbrowzer : {6C497D62-8919-413C-82DB-E935FB3EC584}
-# 	2:5:Class:CWMPPlayer4
-# 	2:10:HeaderFile:wmpplayer4.h
-# 	2:8:ImplFile:wmpplayer4.cpp
-# End Section
-# Section muzikbrowzer : {8DA61686-4668-4A5C-AE5D-803193293DBE}
-# 	2:5:Class:CWMPDVD
-# 	2:10:HeaderFile:wmpdvd.h
-# 	2:8:ImplFile:wmpdvd.cpp
-# End Section
 # Section muzikbrowzer : {40897764-CEAB-47BE-AD4A-8E28537F9BBF}
 # 	2:5:Class:CWMPPlayerApplication
 # 	2:10:HeaderFile:wmpplayerapplication.h
 # 	2:8:ImplFile:wmpplayerapplication.cpp
+# End Section
+# Section muzikbrowzer : {6BF52A52-394A-11D3-B153-00C04F79FAA6}
+# 	2:21:DefaultSinkHeaderFile:wmpplayer4.h
+# 	2:16:DefaultSinkClass:CWMPPlayer4
 # End Section
 # Section muzikbrowzer : {9104D1AB-80C9-4FED-ABF0-2E6417A6DF14}
 # 	2:5:Class:CWMPSettings
 # 	2:10:HeaderFile:wmpsettings.h
 # 	2:8:ImplFile:wmpsettings.cpp
 # End Section
-# Section muzikbrowzer : {6BF52A52-394A-11D3-B153-00C04F79FAA6}
-# 	2:21:DefaultSinkHeaderFile:wmpplayer4.h
-# 	2:16:DefaultSinkClass:CWMPPlayer4
+# Section muzikbrowzer : {A12DCF7D-14AB-4C1B-A8CD-63909F06025B}
+# 	2:5:Class:CWMPError
+# 	2:10:HeaderFile:wmperror.h
+# 	2:8:ImplFile:wmperror.cpp
+# End Section
+# Section muzikbrowzer : {EE4C8FE2-34B2-11D3-A3BF-006097C9B344}
+# 	2:5:Class:CWMPCdromCollection
+# 	2:10:HeaderFile:wmpcdromcollection.h
+# 	2:8:ImplFile:wmpcdromcollection.cpp
+# End Section
+# Section muzikbrowzer : {D5F0F4F1-130C-11D3-B14E-00C04F79FAA6}
+# 	2:5:Class:CWMPPlaylist
+# 	2:10:HeaderFile:wmpplaylist.h
+# 	2:8:ImplFile:wmpplaylist.cpp
+# End Section
+# Section muzikbrowzer : {4F2DF574-C588-11D3-9ED0-00C04FB6E937}
+# 	2:5:Class:CWMPClosedCaption
+# 	2:10:HeaderFile:wmpclosedcaption.h
+# 	2:8:ImplFile:wmpclosedcaption.cpp
+# End Section
+# Section muzikbrowzer : {94D55E95-3FAC-11D3-B155-00C04F79FAA6}
+# 	2:5:Class:CWMPMedia
+# 	2:10:HeaderFile:wmpmedia.h
+# 	2:8:ImplFile:wmpmedia.cpp
+# End Section
+# Section muzikbrowzer : {3614C646-3B3B-4DE7-A81E-930E3F2127B3}
+# 	2:5:Class:CWMPErrorItem
+# 	2:10:HeaderFile:wmperroritem.h
+# 	2:8:ImplFile:wmperroritem.cpp
+# End Section
+# Section muzikbrowzer : {EC21B779-EDEF-462D-BBA4-AD9DDE2B29A7}
+# 	2:5:Class:CWMPNetwork
+# 	2:10:HeaderFile:wmpnetwork.h
+# 	2:8:ImplFile:wmpnetwork.cpp
+# End Section
+# Section muzikbrowzer : {10A13217-23A7-439B-B1C0-D847C79B7774}
+# 	2:5:Class:CWMPPlaylistCollection
+# 	2:10:HeaderFile:wmpplaylistcollection.h
+# 	2:8:ImplFile:wmpplaylistcollection.cpp
+# End Section
+# Section muzikbrowzer : {8363BC22-B4B4-4B19-989D-1CD765749DD1}
+# 	2:5:Class:CWMPMediaCollection
+# 	2:10:HeaderFile:wmpmediacollection.h
+# 	2:8:ImplFile:wmpmediacollection.cpp
+# End Section
+# Section muzikbrowzer : {4A976298-8C0D-11D3-B389-00C04F68574B}
+# 	2:5:Class:CWMPStringCollection
+# 	2:10:HeaderFile:wmpstringcollection.h
+# 	2:8:ImplFile:wmpstringcollection.cpp
+# End Section
+# Section muzikbrowzer : {74C09E02-F828-11D2-A74B-00A0C905F36E}
+# 	2:5:Class:CWMPControls
+# 	2:10:HeaderFile:wmpcontrols.h
+# 	2:8:ImplFile:wmpcontrols.cpp
+# End Section
+# Section muzikbrowzer : {679409C0-99F7-11D3-9FB7-00105AA620BB}
+# 	2:5:Class:CWMPPlaylistArray
+# 	2:10:HeaderFile:wmpplaylistarray.h
+# 	2:8:ImplFile:wmpplaylistarray.cpp
+# End Section
+# Section muzikbrowzer : {CFAB6E98-8730-11D3-B388-00C04F68574B}
+# 	2:5:Class:CWMPCdrom
+# 	2:10:HeaderFile:wmpcdrom.h
+# 	2:8:ImplFile:wmpcdrom.cpp
+# End Section
+# Section muzikbrowzer : {8DA61686-4668-4A5C-AE5D-803193293DBE}
+# 	2:5:Class:CWMPDVD
+# 	2:10:HeaderFile:wmpdvd.h
+# 	2:8:ImplFile:wmpdvd.cpp
+# End Section
+# Section muzikbrowzer : {6C497D62-8919-413C-82DB-E935FB3EC584}
+# 	2:5:Class:CWMPPlayer4
+# 	2:10:HeaderFile:wmpplayer4.h
+# 	2:8:ImplFile:wmpplayer4.cpp
 # End Section
